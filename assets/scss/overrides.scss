@@ -324,14 +324,32 @@
     }
   }
   
-  // Panels container
+  // Panels container - more spacing below tabs
   .p-tabview-panels {
-    padding: 1.5rem;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
     background: transparent;
   }
   
   .p-tabview-panel {
     padding: 0;
+  }
+}
+
+// ============================================
+// FORM ACTION BUTTONS
+// ============================================
+.form-actions {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+}
+
+// Target form action buttons inside tab panels
+.p-tabview-panel {
+  form {
+    .flex.justify-end.gap-4 {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+    }
   }
 }
 

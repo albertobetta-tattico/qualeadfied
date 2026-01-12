@@ -713,16 +713,4 @@ onMounted(() => {
   color: #dc3545;
   margin-top: 0.25rem;
 }
-
-:deep(.p-tabview-panels) {
-  padding: 0 !important;
-}
-
-:deep(.p-tabview-nav) {
-  border-bottom: 1px solid #e9ecef;
-}
-
-:deep(.p-tabview-nav-link) {
-  padding: 1rem 1.5rem !important;
-}
 </style>
