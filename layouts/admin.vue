@@ -118,7 +118,7 @@ const isActive = (path: string) => route.path === path
     </aside>
 
     <!-- Main Content Area -->
-    <main class="admin-main">
+    <main class="admin-main" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
       <!-- Header -->
       <header class="admin-header">
         <div class="admin-header-left">

@@ -322,7 +322,8 @@ ul, ol {
   flex-direction: column;
   transition: margin-left $transition-slow $transition-easing;
   
-  .sidebar-collapsed + & {
+  // Quando la sidebar è collassata, il main si espande
+  &.sidebar-collapsed {
     margin-left: $sidebar-width-collapsed;
   }
 }
