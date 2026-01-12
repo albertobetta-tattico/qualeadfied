@@ -10,9 +10,22 @@ declare module 'vue' {
   export interface GlobalComponents {
     PrimeButton: typeof import('primevue/button')['default']
     PrimeColumn: typeof import('primevue/column')['default']
+    PrimeConfirmDialog: typeof import('primevue/confirmdialog')['default']
     PrimeDataTable: typeof import('primevue/datatable')['default']
+    PrimeDialog: typeof import('primevue/dialog')['default']
+    PrimeInputNumber: typeof import('primevue/inputnumber')['default']
+    PrimeInputText: typeof import('primevue/inputtext')['default']
+    PrimeMenu: typeof import('primevue/menu')['default']
+    PrimeSelect: typeof import('primevue/select')['default']
+    PrimeTabPanel: typeof import('primevue/tabpanel')['default']
+    PrimeTabView: typeof import('primevue/tabview')['default']
     PrimeTag: typeof import('primevue/tag')['default']
+    PrimeToast: typeof import('primevue/toast')['default']
+    PrimeToggleSwitch: typeof import('primevue/toggleswitch')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+  }
+  export interface ComponentCustomProperties {
+    Tooltip: typeof import('primevue/tooltip')['default']
   }
 }

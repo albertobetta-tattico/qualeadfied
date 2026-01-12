@@ -216,7 +216,7 @@ export function useClientValidation() {
  * Azioni conferma per clienti
  */
 export function useClientActions() {
-  const { $toast } = useNuxtApp()
+  const toast = useToast()
   const confirm = useConfirm()
 
   const confirmDelete = (client: Client, onConfirm: () => void) => {
@@ -255,7 +255,7 @@ export function useClientActions() {
   }
 
   const showSuccess = (message: string) => {
-    $toast.add({
+    toast.add({
       severity: 'success',
       summary: 'Operazione completata',
       detail: message,
@@ -264,7 +264,7 @@ export function useClientActions() {
   }
 
   const showError = (message: string) => {
-    $toast.add({
+    toast.add({
       severity: 'error',
       summary: 'Errore',
       detail: message,
@@ -273,11 +273,20 @@ export function useClientActions() {
   }
 
   const showInfo = (message: string) => {
-    $toast.add({
+    toast.add({
       severity: 'info',
       summary: 'Informazione',
       detail: message,
       life: 3000
+    })
+  }
+
+  const showWarning = (message: string) => {
+    toast.add({
+      severity: 'warn',
+      summary: 'Attenzione',
+      detail: message,
+      life: 4000
     })
   }
 
@@ -287,7 +296,8 @@ export function useClientActions() {
     confirmResetPassword,
     showSuccess,
     showError,
-    showInfo
+    showInfo,
+    showWarning
   }
 }
 
@@ -359,8 +369,8 @@ export function useClientFormatters() {
     return labels[status] || status
   }
 
-  const getStatusSeverity = (status: string): string => {
-    const severities: Record<string, string> = {
+  const getStatusSeverity = (status: string): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" | undefined => {
+    const severities: Record<string, "success" | "info" | "warn" | "danger" | "secondary"> = {
       pending: 'warn',
       active: 'success',
       suspended: 'danger'

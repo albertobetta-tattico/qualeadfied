@@ -56,11 +56,35 @@ const menuItems = [
 
 // Current route for active state
 const route = useRoute()
-const isActive = (path: string) => route.path === path
+const isActive = (path: string) => {
+  if (path === '/admin') {
+    return route.path === '/admin'
+  }
+  return route.path.startsWith(path)
+}
+
+// Get current page title for breadcrumb
+const currentPageTitle = computed(() => {
+  const path = route.path
+  for (const section of menuItems) {
+    for (const item of section.items) {
+      if (path.startsWith(item.to) && item.to !== '/admin') {
+        return item.label
+      }
+    }
+  }
+  return 'Dashboard'
+})
 </script>
 
 <template>
   <div class="admin-layout">
+    <!-- Toast Notifications -->
+    <PrimeToast position="top-right" />
+    
+    <!-- Confirm Dialog -->
+    <PrimeConfirmDialog />
+
     <!-- Sidebar Overlay (Mobile) -->
     <div
       v-if="sidebarOpen"
@@ -78,8 +102,10 @@ const isActive = (path: string) => route.path === path
     >
       <!-- Logo -->
       <div class="sidebar-logo">
-        <div class="sidebar-logo-icon">Q</div>
-        <span class="sidebar-logo-text">Qualeadfied<sup>®</sup></span>
+        <NuxtLink to="/admin" class="flex items-center gap-3">
+          <div class="sidebar-logo-icon">Q</div>
+          <span class="sidebar-logo-text">Qualeadfied<sup>®</sup></span>
+        </NuxtLink>
       </div>
 
       <!-- Navigation -->
@@ -135,7 +161,7 @@ const isActive = (path: string) => route.path === path
           <nav class="admin-header-breadcrumb">
             <NuxtLink to="/admin">Home</NuxtLink>
             <span class="separator">/</span>
-            <span class="current">Dashboard</span>
+            <span class="current">{{ currentPageTitle }}</span>
           </nav>
         </div>
 
@@ -187,5 +213,15 @@ const isActive = (path: string) => route.path === path
   .admin-sidebar.open {
     transform: translateX(0);
   }
+}
+
+/* Logo link styles */
+.sidebar-logo a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.sidebar-logo a:hover {
+  opacity: 0.9;
 }
 </style>
