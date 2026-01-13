@@ -897,4 +897,5 @@ ul, ol {
 // ============================================
 // PRIMEVUE COMPONENT OVERRIDES
 // ============================================
-@import '../scss/overrides';
+// Note: PrimeVue overrides are loaded via nuxt.config.ts css array
+// to avoid Sass @import deprecation warnings

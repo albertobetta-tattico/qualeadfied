@@ -1,0 +1,454 @@
+/**
+ * useLead Composable - Funzioni per gestione lead
+ * Qualeadfied B2B Lead Platform
+ */
+
+import { reactive, computed } from 'vue'
+import type { Lead, LeadCreateForm, LeadUpdateForm, LeadStatus, Category } from '~/types/lead'
+
+/**
+ * Validazione campi lead
+ */
+export function useLeadValidation() {
+  const errors = reactive<Record<string, string>>({})
+
+  const validateRequired = (field: string, value: any, label: string): boolean => {
+    if (!value || (typeof value === 'string' && value.trim() === '')) {
+      errors[field] = `${label} è obbligatorio`
+      return false
+    }
+    delete errors[field]
+    return true
+  }
+
+  const validateEmail = (value: string): boolean => {
+    if (!value) {
+      errors.email = 'L\'email è obbligatoria'
+      return false
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(value)) {
+      errors.email = 'Formato email non valido'
+      return false
+    }
+    delete errors.email
+    return true
+  }
+
+  const validatePhone = (value: string): boolean => {
+    if (!value) {
+      errors.phone = 'Il telefono è obbligatorio'
+      return false
+    }
+    // Formato telefono italiano (più permissivo)
+    const phoneRegex = /^(\+39)?[\s]?[0-9\s\-\.]{6,15}$/
+    if (!phoneRegex.test(value.replace(/[\s\-\.]/g, ''))) {
+      errors.phone = 'Formato telefono non valido'
+      return false
+    }
+    delete errors.phone
+    return true
+  }
+
+  const validateCategoryId = (value: number | null): boolean => {
+    if (!value) {
+      errors.category_id = 'Seleziona una categoria'
+      return false
+    }
+    delete errors.category_id
+    return true
+  }
+
+  const validateProvinceId = (value: number | null): boolean => {
+    if (!value) {
+      errors.province_id = 'Seleziona una provincia'
+      return false
+    }
+    delete errors.province_id
+    return true
+  }
+
+  const validateSourceId = (value: number | null): boolean => {
+    if (!value) {
+      errors.source_id = 'Seleziona una fonte'
+      return false
+    }
+    delete errors.source_id
+    return true
+  }
+
+  const validateGeneratedAt = (value: string): boolean => {
+    if (!value) {
+      errors.generated_at = 'La data di generazione è obbligatoria'
+      return false
+    }
+    // Verifica che sia una data valida
+    const date = new Date(value)
+    if (isNaN(date.getTime())) {
+      errors.generated_at = 'Data non valida'
+      return false
+    }
+    // Verifica che non sia nel futuro
+    if (date > new Date()) {
+      errors.generated_at = 'La data non può essere nel futuro'
+      return false
+    }
+    delete errors.generated_at
+    return true
+  }
+
+  const validateField = (field: string, value: any): boolean => {
+    switch (field) {
+      case 'first_name':
+        return validateRequired(field, value, 'Il nome')
+      case 'last_name':
+        return validateRequired(field, value, 'Il cognome')
+      case 'email':
+        return validateEmail(value)
+      case 'phone':
+        return validatePhone(value)
+      case 'category_id':
+        return validateCategoryId(value)
+      case 'province_id':
+        return validateProvinceId(value)
+      case 'source_id':
+        return validateSourceId(value)
+      case 'generated_at':
+        return validateGeneratedAt(value)
+      default:
+        return true
+    }
+  }
+
+  const validateForm = (form: LeadCreateForm | LeadUpdateForm): boolean => {
+    let isValid = true
+
+    isValid = validateRequired('first_name', form.first_name, 'Il nome') && isValid
+    isValid = validateRequired('last_name', form.last_name, 'Il cognome') && isValid
+    isValid = validateEmail(form.email) && isValid
+    isValid = validatePhone(form.phone) && isValid
+    isValid = validateCategoryId(form.category_id) && isValid
+    isValid = validateProvinceId(form.province_id) && isValid
+    isValid = validateSourceId(form.source_id) && isValid
+    isValid = validateGeneratedAt(form.generated_at) && isValid
+
+    return isValid
+  }
+
+  const clearErrors = () => {
+    Object.keys(errors).forEach(key => delete errors[key])
+  }
+
+  const hasErrors = computed(() => Object.keys(errors).length > 0)
+
+  return {
+    errors,
+    hasErrors,
+    validateField,
+    validateForm,
+    clearErrors
+  }
+}
+
+/**
+ * Azioni conferma per lead
+ */
+export function useLeadActions() {
+  const toast = useToast()
+  const confirm = useConfirm()
+
+  const confirmDelete = (lead: Lead, onConfirm: () => void) => {
+    if (lead.status !== 'free') {
+      toast.add({
+        severity: 'error',
+        summary: 'Operazione non consentita',
+        detail: 'Non è possibile eliminare un lead già venduto',
+        life: 5000
+      })
+      return
+    }
+
+    confirm.require({
+      message: `Sei sicuro di voler eliminare il lead di "${lead.first_name} ${lead.last_name}"? Questa azione non può essere annullata.`,
+      header: 'Conferma Eliminazione',
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button-danger',
+      acceptLabel: 'Elimina',
+      rejectLabel: 'Annulla',
+      accept: onConfirm
+    })
+  }
+
+  const confirmBulkDelete = (count: number, onConfirm: () => void) => {
+    confirm.require({
+      message: `Sei sicuro di voler eliminare ${count} lead selezionati? I lead già venduti verranno ignorati.`,
+      header: 'Conferma Eliminazione Multipla',
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button-danger',
+      acceptLabel: 'Elimina',
+      rejectLabel: 'Annulla',
+      accept: onConfirm
+    })
+  }
+
+  const showSuccess = (message: string) => {
+    toast.add({
+      severity: 'success',
+      summary: 'Operazione completata',
+      detail: message,
+      life: 3000
+    })
+  }
+
+  const showError = (message: string) => {
+    toast.add({
+      severity: 'error',
+      summary: 'Errore',
+      detail: message,
+      life: 5000
+    })
+  }
+
+  const showInfo = (message: string) => {
+    toast.add({
+      severity: 'info',
+      summary: 'Informazione',
+      detail: message,
+      life: 3000
+    })
+  }
+
+  const showWarning = (message: string) => {
+    toast.add({
+      severity: 'warn',
+      summary: 'Attenzione',
+      detail: message,
+      life: 4000
+    })
+  }
+
+  return {
+    confirmDelete,
+    confirmBulkDelete,
+    showSuccess,
+    showError,
+    showInfo,
+    showWarning
+  }
+}
+
+/**
+ * Formattatori per visualizzazione lead
+ */
+export function useLeadFormatters() {
+  const formatStatus = (status: LeadStatus): string => {
+    const labels: Record<LeadStatus, string> = {
+      free: 'Disponibile',
+      sold_exclusive: 'Venduto Esclusivo',
+      sold_shared: 'Condiviso',
+      exhausted: 'Esaurito'
+    }
+    return labels[status] || status
+  }
+
+  const getStatusSeverity = (status: LeadStatus): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" | undefined => {
+    const severities: Record<LeadStatus, "success" | "info" | "warn" | "danger" | "secondary"> = {
+      free: 'success',
+      sold_exclusive: 'info',
+      sold_shared: 'warn',
+      exhausted: 'danger'
+    }
+    return severities[status] || 'secondary'
+  }
+
+  const getStatusIcon = (status: LeadStatus): string => {
+    const icons: Record<LeadStatus, string> = {
+      free: 'pi-check-circle',
+      sold_exclusive: 'pi-lock',
+      sold_shared: 'pi-users',
+      exhausted: 'pi-ban'
+    }
+    return icons[status] || 'pi-circle'
+  }
+
+  const formatSharesDisplay = (lead: Lead, category?: Category): string => {
+    if (lead.status === 'free') return 'Disponibile'
+    if (lead.status === 'sold_exclusive') return 'Esclusivo'
+    
+    const maxShares = category?.max_shares || 3
+    return `${lead.current_shares}/${maxShares}`
+  }
+
+  const formatDate = (dateString: string | null): string => {
+    if (!dateString) return '-'
+    return new Date(dateString).toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
+  }
+
+  const formatDateTime = (dateString: string | null): string => {
+    if (!dateString) return '-'
+    return new Date(dateString).toLocaleString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const formatDateForInput = (dateString: string | null): string => {
+    if (!dateString) return new Date().toISOString().split('T')[0]
+    return new Date(dateString).toISOString().split('T')[0]
+  }
+
+  const getFullName = (lead: Lead): string => {
+    return `${lead.first_name} ${lead.last_name}`.trim() || '-'
+  }
+
+  const truncateText = (text: string | undefined, maxLength: number = 80): string => {
+    if (!text) return '-'
+    if (text.length <= maxLength) return text
+    return text.substring(0, maxLength) + '...'
+  }
+
+  const formatPhone = (phone: string): string => {
+    if (!phone) return '-'
+    // Rimuovi spazi e caratteri speciali
+    const clean = phone.replace(/[^\d+]/g, '')
+    // Se inizia con +39, formatta come numero italiano
+    if (clean.startsWith('+39')) {
+      const national = clean.substring(3)
+      if (national.length === 10) {
+        return `+39 ${national.substring(0, 3)} ${national.substring(3, 6)} ${national.substring(6)}`
+      }
+    }
+    return phone
+  }
+
+  const canEdit = (lead: Lead): boolean => {
+    // Un lead può essere modificato solo se è ancora disponibile (free)
+    // o parzialmente venduto (sold_shared)
+    return lead.status === 'free' || lead.status === 'sold_shared'
+  }
+
+  const canDelete = (lead: Lead): boolean => {
+    // Un lead può essere eliminato solo se non è mai stato venduto
+    return lead.status === 'free'
+  }
+
+  return {
+    formatStatus,
+    getStatusSeverity,
+    getStatusIcon,
+    formatSharesDisplay,
+    formatDate,
+    formatDateTime,
+    formatDateForInput,
+    getFullName,
+    truncateText,
+    formatPhone,
+    canEdit,
+    canDelete
+  }
+}
+
+/**
+ * Form lead con valori di default
+ */
+export function useLeadForm(initialData?: Lead) {
+  const today = new Date().toISOString().split('T')[0]
+
+  const form = reactive<LeadCreateForm>({
+    category_id: initialData?.category_id || null,
+    province_id: initialData?.province_id || null,
+    source_id: initialData?.source_id || null,
+    first_name: initialData?.first_name || '',
+    last_name: initialData?.last_name || '',
+    email: initialData?.email || '',
+    phone: initialData?.phone || '',
+    request_text: initialData?.request_text || '',
+    extra_tags: initialData?.extra_tags || {},
+    generated_at: initialData?.generated_at || today,
+    external_id: initialData?.external_id || ''
+  })
+
+  const resetForm = () => {
+    form.category_id = initialData?.category_id || null
+    form.province_id = initialData?.province_id || null
+    form.source_id = initialData?.source_id || null
+    form.first_name = initialData?.first_name || ''
+    form.last_name = initialData?.last_name || ''
+    form.email = initialData?.email || ''
+    form.phone = initialData?.phone || ''
+    form.request_text = initialData?.request_text || ''
+    form.extra_tags = initialData?.extra_tags || {}
+    form.generated_at = initialData?.generated_at || today
+    form.external_id = initialData?.external_id || ''
+  }
+
+  const isCreate = !initialData
+
+  return {
+    form,
+    isCreate,
+    resetForm
+  }
+}
+
+/**
+ * Validazione sorgenti lead
+ */
+export function useLeadSourceValidation() {
+  const errors = reactive<Record<string, string>>({})
+
+  const validateName = (value: string): boolean => {
+    if (!value || value.trim().length < 2) {
+      errors.name = 'Il nome deve avere almeno 2 caratteri'
+      return false
+    }
+    delete errors.name
+    return true
+  }
+
+  const validateSlug = (value: string): boolean => {
+    if (!value || value.trim().length < 2) {
+      errors.slug = 'Lo slug deve avere almeno 2 caratteri'
+      return false
+    }
+    // Slug deve contenere solo lettere minuscole, numeri e trattini
+    const slugRegex = /^[a-z0-9-]+$/
+    if (!slugRegex.test(value)) {
+      errors.slug = 'Lo slug può contenere solo lettere minuscole, numeri e trattini'
+      return false
+    }
+    delete errors.slug
+    return true
+  }
+
+  const validateField = (field: string, value: any): boolean => {
+    switch (field) {
+      case 'name':
+        return validateName(value)
+      case 'slug':
+        return validateSlug(value)
+      default:
+        return true
+    }
+  }
+
+  const clearErrors = () => {
+    Object.keys(errors).forEach(key => delete errors[key])
+  }
+
+  const hasErrors = computed(() => Object.keys(errors).length > 0)
+
+  return {
+    errors,
+    hasErrors,
+    validateField,
+    clearErrors
+  }
+}
