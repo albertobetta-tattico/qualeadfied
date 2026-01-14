@@ -12,6 +12,10 @@ import type {
   CategoryStats,
   CategoryPrice,
   CategoryPriceForm,
+  CategoryPriceWithCategory,
+  PriceHistoryEntry,
+  PricingFilters,
+  PricingStats,
   Province,
   ProvinceFilters,
   ProvinceStats,
@@ -52,6 +56,13 @@ interface CatalogState {
   packageStats: PackageStats | null
   packagePagination: PaginationMeta
   packageFilters: PackageFilters
+
+  // Pricing
+  categoryPricesWithCategory: CategoryPriceWithCategory[]
+  priceHistory: PriceHistoryEntry[]
+  pricingStats: PricingStats | null
+  pricingPagination: PaginationMeta
+  pricingFilters: PricingFilters
 
   // UI State
   loading: boolean
@@ -228,6 +239,196 @@ const mockPackages: Package[] = [
   }
 ]
 
+// Mock Category Prices - Prezzi per categoria
+const mockCategoryPrices: CategoryPrice[] = [
+  {
+    id: 1,
+    category_id: 1,
+    exclusive_price: 35.00,
+    shared_prices: { slot_1: 15.00, slot_2: 15.00, slot_3: 15.00 },
+    valid_from: '2024-01-01T00:00:00Z',
+    valid_to: null,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 2,
+    category_id: 2,
+    exclusive_price: 28.00,
+    shared_prices: { slot_1: 12.00, slot_2: 12.00, slot_3: 12.00 },
+    valid_from: '2024-01-01T00:00:00Z',
+    valid_to: null,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-05T00:00:00Z'
+  },
+  {
+    id: 3,
+    category_id: 3,
+    exclusive_price: 32.00,
+    shared_prices: { slot_1: 10.00, slot_2: 10.00, slot_3: 10.00, slot_4: 10.00 },
+    valid_from: '2024-01-01T00:00:00Z',
+    valid_to: null,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-10T00:00:00Z'
+  },
+  {
+    id: 4,
+    category_id: 4,
+    exclusive_price: 45.00,
+    shared_prices: { slot_1: 25.00, slot_2: 25.00 },
+    valid_from: '2024-01-01T00:00:00Z',
+    valid_to: null,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 5,
+    category_id: 5,
+    exclusive_price: 22.00,
+    shared_prices: { slot_1: 10.00, slot_2: 10.00, slot_3: 10.00 },
+    valid_from: '2024-01-01T00:00:00Z',
+    valid_to: null,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-08T00:00:00Z'
+  }
+]
+
+// Mock Price History - Storico variazioni prezzi
+const mockPriceHistory: PriceHistoryEntry[] = [
+  {
+    id: 1,
+    category_id: 1,
+    category_name: 'Fotovoltaico',
+    exclusive_price: 25.00,
+    shared_prices: { slot_1: 10.00, slot_2: 10.00, slot_3: 10.00 },
+    valid_from: '2023-01-01T00:00:00Z',
+    valid_to: '2023-05-31T23:59:59Z',
+    changed_at: '2023-06-01T00:00:00Z',
+    changed_by: 'Mario Rossi'
+  },
+  {
+    id: 2,
+    category_id: 1,
+    category_name: 'Fotovoltaico',
+    exclusive_price: 30.00,
+    shared_prices: { slot_1: 12.00, slot_2: 12.00, slot_3: 12.00 },
+    valid_from: '2023-06-01T00:00:00Z',
+    valid_to: '2023-12-31T23:59:59Z',
+    changed_at: '2023-06-01T00:00:00Z',
+    changed_by: 'Mario Rossi'
+  },
+  {
+    id: 3,
+    category_id: 1,
+    category_name: 'Fotovoltaico',
+    exclusive_price: 35.00,
+    shared_prices: { slot_1: 15.00, slot_2: 15.00, slot_3: 15.00 },
+    valid_from: '2024-01-01T00:00:00Z',
+    valid_to: null,
+    changed_at: '2024-01-01T09:30:00Z',
+    changed_by: 'Admin'
+  },
+  {
+    id: 4,
+    category_id: 2,
+    category_name: 'Infissi e Serramenti',
+    exclusive_price: 20.00,
+    shared_prices: { slot_1: 8.00, slot_2: 8.00, slot_3: 8.00 },
+    valid_from: '2023-01-01T00:00:00Z',
+    valid_to: '2023-08-31T23:59:59Z',
+    changed_at: '2023-09-01T00:00:00Z',
+    changed_by: 'Mario Rossi'
+  },
+  {
+    id: 5,
+    category_id: 2,
+    category_name: 'Infissi e Serramenti',
+    exclusive_price: 25.00,
+    shared_prices: { slot_1: 10.00, slot_2: 10.00, slot_3: 10.00 },
+    valid_from: '2023-09-01T00:00:00Z',
+    valid_to: '2024-01-04T23:59:59Z',
+    changed_at: '2023-09-01T14:00:00Z',
+    changed_by: 'Mario Rossi'
+  },
+  {
+    id: 6,
+    category_id: 2,
+    category_name: 'Infissi e Serramenti',
+    exclusive_price: 28.00,
+    shared_prices: { slot_1: 12.00, slot_2: 12.00, slot_3: 12.00 },
+    valid_from: '2024-01-05T00:00:00Z',
+    valid_to: null,
+    changed_at: '2024-01-05T11:15:00Z',
+    changed_by: 'Admin'
+  },
+  {
+    id: 7,
+    category_id: 3,
+    category_name: 'Climatizzazione',
+    exclusive_price: 28.00,
+    shared_prices: { slot_1: 8.00, slot_2: 8.00, slot_3: 8.00, slot_4: 8.00 },
+    valid_from: '2023-03-01T00:00:00Z',
+    valid_to: '2024-01-09T23:59:59Z',
+    changed_at: '2024-01-10T00:00:00Z',
+    changed_by: 'Giulia Bianchi'
+  },
+  {
+    id: 8,
+    category_id: 3,
+    category_name: 'Climatizzazione',
+    exclusive_price: 32.00,
+    shared_prices: { slot_1: 10.00, slot_2: 10.00, slot_3: 10.00, slot_4: 10.00 },
+    valid_from: '2024-01-10T00:00:00Z',
+    valid_to: null,
+    changed_at: '2024-01-10T16:45:00Z',
+    changed_by: 'Giulia Bianchi'
+  },
+  {
+    id: 9,
+    category_id: 4,
+    category_name: 'Ristrutturazioni',
+    exclusive_price: 40.00,
+    shared_prices: { slot_1: 22.00, slot_2: 22.00 },
+    valid_from: '2023-06-01T00:00:00Z',
+    valid_to: '2023-12-31T23:59:59Z',
+    changed_at: '2024-01-01T00:00:00Z',
+    changed_by: 'Admin'
+  },
+  {
+    id: 10,
+    category_id: 4,
+    category_name: 'Ristrutturazioni',
+    exclusive_price: 45.00,
+    shared_prices: { slot_1: 25.00, slot_2: 25.00 },
+    valid_from: '2024-01-01T00:00:00Z',
+    valid_to: null,
+    changed_at: '2024-01-01T10:00:00Z',
+    changed_by: 'Admin'
+  },
+  {
+    id: 11,
+    category_id: 5,
+    category_name: 'Caldaie',
+    exclusive_price: 18.00,
+    shared_prices: { slot_1: 8.00, slot_2: 8.00, slot_3: 8.00 },
+    valid_from: '2023-01-01T00:00:00Z',
+    valid_to: '2024-01-07T23:59:59Z',
+    changed_at: '2024-01-08T00:00:00Z',
+    changed_by: 'Mario Rossi'
+  },
+  {
+    id: 12,
+    category_id: 5,
+    category_name: 'Caldaie',
+    exclusive_price: 22.00,
+    shared_prices: { slot_1: 10.00, slot_2: 10.00, slot_3: 10.00 },
+    valid_from: '2024-01-08T00:00:00Z',
+    valid_to: null,
+    changed_at: '2024-01-08T09:00:00Z',
+    changed_by: 'Mario Rossi'
+  }
+]
+
 // Flag per usare mock data
 const USE_MOCK_DATA = true
 
@@ -293,6 +494,23 @@ export const useCatalogStore = defineStore('catalog', {
       per_page: 20
     },
 
+    // Pricing
+    categoryPricesWithCategory: [],
+    priceHistory: [],
+    pricingStats: null,
+    pricingPagination: {
+      current_page: 1,
+      last_page: 1,
+      per_page: 20,
+      total: 0
+    },
+    pricingFilters: {
+      search: '',
+      category_id: '',
+      page: 1,
+      per_page: 20
+    },
+
     // UI State
     loading: false,
     saving: false,
@@ -351,6 +569,20 @@ export const useCatalogStore = defineStore('catalog', {
         state.packageFilters.category_id ||
         state.packageFilters.is_active !== ''
       )
+    },
+
+    // Pricing
+    hasPrices: (state): boolean => state.categoryPricesWithCategory.length > 0,
+    categoriesWithPrices: (state): number[] => state.categoryPricesWithCategory.map(p => p.category_id),
+    categoriesWithoutPrices: (state): Category[] => {
+      const withPrices = state.categoryPricesWithCategory.map(p => p.category_id)
+      return state.categories.filter(c => !withPrices.includes(c.id) && c.is_active)
+    },
+    getPriceForCategory: (state) => (categoryId: number): CategoryPriceWithCategory | undefined => {
+      return state.categoryPricesWithCategory.find(p => p.category_id === categoryId)
+    },
+    hasPricingActiveFilters: (state): boolean => {
+      return !!(state.pricingFilters.search || state.pricingFilters.category_id)
     }
   },
 
@@ -1223,6 +1455,268 @@ export const useCatalogStore = defineStore('catalog', {
         is_active: '',
         sort_by: 'sort_order',
         sort_order: 'asc',
+        page: 1,
+        per_page: 20
+      }
+    },
+
+    // ============================================
+    // PRICING
+    // ============================================
+
+    async fetchCategoryPrices() {
+      this.loading = true
+      this.error = null
+
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+
+          // Unisci prezzi con categorie
+          let pricesWithCategory: CategoryPriceWithCategory[] = mockCategoryPrices.map(price => {
+            const category = mockCategories.find(c => c.id === price.category_id)
+            return {
+              ...price,
+              category: category!
+            }
+          }).filter(p => p.category)
+
+          // Filtro ricerca
+          if (this.pricingFilters.search) {
+            const search = this.pricingFilters.search.toLowerCase()
+            pricesWithCategory = pricesWithCategory.filter(p =>
+              p.category.name.toLowerCase().includes(search)
+            )
+          }
+
+          // Filtro categoria
+          if (this.pricingFilters.category_id) {
+            pricesWithCategory = pricesWithCategory.filter(p =>
+              p.category_id === this.pricingFilters.category_id
+            )
+          }
+
+          // Ordinamento per nome categoria
+          pricesWithCategory.sort((a, b) => a.category.name.localeCompare(b.category.name))
+
+          // Paginazione
+          const page = this.pricingFilters.page || 1
+          const perPage = this.pricingFilters.per_page || 20
+          const start = (page - 1) * perPage
+          const end = start + perPage
+
+          this.categoryPricesWithCategory = pricesWithCategory.slice(start, end)
+          this.pricingPagination = {
+            current_page: page,
+            last_page: Math.ceil(pricesWithCategory.length / perPage),
+            per_page: perPage,
+            total: pricesWithCategory.length
+          }
+          return
+        }
+
+        const { api } = useApi()
+        const params = new URLSearchParams()
+        if (this.pricingFilters.search) params.append('search', this.pricingFilters.search)
+        if (this.pricingFilters.category_id) params.append('category_id', String(this.pricingFilters.category_id))
+        params.append('page', String(this.pricingFilters.page || 1))
+        params.append('per_page', String(this.pricingFilters.per_page || 20))
+
+        const response = await api<{ data: CategoryPriceWithCategory[]; meta: PaginationMeta }>(
+          `/admin/pricing?${params.toString()}`
+        )
+        this.categoryPricesWithCategory = response.data
+        this.pricingPagination = response.meta
+      } catch (error: any) {
+        this.error = error.message || 'Errore nel caricamento prezzi'
+        console.error('fetchCategoryPrices error:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchPriceForCategory(categoryId: number): Promise<CategoryPrice | null> {
+      this.loading = true
+      this.error = null
+
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 300))
+          const price = mockCategoryPrices.find(p => p.category_id === categoryId)
+          return price || null
+        }
+
+        const { api } = useApi()
+        const response = await api<{ data: CategoryPrice }>(`/admin/pricing/${categoryId}`)
+        return response.data
+      } catch (error: any) {
+        this.error = error.message || 'Errore nel caricamento prezzo'
+        console.error('fetchPriceForCategory error:', error)
+        return null
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async updateCategoryPrice(categoryId: number, data: CategoryPriceForm): Promise<CategoryPrice | null> {
+      this.saving = true
+      this.error = null
+
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+          const index = mockCategoryPrices.findIndex(p => p.category_id === categoryId)
+          
+          if (index !== -1) {
+            // Aggiorna prezzo esistente
+            mockCategoryPrices[index] = {
+              ...mockCategoryPrices[index],
+              exclusive_price: data.exclusive_price,
+              shared_prices: data.shared_prices,
+              updated_at: new Date().toISOString()
+            }
+
+            // Aggiorna anche la lista con categoria
+            const listIndex = this.categoryPricesWithCategory.findIndex(p => p.category_id === categoryId)
+            if (listIndex !== -1) {
+              this.categoryPricesWithCategory[listIndex] = {
+                ...this.categoryPricesWithCategory[listIndex],
+                exclusive_price: data.exclusive_price,
+                shared_prices: data.shared_prices,
+                updated_at: new Date().toISOString()
+              }
+            }
+
+            return mockCategoryPrices[index]
+          } else {
+            // Crea nuovo prezzo
+            const newPrice: CategoryPrice = {
+              id: Math.max(...mockCategoryPrices.map(p => p.id)) + 1,
+              category_id: categoryId,
+              exclusive_price: data.exclusive_price,
+              shared_prices: data.shared_prices,
+              valid_from: new Date().toISOString(),
+              valid_to: null,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+            mockCategoryPrices.push(newPrice)
+
+            // Aggiungi alla lista con categoria
+            const category = mockCategories.find(c => c.id === categoryId)
+            if (category) {
+              this.categoryPricesWithCategory.push({
+                ...newPrice,
+                category
+              })
+            }
+
+            return newPrice
+          }
+        }
+
+        const { api } = useApi()
+        const response = await api<{ data: CategoryPrice }>(`/admin/pricing/${categoryId}`, {
+          method: 'PUT',
+          body: data
+        })
+
+        // Aggiorna la lista
+        const index = this.categoryPricesWithCategory.findIndex(p => p.category_id === categoryId)
+        if (index !== -1) {
+          this.categoryPricesWithCategory[index] = {
+            ...this.categoryPricesWithCategory[index],
+            ...response.data
+          }
+        }
+
+        return response.data
+      } catch (error: any) {
+        this.error = error.message || 'Errore nell\'aggiornamento prezzo'
+        console.error('updateCategoryPrice error:', error)
+        return null
+      } finally {
+        this.saving = false
+      }
+    },
+
+    async fetchPriceHistory(categoryId?: number) {
+      this.loading = true
+      this.error = null
+
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 400))
+          
+          let history = [...mockPriceHistory]
+          
+          // Filtro per categoria
+          if (categoryId) {
+            history = history.filter(h => h.category_id === categoryId)
+          }
+
+          // Ordinamento per data (più recente prima)
+          history.sort((a, b) => new Date(b.changed_at).getTime() - new Date(a.changed_at).getTime())
+
+          this.priceHistory = history
+          return
+        }
+
+        const { api } = useApi()
+        const params = categoryId ? `?category_id=${categoryId}` : ''
+        const response = await api<{ data: PriceHistoryEntry[] }>(`/admin/pricing/history${params}`)
+        this.priceHistory = response.data
+      } catch (error: any) {
+        this.error = error.message || 'Errore nel caricamento storico prezzi'
+        console.error('fetchPriceHistory error:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchPricingStats() {
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 200))
+          
+          const categoriesWithPrices = mockCategoryPrices.length
+          const categoriesTotal = mockCategories.filter(c => c.is_active).length
+          const avgExclusive = mockCategoryPrices.reduce((acc, p) => acc + p.exclusive_price, 0) / mockCategoryPrices.length
+          const allSharedPrices = mockCategoryPrices.flatMap(p => Object.values(p.shared_prices))
+          const avgShared = allSharedPrices.reduce((acc, p) => acc + p, 0) / allSharedPrices.length
+          
+          const lastUpdate = mockCategoryPrices.reduce((latest, p) => {
+            const date = new Date(p.updated_at)
+            return date > latest ? date : latest
+          }, new Date(0))
+
+          this.pricingStats = {
+            total_categories: categoriesTotal,
+            categories_with_prices: categoriesWithPrices,
+            categories_without_prices: categoriesTotal - categoriesWithPrices,
+            avg_exclusive_price: Math.round(avgExclusive * 100) / 100,
+            avg_shared_price: Math.round(avgShared * 100) / 100,
+            last_update: lastUpdate.toISOString()
+          }
+          return
+        }
+
+        const { api } = useApi()
+        const response = await api<{ data: PricingStats }>('/admin/pricing/stats')
+        this.pricingStats = response.data
+      } catch (error: any) {
+        console.error('fetchPricingStats error:', error)
+      }
+    },
+
+    setPricingFilters(filters: Partial<PricingFilters>) {
+      this.pricingFilters = { ...this.pricingFilters, ...filters, page: 1 }
+    },
+
+    resetPricingFilters() {
+      this.pricingFilters = {
+        search: '',
+        category_id: '',
         page: 1,
         per_page: 20
       }

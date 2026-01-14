@@ -208,6 +208,73 @@ export function usePackageValidation() {
 }
 
 // ============================================
+// VALIDAZIONE PREZZI
+// ============================================
+
+export function usePricingValidation() {
+  const errors = reactive<Record<string, string>>({})
+
+  const validateExclusivePrice = (value: number): boolean => {
+    if (value < 0) {
+      errors.exclusive_price = 'Il prezzo deve essere un valore positivo'
+      return false
+    }
+    if (value > 10000) {
+      errors.exclusive_price = 'Il prezzo massimo è 10.000€'
+      return false
+    }
+    delete errors.exclusive_price
+    return true
+  }
+
+  const validateSharedPrice = (slotKey: string, value: number): boolean => {
+    if (value < 0) {
+      errors[slotKey] = 'Il prezzo deve essere positivo'
+      return false
+    }
+    if (value > 10000) {
+      errors[slotKey] = 'Il prezzo massimo è 10.000€'
+      return false
+    }
+    delete errors[slotKey]
+    return true
+  }
+
+  const validateSharedPrices = (sharedPrices: Record<string, number>): boolean => {
+    let isValid = true
+    for (const [key, value] of Object.entries(sharedPrices)) {
+      if (!validateSharedPrice(key, value)) {
+        isValid = false
+      }
+    }
+    return isValid
+  }
+
+  const validateForm = (exclusivePrice: number, sharedPrices: Record<string, number>): boolean => {
+    let isValid = true
+    isValid = validateExclusivePrice(exclusivePrice) && isValid
+    isValid = validateSharedPrices(sharedPrices) && isValid
+    return isValid
+  }
+
+  const clearErrors = () => {
+    Object.keys(errors).forEach(key => delete errors[key])
+  }
+
+  const hasErrors = computed(() => Object.keys(errors).length > 0)
+
+  return {
+    errors,
+    hasErrors,
+    validateExclusivePrice,
+    validateSharedPrice,
+    validateSharedPrices,
+    validateForm,
+    clearErrors
+  }
+}
+
+// ============================================
 // AZIONI CATALOGO
 // ============================================
 

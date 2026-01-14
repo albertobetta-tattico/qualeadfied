@@ -52,15 +52,55 @@ export interface CategoryFilters {
 export interface CategoryPrice {
   id: number
   category_id: number
+  category?: Category
   exclusive_price: number
-  shared_prices: Record<string, number>
+  shared_prices: Record<string, number> // { "slot_1": 25.00, "slot_2": 25.00, ... }
   valid_from: string
   valid_to: string | null
+  created_at: string
+  updated_at: string
 }
 
 export interface CategoryPriceForm {
   exclusive_price: number
   shared_prices: Record<string, number>
+}
+
+export interface CategoryPriceWithCategory extends CategoryPrice {
+  category: Category
+}
+
+export interface PriceHistoryEntry {
+  id: number
+  category_id: number
+  category_name: string
+  exclusive_price: number
+  shared_prices: Record<string, number>
+  valid_from: string
+  valid_to: string | null
+  changed_at: string
+  changed_by: string | null
+}
+
+export interface PricingFilters {
+  search?: string
+  category_id?: number | ''
+  date_from?: string
+  date_to?: string
+  page?: number
+  per_page?: number
+}
+
+export interface PricingStats {
+  total_categories: number
+  categories_with_prices: number
+  categories_without_prices: number
+  avg_exclusive_price: number
+  avg_shared_price?: number
+  last_update?: string | null
+  // Additional stats for history page
+  total_price_changes?: number
+  last_price_change?: string | null
 }
 
 export interface CategoryStats {
