@@ -340,6 +340,25 @@ export interface DashboardNotification {
   read: boolean
 }
 
+export interface DashboardRecentLead {
+  id: number
+  name: string
+  email: string
+  category: string
+  province: string
+  status: ContactStatus
+  acquisition_type: AcquisitionType
+  purchased_at: string
+}
+
+export interface DashboardRecentOrder {
+  id: string
+  items_count: number
+  amount: number
+  status: OrderStatus
+  date: string
+}
+
 // =============================================================================
 // AUTHENTICATED CATALOG
 // =============================================================================

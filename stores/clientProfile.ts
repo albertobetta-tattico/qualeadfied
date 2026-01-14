@@ -12,7 +12,9 @@ import type {
   TrialStatus,
   TrialClaimRequest,
   DashboardStats,
-  DashboardNotification
+  DashboardNotification,
+  DashboardRecentLead,
+  DashboardRecentOrder
 } from '~/types/clientArea'
 
 const USE_MOCK_DATA = true
@@ -88,11 +90,99 @@ const mockTrialStatus: TrialStatus = {
   leads_claimed: 1
 }
 
+// Mock recent leads
+const mockRecentLeads: DashboardRecentLead[] = [
+  {
+    id: 1,
+    name: 'Marco Verdi',
+    email: 'm.verdi@example.it',
+    category: 'Fotovoltaico',
+    province: 'Milano',
+    status: 'new',
+    acquisition_type: 'exclusive',
+    purchased_at: '2026-01-12'
+  },
+  {
+    id: 2,
+    name: 'Laura Bianchi',
+    email: 'l.bianchi@example.it',
+    category: 'Infissi',
+    province: 'Roma',
+    status: 'contacted',
+    acquisition_type: 'shared',
+    purchased_at: '2026-01-11'
+  },
+  {
+    id: 3,
+    name: 'Giuseppe Ferrari',
+    email: 'g.ferrari@example.it',
+    category: 'Climatizzazione',
+    province: 'Torino',
+    status: 'in_progress',
+    acquisition_type: 'exclusive',
+    purchased_at: '2026-01-10'
+  },
+  {
+    id: 4,
+    name: 'Anna Russo',
+    email: 'a.russo@example.it',
+    category: 'Caldaie',
+    province: 'Napoli',
+    status: 'converted',
+    acquisition_type: 'free_trial',
+    purchased_at: '2026-01-08'
+  },
+  {
+    id: 5,
+    name: 'Paolo Esposito',
+    email: 'p.esposito@example.it',
+    category: 'Fotovoltaico',
+    province: 'Bologna',
+    status: 'not_interested',
+    acquisition_type: 'shared',
+    purchased_at: '2026-01-07'
+  }
+]
+
+// Mock recent orders
+const mockRecentOrders: DashboardRecentOrder[] = [
+  {
+    id: 'ORD-2026-00015',
+    items_count: 3,
+    amount: 175.50,
+    status: 'completed',
+    date: '2026-01-12'
+  },
+  {
+    id: 'ORD-2026-00014',
+    items_count: 1,
+    amount: 45.00,
+    status: 'completed',
+    date: '2026-01-10'
+  },
+  {
+    id: 'ORD-2026-00013',
+    items_count: 2,
+    amount: 128.00,
+    status: 'processing',
+    date: '2026-01-08'
+  },
+  {
+    id: 'ORD-2026-00012',
+    items_count: 5,
+    amount: 327.38,
+    status: 'completed',
+    date: '2026-01-05'
+  }
+]
+
 interface ClientProfileState {
   profile: ClientProfileData | null
   dashboardStats: DashboardStats | null
   notifications: DashboardNotification[]
   trialStatus: TrialStatus | null
+  recentLeads: DashboardRecentLead[]
+  recentOrders: DashboardRecentOrder[]
   loading: boolean
   saving: boolean
   error: string | null
@@ -104,6 +194,8 @@ export const useClientProfileStore = defineStore('clientProfile', {
     dashboardStats: null,
     notifications: [],
     trialStatus: null,
+    recentLeads: [],
+    recentOrders: [],
     loading: false,
     saving: false,
     error: null
@@ -479,6 +571,50 @@ export const useClientProfileStore = defineStore('clientProfile', {
     },
 
     /**
+     * Fetch recent leads for dashboard
+     */
+    async fetchRecentLeads(): Promise<void> {
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+          this.recentLeads = [...mockRecentLeads]
+          return
+        }
+
+        const response = await $fetch<{ data: DashboardRecentLead[] }>('/api/client/dashboard/recent-leads', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+          }
+        })
+        this.recentLeads = response.data
+      } catch (e: any) {
+        console.error('Error fetching recent leads:', e)
+      }
+    },
+
+    /**
+     * Fetch recent orders for dashboard
+     */
+    async fetchRecentOrders(): Promise<void> {
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+          this.recentOrders = [...mockRecentOrders]
+          return
+        }
+
+        const response = await $fetch<{ data: DashboardRecentOrder[] }>('/api/client/dashboard/recent-orders', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+          }
+        })
+        this.recentOrders = response.data
+      } catch (e: any) {
+        console.error('Error fetching recent orders:', e)
+      }
+    },
+
+    /**
      * Initialize dashboard data
      */
     async initializeDashboard(): Promise<void> {
@@ -486,7 +622,9 @@ export const useClientProfileStore = defineStore('clientProfile', {
         this.fetchProfile(),
         this.fetchDashboardStats(),
         this.fetchNotifications(),
-        this.fetchTrialStatus()
+        this.fetchTrialStatus(),
+        this.fetchRecentLeads(),
+        this.fetchRecentOrders()
       ])
     }
   }
