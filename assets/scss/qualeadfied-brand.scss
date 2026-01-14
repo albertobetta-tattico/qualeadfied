@@ -84,13 +84,15 @@
   font-weight: $font-weight-medium;
   transition: all $transition-base $transition-easing;
 
+  // Default buttons (no severity = primary) and explicit primary buttons
+  &:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warn):not(.p-button-danger):not(.p-button-help):not(.p-button-contrast):not(.p-button-text):not(.p-button-outlined):not(.p-button-link),
   &.p-button-primary:not(.p-button-text):not(.p-button-outlined) {
-    background: $color-dark-bg;
-    border: none;
+    background: $color-dark-bg !important;
+    border: none !important;
     box-shadow: 0 2px 8px rgba($color-dark-bg, 0.3);
 
     &:hover:not(:disabled) {
-      background: $color-dark-bg-light;
+      background: $color-dark-bg-light !important;
       box-shadow: 0 4px 12px rgba($color-dark-bg, 0.4);
       transform: translateY(-1px);
     }
