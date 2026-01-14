@@ -1,0 +1,20 @@
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<h1>404 Not Found</h1>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: oneapp.dev/assets/42xyqrfas/42ydjdj83/ChatGPT Image 14 gen 2025, 19_03_10.png</li>
+<li>RequestId: ABCJKBCQQ8A97A6P</li>
+<li>HostId: VRdNMGl7ND9FAPzAqi2t6aHLqdvtlSRKO/GGlvDQi98QyYFe4HB9WlX2rnBk9KAx15z+zd4LpLoyOg+DjqVidCZewNjP4qKu</li>
+</ul>
+<h3>An Error Occurred While Attempting to Retrieve a Custom Error Document</h3>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: error.html</li>
+</ul>
+<hr/>
+</body>
+</html>

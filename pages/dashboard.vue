@@ -19,7 +19,7 @@ onMounted(async () => {
 const router = useRouter()
 
 const goToLeads = () => {
-  router.push('/catalogo-lead')
+  router.push('/leads')
 }
 
 const goToPackages = () => {
