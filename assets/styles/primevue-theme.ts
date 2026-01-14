@@ -205,6 +205,38 @@ const QualeadfiedPreset = definePreset(Aura, {
               hoverBackground: '#0E0E1A',
               color: '#ffffff'
             }
+          },
+          text: {
+            primary: {
+              hoverBackground: 'rgba(15, 52, 96, 0.08)',
+              activeBackground: 'rgba(15, 52, 96, 0.12)',
+              color: '#0F3460'
+            },
+            secondary: {
+              hoverBackground: '{surface.100}',
+              activeBackground: '{surface.200}',
+              color: '{surface.600}'
+            },
+            success: {
+              hoverBackground: 'rgba(40, 167, 69, 0.08)',
+              activeBackground: 'rgba(40, 167, 69, 0.12)',
+              color: '#28A745'
+            },
+            info: {
+              hoverBackground: 'rgba(23, 162, 184, 0.08)',
+              activeBackground: 'rgba(23, 162, 184, 0.12)',
+              color: '#17A2B8'
+            },
+            warn: {
+              hoverBackground: 'rgba(255, 193, 7, 0.08)',
+              activeBackground: 'rgba(255, 193, 7, 0.12)',
+              color: '#D39E00'
+            },
+            danger: {
+              hoverBackground: 'rgba(220, 53, 69, 0.08)',
+              activeBackground: 'rgba(220, 53, 69, 0.12)',
+              color: '#DC3545'
+            }
           }
         }
       }

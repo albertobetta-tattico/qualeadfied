@@ -84,7 +84,7 @@
   font-weight: $font-weight-medium;
   transition: all $transition-base $transition-easing;
 
-  &.p-button-primary {
+  &.p-button-primary:not(.p-button-text):not(.p-button-outlined) {
     background: linear-gradient(135deg, $color-primary 0%, $color-primary-600 100%);
     border: none;
     box-shadow: 0 2px 8px rgba($color-primary, 0.3);
@@ -97,6 +97,45 @@
 
     &:active:not(:disabled) {
       transform: translateY(0);
+    }
+  }
+
+  // Text buttons - transparent background, only icon/text visible
+  &.p-button-text {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    &.p-button-primary {
+      color: $color-primary;
+
+      &:hover:not(:disabled) {
+        background: rgba($color-primary, 0.08) !important;
+      }
+    }
+
+    &.p-button-danger {
+      color: $color-danger;
+
+      &:hover:not(:disabled) {
+        background: rgba($color-danger, 0.08) !important;
+      }
+    }
+
+    &.p-button-success {
+      color: $color-success;
+
+      &:hover:not(:disabled) {
+        background: rgba($color-success, 0.08) !important;
+      }
+    }
+
+    &.p-button-secondary {
+      color: $color-neutral-600;
+
+      &:hover:not(:disabled) {
+        background: rgba($color-neutral-600, 0.08) !important;
+      }
     }
   }
 
