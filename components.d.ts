@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     PrimeButton: typeof import('primevue/button')['default']
+    PrimeCard: typeof import('primevue/card')['default']
     PrimeChart: typeof import('primevue/chart')['default']
     PrimeCheckbox: typeof import('primevue/checkbox')['default']
     PrimeColumn: typeof import('primevue/column')['default']
@@ -26,6 +27,7 @@ declare module 'vue' {
     PrimeMessage: typeof import('primevue/message')['default']
     PrimePaginator: typeof import('primevue/paginator')['default']
     PrimePassword: typeof import('primevue/password')['default']
+    PrimeProgressSpinner: typeof import('primevue/progressspinner')['default']
     PrimeRadioButton: typeof import('primevue/radiobutton')['default']
     PrimeSelect: typeof import('primevue/select')['default']
     PrimeTabPanel: typeof import('primevue/tabpanel')['default']

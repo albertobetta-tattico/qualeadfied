@@ -91,7 +91,7 @@ const getCartItemMode = (leadId: number): string | null => {
       </div>
       <div class="flex items-center gap-2">
         <NuxtLink to="/carrello">
-          <Button
+          <PrimeButton
             :label="`Carrello (${cartStore.itemCount})`"
             icon="pi pi-shopping-cart"
             :badge="cartStore.itemCount > 0 ? String(cartStore.itemCount) : undefined"
@@ -102,14 +102,14 @@ const getCartItemMode = (leadId: number): string | null => {
     </div>
 
     <!-- Filters -->
-    <Card class="mb-6">
+    <PrimeCard class="mb-6">
       <template #content>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Categoria
             </label>
-            <Select
+            <PrimeSelect
               v-model="selectedCategory"
               :options="[{ id: '', name: 'Tutte le categorie' }, ...catalogStore.categories]"
               optionLabel="name"
@@ -122,7 +122,7 @@ const getCartItemMode = (leadId: number): string | null => {
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Provincia
             </label>
-            <Select
+            <PrimeSelect
               v-model="selectedProvince"
               :options="[{ id: '', name: 'Tutte le province' }, ...catalogStore.provinces]"
               optionLabel="name"
@@ -132,12 +132,12 @@ const getCartItemMode = (leadId: number): string | null => {
             />
           </div>
           <div class="md:col-span-2 flex items-end gap-2">
-            <Button
+            <PrimeButton
               label="Filtra"
               icon="pi pi-search"
               @click="applyFilters"
             />
-            <Button
+            <PrimeButton
               label="Reset"
               icon="pi pi-times"
               severity="secondary"
@@ -146,17 +146,17 @@ const getCartItemMode = (leadId: number): string | null => {
           </div>
         </div>
       </template>
-    </Card>
+    </PrimeCard>
 
     <!-- Loading State -->
     <div v-if="catalogStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Leads Grid -->
     <div v-else-if="catalogStore.leads.length > 0">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
-        <Card
+        <PrimeCard
           v-for="lead in catalogStore.leads"
           :key="lead.id"
           class="lead-card"
@@ -165,8 +165,8 @@ const getCartItemMode = (leadId: number): string | null => {
             <div class="p-4 pb-0">
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-2">
-                  <Tag :value="lead.category?.name" severity="info" />
-                  <Tag :value="lead.province?.code" severity="secondary" />
+                  <PrimeTag :value="lead.category?.name" severity="info" />
+                  <PrimeTag :value="lead.province?.code" severity="secondary" />
                 </div>
                 <span class="text-xs text-surface-400">
                   {{ formatRelativeTime(lead.generated_at) }}
@@ -221,13 +221,13 @@ const getCartItemMode = (leadId: number): string | null => {
                 </div>
               </div>
               <div v-else class="grid grid-cols-2 gap-2 pt-2">
-                <Button
+                <PrimeButton
                   label="Esclusivo"
                   icon="pi pi-star"
                   size="small"
                   @click="addToCart(lead.id, 'exclusive')"
                 />
-                <Button
+                <PrimeButton
                   label="Condiviso"
                   icon="pi pi-users"
                   size="small"
@@ -237,12 +237,12 @@ const getCartItemMode = (leadId: number): string | null => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Pagination -->
       <div class="flex justify-center">
-        <Paginator
+        <PrimePaginator
           :rows="catalogStore.pagination.per_page"
           :totalRecords="catalogStore.pagination.total"
           :first="(catalogStore.pagination.current_page - 1) * catalogStore.pagination.per_page"
@@ -260,7 +260,7 @@ const getCartItemMode = (leadId: number): string | null => {
       <p class="text-surface-500 dark:text-surface-400 mb-4">
         Prova a modificare i filtri di ricerca
       </p>
-      <Button
+      <PrimeButton
         label="Reset filtri"
         icon="pi pi-refresh"
         @click="resetFilters"
