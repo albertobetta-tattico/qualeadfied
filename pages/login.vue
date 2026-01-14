@@ -219,7 +219,7 @@ onMounted(async () => {
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: #2D2D2D;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -253,12 +253,12 @@ onMounted(async () => {
 }
 
 .demo-hint {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
-  color: #1e40af;
+  color: #525252;
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
@@ -282,7 +282,7 @@ onMounted(async () => {
 
 .forgot-link {
   font-size: 0.875rem;
-  color: #2563eb;
+  color: #2D2D2D;
   text-decoration: none;
 }
 
@@ -303,10 +303,14 @@ onMounted(async () => {
 }
 
 .login-btn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  background: #2D2D2D !important;
   border: none !important;
   height: 48px;
   font-size: 1rem;
+}
+
+.login-btn:hover {
+  background: #3D3D3D !important;
 }
 
 .p-error {
@@ -323,7 +327,7 @@ onMounted(async () => {
 }
 
 .register-link a {
-  color: #2563eb;
+  color: #2D2D2D;
   font-weight: 500;
   text-decoration: none;
 }
@@ -338,7 +342,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  background: #2D2D2D;
 }
 
 @media (max-width: 968px) {
@@ -357,6 +361,7 @@ onMounted(async () => {
   font-weight: 700;
   margin-bottom: 1rem;
   line-height: 1.2;
+  color: white;
 }
 
 .illustration-text {
@@ -379,7 +384,7 @@ onMounted(async () => {
 }
 
 .feature-item i {
-  color: #86efac;
+  color: white;
   font-size: 1.25rem;
 }
 
