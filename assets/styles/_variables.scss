@@ -22,17 +22,17 @@ $color-primary-800: #141424;
 $color-primary-900: #0E0E1A;
 $color-primary: $color-primary-500;
 
-// Accent Color - CTA & Highlights
-$color-accent-50: #FCE4EC;
-$color-accent-100: #F8BBD9;
-$color-accent-200: #F48FB1;
-$color-accent-300: #F06292;
-$color-accent-400: #EC407A;
-$color-accent-500: #E94560; // Main accent
-$color-accent-600: #D81B60;
-$color-accent-700: #C2185B;
-$color-accent-800: #AD1457;
-$color-accent-900: #880E4F;
+// Accent Color - CTA & Highlights (Pink from Qualeadfied brand)
+$color-accent-50: #FDF2F8;
+$color-accent-100: #FCE7F3;
+$color-accent-200: #FBCFE8;
+$color-accent-300: #F9A8D4;
+$color-accent-400: #F472B6;
+$color-accent-500: #EC4899; // Main accent - Pink brand color
+$color-accent-600: #DB2777;
+$color-accent-700: #BE185D;
+$color-accent-800: #9D174D;
+$color-accent-900: #831843;
 $color-accent: $color-accent-500;
 
 // Neutral Grayscale
@@ -88,6 +88,13 @@ $color-body-bg: $color-neutral-50;
 $color-text: $color-neutral-800;
 $color-text-muted: $color-neutral-600;
 $color-border: $color-neutral-200;
+
+// Dark Section Colors (Qualeadfied brand)
+$color-dark-bg: #2D2D2D;
+$color-dark-bg-light: #3D3D3D;
+$color-dark-text: #FFFFFF;
+$color-dark-text-muted: rgba(255, 255, 255, 0.7);
+$color-dark-border: rgba(255, 255, 255, 0.1);
 
 // ============================================
 // TYPOGRAPHY

@@ -1,0 +1,748 @@
+// ============================================
+// QUALEADFIED BRAND STYLES
+// Extracted from qualeadfied.com design
+// ============================================
+
+@use "sass:color";
+
+// ============================================
+// CLIENT LAYOUT - SIDEBAR
+// ============================================
+
+.client-sidebar,
+.admin-sidebar {
+  background: linear-gradient(180deg, $color-dark-bg 0%, color.adjust($color-dark-bg, $lightness: -5%) 100%);
+
+  .sidebar-logo {
+    border-bottom: 1px solid $color-dark-border;
+
+    &-text {
+      font-family: $font-family-brand;
+
+      // Brand name styling like qualeadfied.com
+      .brand-accent {
+        font-style: italic;
+        color: $color-accent;
+      }
+    }
+  }
+
+  .sidebar-menu-item {
+    border-radius: $radius-lg;
+
+    &:hover {
+      background-color: rgba($color-white, 0.08);
+    }
+
+    &.active {
+      background: linear-gradient(90deg, rgba($color-accent, 0.15) 0%, rgba($color-accent, 0.05) 100%);
+      border-left: 3px solid $color-accent;
+
+      .sidebar-menu-icon {
+        color: $color-accent;
+      }
+    }
+
+    &-badge {
+      background-color: $color-accent;
+    }
+  }
+}
+
+// ============================================
+// CLIENT LAYOUT - CARDS & PANELS
+// ============================================
+
+// KPI Cards with brand style
+.kpi-card,
+.q-card {
+  border-radius: $radius-xl;
+  border: 1px solid rgba($color-border, 0.5);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all $transition-base $transition-easing;
+
+  &:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+}
+
+// Accent highlights in cards
+.kpi-card-icon {
+  &.accent {
+    background: linear-gradient(135deg, rgba($color-accent, 0.15) 0%, rgba($color-accent, 0.05) 100%);
+    color: $color-accent;
+  }
+}
+
+// ============================================
+// BUTTONS - BRAND STYLE
+// ============================================
+
+.p-button {
+  border-radius: $radius-lg;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base $transition-easing;
+
+  &.p-button-primary {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-600 100%);
+    border: none;
+    box-shadow: 0 2px 8px rgba($color-primary, 0.3);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, $color-primary-600 0%, $color-primary-700 100%);
+      box-shadow: 0 4px 12px rgba($color-primary, 0.4);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  }
+
+  // Pink accent button
+  &.p-button-accent,
+  &.p-button-help {
+    background: linear-gradient(135deg, $color-accent 0%, $color-accent-600 100%);
+    border: none;
+    box-shadow: 0 2px 8px rgba($color-accent, 0.3);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, $color-accent-600 0%, $color-accent-700 100%);
+      box-shadow: 0 4px 12px rgba($color-accent, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// ============================================
+// TAGS & BADGES - BRAND STYLE
+// ============================================
+
+.p-tag {
+  border-radius: $radius-sm;
+  font-weight: $font-weight-medium;
+
+  &.p-tag-primary {
+    background-color: rgba($color-primary, 0.1);
+    color: $color-primary;
+  }
+
+  &.p-tag-info {
+    background-color: rgba($color-info, 0.1);
+    color: $color-info-dark;
+  }
+
+  &.p-tag-success {
+    background-color: rgba($color-success, 0.1);
+    color: $color-success-dark;
+  }
+
+  &.p-tag-warning {
+    background-color: rgba($color-warning, 0.15);
+    color: $color-warning-dark;
+  }
+
+  &.p-tag-danger {
+    background-color: rgba($color-danger, 0.1);
+    color: $color-danger-dark;
+  }
+}
+
+// ============================================
+// DATA TABLES - REFINED STYLE
+// ============================================
+
+.p-datatable {
+  border-radius: $radius-xl;
+  overflow: hidden;
+
+  .p-datatable-thead > tr > th {
+    background-color: $color-neutral-50;
+    font-weight: $font-weight-semibold;
+    color: $color-neutral-700;
+    text-transform: uppercase;
+    font-size: $font-size-xs;
+    letter-spacing: 0.05em;
+    padding: $space-4;
+    border-bottom: 2px solid $color-border;
+  }
+
+  .p-datatable-tbody > tr {
+    transition: background-color $transition-fast $transition-easing;
+
+    > td {
+      padding: $space-4;
+      border-bottom: 1px solid rgba($color-border, 0.5);
+    }
+
+    &:hover {
+      background-color: rgba($color-primary, 0.02);
+    }
+
+    &:last-child > td {
+      border-bottom: none;
+    }
+  }
+}
+
+// ============================================
+// FORMS - REFINED INPUTS
+// ============================================
+
+.p-inputtext {
+  border-radius: $radius-lg;
+  border: 1px solid $color-neutral-300;
+  transition: all $transition-base $transition-easing;
+
+  &:hover:not(:focus):not(:disabled) {
+    border-color: $color-neutral-400;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+}
+
+.p-select {
+  border-radius: $radius-lg;
+
+  &:not(.p-disabled).p-focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+}
+
+// ============================================
+// PUBLIC PAGES - HERO SECTIONS
+// ============================================
+
+.hero-section {
+  background-color: $color-white;
+  padding: $space-16 $space-4;
+  text-align: center;
+
+  .hero-title {
+    font-family: $font-family-brand;
+    font-size: $font-size-5xl;
+    font-weight: $font-weight-bold;
+    color: $color-neutral-900;
+    margin-bottom: $space-4;
+
+    @include md {
+      font-size: $font-size-6xl;
+    }
+
+    // Brand text with accent
+    .text-accent {
+      font-style: italic;
+      color: $color-neutral-900;
+    }
+
+    .text-highlight {
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: $font-size-xl;
+    color: $color-text-muted;
+    max-width: 600px;
+    margin: 0 auto $space-8;
+    line-height: $line-height-relaxed;
+  }
+}
+
+// ============================================
+// PUBLIC PAGES - DARK SECTIONS
+// ============================================
+
+.dark-section {
+  background-color: $color-dark-bg;
+  color: $color-dark-text;
+  padding: $space-16 $space-4;
+
+  .section-title {
+    font-family: $font-family-brand;
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    text-align: center;
+    margin-bottom: $space-12;
+
+    @include md {
+      font-size: $font-size-4xl;
+    }
+
+    .text-accent {
+      font-style: italic;
+    }
+  }
+
+  .section-subtitle {
+    color: $color-dark-text-muted;
+    text-align: center;
+    max-width: 600px;
+    margin: -$space-8 auto $space-12;
+  }
+}
+
+// Feature cards on dark background
+.feature-card-dark {
+  text-align: center;
+  padding: $space-6;
+
+  .feature-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto $space-6;
+    border-radius: $radius-full;
+    overflow: hidden;
+    background-color: $color-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .feature-title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    margin-bottom: $space-3;
+    color: $color-dark-text;
+  }
+
+  .feature-description {
+    font-size: $font-size-base;
+    color: $color-dark-text-muted;
+    line-height: $line-height-relaxed;
+
+    // Accent text in descriptions
+    strong {
+      color: $color-dark-text;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+// ============================================
+// PUBLIC PAGES - TESTIMONIALS
+// ============================================
+
+.testimonial-card {
+  text-align: center;
+  padding: $space-6;
+
+  .testimonial-avatar {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto $space-4;
+    border-radius: $radius-full;
+    overflow: hidden;
+    border: 3px solid $color-white;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .testimonial-quote {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-dark-text;
+    margin-bottom: $space-4;
+    line-height: $line-height-snug;
+  }
+
+  .testimonial-text {
+    font-size: $font-size-base;
+    color: $color-dark-text-muted;
+    line-height: $line-height-relaxed;
+    margin-bottom: $space-4;
+
+    // Brand mentions
+    .brand-mention {
+      font-weight: $font-weight-semibold;
+      color: $color-dark-text;
+      text-decoration: underline;
+    }
+  }
+
+  .testimonial-author {
+    font-weight: $font-weight-bold;
+    color: $color-dark-text;
+  }
+
+  .testimonial-role {
+    font-size: $font-size-sm;
+    color: $color-dark-text-muted;
+    font-style: italic;
+  }
+}
+
+// ============================================
+// PUBLIC PAGES - CTA BANNER
+// ============================================
+
+.cta-banner {
+  background-color: $color-dark-bg;
+  padding: $space-12 $space-4;
+
+  .cta-container {
+    max-width: $container-max-width;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: $space-6;
+
+    @include md {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+
+  .cta-title {
+    font-family: $font-family-brand;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-dark-text;
+    margin-bottom: $space-2;
+  }
+
+  .cta-subtitle {
+    font-size: $font-size-base;
+    color: $color-dark-text-muted;
+  }
+}
+
+// ============================================
+// PUBLIC PAGES - CATALOG HEADER
+// ============================================
+
+.catalog-header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-600 100%);
+  padding: $space-12 $space-4;
+  color: $color-white;
+
+  .catalog-title {
+    font-family: $font-family-brand;
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $space-2;
+  }
+
+  .catalog-subtitle {
+    font-size: $font-size-lg;
+    opacity: 0.9;
+  }
+}
+
+// ============================================
+// LEAD CARDS - CATALOG STYLE
+// ============================================
+
+.lead-card {
+  border-radius: $radius-xl;
+  border: 1px solid $color-border;
+  background-color: $color-white;
+  padding: $space-6;
+  transition: all $transition-base $transition-easing;
+
+  &:hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border-color: rgba($color-primary, 0.2);
+  }
+
+  .lead-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-4;
+  }
+
+  .lead-date {
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+  }
+
+  .lead-province {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    margin-bottom: $space-3;
+
+    i {
+      color: $color-accent;
+    }
+  }
+
+  .lead-preview {
+    font-size: $font-size-base;
+    color: $color-text;
+    line-height: $line-height-relaxed;
+    margin-bottom: $space-4;
+    min-height: 48px;
+  }
+
+  .lead-price {
+    margin-bottom: $space-4;
+
+    &-label {
+      font-size: $font-size-xs;
+      color: $color-text-muted;
+      display: block;
+      margin-bottom: $space-1;
+    }
+
+    &-value {
+      font-size: $font-size-3xl;
+      font-weight: $font-weight-bold;
+      color: $color-neutral-900;
+    }
+  }
+}
+
+// ============================================
+// CHECKBOXES - BRAND STYLE (like qualeadfied.com)
+// ============================================
+
+.brand-checkbox {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-4;
+
+  .checkbox-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: $radius-sm;
+    background-color: $color-dark-bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i {
+      color: $color-white;
+      font-size: $font-size-sm;
+    }
+  }
+
+  .checkbox-label {
+    font-size: $font-size-lg;
+    color: $color-text;
+  }
+}
+
+// ============================================
+// DASHBOARD WELCOME SECTION
+// ============================================
+
+.dashboard-welcome {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-600 100%);
+  border-radius: $radius-xl;
+  padding: $space-8;
+  color: $color-white;
+  margin-bottom: $space-6;
+
+  .welcome-title {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $space-2;
+  }
+
+  .welcome-subtitle {
+    font-size: $font-size-base;
+    opacity: 0.9;
+  }
+
+  .welcome-actions {
+    margin-top: $space-6;
+    display: flex;
+    gap: $space-3;
+
+    .p-button {
+      background-color: $color-white;
+      color: $color-primary;
+      border: none;
+
+      &:hover {
+        background-color: rgba($color-white, 0.9);
+      }
+
+      &.p-button-outlined {
+        background-color: transparent;
+        color: $color-white;
+        border: 1px solid rgba($color-white, 0.5);
+
+        &:hover {
+          background-color: rgba($color-white, 0.1);
+          border-color: $color-white;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// TRIAL BANNER
+// ============================================
+
+.trial-banner {
+  .p-card {
+    background: linear-gradient(135deg, rgba($color-accent, 0.1) 0%, rgba($color-accent, 0.05) 100%);
+    border: 1px solid rgba($color-accent, 0.2);
+    border-radius: $radius-xl;
+  }
+
+  .trial-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, $color-accent 0%, $color-accent-600 100%);
+    border-radius: $radius-full;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      color: $color-white;
+      font-size: $font-size-xl;
+    }
+  }
+}
+
+// ============================================
+// FOOTER
+// ============================================
+
+.site-footer {
+  background-color: $color-dark-bg;
+  color: $color-dark-text;
+  padding: $space-12 $space-4;
+
+  .footer-logo {
+    font-family: $font-family-brand;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    margin-bottom: $space-2;
+
+    .text-accent {
+      font-style: italic;
+    }
+  }
+
+  .footer-tagline {
+    font-size: $font-size-base;
+    color: $color-dark-text-muted;
+    font-style: italic;
+    margin-bottom: $space-6;
+  }
+
+  .footer-copyright {
+    font-size: $font-size-sm;
+    color: $color-dark-text-muted;
+    text-align: center;
+    padding-top: $space-6;
+    border-top: 1px solid $color-dark-border;
+    margin-top: $space-8;
+  }
+}
+
+// ============================================
+// CHAT BUTTON (like qualeadfied.com)
+// ============================================
+
+.chat-button {
+  position: fixed;
+  bottom: $space-6;
+  right: $space-6;
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-600 100%);
+  color: $color-white;
+  border: none;
+  border-radius: $radius-full;
+  padding: $space-4 $space-6;
+  font-weight: $font-weight-medium;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  box-shadow: 0 4px 15px rgba($color-accent, 0.4);
+  cursor: pointer;
+  transition: all $transition-base $transition-easing;
+  z-index: $z-index-fixed;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba($color-accent, 0.5);
+  }
+
+  i {
+    font-size: $font-size-lg;
+  }
+}
+
+// ============================================
+// ANIMATIONS & TRANSITIONS
+// ============================================
+
+// Hover lift effect
+.hover-lift {
+  transition: all $transition-base $transition-easing;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Smooth card transitions
+.smooth-card {
+  transition: all $transition-slow $transition-easing;
+}
+
+// ============================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================
+
+@media (max-width: $breakpoint-md - 1) {
+  .hero-section {
+    padding: $space-12 $space-4;
+
+    .hero-title {
+      font-size: $font-size-3xl;
+    }
+
+    .hero-subtitle {
+      font-size: $font-size-base;
+    }
+  }
+
+  .dark-section {
+    padding: $space-12 $space-4;
+
+    .section-title {
+      font-size: $font-size-2xl;
+    }
+  }
+
+  .dashboard-welcome {
+    padding: $space-6;
+
+    .welcome-title {
+      font-size: $font-size-2xl;
+    }
+
+    .welcome-actions {
+      flex-direction: column;
+    }
+  }
+}

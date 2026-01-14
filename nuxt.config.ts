@@ -120,7 +120,8 @@ export default defineNuxtConfig({
   css: [
     'primeicons/primeicons.css',
     '~/assets/styles/main.scss',
-    '~/assets/scss/overrides.scss'
+    '~/assets/scss/overrides.scss',
+    '~/assets/scss/qualeadfied-brand.scss'
   ],
 
   // ============================================
