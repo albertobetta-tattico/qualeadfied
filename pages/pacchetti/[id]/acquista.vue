@@ -1,0 +1,487 @@
+<script setup lang="ts">
+/**
+ * Page - Purchase Package
+ * Checkout page for purchasing a lead package
+ */
+definePageMeta({
+  layout: 'client'
+})
+
+const route = useRoute('pacchetti-id-acquista')
+const router = useRouter()
+const packageId = computed(() => {
+  const id = route.params.id
+  return Number(Array.isArray(id) ? id[0] : id)
+})
+
+const packagesStore = usePackagesStore()
+const profileStore = useClientProfileStore()
+const { formatCurrency } = useClientFormatters()
+const { showSuccess, showError } = useClientToast()
+const { validateForm, errors, clearErrors } = useBillingValidation()
+
+// Current package
+const currentPackage = computed(() => {
+  return packagesStore.availablePackages.find(p => p.id === packageId.value)
+})
+
+// Payment method
+const paymentMethod = ref<'card' | 'sepa'>('card')
+
+// Billing form
+const billingForm = ref({
+  billing_address: '',
+  billing_city: '',
+  billing_province: '',
+  billing_zip: '',
+  billing_country: 'IT',
+  sdi_code: '',
+  pec_email: ''
+})
+
+// Loading states
+const processing = ref(false)
+
+// Fetch data on mount
+onMounted(async () => {
+  await Promise.all([
+    packagesStore.fetchPackages(),
+    profileStore.fetchProfile()
+  ])
+
+  // Pre-fill billing form from profile
+  if (profileStore.profile) {
+    billingForm.value = {
+      billing_address: profileStore.profile.billing_address || '',
+      billing_city: profileStore.profile.billing_city || '',
+      billing_province: profileStore.profile.billing_province || '',
+      billing_zip: profileStore.profile.billing_zip || '',
+      billing_country: profileStore.profile.billing_country || 'IT',
+      sdi_code: profileStore.profile.sdi_code || '',
+      pec_email: profileStore.profile.pec_email || ''
+    }
+  }
+
+  // Redirect if package not found
+  if (!currentPackage.value) {
+    router.push('/pacchetti')
+  }
+})
+
+// Calculate VAT
+const vatRate = 22
+const vatAmount = computed(() => {
+  if (!currentPackage.value) return 0
+  return (currentPackage.value.price * vatRate) / 100
+})
+
+const totalWithVat = computed(() => {
+  if (!currentPackage.value) return 0
+  return currentPackage.value.price + vatAmount.value
+})
+
+// Calculate discount
+const calculateSavings = computed(() => {
+  if (!currentPackage.value) return 0
+  return currentPackage.value.original_price - currentPackage.value.price
+})
+
+// Process payment
+const processPayment = async () => {
+  clearErrors()
+
+  // Validate billing form
+  if (!validateForm(billingForm.value)) {
+    showError('Correggi gli errori nel form')
+    return
+  }
+
+  processing.value = true
+
+  try {
+    // First, update billing data if needed
+    if (!profileStore.hasBillingData) {
+      const billingSuccess = await profileStore.updateBilling(billingForm.value)
+      if (!billingSuccess) {
+        showError(profileStore.error || 'Errore nell\'aggiornamento dati fatturazione')
+        return
+      }
+    }
+
+    // Purchase package
+    const result = await packagesStore.purchasePackage(packageId.value, paymentMethod.value)
+
+    if (result) {
+      showSuccess('Pacchetto acquistato con successo!')
+      // Redirect to active packages
+      router.push('/pacchetti/attivi')
+    } else {
+      showError(packagesStore.error || 'Errore nell\'acquisto')
+    }
+  } finally {
+    processing.value = false
+  }
+}
+</script>
+
+<template>
+  <div class="purchase-package-page">
+    <!-- Header -->
+    <div class="mb-6">
+      <NuxtLink to="/pacchetti" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
+        <i class="pi pi-arrow-left"></i>
+        Torna ai pacchetti
+      </NuxtLink>
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">
+        Acquista Pacchetto
+      </h1>
+      <p class="text-surface-600 dark:text-surface-400">
+        Completa l'acquisto del pacchetto
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    <div v-if="packagesStore.loading || profileStore.loading" class="flex justify-center py-12">
+      <ProgressSpinner />
+    </div>
+
+    <!-- Purchase Content -->
+    <div v-else-if="currentPackage" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Main Content -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Package Summary -->
+        <Card class="bg-primary-50 dark:bg-primary-900/20">
+          <template #content>
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                <i class="pi pi-box text-primary text-2xl"></i>
+              </div>
+              <div class="flex-grow">
+                <Tag v-if="currentPackage.category" :value="currentPackage.category.name" severity="info" class="mb-2" />
+                <Tag v-else value="Tutte le categorie" severity="secondary" class="mb-2" />
+                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0">
+                  {{ currentPackage.name }}
+                </h3>
+                <p class="text-surface-600 dark:text-surface-400">
+                  {{ currentPackage.description }}
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="text-3xl font-bold text-primary">
+                  {{ currentPackage.total_leads }}
+                </p>
+                <p class="text-sm text-surface-500">lead</p>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <!-- Billing Data -->
+        <Card>
+          <template #title>
+            <div class="flex items-center gap-2">
+              <i class="pi pi-file-edit text-primary"></i>
+              Dati di Fatturazione
+            </div>
+          </template>
+          <template #content>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Company info (readonly) -->
+              <div class="md:col-span-2 p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <p class="text-sm text-surface-500 mb-1">Ragione Sociale</p>
+                    <p class="font-medium text-surface-900 dark:text-surface-0">
+                      {{ profileStore.profile?.company_name }}
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-sm text-surface-500 mb-1">Partita IVA</p>
+                    <p class="font-medium text-surface-900 dark:text-surface-0">
+                      {{ profileStore.profile?.vat_number }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Billing Address -->
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                  Indirizzo *
+                </label>
+                <InputText
+                  v-model="billingForm.billing_address"
+                  placeholder="Via, numero civico"
+                  class="w-full"
+                  :invalid="!!errors.billing_address"
+                />
+                <small v-if="errors.billing_address" class="text-red-500">
+                  {{ errors.billing_address }}
+                </small>
+              </div>
+
+              <!-- City -->
+              <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                  Città *
+                </label>
+                <InputText
+                  v-model="billingForm.billing_city"
+                  placeholder="Città"
+                  class="w-full"
+                  :invalid="!!errors.billing_city"
+                />
+                <small v-if="errors.billing_city" class="text-red-500">
+                  {{ errors.billing_city }}
+                </small>
+              </div>
+
+              <!-- Province -->
+              <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                  Provincia *
+                </label>
+                <InputText
+                  v-model="billingForm.billing_province"
+                  placeholder="MI"
+                  maxlength="2"
+                  class="w-full"
+                  :invalid="!!errors.billing_province"
+                />
+                <small v-if="errors.billing_province" class="text-red-500">
+                  {{ errors.billing_province }}
+                </small>
+              </div>
+
+              <!-- ZIP -->
+              <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                  CAP *
+                </label>
+                <InputText
+                  v-model="billingForm.billing_zip"
+                  placeholder="20100"
+                  maxlength="5"
+                  class="w-full"
+                  :invalid="!!errors.billing_zip"
+                />
+                <small v-if="errors.billing_zip" class="text-red-500">
+                  {{ errors.billing_zip }}
+                </small>
+              </div>
+
+              <!-- Country -->
+              <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                  Paese
+                </label>
+                <InputText
+                  v-model="billingForm.billing_country"
+                  disabled
+                  class="w-full"
+                />
+              </div>
+
+              <Divider class="md:col-span-2" />
+
+              <!-- SDI Code -->
+              <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                  Codice SDI
+                </label>
+                <InputText
+                  v-model="billingForm.sdi_code"
+                  placeholder="ABC1234"
+                  maxlength="7"
+                  class="w-full uppercase"
+                  :invalid="!!errors.sdi_code"
+                />
+                <small v-if="errors.sdi_code" class="text-red-500">
+                  {{ errors.sdi_code }}
+                </small>
+              </div>
+
+              <!-- PEC Email -->
+              <div>
+                <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                  Email PEC
+                </label>
+                <InputText
+                  v-model="billingForm.pec_email"
+                  placeholder="azienda@pec.it"
+                  class="w-full"
+                  :invalid="!!errors.pec_email"
+                />
+                <small v-if="errors.pec_email" class="text-red-500">
+                  {{ errors.pec_email }}
+                </small>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <!-- Payment Method -->
+        <Card>
+          <template #title>
+            <div class="flex items-center gap-2">
+              <i class="pi pi-credit-card text-primary"></i>
+              Metodo di Pagamento
+            </div>
+          </template>
+          <template #content>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Card Option -->
+              <div
+                class="payment-option p-4 border-2 rounded-lg cursor-pointer transition-all"
+                :class="paymentMethod === 'card'
+                  ? 'border-primary bg-primary-50 dark:bg-primary-900/20'
+                  : 'border-surface-200 dark:border-surface-700 hover:border-surface-300'"
+                @click="paymentMethod = 'card'"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                    :class="paymentMethod === 'card'
+                      ? 'border-primary bg-primary'
+                      : 'border-surface-300'"
+                  >
+                    <i v-if="paymentMethod === 'card'" class="pi pi-check text-white text-xs"></i>
+                  </div>
+                  <div class="flex-grow">
+                    <p class="font-medium text-surface-900 dark:text-surface-0">
+                      Carta di Credito/Debito
+                    </p>
+                    <p class="text-sm text-surface-500">
+                      Visa, Mastercard, American Express
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SEPA Option -->
+              <div
+                class="payment-option p-4 border-2 rounded-lg cursor-pointer transition-all"
+                :class="paymentMethod === 'sepa'
+                  ? 'border-primary bg-primary-50 dark:bg-primary-900/20'
+                  : 'border-surface-200 dark:border-surface-700 hover:border-surface-300'"
+                @click="paymentMethod = 'sepa'"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                    :class="paymentMethod === 'sepa'
+                      ? 'border-primary bg-primary'
+                      : 'border-surface-300'"
+                  >
+                    <i v-if="paymentMethod === 'sepa'" class="pi pi-check text-white text-xs"></i>
+                  </div>
+                  <div class="flex-grow">
+                    <p class="font-medium text-surface-900 dark:text-surface-0">
+                      Addebito SEPA
+                    </p>
+                    <p class="text-sm text-surface-500">
+                      Bonifico bancario diretto
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </Card>
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <div>
+        <Card class="sticky top-4">
+          <template #title>Riepilogo Ordine</template>
+          <template #content>
+            <div class="space-y-4">
+              <!-- Package Details -->
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-surface-600 dark:text-surface-400">
+                    {{ currentPackage.total_leads }} lead
+                  </span>
+                  <span class="text-surface-900 dark:text-surface-0">
+                    {{ formatCurrency(currentPackage.price) }}
+                  </span>
+                </div>
+                <div class="flex justify-between text-sm text-green-600">
+                  <span>Risparmi</span>
+                  <span>-{{ formatCurrency(calculateSavings) }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-surface-600 dark:text-surface-400">
+                    IVA ({{ vatRate }}%)
+                  </span>
+                  <span class="text-surface-900 dark:text-surface-0">
+                    {{ formatCurrency(vatAmount) }}
+                  </span>
+                </div>
+              </div>
+
+              <Divider />
+
+              <!-- Total -->
+              <div class="flex justify-between items-center">
+                <span class="text-lg font-semibold text-surface-900 dark:text-surface-0">
+                  Totale
+                </span>
+                <span class="text-2xl font-bold text-primary">
+                  {{ formatCurrency(totalWithVat) }}
+                </span>
+              </div>
+
+              <!-- Package Benefits -->
+              <div class="p-3 bg-surface-50 dark:bg-surface-800 rounded-lg space-y-2">
+                <div class="flex items-center gap-2 text-sm">
+                  <i class="pi pi-check-circle text-green-500"></i>
+                  <span class="text-surface-600 dark:text-surface-400">
+                    Validità {{ currentPackage.valid_days }} giorni
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                  <i class="pi pi-check-circle text-green-500"></i>
+                  <span class="text-surface-600 dark:text-surface-400">
+                    {{ currentPackage.exclusive_leads }} lead esclusivi + {{ currentPackage.shared_leads }} condivisi
+                  </span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                  <i class="pi pi-check-circle text-green-500"></i>
+                  <span class="text-surface-600 dark:text-surface-400">
+                    Selezione libera dal catalogo
+                  </span>
+                </div>
+              </div>
+
+              <!-- Pay Button -->
+              <Button
+                :label="processing ? 'Elaborazione...' : `Paga ${formatCurrency(totalWithVat)}`"
+                icon="pi pi-lock"
+                class="w-full"
+                size="large"
+                :loading="processing"
+                :disabled="processing"
+                @click="processPayment"
+              />
+
+              <!-- Security Info -->
+              <div class="text-center">
+                <p class="text-xs text-surface-400">
+                  <i class="pi pi-lock mr-1"></i>
+                  Pagamento sicuro con Stripe
+                </p>
+              </div>
+            </div>
+          </template>
+        </Card>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.payment-option:hover {
+  transform: translateY(-1px);
+}
+</style>
