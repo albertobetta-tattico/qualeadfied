@@ -68,7 +68,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
     <!-- Filter & Actions -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div class="flex items-center gap-4">
-        <Select
+        <PrimeSelect
           v-model="selectedCategory"
           :options="[{ id: '', name: 'Tutte le categorie' }, ...categories]"
           optionLabel="name"
@@ -78,7 +78,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
         />
       </div>
       <NuxtLink to="/pacchetti/attivi">
-        <Button
+        <PrimeButton
           label="I miei pacchetti attivi"
           icon="pi pi-box"
           severity="secondary"
@@ -88,12 +88,12 @@ const purchasePackage = async (pkg: LeadPackage) => {
 
     <!-- Loading State -->
     <div v-if="packagesStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Packages Grid -->
     <div v-else-if="filteredPackages.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <Card
+      <PrimeCard
         v-for="pkg in filteredPackages"
         :key="pkg.id"
         class="package-card overflow-hidden"
@@ -101,8 +101,8 @@ const purchasePackage = async (pkg: LeadPackage) => {
         <template #content>
           <div class="text-center mb-6">
             <!-- Category Badge -->
-            <Tag v-if="pkg.category" :value="pkg.category.name" severity="info" class="mb-4" />
-            <Tag v-else value="Tutte le categorie" severity="secondary" class="mb-4" />
+            <PrimeTag v-if="pkg.category" :value="pkg.category.name" severity="info" class="mb-4" />
+            <PrimeTag v-else value="Tutte le categorie" severity="secondary" class="mb-4" />
 
             <!-- Package Name -->
             <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">
@@ -129,7 +129,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
                 <span class="text-surface-400 line-through">
                   {{ formatCurrency(pkg.original_price) }}
                 </span>
-                <Tag
+                <PrimeTag
                   :value="`-${pkg.discount_percent}%`"
                   severity="success"
                   size="small"
@@ -173,14 +173,14 @@ const purchasePackage = async (pkg: LeadPackage) => {
           </div>
 
           <!-- CTA -->
-          <Button
+          <PrimeButton
             label="Acquista Pacchetto"
             icon="pi pi-shopping-cart"
             class="w-full"
             @click="purchasePackage(pkg)"
           />
         </template>
-      </Card>
+      </PrimeCard>
     </div>
 
     <!-- Empty State -->
@@ -195,7 +195,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
     </div>
 
     <!-- Info Section -->
-    <Card class="mt-8 bg-surface-50 dark:bg-surface-800">
+    <PrimeCard class="mt-8 bg-surface-50 dark:bg-surface-800">
       <template #content>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="text-center">
@@ -233,7 +233,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
           </div>
         </div>
       </template>
-    </Card>
+    </PrimeCard>
   </div>
 </template>
 

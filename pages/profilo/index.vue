@@ -75,7 +75,7 @@ const logout = async () => {
           Gestisci le tue informazioni personali
         </p>
       </div>
-      <Button
+      <PrimeButton
         label="Esci"
         icon="pi pi-sign-out"
         severity="secondary"
@@ -85,14 +85,14 @@ const logout = async () => {
 
     <!-- Loading State -->
     <div v-if="profileStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <div v-else-if="profileStore.profile" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Content -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Company Info (readonly) -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-building text-primary"></i>
@@ -125,17 +125,17 @@ const logout = async () => {
               Per modificare i dati aziendali contatta il supporto
             </p>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Personal Info (editable) -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <i class="pi pi-user text-primary"></i>
                 Dati Personali
               </div>
-              <Button
+              <PrimeButton
                 v-if="!isEditing"
                 icon="pi pi-pencil"
                 text
@@ -150,7 +150,7 @@ const logout = async () => {
                   <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                     Nome
                   </label>
-                  <InputText
+                  <PrimeInputText
                     v-model="profileForm.first_name"
                     class="w-full"
                   />
@@ -159,7 +159,7 @@ const logout = async () => {
                   <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                     Cognome
                   </label>
-                  <InputText
+                  <PrimeInputText
                     v-model="profileForm.last_name"
                     class="w-full"
                   />
@@ -168,19 +168,19 @@ const logout = async () => {
                   <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                     Telefono
                   </label>
-                  <InputText
+                  <PrimeInputText
                     v-model="profileForm.phone"
                     class="w-full"
                   />
                 </div>
               </div>
               <div class="flex justify-end gap-2">
-                <Button
+                <PrimeButton
                   label="Annulla"
                   severity="secondary"
                   @click="cancelEdit"
                 />
-                <Button
+                <PrimeButton
                   label="Salva"
                   icon="pi pi-check"
                   :loading="profileStore.saving"
@@ -210,18 +210,18 @@ const logout = async () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Sidebar -->
       <div class="space-y-4">
         <!-- Quick Links -->
-        <Card>
+        <PrimeCard>
           <template #title>Gestione Account</template>
           <template #content>
             <div class="space-y-2">
               <NuxtLink to="/profilo/fatturazione">
-                <Button
+                <PrimeButton
                   label="Dati Fatturazione"
                   icon="pi pi-file-edit"
                   class="w-full"
@@ -229,7 +229,7 @@ const logout = async () => {
                 />
               </NuxtLink>
               <NuxtLink to="/profilo/sicurezza">
-                <Button
+                <PrimeButton
                   label="Sicurezza"
                   icon="pi pi-shield"
                   class="w-full"
@@ -237,7 +237,7 @@ const logout = async () => {
                 />
               </NuxtLink>
               <NuxtLink to="/profilo/preferenze">
-                <Button
+                <PrimeButton
                   label="Preferenze"
                   icon="pi pi-cog"
                   class="w-full"
@@ -246,16 +246,16 @@ const logout = async () => {
               </NuxtLink>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Account Status -->
-        <Card>
+        <PrimeCard>
           <template #title>Stato Account</template>
           <template #content>
             <div class="space-y-3">
               <div class="flex items-center justify-between">
                 <span class="text-surface-600 dark:text-surface-400">Dati fatturazione</span>
-                <Tag
+                <PrimeTag
                   :value="profileStore.hasBillingData ? 'Completi' : 'Da completare'"
                   :severity="profileStore.hasBillingData ? 'success' : 'warning'"
                   size="small"
@@ -263,7 +263,7 @@ const logout = async () => {
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-surface-600 dark:text-surface-400">Prova gratuita</span>
-                <Tag
+                <PrimeTag
                   :value="profileStore.hasFreeTrial ? `${profileStore.freeTrialLeadsRemaining} lead` : 'Esaurita'"
                   :severity="profileStore.hasFreeTrial ? 'info' : 'secondary'"
                   size="small"
@@ -271,7 +271,7 @@ const logout = async () => {
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-surface-600 dark:text-surface-400">Notifiche</span>
-                <Tag
+                <PrimeTag
                   :value="profileStore.profile.email_notifications_enabled ? 'Attive' : 'Disattive'"
                   :severity="profileStore.profile.email_notifications_enabled ? 'success' : 'secondary'"
                   size="small"
@@ -279,17 +279,17 @@ const logout = async () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Support -->
-        <Card class="bg-surface-50 dark:bg-surface-800">
+        <PrimeCard class="bg-surface-50 dark:bg-surface-800">
           <template #content>
             <div class="text-center">
               <i class="pi pi-headphones text-2xl text-surface-400 mb-2"></i>
               <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">
                 Hai bisogno di aiuto?
               </p>
-              <Button
+              <PrimeButton
                 label="Contatta Supporto"
                 icon="pi pi-envelope"
                 severity="secondary"
@@ -297,7 +297,7 @@ const logout = async () => {
               />
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
     </div>
   </div>

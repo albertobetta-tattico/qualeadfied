@@ -86,19 +86,19 @@ const viewOrder = (orderId: number) => {
         </p>
       </div>
       <NuxtLink to="/leads">
-        <Button label="Acquista Lead" icon="pi pi-plus" />
+        <PrimeButton label="Acquista Lead" icon="pi pi-plus" />
       </NuxtLink>
     </div>
 
     <!-- Filters -->
-    <Card class="mb-6">
+    <PrimeCard class="mb-6">
       <template #content>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Stato
             </label>
-            <Select
+            <PrimeSelect
               v-model="selectedStatus"
               :options="orderStatusOptions"
               optionLabel="label"
@@ -111,7 +111,7 @@ const viewOrder = (orderId: number) => {
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Tipo Ordine
             </label>
-            <Select
+            <PrimeSelect
               v-model="selectedType"
               :options="orderTypeOptions"
               optionLabel="label"
@@ -121,12 +121,12 @@ const viewOrder = (orderId: number) => {
             />
           </div>
           <div class="md:col-span-2 flex items-end gap-2">
-            <Button
+            <PrimeButton
               label="Filtra"
               icon="pi pi-search"
               @click="applyFilters"
             />
-            <Button
+            <PrimeButton
               label="Reset"
               icon="pi pi-times"
               severity="secondary"
@@ -135,75 +135,75 @@ const viewOrder = (orderId: number) => {
           </div>
         </div>
       </template>
-    </Card>
+    </PrimeCard>
 
     <!-- Loading State -->
     <div v-if="ordersStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Orders List -->
     <div v-else-if="ordersStore.orders.length > 0">
-      <Card class="mb-6">
+      <PrimeCard class="mb-6">
         <template #content>
-          <DataTable
+          <PrimeDataTable
             :value="ordersStore.orders"
             responsiveLayout="scroll"
             class="orders-table"
             @row-click="(e: any) => viewOrder(e.data.id)"
           >
-            <Column field="order_number" header="Ordine" sortable>
+            <PrimeColumn field="order_number" header="Ordine" sortable>
               <template #body="{ data }">
                 <span class="font-medium text-primary cursor-pointer hover:underline">
                   {{ data.order_number }}
                 </span>
               </template>
-            </Column>
+            </PrimeColumn>
 
-            <Column field="created_at" header="Data" sortable>
+            <PrimeColumn field="created_at" header="Data" sortable>
               <template #body="{ data }">
                 {{ formatDate(data.created_at) }}
               </template>
-            </Column>
+            </PrimeColumn>
 
-            <Column field="order_type" header="Tipo">
+            <PrimeColumn field="order_type" header="Tipo">
               <template #body="{ data }">
-                <Tag
+                <PrimeTag
                   :value="formatOrderType(data.order_type)"
                   :severity="data.order_type === 'free_trial' ? 'secondary' : 'info'"
                   size="small"
                 />
               </template>
-            </Column>
+            </PrimeColumn>
 
-            <Column field="items_count" header="Lead">
+            <PrimeColumn field="items_count" header="Lead">
               <template #body="{ data }">
                 {{ data.items_count }}
               </template>
-            </Column>
+            </PrimeColumn>
 
-            <Column field="total" header="Totale" sortable>
+            <PrimeColumn field="total" header="Totale" sortable>
               <template #body="{ data }">
                 <span class="font-semibold">
                   {{ formatCurrency(data.total) }}
                 </span>
               </template>
-            </Column>
+            </PrimeColumn>
 
-            <Column field="status" header="Stato">
+            <PrimeColumn field="status" header="Stato">
               <template #body="{ data }">
-                <Tag
+                <PrimeTag
                   :value="formatOrderStatus(data.status)"
                   :severity="getOrderStatusSeverity(data.status)"
                   size="small"
                 />
               </template>
-            </Column>
+            </PrimeColumn>
 
-            <Column header="Azioni" style="width: 150px">
+            <PrimeColumn header="Azioni" style="width: 150px">
               <template #body="{ data }">
                 <div class="flex gap-1">
-                  <Button
+                  <PrimeButton
                     icon="pi pi-eye"
                     size="small"
                     rounded
@@ -211,7 +211,7 @@ const viewOrder = (orderId: number) => {
                     v-tooltip.top="'Dettagli'"
                     @click.stop="viewOrder(data.id)"
                   />
-                  <Button
+                  <PrimeButton
                     v-if="data.invoice_url"
                     icon="pi pi-download"
                     size="small"
@@ -223,14 +223,14 @@ const viewOrder = (orderId: number) => {
                   />
                 </div>
               </template>
-            </Column>
-          </DataTable>
+            </PrimeColumn>
+          </PrimeDataTable>
         </template>
-      </Card>
+      </PrimeCard>
 
       <!-- Pagination -->
       <div class="flex justify-center">
-        <Paginator
+        <PrimePaginator
           :rows="ordersStore.pagination.per_page"
           :totalRecords="ordersStore.pagination.total"
           :first="(ordersStore.pagination.current_page - 1) * ordersStore.pagination.per_page"
@@ -250,16 +250,16 @@ const viewOrder = (orderId: number) => {
       </p>
       <div class="flex justify-center gap-3">
         <NuxtLink to="/leads">
-          <Button label="Vai al Catalogo" icon="pi pi-search" size="large" />
+          <PrimeButton label="Vai al Catalogo" icon="pi pi-search" size="large" />
         </NuxtLink>
         <NuxtLink to="/pacchetti">
-          <Button label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" size="large" />
+          <PrimeButton label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" size="large" />
         </NuxtLink>
       </div>
     </div>
 
     <!-- Summary Stats -->
-    <Card v-if="ordersStore.orders.length > 0" class="mt-6 bg-surface-50 dark:bg-surface-800">
+    <PrimeCard v-if="ordersStore.orders.length > 0" class="mt-6 bg-surface-50 dark:bg-surface-800">
       <template #content>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <div>
@@ -282,7 +282,7 @@ const viewOrder = (orderId: number) => {
           </div>
         </div>
       </template>
-    </Card>
+    </PrimeCard>
   </div>
 </template>
 

@@ -109,7 +109,7 @@ const viewLead = (lead: MyLead) => {
         </p>
       </div>
       <div class="flex items-center gap-2">
-        <SplitButton
+        <PrimeSplitButton
           label="Esporta"
           icon="pi pi-download"
           severity="secondary"
@@ -119,56 +119,56 @@ const viewLead = (lead: MyLead) => {
           ]"
         />
         <NuxtLink to="/leads">
-          <Button label="Acquista Lead" icon="pi pi-plus" />
+          <PrimeButton label="Acquista Lead" icon="pi pi-plus" />
         </NuxtLink>
       </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <Card class="text-center">
+      <PrimeCard class="text-center">
         <template #content>
           <p class="text-3xl font-bold text-surface-900 dark:text-surface-0">
             {{ myLeadsStore.pagination.total }}
           </p>
           <p class="text-sm text-surface-500">Totale Lead</p>
         </template>
-      </Card>
-      <Card class="text-center">
+      </PrimeCard>
+      <PrimeCard class="text-center">
         <template #content>
           <p class="text-3xl font-bold text-blue-500">
             {{ myLeadsStore.newLeadsCount }}
           </p>
           <p class="text-sm text-surface-500">Da Contattare</p>
         </template>
-      </Card>
-      <Card class="text-center">
+      </PrimeCard>
+      <PrimeCard class="text-center">
         <template #content>
           <p class="text-3xl font-bold text-green-500">
             {{ myLeadsStore.convertedLeadsCount }}
           </p>
           <p class="text-sm text-surface-500">Convertiti</p>
         </template>
-      </Card>
-      <Card class="text-center">
+      </PrimeCard>
+      <PrimeCard class="text-center">
         <template #content>
           <p class="text-3xl font-bold text-primary">
             {{ myLeadsStore.conversionRate }}%
           </p>
           <p class="text-sm text-surface-500">Conversione</p>
         </template>
-      </Card>
+      </PrimeCard>
     </div>
 
     <!-- Filters -->
-    <Card class="mb-6">
+    <PrimeCard class="mb-6">
       <template #content>
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Categoria
             </label>
-            <Select
+            <PrimeSelect
               v-model="selectedCategory"
               :options="[{ id: '', name: 'Tutte' }, ...catalogStore.categories]"
               optionLabel="name"
@@ -181,7 +181,7 @@ const viewLead = (lead: MyLead) => {
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Stato
             </label>
-            <Select
+            <PrimeSelect
               v-model="selectedStatus"
               :options="contactStatusOptions"
               optionLabel="label"
@@ -194,7 +194,7 @@ const viewLead = (lead: MyLead) => {
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Tipo
             </label>
-            <Select
+            <PrimeSelect
               v-model="selectedAcquisitionType"
               :options="acquisitionTypeOptions"
               optionLabel="label"
@@ -207,7 +207,7 @@ const viewLead = (lead: MyLead) => {
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Cerca
             </label>
-            <InputText
+            <PrimeInputText
               v-model="searchQuery"
               placeholder="Nome, email, telefono..."
               class="w-full"
@@ -215,12 +215,12 @@ const viewLead = (lead: MyLead) => {
             />
           </div>
           <div class="flex items-end gap-2">
-            <Button
+            <PrimeButton
               label="Filtra"
               icon="pi pi-search"
               @click="applyFilters"
             />
-            <Button
+            <PrimeButton
               icon="pi pi-times"
               severity="secondary"
               @click="resetFilters"
@@ -228,17 +228,17 @@ const viewLead = (lead: MyLead) => {
           </div>
         </div>
       </template>
-    </Card>
+    </PrimeCard>
 
     <!-- Loading State -->
     <div v-if="myLeadsStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Leads List -->
     <div v-else-if="myLeadsStore.leads.length > 0">
       <div class="space-y-4 mb-6">
-        <Card
+        <PrimeCard
           v-for="lead in myLeadsStore.leads"
           :key="lead.id"
           class="lead-card cursor-pointer"
@@ -249,14 +249,14 @@ const viewLead = (lead: MyLead) => {
               <!-- Lead Info -->
               <div class="flex-grow">
                 <div class="flex flex-wrap items-center gap-2 mb-2">
-                  <Tag :value="lead.lead.category?.name" severity="info" size="small" />
-                  <Tag :value="lead.lead.province?.code" severity="secondary" size="small" />
-                  <Tag
+                  <PrimeTag :value="lead.lead.category?.name" severity="info" size="small" />
+                  <PrimeTag :value="lead.lead.province?.code" severity="secondary" size="small" />
+                  <PrimeTag
                     :value="formatContactStatus(lead.contact_status)"
                     :severity="getContactStatusSeverity(lead.contact_status)"
                     size="small"
                   />
-                  <Tag
+                  <PrimeTag
                     :value="formatAcquisitionType(lead.acquisition_type)"
                     :severity="getAcquisitionTypeSeverity(lead.acquisition_type)"
                     size="small"
@@ -293,7 +293,7 @@ const viewLead = (lead: MyLead) => {
 
                 <!-- Quick Status Update -->
                 <div class="flex gap-1" @click.stop>
-                  <Button
+                  <PrimeButton
                     v-if="lead.contact_status === 'new'"
                     icon="pi pi-phone"
                     size="small"
@@ -302,7 +302,7 @@ const viewLead = (lead: MyLead) => {
                     v-tooltip.top="'Segna come contattato'"
                     @click="updateStatus(lead, 'contacted')"
                   />
-                  <Button
+                  <PrimeButton
                     v-if="lead.contact_status !== 'converted' && lead.contact_status !== 'not_interested'"
                     icon="pi pi-check"
                     size="small"
@@ -311,7 +311,7 @@ const viewLead = (lead: MyLead) => {
                     v-tooltip.top="'Segna come convertito'"
                     @click="updateStatus(lead, 'converted')"
                   />
-                  <Button
+                  <PrimeButton
                     icon="pi pi-eye"
                     size="small"
                     severity="secondary"
@@ -334,12 +334,12 @@ const viewLead = (lead: MyLead) => {
               </p>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Pagination -->
       <div class="flex justify-center">
-        <Paginator
+        <PrimePaginator
           :rows="myLeadsStore.pagination.per_page"
           :totalRecords="myLeadsStore.pagination.total"
           :first="(myLeadsStore.pagination.current_page - 1) * myLeadsStore.pagination.per_page"
@@ -359,10 +359,10 @@ const viewLead = (lead: MyLead) => {
       </p>
       <div class="flex justify-center gap-3">
         <NuxtLink to="/leads">
-          <Button label="Vai al Catalogo" icon="pi pi-search" size="large" />
+          <PrimeButton label="Vai al Catalogo" icon="pi pi-search" size="large" />
         </NuxtLink>
         <NuxtLink to="/pacchetti">
-          <Button label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" size="large" />
+          <PrimeButton label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" size="large" />
         </NuxtLink>
       </div>
     </div>

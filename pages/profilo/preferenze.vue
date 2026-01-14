@@ -81,14 +81,14 @@ watch(marketingConsent, (newValue, oldValue) => {
 
     <!-- Loading State -->
     <div v-if="profileStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Content -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Email Notifications -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-bell text-primary"></i>
@@ -132,10 +132,10 @@ watch(marketingConsent, (newValue, oldValue) => {
               </ul>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Marketing Consent -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-megaphone text-primary"></i>
@@ -179,19 +179,19 @@ watch(marketingConsent, (newValue, oldValue) => {
               </p>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Sidebar -->
       <div class="space-y-4">
         <!-- Current Status -->
-        <Card>
+        <PrimeCard>
           <template #title>Stato Attuale</template>
           <template #content>
             <div class="space-y-3">
               <div class="flex items-center justify-between">
                 <span class="text-surface-600 dark:text-surface-400">Notifiche email</span>
-                <Tag
+                <PrimeTag
                   :value="emailNotifications ? 'Attive' : 'Disattive'"
                   :severity="emailNotifications ? 'success' : 'secondary'"
                   size="small"
@@ -199,7 +199,7 @@ watch(marketingConsent, (newValue, oldValue) => {
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-surface-600 dark:text-surface-400">Marketing</span>
-                <Tag
+                <PrimeTag
                   :value="marketingConsent ? 'Attivo' : 'Disattivo'"
                   :severity="marketingConsent ? 'success' : 'secondary'"
                   size="small"
@@ -207,10 +207,10 @@ watch(marketingConsent, (newValue, oldValue) => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Privacy Info -->
-        <Card class="bg-surface-50 dark:bg-surface-800">
+        <PrimeCard class="bg-surface-50 dark:bg-surface-800">
           <template #content>
             <div class="flex items-start gap-3">
               <i class="pi pi-shield text-surface-400 mt-1"></i>
@@ -227,7 +227,7 @@ watch(marketingConsent, (newValue, oldValue) => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
     </div>
   </div>

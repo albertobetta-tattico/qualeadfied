@@ -75,13 +75,13 @@ const proceedToCheckout = () => {
       </div>
       <div v-if="cartStore.itemCount > 0" class="flex items-center gap-2">
         <NuxtLink to="/leads">
-          <Button
+          <PrimeButton
             label="Continua lo shopping"
             icon="pi pi-arrow-left"
             severity="secondary"
           />
         </NuxtLink>
-        <Button
+        <PrimeButton
           label="Svuota carrello"
           icon="pi pi-trash"
           severity="danger"
@@ -93,7 +93,7 @@ const proceedToCheckout = () => {
 
     <!-- Loading State -->
     <div v-if="cartStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Empty Cart -->
@@ -106,7 +106,7 @@ const proceedToCheckout = () => {
         Inizia ad aggiungere lead dal catalogo
       </p>
       <NuxtLink to="/leads">
-        <Button label="Vai al Catalogo" icon="pi pi-search" size="large" />
+        <PrimeButton label="Vai al Catalogo" icon="pi pi-search" size="large" />
       </NuxtLink>
     </div>
 
@@ -114,7 +114,7 @@ const proceedToCheckout = () => {
     <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Cart Items -->
       <div class="lg:col-span-2">
-        <Card>
+        <PrimeCard>
           <template #content>
             <div class="space-y-4">
               <div
@@ -126,8 +126,8 @@ const proceedToCheckout = () => {
                   <!-- Lead Info -->
                   <div class="flex-grow">
                     <div class="flex items-center gap-2 mb-2">
-                      <Tag :value="item.lead?.category?.name" severity="info" size="small" />
-                      <Tag :value="item.lead?.province?.code" severity="secondary" size="small" />
+                      <PrimeTag :value="item.lead?.category?.name" severity="info" size="small" />
+                      <PrimeTag :value="item.lead?.province?.code" severity="secondary" size="small" />
                     </div>
                     <h3 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">
                       Lead #{{ item.lead_id }}
@@ -143,7 +143,7 @@ const proceedToCheckout = () => {
                   <!-- Mode Selection & Price -->
                   <div class="flex flex-col items-end gap-3">
                     <!-- Mode Toggle -->
-                    <SelectButton
+                    <PrimeSelectButton
                       :modelValue="item.purchase_mode"
                       :options="[
                         { label: 'Esclusivo', value: 'exclusive' },
@@ -166,7 +166,7 @@ const proceedToCheckout = () => {
                     </div>
 
                     <!-- Remove Button -->
-                    <Button
+                    <PrimeButton
                       icon="pi pi-trash"
                       severity="danger"
                       text
@@ -178,12 +178,12 @@ const proceedToCheckout = () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Order Summary -->
       <div>
-        <Card class="sticky top-4">
+        <PrimeCard class="sticky top-4">
           <template #title>Riepilogo Ordine</template>
           <template #content>
             <div class="space-y-4">
@@ -207,7 +207,7 @@ const proceedToCheckout = () => {
                 </div>
               </div>
 
-              <Divider />
+              <PrimeDivider />
 
               <!-- Total -->
               <div class="flex justify-between items-center">
@@ -220,7 +220,7 @@ const proceedToCheckout = () => {
               </div>
 
               <!-- Checkout Button -->
-              <Button
+              <PrimeButton
                 label="Procedi al Checkout"
                 icon="pi pi-credit-card"
                 class="w-full"
@@ -237,10 +237,10 @@ const proceedToCheckout = () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Benefits -->
-        <Card class="mt-4">
+        <PrimeCard class="mt-4">
           <template #content>
             <div class="space-y-3">
               <div class="flex items-center gap-3">
@@ -263,7 +263,7 @@ const proceedToCheckout = () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
     </div>
   </div>
