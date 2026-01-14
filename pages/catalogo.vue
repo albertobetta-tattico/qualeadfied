@@ -425,7 +425,7 @@ const getAvailabilityBadge = (lead: any) => {
 
 /* Header */
 .catalog-header {
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  background: #2D2D2D;
   padding: 3rem 1.5rem;
   color: white;
 }
@@ -656,8 +656,40 @@ const getAvailabilityBadge = (lead: any) => {
 
 /* CTA Banner */
 .cta-banner {
-  background: #0f172a;
+  background: #2D2D2D;
   padding: 3rem 1.5rem;
+}
+
+/* Lead Card CTA buttons */
+.lead-cta :deep(.p-button) {
+  font-weight: 600;
+}
+
+.lead-cta :deep(.p-button.p-button-primary:not(.p-button-outlined)) {
+  background: linear-gradient(135deg, #EC4899, #DB2777);
+  border: none;
+}
+
+.lead-cta :deep(.p-button.p-button-outlined) {
+  background: transparent;
+  border: 2px solid #0F3460;
+  color: #0F3460;
+}
+
+.lead-cta :deep(.p-button.p-button-outlined:hover) {
+  background: rgba(15, 52, 96, 0.08);
+}
+
+/* CTA Banner button */
+.cta-banner :deep(.p-button) {
+  background: linear-gradient(135deg, #EC4899, #DB2777);
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+
+.cta-banner :deep(.p-button:hover) {
+  background: linear-gradient(135deg, #DB2777, #BE185D);
 }
 
 .cta-banner-container {

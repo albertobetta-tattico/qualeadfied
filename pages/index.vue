@@ -283,7 +283,7 @@ const formatNumber = (num: number): string => {
 }
 
 .hero-btn-primary {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  background: linear-gradient(135deg, #EC4899, #DB2777) !important;
   border: none !important;
 }
 
@@ -431,7 +431,7 @@ const formatNumber = (num: number): string => {
   width: 64px;
   height: 64px;
   margin: 0 auto 1.5rem;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(236, 72, 153, 0.05));
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -440,7 +440,7 @@ const formatNumber = (num: number): string => {
 
 .value-icon i {
   font-size: 1.75rem;
-  color: #2563eb;
+  color: #EC4899;
 }
 
 .value-title {
@@ -500,7 +500,7 @@ const formatNumber = (num: number): string => {
   width: 80px;
   height: 80px;
   margin: 0 auto 1.5rem;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: #2D2D2D;
   color: white;
   font-size: 2rem;
   font-weight: 700;
@@ -566,7 +566,7 @@ const formatNumber = (num: number): string => {
 .category-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: #2D2D2D;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -594,7 +594,7 @@ const formatNumber = (num: number): string => {
 }
 
 .category-link {
-  color: #2563eb;
+  color: #EC4899;
   font-weight: 500;
   font-size: 0.875rem;
   display: inline-flex;
@@ -605,7 +605,7 @@ const formatNumber = (num: number): string => {
 /* Stats Section */
 .stats-section {
   padding: 4rem 1.5rem;
-  background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+  background: #2D2D2D;
 }
 
 .stats-grid {
@@ -638,7 +638,7 @@ const formatNumber = (num: number): string => {
 /* CTA Section */
 .cta-section {
   padding: 5rem 1.5rem;
-  background: #0f172a;
+  background: #2D2D2D;
 }
 
 .cta-content {
@@ -669,7 +669,7 @@ const formatNumber = (num: number): string => {
 }
 
 .cta-btn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  background: linear-gradient(135deg, #EC4899, #DB2777) !important;
   border: none !important;
 }
 

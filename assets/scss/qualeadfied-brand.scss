@@ -430,20 +430,26 @@
 // ============================================
 
 .catalog-header {
-  background: linear-gradient(135deg, $color-primary 0%, $color-primary-600 100%);
+  background-color: $color-dark-bg !important;
+  background: $color-dark-bg !important;
   padding: $space-12 $space-4;
   color: $color-white;
+
+  .catalog-header-container {
+    text-align: center;
+  }
 
   .catalog-title {
     font-family: $font-family-brand;
     font-size: $font-size-4xl;
     font-weight: $font-weight-bold;
     margin-bottom: $space-2;
+    color: $color-white !important;
   }
 
   .catalog-subtitle {
     font-size: $font-size-lg;
-    opacity: 0.9;
+    color: $color-dark-text-muted;
   }
 }
 
@@ -744,5 +750,152 @@
     .welcome-actions {
       flex-direction: column;
     }
+  }
+}
+
+// ============================================
+// HOMEPAGE - QUALEADFIED STYLE (Dark Gray)
+// ============================================
+
+// Stats section - dark gray like qualeadfied.com
+.homepage .stats-section {
+  background: $color-dark-bg !important;
+  background-color: $color-dark-bg !important;
+
+  .stat-number {
+    color: $color-white;
+  }
+
+  .stat-label {
+    color: $color-dark-text-muted;
+  }
+}
+
+// CTA section - dark gray
+.homepage .cta-section {
+  background: $color-dark-bg !important;
+  background-color: $color-dark-bg !important;
+}
+
+// CTA Banner - dark gray
+.cta-banner {
+  background: $color-dark-bg !important;
+  background-color: $color-dark-bg !important;
+
+  .cta-banner-title {
+    color: $color-white;
+  }
+
+  .cta-banner-text {
+    color: $color-dark-text-muted;
+  }
+
+  // CTA button styling - make it readable with accent color
+  .p-button {
+    background: linear-gradient(135deg, $color-accent 0%, $color-accent-600 100%) !important;
+    border: none !important;
+    color: $color-white !important;
+    font-weight: $font-weight-semibold;
+
+    &:hover {
+      background: linear-gradient(135deg, $color-accent-600 0%, $color-accent-700 100%) !important;
+    }
+  }
+}
+
+// ============================================
+// LEAD CARD BUTTONS - IMPROVED READABILITY
+// ============================================
+
+.lead-card {
+  .lead-cta {
+    .p-button {
+      font-weight: $font-weight-semibold;
+
+      // Primary button (logged in users)
+      &.p-button-primary:not(.p-button-outlined) {
+        background: linear-gradient(135deg, $color-accent 0%, $color-accent-600 100%) !important;
+        border: none !important;
+        color: $color-white !important;
+
+        &:hover {
+          background: linear-gradient(135deg, $color-accent-600 0%, $color-accent-700 100%) !important;
+        }
+      }
+
+      // Outlined button (non-logged users)
+      &.p-button-outlined {
+        background: transparent !important;
+        border: 2px solid $color-primary !important;
+        color: $color-primary !important;
+
+        &:hover {
+          background: rgba($color-primary, 0.08) !important;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// HERO SECTION - IMPROVED PRIMARY BUTTONS
+// ============================================
+
+.hero-section {
+  .hero-cta {
+    .hero-btn-primary,
+    .p-button:not(.p-button-outlined):not(.p-button-secondary) {
+      background: linear-gradient(135deg, $color-accent 0%, $color-accent-600 100%) !important;
+      border: none !important;
+      color: $color-white !important;
+      font-weight: $font-weight-semibold;
+
+      &:hover {
+        background: linear-gradient(135deg, $color-accent-600 0%, $color-accent-700 100%) !important;
+      }
+    }
+  }
+}
+
+// ============================================
+// VALUE PROPOSITION - ICON WITH ACCENT
+// ============================================
+
+.value-section {
+  .value-icon {
+    background: linear-gradient(135deg, rgba($color-accent, 0.15) 0%, rgba($color-accent, 0.05) 100%) !important;
+
+    i {
+      color: $color-accent !important;
+    }
+  }
+}
+
+// ============================================
+// HOW IT WORKS - DARK GRAY CIRCLES
+// ============================================
+
+.how-section {
+  .how-step-number {
+    background: $color-dark-bg !important;
+    color: $color-white;
+  }
+}
+
+// ============================================
+// CATEGORY CARDS - ACCENT STYLE
+// ============================================
+
+.categories-section {
+  .category-icon {
+    background: $color-dark-bg !important;
+
+    i {
+      color: $color-white;
+    }
+  }
+
+  .category-link {
+    color: $color-accent !important;
   }
 }
