@@ -105,12 +105,28 @@
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    transform: none !important;
+
+    // Icon-only text buttons - ensure proper centering
+    &.p-button-icon-only {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
+      width: 2.25rem;
+      height: 2.25rem;
+
+      .p-button-icon {
+        margin: 0 !important;
+      }
+    }
 
     &.p-button-primary {
       color: $color-primary;
 
       &:hover:not(:disabled) {
         background: rgba($color-primary, 0.08) !important;
+        transform: none !important;
       }
     }
 
@@ -119,6 +135,7 @@
 
       &:hover:not(:disabled) {
         background: rgba($color-danger, 0.08) !important;
+        transform: none !important;
       }
     }
 
@@ -127,6 +144,7 @@
 
       &:hover:not(:disabled) {
         background: rgba($color-success, 0.08) !important;
+        transform: none !important;
       }
     }
 
@@ -135,6 +153,7 @@
 
       &:hover:not(:disabled) {
         background: rgba($color-neutral-600, 0.08) !important;
+        transform: none !important;
       }
     }
   }
