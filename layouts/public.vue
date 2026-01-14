@@ -245,7 +245,7 @@ watch(() => route.path, () => {
 .public-logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: #2D2D2D;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -282,7 +282,7 @@ watch(() => route.path, () => {
 
 .public-nav-link:hover,
 .public-nav-link.active {
-  color: #2563eb;
+  color: #0F3460;
 }
 
 /* Auth buttons */

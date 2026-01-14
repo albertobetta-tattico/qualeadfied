@@ -501,7 +501,7 @@ onMounted(async () => {
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: #2D2D2D;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -557,7 +557,7 @@ onMounted(async () => {
 }
 
 .step-dot.active {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: #2D2D2D;
   color: white;
 }
 
@@ -698,7 +698,7 @@ onMounted(async () => {
 }
 
 .consent-item a {
-  color: #2563eb;
+  color: #0F3460;
   text-decoration: none;
 }
 
@@ -718,7 +718,7 @@ onMounted(async () => {
 }
 
 .step-btn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  background: #2D2D2D !important;
   border: none !important;
 }
 
@@ -729,7 +729,7 @@ onMounted(async () => {
 }
 
 .login-link a {
-  color: #2563eb;
+  color: #0F3460;
   font-weight: 500;
   text-decoration: none;
 }
@@ -783,7 +783,7 @@ onMounted(async () => {
 }
 
 .complete-note a {
-  color: #2563eb;
+  color: #0F3460;
   text-decoration: none;
 }
 
@@ -797,7 +797,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  background: #2D2D2D;
 }
 
 @media (max-width: 968px) {
@@ -815,6 +815,7 @@ onMounted(async () => {
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 2rem;
+  color: white;
 }
 
 .benefits-list {
@@ -841,13 +842,14 @@ onMounted(async () => {
 
 .benefit-icon i {
   font-size: 1.25rem;
-  color: #93c5fd;
+  color: white;
 }
 
 .benefit-text h4 {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
+  color: white;
 }
 
 .benefit-text p {

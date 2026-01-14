@@ -85,13 +85,13 @@
   transition: all $transition-base $transition-easing;
 
   &.p-button-primary:not(.p-button-text):not(.p-button-outlined) {
-    background: linear-gradient(135deg, $color-primary 0%, $color-primary-600 100%);
+    background: $color-dark-bg;
     border: none;
-    box-shadow: 0 2px 8px rgba($color-primary, 0.3);
+    box-shadow: 0 2px 8px rgba($color-dark-bg, 0.3);
 
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, $color-primary-600 0%, $color-primary-700 100%);
-      box-shadow: 0 4px 12px rgba($color-primary, 0.4);
+      background: $color-dark-bg-light;
+      box-shadow: 0 4px 12px rgba($color-dark-bg, 0.4);
       transform: translateY(-1px);
     }
 
