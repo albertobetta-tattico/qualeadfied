@@ -72,13 +72,13 @@ const saveBillingData = async () => {
 
     <!-- Loading State -->
     <div v-if="profileStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <div v-else-if="profileStore.profile" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Form -->
       <div class="lg:col-span-2">
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
@@ -110,7 +110,7 @@ const saveBillingData = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Indirizzo *
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_address"
                   placeholder="Via, numero civico"
                   class="w-full"
@@ -126,7 +126,7 @@ const saveBillingData = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Città *
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_city"
                   placeholder="Città"
                   class="w-full"
@@ -142,7 +142,7 @@ const saveBillingData = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Provincia *
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_province"
                   placeholder="MI"
                   maxlength="2"
@@ -159,7 +159,7 @@ const saveBillingData = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   CAP *
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_zip"
                   placeholder="20100"
                   maxlength="5"
@@ -176,7 +176,7 @@ const saveBillingData = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Paese
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_country"
                   disabled
                   class="w-full"
@@ -184,10 +184,10 @@ const saveBillingData = async () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Electronic Invoicing -->
-        <Card class="mt-6">
+        <PrimeCard class="mt-6">
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-send text-primary"></i>
@@ -205,7 +205,7 @@ const saveBillingData = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Codice SDI
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.sdi_code"
                   placeholder="ABC1234"
                   maxlength="7"
@@ -225,7 +225,7 @@ const saveBillingData = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Email PEC
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.pec_email"
                   placeholder="azienda@pec.it"
                   class="w-full"
@@ -238,7 +238,7 @@ const saveBillingData = async () => {
             </div>
 
             <div class="flex justify-end mt-6">
-              <Button
+              <PrimeButton
                 label="Salva Modifiche"
                 icon="pi pi-check"
                 :loading="profileStore.saving"
@@ -246,13 +246,13 @@ const saveBillingData = async () => {
               />
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Sidebar -->
       <div class="space-y-4">
         <!-- Info Card -->
-        <Card class="bg-blue-50 dark:bg-blue-900/20">
+        <PrimeCard class="bg-blue-50 dark:bg-blue-900/20">
           <template #content>
             <div class="flex items-start gap-3">
               <i class="pi pi-info-circle text-blue-500 mt-1"></i>
@@ -266,10 +266,10 @@ const saveBillingData = async () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Help -->
-        <Card>
+        <PrimeCard>
           <template #title>Aiuto</template>
           <template #content>
             <div class="space-y-3 text-sm">
@@ -287,7 +287,7 @@ const saveBillingData = async () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
     </div>
   </div>

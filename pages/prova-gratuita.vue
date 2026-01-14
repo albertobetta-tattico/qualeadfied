@@ -99,7 +99,7 @@ const claimTrialLeads = () => {
     </div>
 
     <!-- Trial Status -->
-    <Card v-if="profileStore.trialStatus" class="mb-6 max-w-2xl mx-auto">
+    <PrimeCard v-if="profileStore.trialStatus" class="mb-6 max-w-2xl mx-auto">
       <template #content>
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
           <div class="text-center md:text-left">
@@ -135,7 +135,7 @@ const claimTrialLeads = () => {
           />
         </div>
       </template>
-    </Card>
+    </PrimeCard>
 
     <!-- No Trial Available -->
     <div
@@ -151,10 +151,10 @@ const claimTrialLeads = () => {
       </p>
       <div class="flex justify-center gap-3">
         <NuxtLink to="/leads">
-          <Button label="Vai al Catalogo" icon="pi pi-search" />
+          <PrimeButton label="Vai al Catalogo" icon="pi pi-search" />
         </NuxtLink>
         <NuxtLink to="/pacchetti">
-          <Button label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" />
+          <PrimeButton label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" />
         </NuxtLink>
       </div>
     </div>
@@ -162,7 +162,7 @@ const claimTrialLeads = () => {
     <!-- Lead Selection -->
     <div v-else>
       <!-- Instructions -->
-      <Card class="mb-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+      <PrimeCard class="mb-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
         <template #content>
           <div class="flex items-start gap-4">
             <i class="pi pi-info-circle text-blue-500 text-xl mt-1"></i>
@@ -177,7 +177,7 @@ const claimTrialLeads = () => {
             </div>
           </div>
         </template>
-      </Card>
+      </PrimeCard>
 
       <!-- Selection Status -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -191,7 +191,7 @@ const claimTrialLeads = () => {
         </div>
         <div class="flex items-center gap-3">
           <!-- Category Filter -->
-          <Select
+          <PrimeSelect
             v-model="selectedCategory"
             :options="[{ id: '', name: 'Tutte le categorie' }, ...catalogStore.categories]"
             optionLabel="name"
@@ -199,7 +199,7 @@ const claimTrialLeads = () => {
             placeholder="Filtra per categoria"
             class="w-48"
           />
-          <Button
+          <PrimeButton
             label="Riscatta Lead"
             icon="pi pi-gift"
             :disabled="selectedLeads.length === 0"
@@ -211,12 +211,12 @@ const claimTrialLeads = () => {
 
       <!-- Loading -->
       <div v-if="catalogStore.loading" class="flex justify-center py-12">
-        <ProgressSpinner />
+        <PrimeProgressSpinner />
       </div>
 
       <!-- Leads Grid -->
       <div v-else-if="filteredLeads.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card
+        <PrimeCard
           v-for="lead in filteredLeads"
           :key="lead.id"
           class="trial-lead-card cursor-pointer transition-all"
@@ -241,8 +241,8 @@ const claimTrialLeads = () => {
               <div class="flex-grow">
                 <!-- Tags -->
                 <div class="flex items-center gap-2 mb-2">
-                  <Tag :value="lead.category?.name" severity="info" size="small" />
-                  <Tag :value="lead.province?.code" severity="secondary" size="small" />
+                  <PrimeTag :value="lead.category?.name" severity="info" size="small" />
+                  <PrimeTag :value="lead.province?.code" severity="secondary" size="small" />
                 </div>
 
                 <!-- Lead Info -->
@@ -261,7 +261,7 @@ const claimTrialLeads = () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Empty State -->
@@ -290,12 +290,12 @@ const claimTrialLeads = () => {
             </p>
           </div>
           <div class="flex items-center gap-3">
-            <Button
+            <PrimeButton
               label="Annulla"
               severity="secondary"
               @click="selectedLeads = []"
             />
-            <Button
+            <PrimeButton
               label="Riscatta Lead"
               icon="pi pi-gift"
               @click="claimTrialLeads"

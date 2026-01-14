@@ -130,7 +130,7 @@ const processPayment = async () => {
 
     <!-- Loading State -->
     <div v-if="cartStore.loading || profileStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Checkout Content -->
@@ -138,7 +138,7 @@ const processPayment = async () => {
       <!-- Main Content -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Billing Data -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
@@ -170,7 +170,7 @@ const processPayment = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Indirizzo *
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_address"
                   placeholder="Via, numero civico"
                   class="w-full"
@@ -186,7 +186,7 @@ const processPayment = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Città *
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_city"
                   placeholder="Città"
                   class="w-full"
@@ -202,7 +202,7 @@ const processPayment = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Provincia *
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_province"
                   placeholder="MI"
                   maxlength="2"
@@ -219,7 +219,7 @@ const processPayment = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   CAP *
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_zip"
                   placeholder="20100"
                   maxlength="5"
@@ -236,21 +236,21 @@ const processPayment = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Paese
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.billing_country"
                   disabled
                   class="w-full"
                 />
               </div>
 
-              <Divider class="md:col-span-2" />
+              <PrimeDivider class="md:col-span-2" />
 
               <!-- SDI Code -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Codice SDI
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.sdi_code"
                   placeholder="ABC1234"
                   maxlength="7"
@@ -267,7 +267,7 @@ const processPayment = async () => {
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                   Email PEC
                 </label>
-                <InputText
+                <PrimeInputText
                   v-model="billingForm.pec_email"
                   placeholder="azienda@pec.it"
                   class="w-full"
@@ -285,10 +285,10 @@ const processPayment = async () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Payment Method -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-credit-card text-primary"></i>
@@ -370,12 +370,12 @@ const processPayment = async () => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Order Summary Sidebar -->
       <div>
-        <Card class="sticky top-4">
+        <PrimeCard class="sticky top-4">
           <template #title>Riepilogo Ordine</template>
           <template #content>
             <div class="space-y-4">
@@ -400,7 +400,7 @@ const processPayment = async () => {
                 </div>
               </div>
 
-              <Divider />
+              <PrimeDivider />
 
               <!-- Totals -->
               <div class="space-y-2">
@@ -422,7 +422,7 @@ const processPayment = async () => {
                 </div>
               </div>
 
-              <Divider />
+              <PrimeDivider />
 
               <!-- Total -->
               <div class="flex justify-between items-center">
@@ -435,7 +435,7 @@ const processPayment = async () => {
               </div>
 
               <!-- Pay Button -->
-              <Button
+              <PrimeButton
                 :label="processing ? 'Elaborazione...' : `Paga ${formatCurrency(cartStore.cart.total)}`"
                 icon="pi pi-lock"
                 class="w-full"
@@ -452,7 +452,7 @@ const processPayment = async () => {
               </p>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
     </div>
 
@@ -466,7 +466,7 @@ const processPayment = async () => {
         Aggiungi dei lead al carrello per procedere al checkout
       </p>
       <NuxtLink to="/leads">
-        <Button label="Vai al Catalogo" icon="pi pi-search" />
+        <PrimeButton label="Vai al Catalogo" icon="pi pi-search" />
       </NuxtLink>
     </div>
   </div>

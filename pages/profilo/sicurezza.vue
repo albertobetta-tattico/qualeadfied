@@ -92,7 +92,7 @@ const passwordStrengthLabel = computed(() => {
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Form -->
       <div class="lg:col-span-2">
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-lock text-primary"></i>
@@ -107,7 +107,7 @@ const passwordStrengthLabel = computed(() => {
                   Password Attuale *
                 </label>
                 <div class="relative">
-                  <InputText
+                  <PrimeInputText
                     v-model="passwordForm.current_password"
                     :type="showCurrentPassword ? 'text' : 'password'"
                     placeholder="Inserisci la password attuale"
@@ -133,7 +133,7 @@ const passwordStrengthLabel = computed(() => {
                   Nuova Password *
                 </label>
                 <div class="relative">
-                  <InputText
+                  <PrimeInputText
                     v-model="passwordForm.password"
                     :type="showNewPassword ? 'text' : 'password'"
                     placeholder="Inserisci la nuova password"
@@ -175,7 +175,7 @@ const passwordStrengthLabel = computed(() => {
                   Conferma Password *
                 </label>
                 <div class="relative">
-                  <InputText
+                  <PrimeInputText
                     v-model="passwordForm.password_confirmation"
                     :type="showConfirmPassword ? 'text' : 'password'"
                     placeholder="Conferma la nuova password"
@@ -196,7 +196,7 @@ const passwordStrengthLabel = computed(() => {
               </div>
 
               <div class="flex justify-end pt-4">
-                <Button
+                <PrimeButton
                   label="Cambia Password"
                   icon="pi pi-check"
                   :loading="profileStore.saving"
@@ -205,13 +205,13 @@ const passwordStrengthLabel = computed(() => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Sidebar -->
       <div class="space-y-4">
         <!-- Requirements -->
-        <Card>
+        <PrimeCard>
           <template #title>Requisiti Password</template>
           <template #content>
             <ul class="space-y-2 text-sm">
@@ -261,10 +261,10 @@ const passwordStrengthLabel = computed(() => {
               </li>
             </ul>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Security Tips -->
-        <Card class="bg-blue-50 dark:bg-blue-900/20">
+        <PrimeCard class="bg-blue-50 dark:bg-blue-900/20">
           <template #content>
             <div class="flex items-start gap-3">
               <i class="pi pi-shield text-blue-500 mt-1"></i>
@@ -280,7 +280,7 @@ const passwordStrengthLabel = computed(() => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
     </div>
   </div>
