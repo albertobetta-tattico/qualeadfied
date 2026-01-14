@@ -10,20 +10,20 @@
   border-radius: 6px;
   border: 1px solid #e9ecef;
   transition: border-color 0.2s, box-shadow 0.2s;
-  
+
   &:focus {
     border-color: #0F3460;
     box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
   }
-  
+
   &.p-invalid {
     border-color: #dc3545;
-    
+
     &:focus {
       box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
     }
   }
-  
+
   &:disabled {
     background-color: #f8f9fa;
     opacity: 0.7;
@@ -36,16 +36,16 @@
 .p-select {
   border-radius: 6px;
   border: 1px solid #e9ecef;
-  
+
   .p-select-label {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
   }
-  
+
   &:not(.p-disabled):hover {
     border-color: #0F3460;
   }
-  
+
   &:not(.p-disabled).p-focus {
     border-color: #0F3460;
     box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
@@ -75,7 +75,7 @@
   font-size: 0.875rem;
   border-radius: 6px;
   border: 1px solid #e9ecef;
-  
+
   &:focus {
     border-color: #0F3460;
     box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
@@ -92,104 +92,104 @@
   border-radius: 6px;
   transition: all 0.2s ease;
   gap: 0.5rem;
-  
+
   &.p-button-icon-only {
     padding: 0.75rem;
     width: 2.5rem;
     height: 2.5rem;
   }
-  
+
   &.p-button-sm {
     padding: 0.5rem 1rem;
     font-size: 0.8125rem;
   }
-  
+
   &.p-button-lg {
     padding: 1rem 1.5rem;
     font-size: 1rem;
   }
-  
+
   // Primary button
   &.p-button-primary {
     background-color: #0F3460;
     border-color: #0F3460;
-    
+
     &:hover:not(:disabled) {
       background-color: #16213E;
       border-color: #16213E;
     }
-    
+
     &:focus {
       box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.3);
     }
   }
-  
+
   // Secondary button
   &.p-button-secondary {
     background-color: #6c757d;
     border-color: #6c757d;
-    
+
     &:hover:not(:disabled) {
       background-color: #5a6268;
       border-color: #5a6268;
     }
   }
-  
+
   // Outlined buttons
   &.p-button-outlined {
     background: transparent;
-    
+
     &.p-button-primary {
       color: #0F3460;
       border: 1px solid #0F3460;
-      
+
       &:hover:not(:disabled) {
         background-color: rgba(15, 52, 96, 0.08);
       }
     }
-    
+
     &.p-button-secondary {
       color: #6c757d;
       border: 1px solid #6c757d;
-      
+
       &:hover:not(:disabled) {
         background-color: rgba(108, 117, 125, 0.08);
       }
     }
-    
+
     &.p-button-danger {
       color: #dc3545;
       border: 1px solid #dc3545;
-      
+
       &:hover:not(:disabled) {
         background-color: rgba(220, 53, 69, 0.08);
       }
     }
-    
+
     &.p-button-warning {
       color: #e65100;
       border: 1px solid #e65100;
-      
+
       &:hover:not(:disabled) {
         background-color: rgba(230, 81, 0, 0.08);
       }
     }
-    
+
     &.p-button-success {
       color: #28a745;
       border: 1px solid #28a745;
-      
+
       &:hover:not(:disabled) {
         background-color: rgba(40, 167, 69, 0.08);
       }
     }
   }
-  
+
   // Text buttons
   &.p-button-text {
     background: transparent;
     border-color: transparent;
-    
+
     &:hover:not(:disabled) {
       background-color: rgba(0, 0, 0, 0.04);
     }
@@ -202,17 +202,17 @@
 .p-toggleswitch {
   width: 3rem;
   height: 1.75rem;
-  
+
   .p-toggleswitch-slider {
     border-radius: 1rem;
-    
+
     &:before {
       width: 1.25rem;
       height: 1.25rem;
       border-radius: 50%;
     }
   }
-  
+
   &.p-toggleswitch-checked {
     .p-toggleswitch-slider {
       background-color: #0F3460;
@@ -244,13 +244,13 @@
     background-color: #f8f9fa;
     border-bottom: 1px solid #e9ecef;
   }
-  
+
   .p-datatable-tbody > tr > td {
     padding: 1rem;
     font-size: 0.875rem;
     border-bottom: 1px solid #f1f3f4;
   }
-  
+
   .p-datatable-tbody > tr:hover {
     background-color: #f8f9fa;
   }
@@ -270,11 +270,11 @@
     border-bottom: 1px solid #e9ecef;
     background: transparent;
     gap: 0 !important;
-    
+
     // Tab item - li element
     .p-tabview-tablist-item {
       margin: 0 0.25rem;
-      
+
       // Tab link - a element
       .p-tabview-tab-header {
         display: flex;
@@ -290,23 +290,23 @@
         margin-bottom: -1px;
         transition: all 0.2s ease;
         cursor: pointer;
-        
+
         &:hover {
           color: #0F3460;
           background: transparent;
           border-bottom-color: #dee2e6;
         }
-        
+
         &:focus {
           box-shadow: none;
           outline: none;
         }
-        
+
         .p-tabview-tab-title {
           white-space: nowrap;
         }
       }
-      
+
       // Active tab
       &.p-tabview-tablist-item-active,
       &[data-p-active="true"] {
@@ -317,19 +317,19 @@
         }
       }
     }
-    
+
     // Hide the ink bar (we use border-bottom instead)
     .p-tabview-ink-bar {
       display: none !important;
     }
   }
-  
+
   // Panels container - more spacing below tabs
   .p-tabview-panels {
     padding: 2rem 1.5rem 1.5rem 1.5rem;
     background: transparent;
   }
-  
+
   .p-tabview-panel {
     padding: 0;
   }
@@ -359,16 +359,16 @@
 .p-dialog {
   border-radius: 8px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
+
   .p-dialog-header {
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid #e9ecef;
   }
-  
+
   .p-dialog-content {
     padding: 1.5rem;
   }
-  
+
   .p-dialog-footer {
     padding: 1rem 1.5rem;
     border-top: 1px solid #e9ecef;
@@ -392,17 +392,17 @@
   .p-toast-message {
     border-radius: 8px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    
+
     .p-toast-message-content {
       padding: 1rem;
       gap: 0.75rem;
     }
-    
+
     .p-toast-summary {
       font-weight: 600;
       font-size: 0.875rem;
     }
-    
+
     .p-toast-detail {
       font-size: 0.8125rem;
       margin-top: 0.25rem;
@@ -416,13 +416,13 @@
 .p-checkbox {
   width: 1.25rem;
   height: 1.25rem;
-  
+
   .p-checkbox-box {
     width: 1.25rem;
     height: 1.25rem;
     border-radius: 4px;
     border: 1px solid #e9ecef;
-    
+
     &.p-highlight {
       background-color: #0F3460;
       border-color: #0F3460;
@@ -457,10 +457,32 @@
 // ============================================
 .p-paginator {
   padding: 1rem;
-  
+
   .p-paginator-element {
     min-width: 2.5rem;
     height: 2.5rem;
     border-radius: 6px;
   }
+}
+
+// ============================================
+// INPUT ICON LEFT
+// ============================================
+.p-input-icon-left {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.p-input-icon-left > i {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  z-index: 1;
+}
+
+.p-input-icon-left > .p-inputtext {
+  padding-left: 2.5rem;
 }

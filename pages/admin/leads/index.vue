@@ -12,15 +12,15 @@ definePageMeta({
 
 // Store & Composables
 const leadStore = useLeadStore()
-const { 
-  formatStatus, 
-  getStatusSeverity, 
+const {
+  formatStatus,
+  getStatusSeverity,
   getStatusIcon,
   formatSharesDisplay,
-  formatDate, 
+  formatDate,
   getFullName,
   truncateText,
-  canDelete 
+  canDelete
 } = useLeadFormatters()
 const { confirmDelete, confirmBulkDelete, showSuccess, showError, showWarning } = useLeadActions()
 const router = useRouter()
@@ -86,7 +86,7 @@ const first = ref(0)
 const rows = ref(10)
 
 // Conta lead selezionabili per eliminazione
-const deletableSelected = computed(() => 
+const deletableSelected = computed(() =>
   selectedLeads.value.filter(l => canDelete(l))
 )
 
@@ -172,7 +172,7 @@ const openDeleteDialog = (lead: Lead) => {
 
 const handleDelete = async () => {
   if (!leadToDelete.value) return
-  
+
   const success = await leadStore.deleteLead(leadToDelete.value.id)
   if (success) {
     showSuccess(`Lead di "${getFullName(leadToDelete.value)}" eliminato con successo`)
@@ -192,14 +192,14 @@ const handleBulkDelete = () => {
   confirmBulkDelete(deletableSelected.value.length, async () => {
     const ids = deletableSelected.value.map(l => l.id)
     const result = await leadStore.deleteLeads(ids)
-    
+
     if (result.success > 0) {
       showSuccess(`${result.success} lead eliminati con successo`)
     }
     if (result.failed > 0) {
       showWarning(`${result.failed} lead non eliminati (già venduti)`)
     }
-    
+
     selectedLeads.value = []
   })
 }
@@ -254,29 +254,29 @@ onUnmounted(() => {
         <p class="page-subtitle">Gestione lead della piattaforma</p>
       </div>
       <div class="page-header-actions">
-        <PrimeButton 
-          label="Nuovo Lead" 
-          icon="pi pi-plus" 
+        <PrimeButton
+          label="Nuovo Lead"
+          icon="pi pi-plus"
           severity="primary"
           @click="navigateToCreate"
         />
-        <PrimeButton 
-          label="Import" 
-          icon="pi pi-upload" 
+        <PrimeButton
+          label="Import"
+          icon="pi pi-upload"
           severity="secondary"
           outlined
           @click="navigateToImport"
         />
-        <PrimeButton 
-          label="Sorgenti" 
-          icon="pi pi-link" 
+        <PrimeButton
+          label="Sorgenti"
+          icon="pi pi-link"
           severity="secondary"
           outlined
           @click="navigateToSources"
         />
-        <PrimeButton 
-          label="Export" 
-          icon="pi pi-download" 
+        <PrimeButton
+          label="Export"
+          icon="pi pi-download"
           severity="secondary"
           text
           @click="exportLeads"
@@ -293,7 +293,7 @@ onUnmounted(() => {
         <div class="kpi-card-value">{{ stats?.total || 0 }}</div>
         <div class="kpi-card-label">Lead Totali</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon success">
           <i class="pi pi-check-circle"></i>
@@ -301,7 +301,7 @@ onUnmounted(() => {
         <div class="kpi-card-value">{{ stats?.free || 0 }}</div>
         <div class="kpi-card-label">Disponibili</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon info">
           <i class="pi pi-lock"></i>
@@ -309,7 +309,7 @@ onUnmounted(() => {
         <div class="kpi-card-value">{{ stats?.sold_exclusive || 0 }}</div>
         <div class="kpi-card-label">Esclusivi</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon warning">
           <i class="pi pi-users"></i>
@@ -368,7 +368,7 @@ onUnmounted(() => {
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
             label="Pulisci filtri"
@@ -543,7 +543,7 @@ onUnmounted(() => {
         <PrimeColumn field="first_name" header="Contatto" sortable style="min-width: 180px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
-              <div 
+              <div
                 class="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-sm flex-shrink-0"
               >
                 {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
@@ -559,7 +559,7 @@ onUnmounted(() => {
         <!-- Phone -->
         <PrimeColumn field="phone" header="Telefono" style="min-width: 130px">
           <template #body="{ data }">
-            <a 
+            <a
               :href="`tel:${data.phone}`"
               class="text-neutral-700 hover:text-primary-600"
             >
@@ -571,7 +571,7 @@ onUnmounted(() => {
         <!-- Category -->
         <PrimeColumn field="category_id" header="Categoria" sortable style="min-width: 150px">
           <template #body="{ data }">
-            <PrimeTag 
+            <PrimeTag
               :value="data.category?.name || '-'"
               severity="secondary"
             />
@@ -591,7 +591,7 @@ onUnmounted(() => {
         <!-- Request Preview -->
         <PrimeColumn field="request_text" header="Richiesta" style="min-width: 200px">
           <template #body="{ data }">
-            <span 
+            <span
               class="text-neutral-600 text-sm"
               v-tooltip.top="data.request_text"
             >
@@ -604,14 +604,14 @@ onUnmounted(() => {
         <PrimeColumn field="status" header="Stato" sortable style="min-width: 140px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
-              <span 
+              <span
                 class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
                 :class="getStatusClass(data.status)"
               >
                 <i class="pi mr-1" :class="getStatusIcon(data.status)"></i>
                 {{ formatStatus(data.status) }}
               </span>
-              <span 
+              <span
                 v-if="data.status === 'sold_shared'"
                 class="text-xs text-neutral-500"
               >
@@ -689,7 +689,7 @@ onUnmounted(() => {
           </p>
         </div>
       </div>
-      
+
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
@@ -712,26 +712,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Search input icon alignment */
-.p-input-icon-left {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.p-input-icon-left > i {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6c757d;
-  z-index: 1;
-}
-
-.p-input-icon-left > .p-inputtext {
-  padding-left: 2.5rem;
-}
-
 /* Additional custom styles */
 :deep(.p-datatable .p-datatable-tbody > tr > td) {
   padding: 0.75rem 1rem;
