@@ -166,15 +166,15 @@ const QualeadfiedPreset = definePreset(Aura, {
               }
             },
             secondary: {
-              background: 'transparent',
-              hoverBackground: 'rgba(15, 52, 96, 0.08)',
-              activeBackground: 'rgba(15, 52, 96, 0.12)',
-              borderColor: '#0F3460',
-              hoverBorderColor: '#0F3460',
-              activeBorderColor: '#0F3460',
-              color: '#0F3460',
-              hoverColor: '#0F3460',
-              activeColor: '#0F3460'
+              background: '{surface.600}',
+              hoverBackground: '{surface.700}',
+              activeBackground: '{surface.800}',
+              borderColor: '{surface.600}',
+              hoverBorderColor: '{surface.700}',
+              activeBorderColor: '{surface.800}',
+              color: '#ffffff',
+              hoverColor: '#ffffff',
+              activeColor: '#ffffff'
             },
             success: {
               background: '#28A745',
