@@ -19,8 +19,6 @@ declare module 'vue' {
     PrimeDialog: typeof import('primevue/dialog')['default']
     PrimeDivider: typeof import('primevue/divider')['default']
     PrimeFileUpload: typeof import('primevue/fileupload')['default']
-    PrimeIconField: typeof import('primevue/iconfield')['default']
-    PrimeInputIcon: typeof import('primevue/inputicon')['default']
     PrimeInputNumber: typeof import('primevue/inputnumber')['default']
     PrimeInputText: typeof import('primevue/inputtext')['default']
     PrimeMenu: typeof import('primevue/menu')['default']

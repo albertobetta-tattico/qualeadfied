@@ -219,8 +219,8 @@ const logout = async () => {
         <PrimeCard>
           <template #title>Gestione Account</template>
           <template #content>
-            <div class="space-y-2">
-              <NuxtLink to="/profilo/fatturazione">
+            <div class="flex flex-col gap-2">
+              <NuxtLink to="/profilo/fatturazione" class="block">
                 <PrimeButton
                   label="Dati Fatturazione"
                   icon="pi pi-file-edit"
@@ -228,7 +228,7 @@ const logout = async () => {
                   severity="secondary"
                 />
               </NuxtLink>
-              <NuxtLink to="/profilo/sicurezza">
+              <NuxtLink to="/profilo/sicurezza" class="block">
                 <PrimeButton
                   label="Sicurezza"
                   icon="pi pi-shield"
@@ -236,7 +236,7 @@ const logout = async () => {
                   severity="secondary"
                 />
               </NuxtLink>
-              <NuxtLink to="/profilo/preferenze">
+              <NuxtLink to="/profilo/preferenze" class="block">
                 <PrimeButton
                   label="Preferenze"
                   icon="pi pi-cog"
