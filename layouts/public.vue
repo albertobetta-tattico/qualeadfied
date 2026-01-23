@@ -36,7 +36,7 @@ watch(() => route.path, () => {
     <header class="public-header">
       <div class="public-header-container">
         <!-- Logo -->
-        <NuxtLink to="/" class="public-logo">
+        <NuxtLink to="/landing" class="public-logo">
           <img src="/logo.png" alt="Qualeadfied" class="public-logo-img" />
         </NuxtLink>
 
@@ -65,7 +65,7 @@ watch(() => route.path, () => {
             </NuxtLink>
           </template>
           <template v-else>
-            <NuxtLink to="/login">
+            <NuxtLink to="/">
               <PrimeButton
                 label="Accedi"
                 severity="secondary"
@@ -117,7 +117,7 @@ watch(() => route.path, () => {
               </NuxtLink>
             </template>
             <template v-else>
-              <NuxtLink to="/login" class="w-full">
+              <NuxtLink to="/" class="w-full">
                 <PrimeButton
                   label="Accedi"
                   severity="secondary"

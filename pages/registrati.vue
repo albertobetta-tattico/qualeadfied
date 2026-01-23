@@ -141,7 +141,7 @@ onMounted(async () => {
       <div class="register-form-section">
         <div class="register-form-wrapper">
           <!-- Logo -->
-          <NuxtLink to="/" class="register-logo">
+          <NuxtLink to="/landing" class="register-logo">
             <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
           </NuxtLink>
 
@@ -156,7 +156,7 @@ onMounted(async () => {
               Clicca sul link nell'email per attivare il tuo account.
             </p>
             <div class="complete-actions">
-              <NuxtLink to="/login">
+              <NuxtLink to="/">
                 <PrimeButton
                   label="Vai al Login"
                   severity="primary"
@@ -433,7 +433,7 @@ onMounted(async () => {
             <!-- Login link -->
             <p class="login-link">
               Hai già un account?
-              <NuxtLink to="/login">Accedi</NuxtLink>
+              <NuxtLink to="/">Accedi</NuxtLink>
             </p>
           </template>
         </div>

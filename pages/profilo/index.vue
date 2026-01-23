@@ -61,7 +61,7 @@ const cancelEdit = () => {
 const router = useRouter()
 const logout = async () => {
   await authStore.logout()
-  router.push('/login')
+  router.push('/')
 }
 </script>
 

@@ -57,7 +57,7 @@ const resendEmail = async () => {
     <div class="forgot-container">
       <div class="forgot-card">
         <!-- Logo -->
-        <NuxtLink to="/" class="forgot-logo">
+        <NuxtLink to="/landing" class="forgot-logo">
           <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
         </NuxtLink>
 
@@ -84,7 +84,7 @@ const resendEmail = async () => {
               class="w-full"
               @click="resendEmail"
             />
-            <NuxtLink to="/login" class="w-full">
+            <NuxtLink to="/" class="w-full">
               <PrimeButton
                 label="Torna al Login"
                 severity="primary"
@@ -129,7 +129,7 @@ const resendEmail = async () => {
             />
           </form>
 
-          <NuxtLink to="/login" class="back-link">
+          <NuxtLink to="/" class="back-link">
             <i class="pi pi-arrow-left mr-2"></i>
             Torna al Login
           </NuxtLink>

@@ -66,7 +66,7 @@ const toggleSidebar = () => {
 // Logout
 const handleLogout = async () => {
   await authStore.logout()
-  router.push('/login')
+  router.push('/')
 }
 
 // User menu ref
@@ -106,7 +106,7 @@ onMounted(async () => {
   if (!authStore.isLoggedIn) {
     const restored = await authStore.checkSession()
     if (!restored) {
-      router.push('/login?redirect=' + route.fullPath)
+      router.push('/?redirect=' + route.fullPath)
       return
     }
   }
