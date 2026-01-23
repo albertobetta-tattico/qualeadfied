@@ -153,10 +153,12 @@ export interface Package {
   categories?: Category[]
   name: string
   description: string | null
-  lead_quantity: number
-  price: number
-  allows_exclusive: boolean
-  allows_shared: boolean
+  // Lead esclusivi
+  exclusive_lead_quantity: number
+  exclusive_price: number
+  // Lead condivisi
+  shared_lead_quantity: number
+  shared_price: number
   is_active: boolean
   sort_order: number
   sales_count?: number
@@ -168,10 +170,10 @@ export interface PackageCreateForm {
   category_ids: number[]
   name: string
   description: string
-  lead_quantity: number
-  price: number
-  allows_exclusive: boolean
-  allows_shared: boolean
+  exclusive_lead_quantity: number
+  exclusive_price: number
+  shared_lead_quantity: number
+  shared_price: number
   is_active: boolean
   sort_order: number
 }
@@ -180,10 +182,10 @@ export interface PackageUpdateForm {
   category_ids: number[]
   name: string
   description: string
-  lead_quantity: number
-  price: number
-  allows_exclusive: boolean
-  allows_shared: boolean
+  exclusive_lead_quantity: number
+  exclusive_price: number
+  shared_lead_quantity: number
+  shared_price: number
   is_active: boolean
   sort_order: number
 }

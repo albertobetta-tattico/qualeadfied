@@ -133,38 +133,38 @@ export function usePackageValidation() {
     return true
   }
 
-  const validateLeadQuantity = (value: number): boolean => {
-    if (value < 1) {
-      errors.lead_quantity = 'La quantità minima è 1'
+  const validateLeadQuantity = (field: string, value: number): boolean => {
+    if (value < 0) {
+      errors[field] = 'La quantità minima è 0'
       return false
     }
     if (value > 1000) {
-      errors.lead_quantity = 'La quantità massima è 1000'
+      errors[field] = 'La quantità massima è 1000'
       return false
     }
-    delete errors.lead_quantity
+    delete errors[field]
     return true
   }
 
-  const validatePrice = (value: number): boolean => {
+  const validatePrice = (field: string, value: number): boolean => {
     if (value < 0) {
-      errors.price = 'Il prezzo deve essere positivo'
+      errors[field] = 'Il prezzo deve essere positivo'
       return false
     }
     if (value > 100000) {
-      errors.price = 'Il prezzo massimo è 100.000€'
+      errors[field] = 'Il prezzo massimo è 100.000€'
       return false
     }
-    delete errors.price
+    delete errors[field]
     return true
   }
 
-  const validateAcquisitionModes = (allowsExclusive: boolean, allowsShared: boolean): boolean => {
-    if (!allowsExclusive && !allowsShared) {
-      errors.acquisition_modes = 'Almeno una modalità di acquisizione deve essere abilitata'
+  const validateTotalLeads = (exclusiveQty: number, sharedQty: number): boolean => {
+    if (exclusiveQty + sharedQty < 1) {
+      errors.total_leads = 'Il pacchetto deve contenere almeno 1 lead'
       return false
     }
-    delete errors.acquisition_modes
+    delete errors.total_leads
     return true
   }
 
@@ -172,12 +172,12 @@ export function usePackageValidation() {
     switch (field) {
       case 'name':
         return validateName(value)
-      case 'lead_quantity':
-        return validateLeadQuantity(value)
-      case 'price':
-        return validatePrice(value)
-      case 'acquisition_modes':
-        return validateAcquisitionModes(value, extra)
+      case 'exclusive_lead_quantity':
+      case 'shared_lead_quantity':
+        return validateLeadQuantity(field, value)
+      case 'exclusive_price':
+      case 'shared_price':
+        return validatePrice(field, value)
       default:
         return true
     }
@@ -186,9 +186,11 @@ export function usePackageValidation() {
   const validateForm = (form: PackageCreateForm | PackageUpdateForm): boolean => {
     let isValid = true
     isValid = validateName(form.name) && isValid
-    isValid = validateLeadQuantity(form.lead_quantity) && isValid
-    isValid = validatePrice(form.price) && isValid
-    isValid = validateAcquisitionModes(form.allows_exclusive, form.allows_shared) && isValid
+    isValid = validateLeadQuantity('exclusive_lead_quantity', form.exclusive_lead_quantity) && isValid
+    isValid = validateLeadQuantity('shared_lead_quantity', form.shared_lead_quantity) && isValid
+    isValid = validatePrice('exclusive_price', form.exclusive_price) && isValid
+    isValid = validatePrice('shared_price', form.shared_price) && isValid
+    isValid = validateTotalLeads(form.exclusive_lead_quantity, form.shared_lead_quantity) && isValid
     return isValid
   }
 
@@ -532,10 +534,10 @@ export function usePackageForm(initialData?: Package) {
     category_ids: [],
     name: '',
     description: '',
-    lead_quantity: 10,
-    price: 100,
-    allows_exclusive: true,
-    allows_shared: true,
+    exclusive_lead_quantity: 5,
+    exclusive_price: 175,
+    shared_lead_quantity: 10,
+    shared_price: 100,
     is_active: true,
     sort_order: 0
   }
@@ -544,10 +546,10 @@ export function usePackageForm(initialData?: Package) {
     category_ids: initialData?.category_ids || defaultForm.category_ids,
     name: initialData?.name || defaultForm.name,
     description: initialData?.description || defaultForm.description,
-    lead_quantity: initialData?.lead_quantity || defaultForm.lead_quantity,
-    price: initialData?.price || defaultForm.price,
-    allows_exclusive: initialData?.allows_exclusive ?? defaultForm.allows_exclusive,
-    allows_shared: initialData?.allows_shared ?? defaultForm.allows_shared,
+    exclusive_lead_quantity: initialData?.exclusive_lead_quantity ?? defaultForm.exclusive_lead_quantity,
+    exclusive_price: initialData?.exclusive_price ?? defaultForm.exclusive_price,
+    shared_lead_quantity: initialData?.shared_lead_quantity ?? defaultForm.shared_lead_quantity,
+    shared_price: initialData?.shared_price ?? defaultForm.shared_price,
     is_active: initialData?.is_active ?? defaultForm.is_active,
     sort_order: initialData?.sort_order || defaultForm.sort_order
   })
@@ -556,10 +558,10 @@ export function usePackageForm(initialData?: Package) {
     form.category_ids = initialData?.category_ids || defaultForm.category_ids
     form.name = initialData?.name || defaultForm.name
     form.description = initialData?.description || defaultForm.description
-    form.lead_quantity = initialData?.lead_quantity || defaultForm.lead_quantity
-    form.price = initialData?.price || defaultForm.price
-    form.allows_exclusive = initialData?.allows_exclusive ?? defaultForm.allows_exclusive
-    form.allows_shared = initialData?.allows_shared ?? defaultForm.allows_shared
+    form.exclusive_lead_quantity = initialData?.exclusive_lead_quantity ?? defaultForm.exclusive_lead_quantity
+    form.exclusive_price = initialData?.exclusive_price ?? defaultForm.exclusive_price
+    form.shared_lead_quantity = initialData?.shared_lead_quantity ?? defaultForm.shared_lead_quantity
+    form.shared_price = initialData?.shared_price ?? defaultForm.shared_price
     form.is_active = initialData?.is_active ?? defaultForm.is_active
     form.sort_order = initialData?.sort_order || defaultForm.sort_order
   }

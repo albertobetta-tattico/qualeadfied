@@ -21,7 +21,7 @@ const packageId = computed(() => {
 const catalogStore = useCatalogStore()
 const router = useRouter()
 const { errors, hasErrors, validateField, validateForm, clearErrors } = usePackageValidation()
-const { showSuccess, showError, showWarning } = useCatalogActions()
+const { showSuccess, showError } = useCatalogActions()
 const { formatCurrency, formatNumber, formatDate } = useCatalogFormatters()
 
 // Form State
@@ -29,10 +29,10 @@ const form = reactive<PackageUpdateForm>({
   category_ids: [],
   name: '',
   description: '',
-  lead_quantity: 10,
-  price: 100,
-  allows_exclusive: true,
-  allows_shared: true,
+  exclusive_lead_quantity: 0,
+  exclusive_price: 0,
+  shared_lead_quantity: 0,
+  shared_price: 0,
   is_active: true,
   sort_order: 0
 })
@@ -49,12 +49,22 @@ const pkg = computed(() => catalogStore.currentPackage)
 // Computed
 const categories = computed(() => catalogStore.categoriesForSelect)
 
-const pricePerLead = computed(() => {
-  if (form.lead_quantity > 0) {
-    return form.price / form.lead_quantity
+const exclusivePricePerLead = computed(() => {
+  if (form.exclusive_lead_quantity > 0) {
+    return form.exclusive_price / form.exclusive_lead_quantity
   }
   return 0
 })
+
+const sharedPricePerLead = computed(() => {
+  if (form.shared_lead_quantity > 0) {
+    return form.shared_price / form.shared_lead_quantity
+  }
+  return 0
+})
+
+const totalLeads = computed(() => form.exclusive_lead_quantity + form.shared_lead_quantity)
+const totalPrice = computed(() => form.exclusive_price + form.shared_price)
 
 // Populate form when package is loaded
 watch(pkg, (newPkg) => {
@@ -62,10 +72,10 @@ watch(pkg, (newPkg) => {
     form.category_ids = newPkg.category_ids || []
     form.name = newPkg.name
     form.description = newPkg.description || ''
-    form.lead_quantity = newPkg.lead_quantity
-    form.price = newPkg.price
-    form.allows_exclusive = newPkg.allows_exclusive
-    form.allows_shared = newPkg.allows_shared
+    form.exclusive_lead_quantity = newPkg.exclusive_lead_quantity
+    form.exclusive_price = newPkg.exclusive_price
+    form.shared_lead_quantity = newPkg.shared_lead_quantity
+    form.shared_price = newPkg.shared_price
     form.is_active = newPkg.is_active
     form.sort_order = newPkg.sort_order
 
@@ -81,13 +91,8 @@ watch(categoryMode, (mode) => {
 })
 
 // Validation on blur
-const onBlur = (field: string, value: any, extra?: any) => {
-  validateField(field, value, extra)
-}
-
-// Validate acquisition modes
-const validateModes = () => {
-  validateField('acquisition_modes', form.allows_exclusive, form.allows_shared)
+const onBlur = (field: string, value: any) => {
+  validateField(field, value)
 }
 
 // Submit form
@@ -173,7 +178,7 @@ onMounted(async () => {
         </div>
         <div class="bg-neutral-50 rounded-lg p-4">
           <div class="text-sm text-neutral-600">Ricavi Generati</div>
-          <div class="text-lg font-semibold text-success">{{ formatCurrency((pkg.sales_count || 0) * pkg.price) }}</div>
+          <div class="text-lg font-semibold text-success">{{ formatCurrency((pkg.sales_count || 0) * (pkg.exclusive_price + pkg.shared_price)) }}</div>
         </div>
         <div class="bg-neutral-50 rounded-lg p-4">
           <div class="text-sm text-neutral-600">Creato il</div>
@@ -265,40 +270,36 @@ onMounted(async () => {
           </div>
         </div>
 
-        <!-- Pricing Card -->
+        <!-- Exclusive Leads Card -->
         <div class="q-card">
           <div class="q-card-header">
             <h3 class="card-title">
-              <i class="pi pi-euro mr-2 text-primary-500"></i>
-              Prezzo e Quantità
+              <i class="pi pi-star mr-2 text-blue-500"></i>
+              Lead Esclusivi
             </h3>
           </div>
           <div class="q-card-body">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <!-- Lead Quantity -->
+              <!-- Exclusive Lead Quantity -->
               <div class="form-group">
-                <label for="lead_quantity">Quantità Lead *</label>
+                <label for="exclusive_lead_quantity">Quantità Lead Esclusivi</label>
                 <PrimeInputNumber
-                  id="lead_quantity"
-                  v-model="form.lead_quantity"
-                  :class="{ 'p-invalid': errors.lead_quantity }"
-                  :min="1"
+                  id="exclusive_lead_quantity"
+                  v-model="form.exclusive_lead_quantity"
+                  :min="0"
                   :max="1000"
                   :showButtons="true"
                   class="w-full"
-                  @blur="onBlur('lead_quantity', form.lead_quantity)"
                 />
-                <small v-if="errors.lead_quantity" class="p-error">{{ errors.lead_quantity }}</small>
-                <small v-else class="form-hint">Numero di lead inclusi nel pacchetto</small>
+                <small class="form-hint">Numero di lead esclusivi inclusi</small>
               </div>
 
-              <!-- Price -->
+              <!-- Exclusive Price -->
               <div class="form-group">
-                <label for="price">Prezzo Totale (€) *</label>
+                <label for="exclusive_price">Prezzo Lead Esclusivi (€)</label>
                 <PrimeInputNumber
-                  id="price"
-                  v-model="form.price"
-                  :class="{ 'p-invalid': errors.price }"
+                  id="exclusive_price"
+                  v-model="form.exclusive_price"
                   :min="0"
                   :max="100000"
                   :minFractionDigits="2"
@@ -307,86 +308,105 @@ onMounted(async () => {
                   currency="EUR"
                   locale="it-IT"
                   class="w-full"
-                  @blur="onBlur('price', form.price)"
                 />
-                <small v-if="errors.price" class="p-error">{{ errors.price }}</small>
-                <small v-else class="form-hint">Prezzo senza IVA</small>
+                <small class="form-hint">Prezzo totale per i lead esclusivi</small>
               </div>
 
-              <!-- Price per Lead (calculated) -->
+              <!-- Exclusive Price per Lead (calculated) -->
               <div class="form-group">
-                <label>Prezzo per Lead</label>
-                <div class="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
-                  <div class="text-2xl font-bold text-primary-600">
-                    {{ formatCurrency(pricePerLead) }}
+                <label>Prezzo per Lead Esclusivo</label>
+                <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div class="text-2xl font-bold text-blue-600">
+                    {{ formatCurrency(exclusivePricePerLead) }}
                   </div>
-                  <div class="text-xs text-neutral-500 mt-1">calcolato automaticamente</div>
+                  <div class="text-xs text-blue-500 mt-1">calcolato automaticamente</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Acquisition Modes Card -->
+        <!-- Shared Leads Card -->
         <div class="q-card">
           <div class="q-card-header">
             <h3 class="card-title">
-              <i class="pi pi-sliders-h mr-2 text-primary-500"></i>
-              Modalità di Acquisizione
+              <i class="pi pi-users mr-2 text-orange-500"></i>
+              Lead Condivisi
             </h3>
           </div>
           <div class="q-card-body">
-            <p class="text-sm text-neutral-600 mb-4">
-              Seleziona quali modalità di acquisizione saranno disponibili per i clienti che acquistano questo pacchetto.
-            </p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Allows Exclusive -->
-              <div
-                class="p-4 rounded-lg border-2 transition-all cursor-pointer"
-                :class="form.allows_exclusive ? 'border-blue-500 bg-blue-50' : 'border-neutral-200 bg-neutral-50'"
-                @click="form.allows_exclusive = !form.allows_exclusive; validateModes()"
-              >
-                <div class="flex items-start gap-3">
-                  <PrimeCheckbox
-                    v-model="form.allows_exclusive"
-                    :binary="true"
-                    @change="validateModes"
-                  />
-                  <div>
-                    <div class="font-medium text-neutral-900">Lead Esclusivi</div>
-                    <p class="text-sm text-neutral-600 mt-1">
-                      I clienti potranno selezionare lead in modalità esclusiva
-                    </p>
-                  </div>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Shared Lead Quantity -->
+              <div class="form-group">
+                <label for="shared_lead_quantity">Quantità Lead Condivisi</label>
+                <PrimeInputNumber
+                  id="shared_lead_quantity"
+                  v-model="form.shared_lead_quantity"
+                  :min="0"
+                  :max="1000"
+                  :showButtons="true"
+                  class="w-full"
+                />
+                <small class="form-hint">Numero di lead condivisi inclusi</small>
               </div>
 
-              <!-- Allows Shared -->
-              <div
-                class="p-4 rounded-lg border-2 transition-all cursor-pointer"
-                :class="form.allows_shared ? 'border-orange-500 bg-orange-50' : 'border-neutral-200 bg-neutral-50'"
-                @click="form.allows_shared = !form.allows_shared; validateModes()"
-              >
-                <div class="flex items-start gap-3">
-                  <PrimeCheckbox
-                    v-model="form.allows_shared"
-                    :binary="true"
-                    @change="validateModes"
-                  />
-                  <div>
-                    <div class="font-medium text-neutral-900">Lead Condivisi</div>
-                    <p class="text-sm text-neutral-600 mt-1">
-                      I clienti potranno selezionare lead in modalità condivisa
-                    </p>
+              <!-- Shared Price -->
+              <div class="form-group">
+                <label for="shared_price">Prezzo Lead Condivisi (€)</label>
+                <PrimeInputNumber
+                  id="shared_price"
+                  v-model="form.shared_price"
+                  :min="0"
+                  :max="100000"
+                  :minFractionDigits="2"
+                  :maxFractionDigits="2"
+                  mode="currency"
+                  currency="EUR"
+                  locale="it-IT"
+                  class="w-full"
+                />
+                <small class="form-hint">Prezzo totale per i lead condivisi</small>
+              </div>
+
+              <!-- Shared Price per Lead (calculated) -->
+              <div class="form-group">
+                <label>Prezzo per Lead Condiviso</label>
+                <div class="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                  <div class="text-2xl font-bold text-orange-600">
+                    {{ formatCurrency(sharedPricePerLead) }}
                   </div>
+                  <div class="text-xs text-orange-500 mt-1">calcolato automaticamente</div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <small v-if="errors.acquisition_modes" class="p-error mt-2 block">
-              {{ errors.acquisition_modes }}
-            </small>
+        <!-- Summary Card -->
+        <div class="q-card bg-gradient-to-r from-primary-50 to-primary-100 border-primary-200">
+          <div class="q-card-header">
+            <h3 class="card-title">
+              <i class="pi pi-calculator mr-2 text-primary-500"></i>
+              Riepilogo Pacchetto
+            </h3>
+          </div>
+          <div class="q-card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="p-4 bg-white rounded-lg">
+                <div class="text-sm text-neutral-600 mb-1">Totale Lead</div>
+                <div class="text-3xl font-bold text-primary-600">{{ formatNumber(totalLeads) }}</div>
+                <div class="text-xs text-neutral-500 mt-1">
+                  {{ form.exclusive_lead_quantity }} esclusivi + {{ form.shared_lead_quantity }} condivisi
+                </div>
+              </div>
+              <div class="p-4 bg-white rounded-lg">
+                <div class="text-sm text-neutral-600 mb-1">Prezzo Totale Pacchetto</div>
+                <div class="text-3xl font-bold text-success">{{ formatCurrency(totalPrice) }}</div>
+                <div class="text-xs text-neutral-500 mt-1">
+                  {{ formatCurrency(form.exclusive_price) }} esclusivi + {{ formatCurrency(form.shared_price) }} condivisi
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

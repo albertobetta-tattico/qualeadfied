@@ -421,36 +421,32 @@ onUnmounted(() => {
           </template>
         </PrimeColumn>
 
-        <!-- Lead Quantity -->
-        <PrimeColumn field="lead_quantity" header="Lead" sortable style="min-width: 100px">
+        <!-- Lead Esclusivi -->
+        <PrimeColumn header="Lead Esclusivi" sortable style="min-width: 130px">
           <template #body="{ data }">
-            <span class="font-semibold text-neutral-900">{{ formatNumber(data.lead_quantity) }}</span>
+            <div class="text-center">
+              <div class="font-semibold text-blue-600">{{ formatNumber(data.exclusive_lead_quantity) }}</div>
+              <div class="text-xs text-neutral-500">{{ formatCurrency(data.exclusive_price) }}</div>
+            </div>
           </template>
         </PrimeColumn>
 
-        <!-- Price -->
-        <PrimeColumn field="price" header="Prezzo" sortable style="min-width: 120px">
+        <!-- Lead Condivisi -->
+        <PrimeColumn header="Lead Condivisi" sortable style="min-width: 130px">
           <template #body="{ data }">
-            <span class="font-semibold text-success">{{ formatCurrency(data.price) }}</span>
+            <div class="text-center">
+              <div class="font-semibold text-orange-600">{{ formatNumber(data.shared_lead_quantity) }}</div>
+              <div class="text-xs text-neutral-500">{{ formatCurrency(data.shared_price) }}</div>
+            </div>
           </template>
         </PrimeColumn>
 
-        <!-- Acquisition Modes -->
-        <PrimeColumn header="Modalità" style="min-width: 150px">
+        <!-- Totale -->
+        <PrimeColumn header="Totale" style="min-width: 120px">
           <template #body="{ data }">
-            <div class="flex flex-wrap gap-1">
-              <span 
-                v-if="data.allows_exclusive" 
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700"
-              >
-                Esclusivo
-              </span>
-              <span 
-                v-if="data.allows_shared" 
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-700"
-              >
-                Condiviso
-              </span>
+            <div class="text-center">
+              <div class="font-semibold text-neutral-900">{{ formatNumber(data.exclusive_lead_quantity + data.shared_lead_quantity) }} lead</div>
+              <div class="text-xs text-success font-medium">{{ formatCurrency(data.exclusive_price + data.shared_price) }}</div>
             </div>
           </template>
         </PrimeColumn>
