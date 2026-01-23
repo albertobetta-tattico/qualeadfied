@@ -166,7 +166,7 @@ const getTrendInfo = (current: number, previous: number) => {
     <!-- Dashboard Content -->
     <div v-else>
       <!-- KPI Stats Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <!-- Lead acquistati -->
         <PrimeCard class="kpi-card">
           <template #content>
@@ -208,29 +208,6 @@ const getTrendInfo = (current: number, previous: number) => {
               <div class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
                 <i class="pi pi-arrow-up"></i>
                 <span>+{{ formatCurrency(profileStore.dashboardStats?.spent_this_month || 0) }} questo mese</span>
-              </div>
-            </div>
-          </template>
-        </PrimeCard>
-
-        <!-- Tasso conversione -->
-        <PrimeCard class="kpi-card">
-          <template #content>
-            <div class="flex flex-col">
-              <div class="flex items-start justify-between mb-3">
-                <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                  <i class="pi pi-chart-line text-purple-500 text-xl"></i>
-                </div>
-              </div>
-              <div class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-1">
-                {{ profileStore.dashboardStats?.conversion_rate || 0 }}%
-              </div>
-              <div class="text-sm text-surface-500 dark:text-surface-400 mb-2">
-                Tasso Conversione
-              </div>
-              <div class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
-                <i class="pi pi-arrow-up"></i>
-                <span>Ottimo risultato</span>
               </div>
             </div>
           </template>
