@@ -149,8 +149,8 @@ export type PackageType = 'category_specific' | 'all_categories'
 
 export interface Package {
   id: number
-  category_id: number | null
-  category?: Category
+  category_ids: number[]
+  categories?: Category[]
   name: string
   description: string | null
   lead_quantity: number
@@ -165,7 +165,7 @@ export interface Package {
 }
 
 export interface PackageCreateForm {
-  category_id: number | null
+  category_ids: number[]
   name: string
   description: string
   lead_quantity: number
@@ -177,7 +177,7 @@ export interface PackageCreateForm {
 }
 
 export interface PackageUpdateForm {
-  category_id: number | null
+  category_ids: number[]
   name: string
   description: string
   lead_quantity: number
@@ -191,6 +191,7 @@ export interface PackageUpdateForm {
 export interface PackageFilters {
   search?: string
   category_id?: number | ''
+  category_ids?: number[]
   is_active?: boolean | ''
   sort_by?: string
   sort_order?: 'asc' | 'desc'

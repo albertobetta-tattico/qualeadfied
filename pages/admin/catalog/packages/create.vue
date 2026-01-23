@@ -19,7 +19,7 @@ const { formatCurrency } = useCatalogFormatters()
 
 // Form State
 const form = reactive<PackageCreateForm>({
-  category_id: null,
+  category_ids: [],
   name: '',
   description: '',
   lead_quantity: 10,
@@ -33,10 +33,10 @@ const form = reactive<PackageCreateForm>({
 // Category selection mode
 const categoryMode = ref<'all' | 'specific'>('all')
 
-// Watch category mode to reset category_id
+// Watch category mode to reset category_ids
 watch(categoryMode, (mode) => {
   if (mode === 'all') {
-    form.category_id = null
+    form.category_ids = []
   }
 })
 
@@ -166,19 +166,20 @@ onMounted(async () => {
 
             <!-- Category Selection (if specific) -->
             <div v-if="categoryMode === 'specific'" class="form-group md:col-span-2">
-              <label for="category_id">Categoria *</label>
-              <PrimeSelect
-                id="category_id"
-                v-model="form.category_id"
+              <label for="category_ids">Categorie *</label>
+              <PrimeMultiSelect
+                id="category_ids"
+                v-model="form.category_ids"
                 :options="categories"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona una categoria"
+                placeholder="Seleziona una o più categorie"
                 class="w-full"
                 :filter="categories.length > 5"
                 filterPlaceholder="Cerca categoria..."
+                display="chip"
               />
-              <small class="form-hint">I clienti potranno selezionare solo lead di questa categoria</small>
+              <small class="form-hint">I clienti potranno selezionare lead delle categorie selezionate</small>
             </div>
 
             <!-- Description -->

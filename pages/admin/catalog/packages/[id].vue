@@ -26,7 +26,7 @@ const { formatCurrency, formatNumber, formatDate } = useCatalogFormatters()
 
 // Form State
 const form = reactive<PackageUpdateForm>({
-  category_id: null,
+  category_ids: [],
   name: '',
   description: '',
   lead_quantity: 10,
@@ -59,7 +59,7 @@ const pricePerLead = computed(() => {
 // Populate form when package is loaded
 watch(pkg, (newPkg) => {
   if (newPkg) {
-    form.category_id = newPkg.category_id
+    form.category_ids = newPkg.category_ids || []
     form.name = newPkg.name
     form.description = newPkg.description || ''
     form.lead_quantity = newPkg.lead_quantity
@@ -68,15 +68,15 @@ watch(pkg, (newPkg) => {
     form.allows_shared = newPkg.allows_shared
     form.is_active = newPkg.is_active
     form.sort_order = newPkg.sort_order
-    
-    categoryMode.value = newPkg.category_id === null ? 'all' : 'specific'
+
+    categoryMode.value = newPkg.category_ids.length === 0 ? 'all' : 'specific'
   }
 }, { immediate: true })
 
-// Watch category mode to reset category_id
+// Watch category mode to reset category_ids
 watch(categoryMode, (mode) => {
   if (mode === 'all') {
-    form.category_id = null
+    form.category_ids = []
   }
 })
 
@@ -93,14 +93,14 @@ const validateModes = () => {
 // Submit form
 const onSubmit = async () => {
   clearErrors()
-  
+
   if (!validateForm(form)) {
     showError('Correggi gli errori nel form prima di procedere')
     return
   }
 
   const updatedPkg = await catalogStore.updatePackage(packageId.value, form)
-  
+
   if (updatedPkg) {
     showSuccess(`Pacchetto "${updatedPkg.name}" aggiornato con successo`)
     router.push('/admin/catalog/packages')
@@ -121,7 +121,7 @@ onMounted(async () => {
     catalogStore.fetchAllCategories()
   ])
   initialLoading.value = false
-  
+
   if (!pkg.value) {
     showError('Pacchetto non trovato')
     router.push('/admin/catalog/packages')
@@ -153,7 +153,7 @@ onMounted(async () => {
           <p class="page-subtitle ml-12">{{ pkg.name }}</p>
         </div>
         <div class="page-header-actions">
-          <PrimeTag 
+          <PrimeTag
             :value="pkg.is_active ? 'Attivo' : 'Non attivo'"
             :severity="pkg.is_active ? 'success' : 'danger'"
             class="text-sm"
@@ -225,26 +225,27 @@ onMounted(async () => {
                       inputId="cat-specific"
                       value="specific"
                     />
-                    <label for="cat-specific" class="cursor-pointer text-sm">Categoria specifica</label>
+                    <label for="cat-specific" class="cursor-pointer text-sm">Categorie specifiche</label>
                   </div>
                 </div>
               </div>
 
               <!-- Category Selection (if specific) -->
               <div v-if="categoryMode === 'specific'" class="form-group md:col-span-2">
-                <label for="category_id">Categoria *</label>
-                <PrimeSelect
-                  id="category_id"
-                  v-model="form.category_id"
+                <label for="category_ids">Categorie *</label>
+                <PrimeMultiSelect
+                  id="category_ids"
+                  v-model="form.category_ids"
                   :options="categories"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Seleziona una categoria"
+                  placeholder="Seleziona una o più categorie"
                   class="w-full"
                   :filter="categories.length > 5"
                   filterPlaceholder="Cerca categoria..."
+                  display="chip"
                 />
-                <small class="form-hint">I clienti potranno selezionare solo lead di questa categoria</small>
+                <small class="form-hint">I clienti potranno selezionare lead delle categorie selezionate</small>
               </div>
 
               <!-- Description -->
@@ -338,10 +339,10 @@ onMounted(async () => {
             <p class="text-sm text-neutral-600 mb-4">
               Seleziona quali modalità di acquisizione saranno disponibili per i clienti che acquistano questo pacchetto.
             </p>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Allows Exclusive -->
-              <div 
+              <div
                 class="p-4 rounded-lg border-2 transition-all cursor-pointer"
                 :class="form.allows_exclusive ? 'border-blue-500 bg-blue-50' : 'border-neutral-200 bg-neutral-50'"
                 @click="form.allows_exclusive = !form.allows_exclusive; validateModes()"
@@ -362,7 +363,7 @@ onMounted(async () => {
               </div>
 
               <!-- Allows Shared -->
-              <div 
+              <div
                 class="p-4 rounded-lg border-2 transition-all cursor-pointer"
                 :class="form.allows_shared ? 'border-orange-500 bg-orange-50' : 'border-neutral-200 bg-neutral-50'"
                 @click="form.allows_shared = !form.allows_shared; validateModes()"
@@ -434,7 +435,7 @@ onMounted(async () => {
         </div>
 
         <!-- Warning if has sales and deactivating -->
-        <div 
+        <div
           v-if="pkg.sales_count && pkg.sales_count > 0 && !form.is_active && pkg.is_active"
           class="bg-warning-light border border-warning/20 rounded-lg p-4"
         >
@@ -444,7 +445,7 @@ onMounted(async () => {
               <h4 class="font-medium text-warning-dark mb-1">Attenzione</h4>
               <p class="text-sm text-warning-dark/80">
                 Questo pacchetto è stato venduto {{ pkg.sales_count }} volte.
-                Disattivandolo, non sarà più acquistabile dai nuovi clienti, ma i clienti che lo hanno già 
+                Disattivandolo, non sarà più acquistabile dai nuovi clienti, ma i clienti che lo hanno già
                 acquistato potranno continuare ad utilizzare il loro monte lead.
               </p>
             </div>

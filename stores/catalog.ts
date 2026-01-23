@@ -164,7 +164,7 @@ const mockCategories: Category[] = [
 const mockPackages: Package[] = [
   {
     id: 1,
-    category_id: 1,
+    category_ids: [1],
     name: 'Starter Fotovoltaico',
     description: 'Pacchetto base per iniziare nel fotovoltaico',
     lead_quantity: 10,
@@ -179,9 +179,9 @@ const mockPackages: Package[] = [
   },
   {
     id: 2,
-    category_id: 1,
-    name: 'Pro Fotovoltaico',
-    description: 'Pacchetto professionale per aziende strutturate',
+    category_ids: [1, 3],
+    name: 'Pro Energia',
+    description: 'Pacchetto professionale per fotovoltaico e climatizzazione',
     lead_quantity: 50,
     price: 650,
     allows_exclusive: true,
@@ -194,7 +194,7 @@ const mockPackages: Package[] = [
   },
   {
     id: 3,
-    category_id: 2,
+    category_ids: [2],
     name: 'Starter Infissi',
     description: 'Pacchetto base per il settore infissi',
     lead_quantity: 10,
@@ -209,7 +209,7 @@ const mockPackages: Package[] = [
   },
   {
     id: 4,
-    category_id: null,
+    category_ids: [],
     name: 'Multi-Categoria Standard',
     description: 'Pacchetto valido per tutte le categorie',
     lead_quantity: 20,
@@ -224,9 +224,9 @@ const mockPackages: Package[] = [
   },
   {
     id: 5,
-    category_id: 3,
+    category_ids: [3, 5, 6],
     name: 'Enterprise Clima',
-    description: 'Pacchetto enterprise per grandi installatori',
+    description: 'Pacchetto enterprise per climatizzazione, caldaie e pompe di calore',
     lead_quantity: 100,
     price: 1200,
     allows_exclusive: true,
@@ -549,8 +549,8 @@ export const useCatalogStore = defineStore('catalog', {
     // Packages
     hasPackages: (state): boolean => state.packages.length > 0,
     activePackages: (state): Package[] => state.packages.filter(p => p.is_active),
-    packagesWithCategory: (state): Package[] => state.packages.filter(p => p.category_id !== null),
-    packagesAllCategories: (state): Package[] => state.packages.filter(p => p.category_id === null),
+    packagesWithCategories: (state): Package[] => state.packages.filter(p => p.category_ids.length > 0),
+    packagesAllCategories: (state): Package[] => state.packages.filter(p => p.category_ids.length === 0),
 
     // Filters
     hasCategoryActiveFilters: (state): boolean => {
@@ -1133,7 +1133,9 @@ export const useCatalogStore = defineStore('catalog', {
 
           let filtered = mockPackages.map(p => ({
             ...p,
-            category: mockCategories.find(c => c.id === p.category_id) || undefined
+            categories: p.category_ids.length > 0
+              ? mockCategories.filter(c => p.category_ids.includes(c.id))
+              : undefined
           }))
 
           // Filtro ricerca
@@ -1145,9 +1147,10 @@ export const useCatalogStore = defineStore('catalog', {
             )
           }
 
-          // Filtro categoria
+          // Filtro categoria (pacchetti che contengono almeno una delle categorie selezionate)
           if (this.packageFilters.category_id) {
-            filtered = filtered.filter(p => p.category_id === this.packageFilters.category_id)
+            const categoryId = Number(this.packageFilters.category_id)
+            filtered = filtered.filter(p => p.category_ids.includes(categoryId))
           }
 
           // Filtro attivo
@@ -1217,7 +1220,9 @@ export const useCatalogStore = defineStore('catalog', {
           if (pkg) {
             this.currentPackage = {
               ...pkg,
-              category: mockCategories.find(c => c.id === pkg.category_id) || undefined
+              categories: pkg.category_ids.length > 0
+                ? mockCategories.filter(c => pkg.category_ids.includes(c.id))
+                : undefined
             }
           } else {
             this.currentPackage = null
@@ -1246,8 +1251,10 @@ export const useCatalogStore = defineStore('catalog', {
           await new Promise(resolve => setTimeout(resolve, 500))
           const newPackage: Package = {
             id: Math.max(...mockPackages.map(p => p.id)) + 1,
-            category_id: data.category_id,
-            category: data.category_id ? mockCategories.find(c => c.id === data.category_id) : undefined,
+            category_ids: data.category_ids,
+            categories: data.category_ids.length > 0
+              ? mockCategories.filter(c => data.category_ids.includes(c.id))
+              : undefined,
             name: data.name,
             description: data.description,
             lead_quantity: data.lead_quantity,
@@ -1292,10 +1299,13 @@ export const useCatalogStore = defineStore('catalog', {
           await new Promise(resolve => setTimeout(resolve, 500))
           const index = mockPackages.findIndex(p => p.id === id)
           if (index !== -1) {
+            const categoryIds = data.category_ids ?? mockPackages[index].category_ids
             const updated = {
               ...mockPackages[index],
               ...data,
-              category: data.category_id ? mockCategories.find(c => c.id === data.category_id) : undefined,
+              categories: categoryIds.length > 0
+                ? mockCategories.filter(c => categoryIds.includes(c.id))
+                : undefined,
               updated_at: new Date().toISOString()
             }
             mockPackages[index] = updated

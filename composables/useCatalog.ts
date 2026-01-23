@@ -529,7 +529,7 @@ export function useCategoryForm(initialData?: Category) {
 
 export function usePackageForm(initialData?: Package) {
   const defaultForm: PackageCreateForm = {
-    category_id: null,
+    category_ids: [],
     name: '',
     description: '',
     lead_quantity: 10,
@@ -541,7 +541,7 @@ export function usePackageForm(initialData?: Package) {
   }
 
   const form = reactive<PackageCreateForm>({
-    category_id: initialData?.category_id || defaultForm.category_id,
+    category_ids: initialData?.category_ids || defaultForm.category_ids,
     name: initialData?.name || defaultForm.name,
     description: initialData?.description || defaultForm.description,
     lead_quantity: initialData?.lead_quantity || defaultForm.lead_quantity,
@@ -553,7 +553,7 @@ export function usePackageForm(initialData?: Package) {
   })
 
   const resetForm = () => {
-    form.category_id = initialData?.category_id || defaultForm.category_id
+    form.category_ids = initialData?.category_ids || defaultForm.category_ids
     form.name = initialData?.name || defaultForm.name
     form.description = initialData?.description || defaultForm.description
     form.lead_quantity = initialData?.lead_quantity || defaultForm.lead_quantity

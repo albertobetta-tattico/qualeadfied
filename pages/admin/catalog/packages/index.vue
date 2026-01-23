@@ -152,7 +152,7 @@ const onSearchInput = () => {
 
 // Get category badge class
 const getCategoryBadgeClass = (pkg: Package) => {
-  if (pkg.category_id === null) {
+  if (pkg.category_ids.length === 0) {
     return 'bg-purple-100 text-purple-700'
   }
   return 'bg-primary-100 text-primary-700'
@@ -398,16 +398,26 @@ onUnmounted(() => {
           </template>
         </PrimeColumn>
 
-        <!-- Category -->
-        <PrimeColumn field="category_id" header="Categoria" sortable style="min-width: 150px">
+        <!-- Categories -->
+        <PrimeColumn header="Categorie" style="min-width: 200px">
           <template #body="{ data }">
-            <span 
-              class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
-              :class="getCategoryBadgeClass(data)"
-            >
-              <i class="pi mr-1" :class="data.category_id ? 'pi-tag' : 'pi-globe'"></i>
-              {{ data.category?.name || 'Tutte le categorie' }}
-            </span>
+            <div v-if="data.category_ids.length === 0" class="flex flex-wrap gap-1">
+              <span
+                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700"
+              >
+                <i class="pi pi-globe mr-1"></i>
+                Tutte le categorie
+              </span>
+            </div>
+            <div v-else class="flex flex-wrap gap-1">
+              <span
+                v-for="category in data.categories"
+                :key="category.id"
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700"
+              >
+                {{ category.name }}
+              </span>
+            </div>
           </template>
         </PrimeColumn>
 
