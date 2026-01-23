@@ -60,7 +60,7 @@ const router = useRouter()
 
 // Navigation
 const navigateToSources = () => {
-  router.push('/admin/leads/sources')
+  router.push('/admin/settings/sources')
 }
 
 // Refs
