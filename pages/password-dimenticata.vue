@@ -58,8 +58,7 @@ const resendEmail = async () => {
       <div class="forgot-card">
         <!-- Logo -->
         <NuxtLink to="/" class="forgot-logo">
-          <div class="logo-icon">Q</div>
-          <span class="logo-text">Qualeadfied<sup>®</sup></span>
+          <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
         </NuxtLink>
 
         <!-- Email Sent State -->
@@ -164,35 +163,14 @@ const resendEmail = async () => {
 }
 
 .forgot-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: inline-block;
   text-decoration: none;
   margin-bottom: 2rem;
 }
 
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1.25rem;
-}
-
-.logo-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.logo-text sup {
-  font-size: 0.65em;
-  top: -0.4em;
+.auth-logo-img {
+  height: 44px;
+  width: auto;
 }
 
 .forgot-icon {

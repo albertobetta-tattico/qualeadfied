@@ -37,8 +37,7 @@ watch(() => route.path, () => {
       <div class="public-header-container">
         <!-- Logo -->
         <NuxtLink to="/" class="public-logo">
-          <div class="public-logo-icon">Q</div>
-          <span class="public-logo-text">Qualeadfied<sup>®</sup></span>
+          <img src="/logo.png" alt="Qualeadfied" class="public-logo-img" />
         </NuxtLink>
 
         <!-- Desktop Navigation -->
@@ -151,8 +150,7 @@ watch(() => route.path, () => {
           <!-- Brand Column -->
           <div class="public-footer-brand">
             <div class="flex items-center gap-2 mb-4">
-              <div class="public-logo-icon">Q</div>
-              <span class="text-xl font-bold text-white">Qualeadfied<sup>®</sup></span>
+              <img src="/logo.png" alt="Qualeadfied" class="footer-logo-img" />
             </div>
             <p class="text-neutral-400 text-sm">
               La piattaforma B2B per l'acquisto di lead qualificati.
@@ -237,33 +235,18 @@ watch(() => route.path, () => {
 .public-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   text-decoration: none;
-  color: inherit;
 }
 
-.public-logo-icon {
-  width: 40px;
+.public-logo-img {
   height: 40px;
-  background: #2D2D2D;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1.25rem;
+  width: auto;
 }
 
-.public-logo-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.public-logo-text sup {
-  font-size: 0.65em;
-  top: -0.4em;
+.footer-logo-img {
+  height: 36px;
+  width: auto;
+  filter: brightness(0) invert(1);
 }
 
 /* Navigation */

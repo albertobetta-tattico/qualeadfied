@@ -102,9 +102,8 @@ const currentPageTitle = computed(() => {
     >
       <!-- Logo -->
       <div class="sidebar-logo">
-        <NuxtLink to="/admin" class="flex items-center gap-3">
-          <div class="sidebar-logo-icon">Q</div>
-          <span class="sidebar-logo-text">Qualeadfied<sup>®</sup></span>
+        <NuxtLink to="/admin">
+          <img src="/logo.png" alt="Qualeadfied" class="sidebar-logo-img" />
         </NuxtLink>
       </div>
 
@@ -217,11 +216,16 @@ const currentPageTitle = computed(() => {
 
 /* Logo link styles */
 .sidebar-logo a {
-  color: inherit;
+  display: block;
   text-decoration: none;
 }
 
 .sidebar-logo a:hover {
   opacity: 0.9;
+}
+
+.sidebar-logo-img {
+  height: 36px;
+  width: auto;
 }
 </style>

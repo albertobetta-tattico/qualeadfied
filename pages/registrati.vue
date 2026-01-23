@@ -142,8 +142,7 @@ onMounted(async () => {
         <div class="register-form-wrapper">
           <!-- Logo -->
           <NuxtLink to="/" class="register-logo">
-            <div class="logo-icon">Q</div>
-            <span class="logo-text">Qualeadfied<sup>®</sup></span>
+            <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
           </NuxtLink>
 
           <!-- Registration Complete -->
@@ -525,35 +524,14 @@ onMounted(async () => {
 }
 
 .register-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: block;
   text-decoration: none;
   margin-bottom: 2rem;
 }
 
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: #2D2D2D;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1.25rem;
-}
-
-.logo-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.logo-text sup {
-  font-size: 0.65em;
-  top: -0.4em;
+.auth-logo-img {
+  height: 44px;
+  width: auto;
 }
 
 .register-title {

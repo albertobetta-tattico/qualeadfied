@@ -150,9 +150,8 @@ watch(() => route.path, () => {
     >
       <!-- Logo -->
       <div class="sidebar-logo">
-        <NuxtLink to="/dashboard" class="flex items-center gap-3">
-          <div class="sidebar-logo-icon">Q</div>
-          <span class="sidebar-logo-text">Qualeadfied<sup>®</sup></span>
+        <NuxtLink to="/dashboard">
+          <img src="/logo.png" alt="Qualeadfied" class="sidebar-logo-img" />
         </NuxtLink>
       </div>
 
@@ -324,10 +323,13 @@ watch(() => route.path, () => {
   width: 72px;
 }
 
-.client-sidebar.collapsed .sidebar-logo-text,
 .client-sidebar.collapsed .sidebar-menu-text,
 .client-sidebar.collapsed .sidebar-trial-banner {
   display: none;
+}
+
+.client-sidebar.collapsed .sidebar-logo-img {
+  height: 32px;
 }
 
 @media (max-width: 1023px) {
@@ -348,31 +350,12 @@ watch(() => route.path, () => {
 
 .sidebar-logo a {
   text-decoration: none;
-  color: inherit;
+  display: block;
 }
 
-.sidebar-logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-}
-
-.sidebar-logo-text {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.sidebar-logo-text sup {
-  font-size: 0.6em;
+.sidebar-logo-img {
+  height: 36px;
+  width: auto;
 }
 
 /* Navigation */
