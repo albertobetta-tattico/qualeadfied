@@ -71,6 +71,7 @@ export interface RegisterForm {
   terms_accepted: boolean
   privacy_accepted: boolean
   marketing_consent: boolean
+  category_ids: number[]
 }
 
 // Login form data

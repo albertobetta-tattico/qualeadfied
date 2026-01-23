@@ -4,7 +4,8 @@
  * Form per la modifica di un cliente B2B esistente
  */
 import { useClientValidation, useClientFormatters, useClientActions } from '~/composables/useClient'
-import type { ClientUpdateForm, FreeTrialConfig } from '~/types/client'
+import type { ClientUpdateForm, FreeTrialConfig, BankData } from '~/types/client'
+import type { Category } from '~/types/catalog'
 
 definePageMeta({
   layout: 'admin'
@@ -14,9 +15,13 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const clientStore = useClientStore()
+const catalogStore = useCatalogStore()
 const { errors, hasErrors, validateField, validateForm, clearErrors } = useClientValidation()
 const { formatStatus, getStatusSeverity, formatDate, formatDateTime, getFreeTrialRemaining, getFreeTrialProgress } = useClientFormatters()
 const { confirmSuspend, confirmResetPassword, showSuccess, showError } = useClientActions()
+
+// Categories
+const categories = computed(() => catalogStore.categories)
 
 // Get client ID from route
 const clientId = computed(() => {
@@ -47,6 +52,13 @@ const form = reactive<ClientUpdateForm>({
     sdi_code: '',
     pec: ''
   },
+  bank_data: {
+    iban: '',
+    bank_account_holder: '',
+    bic_swift: '',
+    bank_name: ''
+  },
+  category_ids: [],
   notify_new_leads: true
 })
 
@@ -78,7 +90,12 @@ const provinceOptions = [
 const loadClient = async () => {
   initialLoading.value = true
   await clientStore.fetchClient(clientId.value)
-  
+
+  // Load categories if not already loaded
+  if (categories.value.length === 0) {
+    await catalogStore.fetchCategories()
+  }
+
   if (client.value) {
     // Populate form with client data
     form.company_name = client.value.company_name
@@ -99,9 +116,16 @@ const loadClient = async () => {
       sdi_code: '',
       pec: ''
     }
+    form.bank_data = client.value.bank_data || {
+      iban: '',
+      bank_account_holder: '',
+      bic_swift: '',
+      bank_name: ''
+    }
+    form.category_ids = client.value.category_ids || []
     form.notify_new_leads = client.value.notify_new_leads
   }
-  
+
   initialLoading.value = false
 }
 
@@ -452,92 +476,154 @@ onMounted(() => {
         <!-- Tab: Fatturazione -->
         <PrimeTabPanel value="1" header="Fatturazione">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Address -->
-              <div class="form-group md:col-span-2">
-                <label for="address">Indirizzo</label>
-                <PrimeInputText
-                  id="address"
-                  v-model="form.billing_data.address"
-                  class="w-full"
-                />
-              </div>
+            <!-- Dati Indirizzo -->
+            <div>
+              <h4 class="text-base font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                <i class="pi pi-map-marker text-primary-500"></i>
+                Indirizzo Fatturazione
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Address -->
+                <div class="form-group md:col-span-2">
+                  <label for="address">Indirizzo</label>
+                  <PrimeInputText
+                    id="address"
+                    v-model="form.billing_data.address"
+                    class="w-full"
+                  />
+                </div>
 
-              <!-- City -->
-              <div class="form-group">
-                <label for="city">Città</label>
-                <PrimeInputText
-                  id="city"
-                  v-model="form.billing_data.city"
-                  class="w-full"
-                />
-              </div>
+                <!-- City -->
+                <div class="form-group">
+                  <label for="city">Città</label>
+                  <PrimeInputText
+                    id="city"
+                    v-model="form.billing_data.city"
+                    class="w-full"
+                  />
+                </div>
 
-              <!-- Province -->
-              <div class="form-group">
-                <label for="province">Provincia</label>
-                <PrimeSelect
-                  id="province"
-                  v-model="form.billing_data.province"
-                  :options="provinceOptions"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Seleziona..."
-                  class="w-full"
-                  :filter="true"
-                />
-              </div>
+                <!-- Province -->
+                <div class="form-group">
+                  <label for="province">Provincia</label>
+                  <PrimeSelect
+                    id="province"
+                    v-model="form.billing_data.province"
+                    :options="provinceOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Seleziona..."
+                    class="w-full"
+                    :filter="true"
+                  />
+                </div>
 
-              <!-- Postal Code -->
-              <div class="form-group">
-                <label for="postal_code">CAP</label>
-                <PrimeInputText
-                  id="postal_code"
-                  v-model="form.billing_data.postal_code"
-                  :class="{ 'p-invalid': errors.postal_code }"
-                  class="w-full"
-                  maxlength="5"
-                  @blur="onBlur('postal_code', form.billing_data.postal_code)"
-                />
-                <small v-if="errors.postal_code" class="p-error">{{ errors.postal_code }}</small>
-              </div>
+                <!-- Postal Code -->
+                <div class="form-group">
+                  <label for="postal_code">CAP</label>
+                  <PrimeInputText
+                    id="postal_code"
+                    v-model="form.billing_data.postal_code"
+                    :class="{ 'p-invalid': errors.postal_code }"
+                    class="w-full"
+                    maxlength="5"
+                    @blur="onBlur('postal_code', form.billing_data.postal_code)"
+                  />
+                  <small v-if="errors.postal_code" class="p-error">{{ errors.postal_code }}</small>
+                </div>
 
-              <!-- Country -->
-              <div class="form-group">
-                <label for="country">Paese</label>
-                <PrimeInputText
-                  id="country"
-                  v-model="form.billing_data.country"
-                  class="w-full"
-                  disabled
-                />
-              </div>
+                <!-- Country -->
+                <div class="form-group">
+                  <label for="country">Paese</label>
+                  <PrimeInputText
+                    id="country"
+                    v-model="form.billing_data.country"
+                    class="w-full"
+                    disabled
+                  />
+                </div>
 
-              <!-- SDI Code -->
-              <div class="form-group">
-                <label for="sdi_code">Codice SDI</label>
-                <PrimeInputText
-                  id="sdi_code"
-                  v-model="form.billing_data.sdi_code"
-                  :class="{ 'p-invalid': errors.sdi_code }"
-                  class="w-full"
-                  maxlength="7"
-                  @blur="onBlur('sdi_code', form.billing_data.sdi_code)"
-                />
-                <small v-if="errors.sdi_code" class="p-error">{{ errors.sdi_code }}</small>
-              </div>
+                <!-- SDI Code -->
+                <div class="form-group">
+                  <label for="sdi_code">Codice SDI</label>
+                  <PrimeInputText
+                    id="sdi_code"
+                    v-model="form.billing_data.sdi_code"
+                    :class="{ 'p-invalid': errors.sdi_code }"
+                    class="w-full"
+                    maxlength="7"
+                    @blur="onBlur('sdi_code', form.billing_data.sdi_code)"
+                  />
+                  <small v-if="errors.sdi_code" class="p-error">{{ errors.sdi_code }}</small>
+                </div>
 
-              <!-- PEC -->
-              <div class="form-group">
-                <label for="pec">PEC</label>
-                <PrimeInputText
-                  id="pec"
-                  v-model="form.billing_data.pec"
-                  :class="{ 'p-invalid': errors.pec }"
-                  class="w-full"
-                  @blur="onBlur('pec', form.billing_data.pec)"
-                />
-                <small v-if="errors.pec" class="p-error">{{ errors.pec }}</small>
+                <!-- PEC -->
+                <div class="form-group">
+                  <label for="pec">PEC</label>
+                  <PrimeInputText
+                    id="pec"
+                    v-model="form.billing_data.pec"
+                    :class="{ 'p-invalid': errors.pec }"
+                    class="w-full"
+                    @blur="onBlur('pec', form.billing_data.pec)"
+                  />
+                  <small v-if="errors.pec" class="p-error">{{ errors.pec }}</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dati Bancari -->
+            <div class="pt-6 border-t border-neutral-200">
+              <h4 class="text-base font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                <i class="pi pi-wallet text-primary-500"></i>
+                Dati Bancari (Pagamenti Diretti)
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- IBAN -->
+                <div class="form-group md:col-span-2">
+                  <label for="iban">IBAN</label>
+                  <PrimeInputText
+                    id="iban"
+                    v-model="form.bank_data.iban"
+                    class="w-full"
+                    placeholder="IT60X0542811101000000123456"
+                  />
+                  <small class="form-hint">Inserisci l'IBAN per i pagamenti diretti</small>
+                </div>
+
+                <!-- Bank Account Holder -->
+                <div class="form-group">
+                  <label for="bank_account_holder">Intestatario Conto</label>
+                  <PrimeInputText
+                    id="bank_account_holder"
+                    v-model="form.bank_data.bank_account_holder"
+                    class="w-full"
+                    placeholder="Nome e cognome o ragione sociale"
+                  />
+                </div>
+
+                <!-- Bank Name -->
+                <div class="form-group">
+                  <label for="bank_name">Nome Banca</label>
+                  <PrimeInputText
+                    id="bank_name"
+                    v-model="form.bank_data.bank_name"
+                    class="w-full"
+                    placeholder="es. Intesa Sanpaolo"
+                  />
+                </div>
+
+                <!-- BIC/SWIFT -->
+                <div class="form-group">
+                  <label for="bic_swift">BIC/SWIFT</label>
+                  <PrimeInputText
+                    id="bic_swift"
+                    v-model="form.bank_data.bic_swift"
+                    class="w-full"
+                    placeholder="es. BCITITMM"
+                  />
+                  <small class="form-hint">Opzionale - per pagamenti internazionali</small>
+                </div>
               </div>
             </div>
 
@@ -565,68 +651,113 @@ onMounted(() => {
         <!-- Tab: Impostazioni -->
         <PrimeTabPanel value="2" header="Impostazioni">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Status -->
+            <!-- Categorie di Interesse -->
+            <div>
+              <h4 class="text-base font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                <i class="pi pi-tags text-primary-500"></i>
+                Categorie di Interesse
+              </h4>
               <div class="form-group">
-                <label for="status">Stato Account</label>
-                <PrimeSelect
-                  id="status"
-                  v-model="form.status"
-                  :options="statusOptions"
-                  optionLabel="label"
-                  optionValue="value"
+                <label for="category_ids">Seleziona le categorie lead di interesse del cliente</label>
+                <PrimeMultiSelect
+                  id="category_ids"
+                  v-model="form.category_ids"
+                  :options="categories"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Seleziona una o più categorie..."
                   class="w-full"
-                />
-              </div>
-
-              <!-- Free Trial Leads -->
-              <div class="form-group">
-                <label for="free_trial_leads">Lead Prova Gratuita</label>
-                <div class="flex gap-2">
-                  <PrimeInputNumber
-                    id="free_trial_leads"
-                    v-model="form.free_trial_leads_total"
-                    :min="client.free_trial_leads_used"
-                    :max="100"
-                    :disabled="!form.free_trial_enabled"
-                    class="flex-1"
-                  />
-                  <span class="text-sm text-neutral-500 self-center">
-                    ({{ client.free_trial_leads_used }} già usati)
-                  </span>
-                </div>
-              </div>
-
-              <!-- Free Trial Toggle -->
-              <div class="form-group">
-                <div class="flex items-center gap-3">
-                  <PrimeToggleSwitch
-                    id="free_trial_enabled"
-                    v-model="form.free_trial_enabled"
-                  />
-                  <label for="free_trial_enabled" class="cursor-pointer mb-0">
-                    Abilita prova gratuita
-                  </label>
-                </div>
+                  display="chip"
+                  :filter="true"
+                  filterPlaceholder="Cerca categoria..."
+                >
+                  <template #option="slotProps">
+                    <div class="flex items-center gap-2">
+                      <span>{{ slotProps.option.name }}</span>
+                      <PrimeTag
+                        v-if="!slotProps.option.is_active"
+                        value="Inattiva"
+                        severity="danger"
+                        class="text-xs"
+                      />
+                    </div>
+                  </template>
+                </PrimeMultiSelect>
                 <small class="form-hint">
-                  Se attiva, il cliente può riscattare lead gratuiti
+                  Il cliente riceverà notifiche solo per i lead delle categorie selezionate
                 </small>
               </div>
+            </div>
 
-              <!-- Notify New Leads -->
-              <div class="form-group">
-                <div class="flex items-center gap-3">
-                  <PrimeToggleSwitch
-                    id="notify_new_leads"
-                    v-model="form.notify_new_leads"
+            <!-- Impostazioni Account -->
+            <div class="pt-6 border-t border-neutral-200">
+              <h4 class="text-base font-semibold text-neutral-800 mb-4 flex items-center gap-2">
+                <i class="pi pi-cog text-primary-500"></i>
+                Impostazioni Account
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Status -->
+                <div class="form-group">
+                  <label for="status">Stato Account</label>
+                  <PrimeSelect
+                    id="status"
+                    v-model="form.status"
+                    :options="statusOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    class="w-full"
                   />
-                  <label for="notify_new_leads" class="cursor-pointer mb-0">
-                    Notifiche nuovi lead
-                  </label>
                 </div>
-                <small class="form-hint">
-                  Riceve email quando sono disponibili nuovi lead
-                </small>
+
+                <!-- Free Trial Leads -->
+                <div class="form-group">
+                  <label for="free_trial_leads">Lead Prova Gratuita</label>
+                  <div class="flex gap-2">
+                    <PrimeInputNumber
+                      id="free_trial_leads"
+                      v-model="form.free_trial_leads_total"
+                      :min="client.free_trial_leads_used"
+                      :max="100"
+                      :disabled="!form.free_trial_enabled"
+                      class="flex-1"
+                    />
+                    <span class="text-sm text-neutral-500 self-center">
+                      ({{ client.free_trial_leads_used }} già usati)
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Free Trial Toggle -->
+                <div class="form-group">
+                  <div class="flex items-center gap-3">
+                    <PrimeToggleSwitch
+                      id="free_trial_enabled"
+                      v-model="form.free_trial_enabled"
+                    />
+                    <label for="free_trial_enabled" class="cursor-pointer mb-0">
+                      Abilita prova gratuita
+                    </label>
+                  </div>
+                  <small class="form-hint">
+                    Se attiva, il cliente può riscattare lead gratuiti
+                  </small>
+                </div>
+
+                <!-- Notify New Leads -->
+                <div class="form-group">
+                  <div class="flex items-center gap-3">
+                    <PrimeToggleSwitch
+                      id="notify_new_leads"
+                      v-model="form.notify_new_leads"
+                    />
+                    <label for="notify_new_leads" class="cursor-pointer mb-0">
+                      Notifiche nuovi lead
+                    </label>
+                  </div>
+                  <small class="form-hint">
+                    Riceve email quando sono disponibili nuovi lead
+                  </small>
+                </div>
               </div>
             </div>
 

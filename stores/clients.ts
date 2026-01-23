@@ -54,6 +54,13 @@ const mockClients: Client[] = [
       sdi_code: 'XXXXXXX',
       pec: 'alpha@pec.it'
     },
+    bank_data: {
+      iban: 'IT60X0542811101000000123456',
+      bank_account_holder: 'Azienda Alpha Srl',
+      bic_swift: 'BPPIITRRXXX',
+      bank_name: 'Banca Popolare di Milano'
+    },
+    category_ids: [1, 2],
     terms_accepted: true,
     privacy_accepted: true,
     marketing_consent: true,
@@ -83,6 +90,13 @@ const mockClients: Client[] = [
       sdi_code: 'YYYYYYY',
       pec: 'beta@pec.it'
     },
+    bank_data: {
+      iban: 'IT40S0300203280123456789012',
+      bank_account_holder: 'Beta Solutions SpA',
+      bic_swift: 'UNCRITM1XXX',
+      bank_name: 'UniCredit'
+    },
+    category_ids: [1, 3, 4],
     terms_accepted: true,
     privacy_accepted: true,
     marketing_consent: false,
@@ -112,6 +126,8 @@ const mockClients: Client[] = [
       sdi_code: '',
       pec: 'gamma@pec.it'
     },
+    bank_data: null,
+    category_ids: [2],
     terms_accepted: true,
     privacy_accepted: true,
     marketing_consent: true,
@@ -141,6 +157,13 @@ const mockClients: Client[] = [
       sdi_code: 'ZZZZZZZ',
       pec: ''
     },
+    bank_data: {
+      iban: 'IT15T0306909606100000016746',
+      bank_account_holder: 'Delta Corp',
+      bic_swift: '',
+      bank_name: 'Intesa Sanpaolo'
+    },
+    category_ids: [],
     terms_accepted: true,
     privacy_accepted: true,
     marketing_consent: false,
@@ -170,6 +193,13 @@ const mockClients: Client[] = [
       sdi_code: 'AAAAAAA',
       pec: 'epsilon@pec.it'
     },
+    bank_data: {
+      iban: 'IT28W8000000292100645211151',
+      bank_account_holder: 'Epsilon Ltd',
+      bic_swift: 'BPMOIT22XXX',
+      bank_name: 'Banco BPM'
+    },
+    category_ids: [1, 2, 3],
     terms_accepted: true,
     privacy_accepted: true,
     marketing_consent: true,
@@ -199,6 +229,8 @@ const mockClients: Client[] = [
       sdi_code: 'BBBBBBB',
       pec: 'zeta@pec.it'
     },
+    bank_data: null,
+    category_ids: [4],
     terms_accepted: true,
     privacy_accepted: true,
     marketing_consent: false,
@@ -430,6 +462,8 @@ export const useClientStore = defineStore('client', {
             free_trial_leads_total: data.free_trial_leads_total,
             free_trial_leads_used: 0,
             billing_data: data.billing_data,
+            bank_data: data.bank_data || null,
+            category_ids: data.category_ids || [],
             terms_accepted: true,
             privacy_accepted: true,
             marketing_consent: false,

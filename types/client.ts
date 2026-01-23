@@ -23,6 +23,13 @@ export interface BillingData {
   pec?: string
 }
 
+export interface BankData {
+  iban?: string
+  bank_account_holder?: string
+  bic_swift?: string
+  bank_name?: string
+}
+
 export interface Client {
   id: number
   company_name: string
@@ -36,6 +43,8 @@ export interface Client {
   free_trial_leads_total: number
   free_trial_leads_used: number
   billing_data: BillingData | null
+  bank_data: BankData | null
+  category_ids: number[]
   terms_accepted: boolean
   privacy_accepted: boolean
   marketing_consent: boolean
@@ -58,6 +67,8 @@ export interface ClientCreateForm {
   free_trial_enabled: boolean
   free_trial_leads_total: number
   billing_data: BillingData
+  bank_data: BankData
+  category_ids: number[]
   notify_new_leads: boolean
 }
 
@@ -72,6 +83,8 @@ export interface ClientUpdateForm {
   free_trial_enabled: boolean
   free_trial_leads_total: number
   billing_data: BillingData
+  bank_data: BankData
+  category_ids: number[]
   notify_new_leads: boolean
 }
 

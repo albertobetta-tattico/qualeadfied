@@ -4,7 +4,7 @@
  */
 
 import { ref, reactive, computed } from 'vue'
-import type { Client, ClientCreateForm, ClientUpdateForm, BillingData } from '~/types/client'
+import type { Client, ClientCreateForm, ClientUpdateForm, BillingData, BankData } from '~/types/client'
 
 /**
  * Validazione campi cliente
@@ -317,6 +317,13 @@ export function useClientForm(initialData?: Client) {
     pec: ''
   }
 
+  const defaultBankData: BankData = {
+    iban: '',
+    bank_account_holder: '',
+    bic_swift: '',
+    bank_name: ''
+  }
+
   const form = reactive<ClientCreateForm>({
     company_name: initialData?.company_name || '',
     vat_number: initialData?.vat_number || '',
@@ -330,6 +337,8 @@ export function useClientForm(initialData?: Client) {
     free_trial_enabled: initialData?.free_trial_enabled ?? true,
     free_trial_leads_total: initialData?.free_trial_leads_total || 3,
     billing_data: initialData?.billing_data || { ...defaultBillingData },
+    bank_data: initialData?.bank_data || { ...defaultBankData },
+    category_ids: initialData?.category_ids || [],
     notify_new_leads: initialData?.notify_new_leads ?? true
   })
 
@@ -346,6 +355,8 @@ export function useClientForm(initialData?: Client) {
     form.free_trial_enabled = initialData?.free_trial_enabled ?? true
     form.free_trial_leads_total = initialData?.free_trial_leads_total || 3
     form.billing_data = initialData?.billing_data || { ...defaultBillingData }
+    form.bank_data = initialData?.bank_data || { ...defaultBankData }
+    form.category_ids = initialData?.category_ids || []
     form.notify_new_leads = initialData?.notify_new_leads ?? true
   }
 

@@ -5,6 +5,7 @@
  */
 import { useRegisterValidation, useAuthToast, usePasswordStrength } from '~/composables/useAuth'
 import type { RegisterForm } from '~/types/auth'
+import type { Category } from '~/types/catalog'
 
 definePageMeta({
   layout: 'public'
@@ -12,9 +13,13 @@ definePageMeta({
 
 const router = useRouter()
 const authStore = useAuthStore()
+const catalogStore = useCatalogStore()
 const { errors, hasErrors, validateField, validateForm, clearErrors } = useRegisterValidation()
 const { showError, showSuccess, showInfo } = useAuthToast()
 const { getStrength } = usePasswordStrength()
+
+// Categories
+const categories = computed(() => catalogStore.categories.filter(c => c.is_active))
 
 // Form data
 const form = reactive<RegisterForm>({
@@ -28,7 +33,8 @@ const form = reactive<RegisterForm>({
   password_confirmation: '',
   terms_accepted: false,
   privacy_accepted: false,
-  marketing_consent: false
+  marketing_consent: false,
+  category_ids: []
 })
 
 // Step state (for multi-step form)
@@ -105,6 +111,7 @@ const handleSubmit = async () => {
 // Format VAT number as user types
 const formatVatNumber = (event: Event) => {
   const input = event.target as HTMLInputElement
+
   let value = input.value.replace(/[^0-9]/g, '')
 
   // Limit to 11 digits
@@ -115,10 +122,14 @@ const formatVatNumber = (event: Event) => {
   form.vat_number = value
 }
 
-// Check if user is already logged in
+// Check if user is already logged in & load categories
 onMounted(async () => {
   if (authStore.isLoggedIn) {
     router.push('/dashboard')
+  }
+  // Load categories for selection
+  if (catalogStore.categories.length === 0) {
+    await catalogStore.fetchCategories()
   }
 })
 </script>
@@ -274,6 +285,29 @@ onMounted(async () => {
                     class="w-full"
                   />
                   <small v-if="errors.phone" class="p-error">{{ errors.phone }}</small>
+                </div>
+
+                <!-- Categories Selection -->
+                <div class="form-group">
+                  <label for="category_ids">
+                    <i class="pi pi-tags mr-1"></i>
+                    Categorie di interesse
+                  </label>
+                  <PrimeMultiSelect
+                    id="category_ids"
+                    v-model="form.category_ids"
+                    :options="categories"
+                    optionLabel="name"
+                    optionValue="id"
+                    placeholder="Seleziona le categorie di tuo interesse..."
+                    class="w-full"
+                    display="chip"
+                    :filter="true"
+                    filterPlaceholder="Cerca categoria..."
+                  />
+                  <small class="field-hint">
+                    Riceverai notifiche per i lead disponibili nelle categorie selezionate
+                  </small>
                 </div>
 
                 <div class="form-buttons">

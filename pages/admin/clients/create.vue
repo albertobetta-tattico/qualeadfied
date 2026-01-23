@@ -4,7 +4,8 @@
  * Form per la creazione di un nuovo cliente B2B
  */
 import { useClientValidation, useClientForm, useClientActions } from '~/composables/useClient'
-import type { ClientCreateForm, BillingData } from '~/types/client'
+import type { ClientCreateForm, BillingData, BankData } from '~/types/client'
+import type { Category } from '~/types/catalog'
 
 definePageMeta({
   layout: 'admin'
@@ -12,9 +13,19 @@ definePageMeta({
 
 // Store & Composables
 const clientStore = useClientStore()
+const catalogStore = useCatalogStore()
 const router = useRouter()
 const { errors, hasErrors, validateField, validateForm, clearErrors } = useClientValidation()
 const { showSuccess, showError } = useClientActions()
+
+// Load categories
+const categories = computed(() => catalogStore.categories)
+
+onMounted(async () => {
+  if (categories.value.length === 0) {
+    await catalogStore.fetchCategories()
+  }
+})
 
 // Form State
 const form = reactive<ClientCreateForm>({
@@ -38,6 +49,13 @@ const form = reactive<ClientCreateForm>({
     sdi_code: '',
     pec: ''
   },
+  bank_data: {
+    iban: '',
+    bank_account_holder: '',
+    bic_swift: '',
+    bank_name: ''
+  },
+  category_ids: [],
   notify_new_leads: true
 })
 
@@ -372,6 +390,107 @@ const onCancel = () => {
               />
               <small v-if="errors.pec" class="p-error">{{ errors.pec }}</small>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank Data Card -->
+      <div class="q-card">
+        <div class="q-card-header">
+          <h3 class="card-title">
+            <i class="pi pi-wallet mr-2 text-primary-500"></i>
+            Dati Bancari (Pagamenti Diretti)
+          </h3>
+        </div>
+        <div class="q-card-body">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- IBAN -->
+            <div class="form-group md:col-span-2">
+              <label for="iban">IBAN</label>
+              <PrimeInputText
+                id="iban"
+                v-model="form.bank_data.iban"
+                class="w-full"
+                placeholder="IT60X0542811101000000123456"
+              />
+              <small class="form-hint">Inserisci l'IBAN per i pagamenti diretti</small>
+            </div>
+
+            <!-- Bank Account Holder -->
+            <div class="form-group">
+              <label for="bank_account_holder">Intestatario Conto</label>
+              <PrimeInputText
+                id="bank_account_holder"
+                v-model="form.bank_data.bank_account_holder"
+                class="w-full"
+                placeholder="Nome e cognome o ragione sociale"
+              />
+            </div>
+
+            <!-- Bank Name -->
+            <div class="form-group">
+              <label for="bank_name">Nome Banca</label>
+              <PrimeInputText
+                id="bank_name"
+                v-model="form.bank_data.bank_name"
+                class="w-full"
+                placeholder="es. Intesa Sanpaolo"
+              />
+            </div>
+
+            <!-- BIC/SWIFT -->
+            <div class="form-group">
+              <label for="bic_swift">BIC/SWIFT</label>
+              <PrimeInputText
+                id="bic_swift"
+                v-model="form.bank_data.bic_swift"
+                class="w-full"
+                placeholder="es. BCITITMM"
+              />
+              <small class="form-hint">Opzionale - per pagamenti internazionali</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Card -->
+      <div class="q-card">
+        <div class="q-card-header">
+          <h3 class="card-title">
+            <i class="pi pi-tags mr-2 text-primary-500"></i>
+            Categorie di Interesse
+          </h3>
+        </div>
+        <div class="q-card-body">
+          <div class="form-group">
+            <label for="category_ids">Seleziona le categorie lead di interesse del cliente</label>
+            <PrimeMultiSelect
+              id="category_ids"
+              v-model="form.category_ids"
+              :options="categories"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Seleziona una o più categorie..."
+              class="w-full"
+              display="chip"
+              :filter="true"
+              filterPlaceholder="Cerca categoria..."
+            >
+              <template #option="slotProps">
+                <div class="flex items-center gap-2">
+                  <span>{{ slotProps.option.name }}</span>
+                  <PrimeTag
+                    v-if="!slotProps.option.is_active"
+                    value="Inattiva"
+                    severity="danger"
+                    class="text-xs"
+                  />
+                </div>
+              </template>
+            </PrimeMultiSelect>
+            <small class="form-hint">
+              Il cliente riceverà notifiche solo per i lead delle categorie selezionate
+            </small>
           </div>
         </div>
       </div>
