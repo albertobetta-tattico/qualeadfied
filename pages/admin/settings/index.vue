@@ -56,6 +56,12 @@ const {
   activityEntityOptions
 } = useSettingsOptions()
 const { errors, hasErrors, validateForm, clearErrors } = useOperatorValidation()
+const router = useRouter()
+
+// Navigation
+const navigateToSources = () => {
+  router.push('/admin/leads/sources')
+}
 
 // Refs
 const activeTab = ref(0)
@@ -339,6 +345,15 @@ onMounted(() => {
       <div class="page-header-left">
         <h1 class="page-title">Impostazioni</h1>
         <p class="page-subtitle">Configurazione sistema, notifiche e gestione operatori</p>
+      </div>
+      <div class="page-header-actions">
+        <PrimeButton
+          label="Sorgenti Lead"
+          icon="pi pi-link"
+          severity="secondary"
+          outlined
+          @click="navigateToSources"
+        />
       </div>
     </div>
 

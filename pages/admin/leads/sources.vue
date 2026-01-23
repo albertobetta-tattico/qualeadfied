@@ -2,20 +2,18 @@
   <div class="leads-sources-page">
     <!-- Page Header -->
     <div class="page-header">
-      <div class="page-header-content">
-        <div>
-          <h1 class="page-title">API & Sorgenti Lead</h1>
-          <p class="page-subtitle">
-            Gestisci le fonti di acquisizione lead e le relative API key
-          </p>
-        </div>
-        <div class="page-actions">
-          <Button
-            label="Nuova Sorgente"
-            icon="pi pi-plus"
-            @click="openCreateDialog"
-          />
-        </div>
+      <div class="page-header-left">
+        <h1 class="page-title">API & Sorgenti Lead</h1>
+        <p class="page-subtitle">
+          Gestisci le fonti di acquisizione lead e le relative API key
+        </p>
+      </div>
+      <div class="page-header-actions">
+        <PrimeButton
+          label="Nuova Sorgente"
+          icon="pi pi-plus"
+          @click="openCreateDialog"
+        />
       </div>
     </div>
 
@@ -63,7 +61,7 @@
     </div>
 
     <!-- Info Banner -->
-    <Message severity="info" :closable="false" class="mb-6">
+    <PrimeMessage severity="info" :closable="false" class="mb-6">
       <div class="flex items-center gap-2">
         <i class="pi pi-info-circle"></i>
         <span>
@@ -71,12 +69,12 @@
           Ogni sorgente può avere una propria API key univoca.
         </span>
       </div>
-    </Message>
+    </PrimeMessage>
 
     <!-- Sources Table -->
-    <Card class="q-card">
+    <PrimeCard class="q-card">
       <template #content>
-        <DataTable
+        <PrimeDataTable
           :value="sources"
           :loading="loading"
           dataKey="id"
@@ -92,7 +90,7 @@
               </div>
               <h3>Nessuna sorgente configurata</h3>
               <p>Crea la prima sorgente per iniziare a ricevere lead via API</p>
-              <Button
+              <PrimeButton
                 label="Crea Sorgente"
                 icon="pi pi-plus"
                 @click="openCreateDialog"
@@ -101,7 +99,7 @@
           </template>
 
           <!-- Nome -->
-          <Column field="name" header="Nome" :sortable="true" style="min-width: 200px">
+          <PrimeColumn field="name" header="Nome" :sortable="true" style="min-width: 200px">
             <template #body="{ data }">
               <div class="source-name">
                 <div class="source-icon" :class="data.is_active ? 'active' : 'inactive'">
@@ -113,24 +111,24 @@
                 </div>
               </div>
             </template>
-          </Column>
+          </PrimeColumn>
 
           <!-- Descrizione -->
-          <Column field="description" header="Descrizione" style="min-width: 250px">
+          <PrimeColumn field="description" header="Descrizione" style="min-width: 250px">
             <template #body="{ data }">
               <span class="text-gray-600">{{ data.description || '-' }}</span>
             </template>
-          </Column>
+          </PrimeColumn>
 
           <!-- API Key -->
-          <Column header="API Key" style="min-width: 300px">
+          <PrimeColumn header="API Key" style="min-width: 300px">
             <template #body="{ data }">
               <div v-if="data.api_key" class="api-key-field">
                 <code class="api-key-code">
                   {{ showApiKey[data.id] ? data.api_key : maskApiKey(data.api_key) }}
                 </code>
                 <div class="api-key-actions">
-                  <Button
+                  <PrimeButton
                     :icon="showApiKey[data.id] ? 'pi pi-eye-slash' : 'pi pi-eye'"
                     text
                     rounded
@@ -138,7 +136,7 @@
                     @click="toggleApiKeyVisibility(data.id)"
                     v-tooltip.top="showApiKey[data.id] ? 'Nascondi' : 'Mostra'"
                   />
-                  <Button
+                  <PrimeButton
                     icon="pi pi-copy"
                     text
                     rounded
@@ -146,7 +144,7 @@
                     @click="copyApiKey(data.api_key)"
                     v-tooltip.top="'Copia'"
                   />
-                  <Button
+                  <PrimeButton
                     icon="pi pi-refresh"
                     text
                     rounded
@@ -159,38 +157,38 @@
               </div>
               <span v-else class="text-gray-400 italic">Non configurata</span>
             </template>
-          </Column>
+          </PrimeColumn>
 
           <!-- Lead Count -->
-          <Column header="Lead" style="width: 100px">
+          <PrimeColumn header="Lead" style="width: 100px">
             <template #body="{ data }">
-              <Tag :value="getLeadCountBySource(data.id)" rounded />
+              <PrimeTag :value="getLeadCountBySource(data.id)" rounded />
             </template>
-          </Column>
+          </PrimeColumn>
 
           <!-- Stato -->
-          <Column field="is_active" header="Stato" style="width: 120px">
+          <PrimeColumn field="is_active" header="Stato" style="width: 120px">
             <template #body="{ data }">
-              <Tag
+              <PrimeTag
                 :value="data.is_active ? 'Attiva' : 'Inattiva'"
                 :severity="data.is_active ? 'success' : 'secondary'"
                 :icon="data.is_active ? 'pi pi-check' : 'pi pi-times'"
               />
             </template>
-          </Column>
+          </PrimeColumn>
 
           <!-- Data Creazione -->
-          <Column field="created_at" header="Creata" :sortable="true" style="width: 130px">
+          <PrimeColumn field="created_at" header="Creata" :sortable="true" style="width: 130px">
             <template #body="{ data }">
               <span class="text-gray-600">{{ formatDate(data.created_at) }}</span>
             </template>
-          </Column>
+          </PrimeColumn>
 
           <!-- Azioni -->
-          <Column header="Azioni" style="width: 120px" frozen alignFrozen="right">
+          <PrimeColumn header="Azioni" style="width: 120px" frozen alignFrozen="right">
             <template #body="{ data }">
               <div class="actions-cell">
-                <Button
+                <PrimeButton
                   icon="pi pi-pencil"
                   text
                   rounded
@@ -198,7 +196,7 @@
                   @click="openEditDialog(data)"
                   v-tooltip.top="'Modifica'"
                 />
-                <Button
+                <PrimeButton
                   icon="pi pi-trash"
                   text
                   rounded
@@ -209,13 +207,13 @@
                 />
               </div>
             </template>
-          </Column>
-        </DataTable>
+          </PrimeColumn>
+        </PrimeDataTable>
       </template>
-    </Card>
+    </PrimeCard>
 
     <!-- API Documentation -->
-    <Card class="q-card mt-6">
+    <PrimeCard class="q-card mt-6">
       <template #title>
         <div class="flex items-center gap-2">
           <i class="pi pi-book"></i>
@@ -225,7 +223,7 @@
       <template #content>
         <div class="api-docs">
           <h4 class="text-lg font-semibold mb-3">Endpoint per inserimento lead</h4>
-          
+
           <div class="code-block">
             <code>POST /api/external/leads</code>
           </div>
@@ -262,10 +260,10 @@ X-API-Key: {api_key}</pre>
           </div>
         </div>
       </template>
-    </Card>
+    </PrimeCard>
 
     <!-- Create/Edit Dialog -->
-    <Dialog
+    <PrimeDialog
       v-model:visible="dialogVisible"
       :header="isEditing ? 'Modifica Sorgente' : 'Nuova Sorgente'"
       :modal="true"
@@ -280,7 +278,7 @@ X-API-Key: {api_key}</pre>
           <label for="source-name" class="form-label required">
             Nome Sorgente
           </label>
-          <InputText
+          <PrimeInputText
             id="source-name"
             v-model="form.name"
             placeholder="Es. Meta Ads, Google Ads, Sito Web"
@@ -297,7 +295,7 @@ X-API-Key: {api_key}</pre>
           <label for="source-slug" class="form-label required">
             Slug (identificativo tecnico)
           </label>
-          <InputText
+          <PrimeInputText
             id="source-slug"
             v-model="form.slug"
             placeholder="es. meta-ads, google-ads"
@@ -317,7 +315,7 @@ X-API-Key: {api_key}</pre>
           <label for="source-description" class="form-label">
             Descrizione
           </label>
-          <Textarea
+          <PrimeTextarea
             id="source-description"
             v-model="form.description"
             placeholder="Descrizione opzionale della sorgente"
@@ -330,7 +328,7 @@ X-API-Key: {api_key}</pre>
         <!-- Stato Attivo -->
         <div class="form-group">
           <div class="flex items-center gap-3">
-            <InputSwitch v-model="form.is_active" inputId="source-active" />
+            <PrimeToggleSwitch v-model="form.is_active" inputId="source-active" />
             <label for="source-active" class="form-label mb-0 cursor-pointer">
               Sorgente attiva
             </label>
@@ -343,7 +341,7 @@ X-API-Key: {api_key}</pre>
         <!-- Genera API Key (solo per nuove sorgenti) -->
         <div v-if="!isEditing" class="form-group">
           <div class="flex items-center gap-3">
-            <Checkbox v-model="generateApiKey" inputId="generate-api-key" :binary="true" />
+            <PrimeCheckbox v-model="generateApiKey" inputId="generate-api-key" :binary="true" />
             <label for="generate-api-key" class="form-label mb-0 cursor-pointer">
               Genera API Key
             </label>
@@ -356,14 +354,14 @@ X-API-Key: {api_key}</pre>
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button
+          <PrimeButton
             label="Annulla"
             severity="secondary"
             text
             @click="closeDialog"
             :disabled="saving"
           />
-          <Button
+          <PrimeButton
             :label="isEditing ? 'Salva Modifiche' : 'Crea Sorgente'"
             :icon="saving ? 'pi pi-spinner pi-spin' : 'pi pi-check'"
             :loading="saving"
@@ -371,10 +369,10 @@ X-API-Key: {api_key}</pre>
           />
         </div>
       </template>
-    </Dialog>
+    </PrimeDialog>
 
     <!-- API Key Display Dialog -->
-    <Dialog
+    <PrimeDialog
       v-model:visible="apiKeyDialogVisible"
       header="API Key Generata"
       :modal="true"
@@ -382,14 +380,14 @@ X-API-Key: {api_key}</pre>
       :style="{ width: '550px' }"
     >
       <div class="api-key-display">
-        <Message severity="warn" :closable="false" class="mb-4">
+        <PrimeMessage severity="warn" :closable="false" class="mb-4">
           <i class="pi pi-exclamation-triangle mr-2"></i>
           Copia questa API key ora! Non sarà più visualizzabile per intero.
-        </Message>
+        </PrimeMessage>
 
         <div class="api-key-box">
           <code class="api-key-full">{{ newApiKey }}</code>
-          <Button
+          <PrimeButton
             icon="pi pi-copy"
             label="Copia"
             severity="secondary"
@@ -399,17 +397,17 @@ X-API-Key: {api_key}</pre>
       </div>
 
       <template #footer>
-        <Button
+        <PrimeButton
           label="Ho copiato la chiave"
           icon="pi pi-check"
           @click="apiKeyDialogVisible = false"
         />
       </template>
-    </Dialog>
+    </PrimeDialog>
 
     <!-- Confirm Dialog -->
-    <ConfirmDialog />
-    <Toast />
+    <PrimeConfirmDialog />
+    <PrimeToast />
   </div>
 </template>
 
@@ -671,15 +669,12 @@ onMounted(() => {
 }
 
 .page-header {
-  margin-bottom: 1.5rem;
-}
-
-.page-header-content {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-bottom: 1.5rem;
 }
 
 .page-title {

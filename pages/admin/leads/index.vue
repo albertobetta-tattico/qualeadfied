@@ -157,10 +157,6 @@ const navigateToImport = () => {
   router.push('/admin/leads/import')
 }
 
-const navigateToSources = () => {
-  router.push('/admin/leads/sources')
-}
-
 const openDeleteDialog = (lead: Lead) => {
   if (!canDelete(lead)) {
     showError('Non è possibile eliminare un lead già venduto')
@@ -266,13 +262,6 @@ onUnmounted(() => {
           severity="secondary"
           outlined
           @click="navigateToImport"
-        />
-        <PrimeButton
-          label="Sorgenti"
-          icon="pi pi-link"
-          severity="secondary"
-          outlined
-          @click="navigateToSources"
         />
         <PrimeButton
           label="Export"
