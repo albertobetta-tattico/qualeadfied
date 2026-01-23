@@ -103,7 +103,8 @@ const currentPageTitle = computed(() => {
       <!-- Logo -->
       <div class="sidebar-logo">
         <NuxtLink to="/admin">
-          <img src="/logo.png" alt="Qualeadfied" class="sidebar-logo-img" />
+          <img v-if="sidebarCollapsed" src="/logo-mini.png" alt="Qualeadfied" class="sidebar-logo-mini" />
+          <img v-else src="/logo.png" alt="Qualeadfied" class="sidebar-logo-img" />
         </NuxtLink>
       </div>
 
@@ -226,6 +227,11 @@ const currentPageTitle = computed(() => {
 
 .sidebar-logo-img {
   height: 36px;
+  width: auto;
+}
+
+.sidebar-logo-mini {
+  height: 32px;
   width: auto;
 }
 </style>
