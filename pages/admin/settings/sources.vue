@@ -3,10 +3,21 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">API & Sorgenti Lead</h1>
-        <p class="page-subtitle">
-          Gestisci le fonti di acquisizione lead e le relative API key
-        </p>
+        <PrimeButton
+          icon="pi pi-arrow-left"
+          severity="secondary"
+          text
+          rounded
+          class="back-button"
+          @click="navigateBack"
+          v-tooltip.top="'Torna a Impostazioni'"
+        />
+        <div>
+          <h1 class="page-title">API & Sorgenti Lead</h1>
+          <p class="page-subtitle">
+            Gestisci le fonti di acquisizione lead e le relative API key
+          </p>
+        </div>
       </div>
       <div class="page-header-actions">
         <PrimeButton
@@ -425,6 +436,12 @@ definePageMeta({
 
 // Store
 const leadStore = useLeadStore()
+const router = useRouter()
+
+// Navigation
+const navigateBack = () => {
+  router.push('/admin/settings')
+}
 
 // Composables
 const { errors, validateField, clearErrors, hasErrors } = useLeadSourceValidation()
@@ -675,6 +692,16 @@ onMounted(() => {
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
+}
+
+.page-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.back-button {
+  margin-top: 0.25rem;
 }
 
 .page-title {
