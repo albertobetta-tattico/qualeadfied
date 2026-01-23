@@ -246,7 +246,6 @@ watch(() => route.path, () => {
 .footer-logo-img {
   height: 36px;
   width: auto;
-  filter: brightness(0) invert(1);
 }
 
 /* Navigation */

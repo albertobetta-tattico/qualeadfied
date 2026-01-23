@@ -191,6 +191,7 @@ watch(() => route.path, () => {
       </div>
 
       <!-- Footer -->
+      <!--
       <div class="sidebar-footer">
         <NuxtLink to="/" class="sidebar-menu-item">
           <span class="sidebar-menu-icon">
@@ -199,6 +200,7 @@ watch(() => route.path, () => {
           <span class="sidebar-menu-text">Torna al sito</span>
         </NuxtLink>
       </div>
+      -->
     </aside>
 
     <!-- Main Content -->
