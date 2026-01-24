@@ -29,7 +29,6 @@ const selectedCategory = ref<number | ''>('')
 const selectedProvince = ref<number | ''>('')
 const selectedStatus = ref<ContactStatus | ''>('')
 const selectedMode = ref<'exclusive' | 'shared' | ''>('')
-const searchQuery = ref('')
 const dateRangeFilter = ref<Date[] | null>(null)
 
 // Mode options (same as /leads page)
@@ -61,7 +60,6 @@ const applyFilters = async () => {
     province_id: selectedProvince.value || undefined,
     contact_status: selectedStatus.value || undefined,
     acquisition_type: selectedMode.value || undefined,
-    search: searchQuery.value || undefined,
     purchased_from: formatDateForApi(dateRangeFilter.value?.[0]) || undefined,
     purchased_to: formatDateForApi(dateRangeFilter.value?.[1]) || undefined
   })
@@ -74,7 +72,6 @@ const resetFilters = async () => {
   selectedProvince.value = ''
   selectedStatus.value = ''
   selectedMode.value = ''
-  searchQuery.value = ''
   dateRangeFilter.value = null
   myLeadsStore.resetFilters()
   await myLeadsStore.fetchLeads()
@@ -194,7 +191,7 @@ const viewLead = (lead: MyLead) => {
     <!-- Filters -->
     <PrimeCard class="mb-6">
       <template #content>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Categoria
@@ -261,17 +258,6 @@ const viewLead = (lead: MyLead) => {
               showIcon
               showButtonBar
               @date-select="applyFilters"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Cerca
-            </label>
-            <PrimeInputText
-              v-model="searchQuery"
-              placeholder="Nome, email, telefono..."
-              class="w-full"
-              @keyup.enter="applyFilters"
             />
           </div>
           <div class="flex items-end gap-2">
