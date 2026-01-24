@@ -28,6 +28,13 @@ const selectedCategory = ref<number | ''>('')
 const selectedStatus = ref<ContactStatus | ''>('')
 const selectedAcquisitionType = ref<AcquisitionType | ''>('')
 const searchQuery = ref('')
+const dateRangeFilter = ref<Date[] | null>(null)
+
+// Helper to format Date to string for API
+const formatDateForApi = (date: Date | null | undefined): string => {
+  if (!date) return ''
+  return date.toISOString().split('T')[0]
+}
 
 // Fetch data on mount
 onMounted(async () => {
@@ -43,7 +50,9 @@ const applyFilters = async () => {
     category_id: selectedCategory.value || undefined,
     contact_status: selectedStatus.value || undefined,
     acquisition_type: selectedAcquisitionType.value || undefined,
-    search: searchQuery.value || undefined
+    search: searchQuery.value || undefined,
+    purchased_from: formatDateForApi(dateRangeFilter.value?.[0]) || undefined,
+    purchased_to: formatDateForApi(dateRangeFilter.value?.[1]) || undefined
   })
   await myLeadsStore.fetchLeads()
 }
@@ -54,6 +63,7 @@ const resetFilters = async () => {
   selectedStatus.value = ''
   selectedAcquisitionType.value = ''
   searchQuery.value = ''
+  dateRangeFilter.value = null
   myLeadsStore.resetFilters()
   await myLeadsStore.fetchLeads()
 }
@@ -163,7 +173,7 @@ const viewLead = (lead: MyLead) => {
     <!-- Filters -->
     <PrimeCard class="mb-6">
       <template #content>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Categoria
@@ -201,6 +211,21 @@ const viewLead = (lead: MyLead) => {
               optionValue="value"
               placeholder="Tipo"
               class="w-full"
+            />
+          </div>
+          <div class="lg:col-span-2">
+            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+              Data acquisto
+            </label>
+            <PrimeDatePicker
+              v-model="dateRangeFilter"
+              selectionMode="range"
+              dateFormat="dd/mm/yy"
+              placeholder="Seleziona periodo"
+              class="w-full"
+              showIcon
+              showButtonBar
+              @date-select="applyFilters"
             />
           </div>
           <div>

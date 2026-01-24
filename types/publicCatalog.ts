@@ -51,8 +51,11 @@ export interface AuthenticatedLead extends PublicLead {
 export interface PublicCatalogFilters {
   category_id?: number | ''
   province_id?: number | ''
+  mode?: 'exclusive' | 'shared' | ''
   date_from?: string
   date_to?: string
+  generated_from?: string
+  generated_to?: string
   availability?: LeadAvailability | ''
   sort_by?: 'date' | 'price'
   sort_order?: 'asc' | 'desc'

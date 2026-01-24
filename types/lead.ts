@@ -134,6 +134,7 @@ export interface LeadFilters {
   province_id?: number | ''
   source_id?: number | ''
   status?: LeadStatus | ''
+  mode?: 'exclusive' | 'shared' | ''
   date_from?: string
   date_to?: string
   generated_from?: string

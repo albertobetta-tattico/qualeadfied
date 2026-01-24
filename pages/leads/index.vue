@@ -2,6 +2,7 @@
 /**
  * Page - Authenticated Lead Catalog
  * Full catalog with pricing and add to cart functionality
+ * Table view with multi-selection for bulk cart add
  */
 definePageMeta({
   layout: 'client'
@@ -9,12 +10,37 @@ definePageMeta({
 
 const catalogStore = usePublicCatalogStore()
 const cartStore = useCartStore()
-const { formatCurrency, formatRelativeTime } = useClientFormatters()
-const { showAddedToCart, showError } = useClientToast()
+const { formatCurrency, formatRelativeTime, formatDate } = useClientFormatters()
+const { showAddedToCart, showError, showSuccess } = useClientToast()
+
+// Selected leads for bulk actions
+const selectedLeads = ref<any[]>([])
+const bulkPurchaseMode = ref<'exclusive' | 'shared'>('shared')
 
 // Filters state
 const selectedCategory = ref<number | ''>('')
 const selectedProvince = ref<number | ''>('')
+const selectedMode = ref<'exclusive' | 'shared' | ''>('')
+const dateRangeFilter = ref<Date[] | null>(null)
+
+// Mode options
+const modeOptions = [
+  { label: 'Tutte le modalità', value: '' },
+  { label: 'Esclusivo', value: 'exclusive' },
+  { label: 'Condiviso', value: 'shared' }
+]
+
+// Bulk purchase mode options
+const bulkModeOptions = [
+  { label: 'Condiviso', value: 'shared' },
+  { label: 'Esclusivo', value: 'exclusive' }
+]
+
+// Helper to format Date to string for API
+const formatDateForApi = (date: Date | null | undefined): string => {
+  if (!date) return ''
+  return date.toISOString().split('T')[0]
+}
 
 // Fetch data on mount
 onMounted(async () => {
@@ -29,7 +55,10 @@ onMounted(async () => {
 const applyFilters = async () => {
   catalogStore.setFilters({
     category_id: selectedCategory.value || undefined,
-    province_id: selectedProvince.value || undefined
+    province_id: selectedProvince.value || undefined,
+    mode: selectedMode.value || undefined,
+    generated_from: formatDateForApi(dateRangeFilter.value?.[0]) || undefined,
+    generated_to: formatDateForApi(dateRangeFilter.value?.[1]) || undefined
   })
   await catalogStore.fetchLeads()
 }
@@ -38,12 +67,14 @@ const applyFilters = async () => {
 const resetFilters = async () => {
   selectedCategory.value = ''
   selectedProvince.value = ''
+  selectedMode.value = ''
+  dateRangeFilter.value = null
   catalogStore.resetFilters()
   await catalogStore.fetchLeads()
 }
 
 // Watch filters for auto-apply
-watch([selectedCategory, selectedProvince], () => {
+watch([selectedCategory, selectedProvince, selectedMode], () => {
   applyFilters()
 })
 
@@ -53,7 +84,7 @@ const onPageChange = async (event: any) => {
   await catalogStore.fetchLeads()
 }
 
-// Add to cart
+// Add single lead to cart
 const addToCart = async (leadId: number, mode: 'exclusive' | 'shared') => {
   const success = await cartStore.addToCart({
     lead_id: leadId,
@@ -67,6 +98,44 @@ const addToCart = async (leadId: number, mode: 'exclusive' | 'shared') => {
   }
 }
 
+// Add multiple leads to cart
+const addSelectedToCart = async () => {
+  if (selectedLeads.value.length === 0) {
+    showError('Seleziona almeno un lead')
+    return
+  }
+
+  let addedCount = 0
+  let errorCount = 0
+
+  for (const lead of selectedLeads.value) {
+    // Skip leads already in cart
+    if (isInCart(lead.id)) {
+      continue
+    }
+
+    const success = await cartStore.addToCart({
+      lead_id: lead.id,
+      purchase_mode: bulkPurchaseMode.value
+    })
+
+    if (success) {
+      addedCount++
+    } else {
+      errorCount++
+    }
+  }
+
+  if (addedCount > 0) {
+    showSuccess(`${addedCount} lead aggiunti al carrello`)
+  }
+  if (errorCount > 0) {
+    showError(`${errorCount} lead non aggiunti`)
+  }
+
+  selectedLeads.value = []
+}
+
 // Check if lead is in cart
 const isInCart = (leadId: number): boolean => {
   return cartStore.isLeadInCart(leadId)
@@ -77,6 +146,23 @@ const getCartItemMode = (leadId: number): string | null => {
   const item = cartStore.getItemByLeadId(leadId)
   return item?.purchase_mode || null
 }
+
+// Computed: count of selected leads not in cart
+const selectableCount = computed(() => {
+  return selectedLeads.value.filter(lead => !isInCart(lead.id)).length
+})
+
+// Calculate bulk total price
+const bulkTotalPrice = computed(() => {
+  return selectedLeads.value
+    .filter(lead => !isInCart(lead.id))
+    .reduce((sum, lead) => {
+      const price = bulkPurchaseMode.value === 'exclusive'
+        ? lead.base_price * 3
+        : lead.base_price
+      return sum + price
+    }, 0)
+})
 </script>
 
 <template>
@@ -104,7 +190,7 @@ const getCartItemMode = (leadId: number): string | null => {
     <!-- Filters -->
     <PrimeCard class="mb-6">
       <template #content>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Categoria
@@ -131,14 +217,41 @@ const getCartItemMode = (leadId: number): string | null => {
               class="w-full"
             />
           </div>
-          <div class="md:col-span-2 flex items-end gap-2">
+          <div>
+            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+              Modalità
+            </label>
+            <PrimeSelect
+              v-model="selectedMode"
+              :options="modeOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Seleziona modalità"
+              class="w-full"
+            />
+          </div>
+          <div class="lg:col-span-2">
+            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+              Data generazione
+            </label>
+            <PrimeDatePicker
+              v-model="dateRangeFilter"
+              selectionMode="range"
+              dateFormat="dd/mm/yy"
+              placeholder="Seleziona periodo"
+              class="w-full"
+              showIcon
+              showButtonBar
+              @date-select="applyFilters"
+            />
+          </div>
+          <div class="flex items-end gap-2">
             <PrimeButton
               label="Filtra"
               icon="pi pi-search"
               @click="applyFilters"
             />
             <PrimeButton
-              label="Reset"
               icon="pi pi-times"
               severity="secondary"
               @click="resetFilters"
@@ -148,108 +261,175 @@ const getCartItemMode = (leadId: number): string | null => {
       </template>
     </PrimeCard>
 
+    <!-- Bulk Actions Bar -->
+    <Transition name="slide-down">
+      <div v-if="selectedLeads.length > 0" class="mb-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <span class="text-primary-700 dark:text-primary-300 font-medium">
+              {{ selectedLeads.length }} lead selezionati
+              <span v-if="selectableCount < selectedLeads.length" class="text-sm text-primary-500">
+                ({{ selectableCount }} acquistabili)
+              </span>
+            </span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <label class="text-sm text-primary-700 dark:text-primary-300">Modalità:</label>
+              <PrimeSelect
+                v-model="bulkPurchaseMode"
+                :options="bulkModeOptions"
+                optionLabel="label"
+                optionValue="value"
+                class="w-32"
+              />
+            </div>
+            <div class="text-right">
+              <span class="text-sm text-primary-600 dark:text-primary-400">Totale:</span>
+              <span class="ml-2 text-lg font-bold text-primary-700 dark:text-primary-300">
+                {{ formatCurrency(bulkTotalPrice) }}
+              </span>
+            </div>
+            <PrimeButton
+              :label="`Aggiungi ${selectableCount} al carrello`"
+              icon="pi pi-shopping-cart"
+              @click="addSelectedToCart"
+              :disabled="selectableCount === 0"
+            />
+            <PrimeButton
+              icon="pi pi-times"
+              severity="secondary"
+              text
+              rounded
+              @click="selectedLeads = []"
+              v-tooltip.top="'Deseleziona tutti'"
+            />
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Loading State -->
     <div v-if="catalogStore.loading" class="flex justify-center py-12">
       <PrimeProgressSpinner />
     </div>
 
-    <!-- Leads Grid -->
-    <div v-else-if="catalogStore.leads.length > 0">
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
-        <PrimeCard
-          v-for="lead in catalogStore.leads"
-          :key="lead.id"
-          class="lead-card"
+    <!-- Leads Table -->
+    <PrimeCard v-else-if="catalogStore.leads.length > 0">
+      <template #content>
+        <PrimeDataTable
+          v-model:selection="selectedLeads"
+          :value="catalogStore.leads"
+          dataKey="id"
+          :paginator="true"
+          :rows="catalogStore.pagination.per_page"
+          :totalRecords="catalogStore.pagination.total"
+          :lazy="true"
+          :rowsPerPageOptions="[10, 25, 50]"
+          stripedRows
+          class="text-sm"
+          @page="onPageChange"
         >
-          <template #header>
-            <div class="p-4 pb-0">
-              <div class="flex items-start justify-between">
-                <div class="flex items-center gap-2">
-                  <PrimeTag :value="lead.category?.name" severity="info" />
-                  <PrimeTag :value="lead.province?.code" severity="secondary" />
-                </div>
-                <span class="text-xs text-surface-400">
-                  {{ formatRelativeTime(lead.generated_at) }}
-                </span>
-              </div>
-            </div>
-          </template>
+          <!-- Checkbox Column -->
+          <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
-          <template #content>
-            <div class="space-y-3">
-              <!-- Lead Info -->
-              <div>
-                <h3 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">
-                  Lead #{{ lead.id }}
-                </h3>
-                <p class="text-sm text-surface-600 dark:text-surface-400 line-clamp-3">
-                  {{ lead.request_preview }}
-                </p>
-              </div>
+          <!-- Lead ID -->
+          <PrimeColumn field="id" header="ID" style="min-width: 80px">
+            <template #body="{ data }">
+              <span class="font-mono text-primary">#{{ data.id }}</span>
+            </template>
+          </PrimeColumn>
 
-              <!-- Availability -->
-              <div class="flex items-center gap-2 text-sm">
+          <!-- Category -->
+          <PrimeColumn header="Categoria" style="min-width: 130px">
+            <template #body="{ data }">
+              <PrimeTag :value="data.category?.name" severity="info" size="small" />
+            </template>
+          </PrimeColumn>
+
+          <!-- Province -->
+          <PrimeColumn header="Provincia" style="min-width: 100px">
+            <template #body="{ data }">
+              <span class="text-surface-700 dark:text-surface-300">
+                {{ data.province?.name }}
+                <span class="text-surface-500">({{ data.province?.code }})</span>
+              </span>
+            </template>
+          </PrimeColumn>
+
+          <!-- Request Preview -->
+          <PrimeColumn header="Richiesta" style="min-width: 250px">
+            <template #body="{ data }">
+              <p class="text-surface-600 dark:text-surface-400 line-clamp-2">
+                {{ data.request_preview }}
+              </p>
+            </template>
+          </PrimeColumn>
+
+          <!-- Availability -->
+          <PrimeColumn header="Disponibilità" style="min-width: 120px">
+            <template #body="{ data }">
+              <div class="flex items-center gap-2">
                 <i class="pi pi-users text-surface-400"></i>
                 <span class="text-surface-600 dark:text-surface-400">
-                  {{ lead.shared_slots_available }} condivisioni disponibili
+                  {{ data.shared_slots_available }} slot
                 </span>
               </div>
+            </template>
+          </PrimeColumn>
 
-              <!-- Pricing -->
-              <div class="grid grid-cols-2 gap-3 pt-3 border-t border-surface-200 dark:border-surface-700">
-                <div class="text-center p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-                  <p class="text-xs text-surface-500 mb-1">Esclusivo</p>
-                  <p class="text-lg font-bold text-primary">
-                    {{ formatCurrency(lead.base_price * 3) }}
-                  </p>
+          <!-- Date -->
+          <PrimeColumn header="Data" style="min-width: 100px">
+            <template #body="{ data }">
+              <span class="text-surface-500">{{ formatRelativeTime(data.generated_at) }}</span>
+            </template>
+          </PrimeColumn>
+
+          <!-- Pricing -->
+          <PrimeColumn header="Prezzo" style="min-width: 180px">
+            <template #body="{ data }">
+              <div class="flex gap-3">
+                <div class="text-center">
+                  <p class="text-xs text-surface-500">Esclusivo</p>
+                  <p class="font-bold text-primary">{{ formatCurrency(data.base_price * 3) }}</p>
                 </div>
-                <div class="text-center p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-                  <p class="text-xs text-surface-500 mb-1">Condiviso</p>
-                  <p class="text-lg font-bold text-surface-700 dark:text-surface-300">
-                    {{ formatCurrency(lead.base_price) }}
-                  </p>
+                <div class="text-center">
+                  <p class="text-xs text-surface-500">Condiviso</p>
+                  <p class="font-bold text-surface-700 dark:text-surface-300">{{ formatCurrency(data.base_price) }}</p>
                 </div>
               </div>
+            </template>
+          </PrimeColumn>
 
-              <!-- Actions -->
-              <div v-if="isInCart(lead.id)" class="pt-2">
-                <div class="flex items-center justify-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <i class="pi pi-check-circle text-green-500"></i>
-                  <span class="text-green-700 dark:text-green-400 font-medium">
-                    Nel carrello ({{ getCartItemMode(lead.id) === 'exclusive' ? 'Esclusivo' : 'Condiviso' }})
-                  </span>
-                </div>
+          <!-- Actions -->
+          <PrimeColumn header="Azioni" style="min-width: 200px" frozen alignFrozen="right">
+            <template #body="{ data }">
+              <div v-if="isInCart(data.id)" class="flex items-center gap-2">
+                <i class="pi pi-check-circle text-green-500"></i>
+                <span class="text-green-700 dark:text-green-400 text-sm font-medium">
+                  Nel carrello ({{ getCartItemMode(data.id) === 'exclusive' ? 'Escl.' : 'Cond.' }})
+                </span>
               </div>
-              <div v-else class="grid grid-cols-2 gap-2 pt-2">
+              <div v-else class="flex gap-2">
                 <PrimeButton
                   label="Esclusivo"
                   icon="pi pi-star"
                   size="small"
-                  @click="addToCart(lead.id, 'exclusive')"
+                  @click="addToCart(data.id, 'exclusive')"
                 />
                 <PrimeButton
                   label="Condiviso"
                   icon="pi pi-users"
                   size="small"
                   severity="secondary"
-                  @click="addToCart(lead.id, 'shared')"
+                  @click="addToCart(data.id, 'shared')"
                 />
               </div>
-            </div>
-          </template>
-        </PrimeCard>
-      </div>
-
-      <!-- Pagination -->
-      <div class="flex justify-center">
-        <PrimePaginator
-          :rows="catalogStore.pagination.per_page"
-          :totalRecords="catalogStore.pagination.total"
-          :first="(catalogStore.pagination.current_page - 1) * catalogStore.pagination.per_page"
-          @page="onPageChange"
-        />
-      </div>
-    </div>
+            </template>
+          </PrimeColumn>
+        </PrimeDataTable>
+      </template>
+    </PrimeCard>
 
     <!-- Empty State -->
     <div v-else class="text-center py-12">
@@ -270,19 +450,22 @@ const getCartItemMode = (leadId: number): string | null => {
 </template>
 
 <style scoped>
-.lead-card {
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.lead-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.line-clamp-3 {
+.line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Slide down transition */
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>

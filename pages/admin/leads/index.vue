@@ -37,11 +37,11 @@ const categoryFilter = ref<number | ''>('')
 const provinceFilter = ref<number | ''>('')
 const sourceFilter = ref<number | ''>('')
 const statusFilter = ref<LeadStatus | ''>('')
-const dateFromFilter = ref<Date | null>(null)
-const dateToFilter = ref<Date | null>(null)
+const modeFilter = ref<'exclusive' | 'shared' | ''>('')
+const dateRangeFilter = ref<Date[] | null>(null)
 
 // Helper to format Date to string for API
-const formatDateForApi = (date: Date | null): string => {
+const formatDateForApi = (date: Date | null | undefined): string => {
   if (!date) return ''
   return date.toISOString().split('T')[0]
 }
@@ -53,6 +53,13 @@ const statusOptions = [
   { label: 'Venduto Esclusivo', value: 'sold_exclusive' },
   { label: 'Condiviso', value: 'sold_shared' },
   { label: 'Esaurito', value: 'exhausted' }
+]
+
+// Mode options for dropdown
+const modeOptions = [
+  { label: 'Tutte le modalità', value: '' },
+  { label: 'Esclusivo', value: 'exclusive' },
+  { label: 'Condiviso', value: 'shared' }
 ]
 
 // Computed
@@ -110,8 +117,9 @@ const applyFilters = () => {
     province_id: provinceFilter.value,
     source_id: sourceFilter.value,
     status: statusFilter.value,
-    generated_from: formatDateForApi(dateFromFilter.value),
-    generated_to: formatDateForApi(dateToFilter.value)
+    mode: modeFilter.value,
+    generated_from: formatDateForApi(dateRangeFilter.value?.[0]),
+    generated_to: formatDateForApi(dateRangeFilter.value?.[1])
   })
   loadLeads()
 }
@@ -122,8 +130,8 @@ const clearFilters = () => {
   provinceFilter.value = ''
   sourceFilter.value = ''
   statusFilter.value = ''
-  dateFromFilter.value = null
-  dateToFilter.value = null
+  modeFilter.value = ''
+  dateRangeFilter.value = null
   leadStore.resetFilters()
   loadLeads()
 }
@@ -373,7 +381,8 @@ onUnmounted(() => {
       <!-- Expanded Filters -->
       <Transition name="slide-up">
         <div v-if="showFilters" class="mt-6 pt-6 border-t border-neutral-200">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- First row: 4 filters -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <!-- Category Filter -->
             <div class="form-group mb-0">
               <label class="text-sm font-medium text-neutral-700 mb-2 block">Categoria</label>
@@ -431,35 +440,42 @@ onUnmounted(() => {
                 @change="applyFilters"
               />
             </div>
+          </div>
 
-            <!-- Date From -->
+          <!-- Second row: Mode, Date Range, Apply Button -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Mode Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data generazione da</label>
-              <PrimeDatePicker
-                v-model="dateFromFilter"
-                dateFormat="dd/mm/yy"
-                placeholder="gg/mm/aaaa"
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">Modalità</label>
+              <PrimeSelect
+                v-model="modeFilter"
+                :options="modeOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Seleziona modalità"
                 class="w-full"
-                showIcon
-                @date-select="applyFilters"
+                @change="applyFilters"
               />
             </div>
 
-            <!-- Date To -->
-            <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data generazione a</label>
+            <!-- Date Range -->
+            <div class="form-group mb-0 lg:col-span-2">
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data generazione</label>
               <PrimeDatePicker
-                v-model="dateToFilter"
+                v-model="dateRangeFilter"
+                selectionMode="range"
                 dateFormat="dd/mm/yy"
-                placeholder="gg/mm/aaaa"
+                placeholder="Seleziona periodo"
                 class="w-full"
                 showIcon
+                showButtonBar
                 @date-select="applyFilters"
               />
             </div>
 
             <!-- Apply Button -->
-            <div class="flex items-end lg:col-span-2">
+            <div class="form-group mb-0">
+              <label class="text-sm font-medium text-neutral-700 mb-2 block invisible">Azioni</label>
               <PrimeButton
                 label="Applica Filtri"
                 icon="pi pi-check"

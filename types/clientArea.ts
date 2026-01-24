@@ -150,6 +150,8 @@ export interface MyLeadFilters {
   acquisition_type?: AcquisitionType | ''
   date_from?: string
   date_to?: string
+  purchased_from?: string
+  purchased_to?: string
   search?: string
   page?: number
   per_page?: number
