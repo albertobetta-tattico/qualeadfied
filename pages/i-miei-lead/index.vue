@@ -80,6 +80,15 @@ const onPageChange = async (event: any) => {
   await myLeadsStore.fetchLeads()
 }
 
+// Sorting
+const onSort = async (event: any) => {
+  myLeadsStore.setFilters({
+    sort_by: event.sortField,
+    sort_order: event.sortOrder === 1 ? 'asc' : 'desc'
+  })
+  await myLeadsStore.fetchLeads()
+}
+
 // Update lead status
 const updateStatus = async (lead: MyLead, status: ContactStatus) => {
   const success = await myLeadsStore.updateLead(lead.id, { contact_status: status })
@@ -273,18 +282,20 @@ const viewLead = (lead: MyLead) => {
           :lazy="true"
           :rowsPerPageOptions="[10, 25, 50]"
           stripedRows
+          removableSort
           class="text-sm"
           @page="onPageChange"
+          @sort="onSort"
         >
           <!-- Lead ID -->
-          <PrimeColumn field="id" header="ID" style="min-width: 70px">
+          <PrimeColumn field="lead.id" header="ID" sortable style="min-width: 70px">
             <template #body="{ data }">
               <span class="font-mono text-primary">#{{ data.lead.id }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Contact Name -->
-          <PrimeColumn header="Contatto" style="min-width: 180px">
+          <PrimeColumn field="lead.first_name" header="Contatto" sortable style="min-width: 180px">
             <template #body="{ data }">
               <div>
                 <p class="font-semibold text-surface-900 dark:text-surface-0">
@@ -296,7 +307,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Phone -->
-          <PrimeColumn header="Telefono" style="min-width: 120px">
+          <PrimeColumn field="lead.phone" header="Telefono" style="min-width: 120px">
             <template #body="{ data }">
               <a :href="`tel:${data.lead.phone}`" class="text-surface-700 dark:text-surface-300 hover:text-primary">
                 {{ data.lead.phone }}
@@ -305,14 +316,14 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Category -->
-          <PrimeColumn header="Categoria" style="min-width: 130px">
+          <PrimeColumn field="lead.category.name" header="Categoria" sortable style="min-width: 130px">
             <template #body="{ data }">
               <PrimeTag :value="data.lead.category?.name" severity="info" size="small" />
             </template>
           </PrimeColumn>
 
           <!-- Province -->
-          <PrimeColumn header="Provincia" style="min-width: 100px">
+          <PrimeColumn field="lead.province.name" header="Provincia" sortable style="min-width: 100px">
             <template #body="{ data }">
               <span class="text-surface-700 dark:text-surface-300">
                 {{ data.lead.province?.name }}
@@ -322,7 +333,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Contact Status -->
-          <PrimeColumn header="Stato" style="min-width: 130px">
+          <PrimeColumn field="contact_status" header="Stato" sortable style="min-width: 130px">
             <template #body="{ data }">
               <PrimeTag
                 :value="formatContactStatus(data.contact_status)"
@@ -333,7 +344,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Acquisition Type -->
-          <PrimeColumn header="Modalità" style="min-width: 100px">
+          <PrimeColumn field="acquisition_type" header="Modalità" sortable style="min-width: 100px">
             <template #body="{ data }">
               <PrimeTag
                 :value="formatAcquisitionType(data.acquisition_type)"
@@ -344,7 +355,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Purchase Price -->
-          <PrimeColumn header="Prezzo" style="min-width: 100px">
+          <PrimeColumn field="purchase_price" header="Prezzo" sortable style="min-width: 100px">
             <template #body="{ data }">
               <span class="font-semibold text-surface-900 dark:text-surface-0">
                 {{ formatCurrency(data.purchase_price) }}
@@ -353,7 +364,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Purchase Date -->
-          <PrimeColumn header="Data Acquisto" style="min-width: 120px">
+          <PrimeColumn field="purchased_at" header="Data Acquisto" sortable style="min-width: 120px">
             <template #body="{ data }">
               <span class="text-surface-500">{{ formatDate(data.purchased_at) }}</span>
             </template>

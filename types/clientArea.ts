@@ -153,6 +153,8 @@ export interface MyLeadFilters {
   purchased_from?: string
   purchased_to?: string
   search?: string
+  sort_by?: string
+  sort_order?: 'asc' | 'desc'
   page?: number
   per_page?: number
 }
