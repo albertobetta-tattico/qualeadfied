@@ -1,47 +1,44 @@
 <script setup lang="ts">
 /**
  * Page - Cart
- * Shopping cart with lead items and checkout action
+ * Shopping cart with grouped lead items and checkout action
  */
-import type { CartItem, PurchaseMode } from '~/types/clientArea'
+import type { CartGroup } from '~/types/clientArea'
 
 definePageMeta({
   layout: 'client'
 })
 
 const cartStore = useCartStore()
-const { formatCurrency, formatRelativeTime, formatPurchaseMode } = useClientFormatters()
+const { formatCurrency, formatPurchaseMode } = useClientFormatters()
 const { showSuccess, showError } = useClientToast()
-const { confirmRemoveFromCart, confirmClearCart } = useClientConfirm()
+const { confirmClearCart } = useClientConfirm()
+const confirm = useConfirm()
 
 // Fetch cart on mount
 onMounted(async () => {
   await cartStore.fetchCart()
 })
 
-// Remove item from cart
-const removeItem = (item: CartItem) => {
-  confirmRemoveFromCart(async () => {
-    const success = await cartStore.removeItem(item.id)
-    if (success) {
-      showSuccess('Lead rimosso dal carrello')
-    } else {
-      showError(cartStore.error || 'Errore nella rimozione')
+// Remove entire group from cart
+const removeGroup = (group: CartGroup) => {
+  const modeLabel = group.purchase_mode === 'exclusive' ? 'esclusivi' : 'condivisi'
+  confirm.require({
+    message: `Vuoi rimuovere tutti i ${group.totalLeads} lead ${modeLabel} della categoria "${group.category.name}"?`,
+    header: 'Rimuovi gruppo',
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: 'Rimuovi',
+    rejectLabel: 'Annulla',
+    acceptClass: 'p-button-danger',
+    accept: async () => {
+      const success = await cartStore.removeGroup(group.key)
+      if (success) {
+        showSuccess(`Gruppo rimosso (${group.totalLeads} lead)`)
+      } else {
+        showError(cartStore.error || 'Errore nella rimozione')
+      }
     }
   })
-}
-
-// Update item mode
-const updateItemMode = async (item: CartItem, mode: PurchaseMode) => {
-  if (item.purchase_mode === mode) return
-
-  const success = await cartStore.updateItem(item.id, mode)
-
-  if (success) {
-    showSuccess('Modalità aggiornata')
-  } else {
-    showError(cartStore.error || 'Errore nell\'aggiornamento')
-  }
 }
 
 // Clear cart
@@ -60,6 +57,23 @@ const clearCart = () => {
 const router = useRouter()
 const proceedToCheckout = () => {
   router.push('/checkout')
+}
+
+// Format provinces list
+const formatProvinces = (provinces: { code: string; name: string }[]): string => {
+  if (provinces.length === 0) return ''
+  if (provinces.length <= 5) {
+    return provinces.map(p => p.code).join(', ')
+  }
+  const first5 = provinces.slice(0, 5).map(p => p.code).join(', ')
+  return `${first5} e altre ${provinces.length - 5}`
+}
+
+// Build group summary text
+const buildGroupSummary = (group: CartGroup): string => {
+  const modeLabel = group.purchase_mode === 'exclusive' ? 'esclusivi' : 'condivisi'
+  const provinceCodes = formatProvinces(group.provinces)
+  return `${group.totalLeads} lead ${modeLabel} per le province: ${provinceCodes}`
 }
 </script>
 
@@ -112,69 +126,93 @@ const proceedToCheckout = () => {
 
     <!-- Cart Content -->
     <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Cart Items -->
-      <div class="lg:col-span-2">
-        <PrimeCard>
+      <!-- Cart Groups -->
+      <div class="lg:col-span-2 space-y-4">
+        <PrimeCard
+          v-for="group in cartStore.groupedItems"
+          :key="group.key"
+          class="cart-group"
+        >
           <template #content>
-            <div class="space-y-4">
-              <div
-                v-for="item in cartStore.cart.items"
-                :key="item.id"
-                class="cart-item p-4 border border-surface-200 dark:border-surface-700 rounded-lg"
-              >
-                <div class="flex flex-col md:flex-row md:items-start gap-4">
-                  <!-- Lead Info -->
-                  <div class="flex-grow">
-                    <div class="flex items-center gap-2 mb-2">
-                      <PrimeTag :value="item.lead?.category?.name" severity="info" size="small" />
-                      <PrimeTag :value="item.lead?.province?.code" severity="secondary" size="small" />
-                    </div>
-                    <h3 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">
-                      Lead #{{ item.lead_id }}
-                    </h3>
-                    <p class="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-2">
-                      {{ item.lead?.request_text_partial }}
-                    </p>
-                    <p class="text-xs text-surface-400">
-                      Generato {{ formatRelativeTime(item.lead?.generated_at || null) }}
-                    </p>
+            <div class="flex flex-col gap-4">
+              <!-- Group Header -->
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-grow">
+                  <!-- Category & Mode Badge -->
+                  <div class="flex items-center gap-2 mb-3">
+                    <PrimeTag
+                      :value="group.category.name"
+                      severity="info"
+                    />
+                    <PrimeTag
+                      :value="formatPurchaseMode(group.purchase_mode)"
+                      :severity="group.purchase_mode === 'exclusive' ? 'success' : 'warn'"
+                    />
                   </div>
 
-                  <!-- Mode Selection & Price -->
-                  <div class="flex flex-col items-end gap-3">
-                    <!-- Mode Toggle -->
-                    <PrimeSelectButton
-                      :modelValue="item.purchase_mode"
-                      :options="[
-                        { label: 'Esclusivo', value: 'exclusive' },
-                        { label: 'Condiviso', value: 'shared' }
-                      ]"
-                      optionLabel="label"
-                      optionValue="value"
-                      :allowEmpty="false"
-                      @update:modelValue="(val: 'exclusive' | 'shared') => updateItemMode(item, val)"
-                    />
+                  <!-- Summary Text -->
+                  <p class="text-surface-700 dark:text-surface-300 mb-2">
+                    Acquisto di <strong>{{ group.totalLeads }}</strong> lead categoria
+                    <strong>{{ group.category.name }}</strong>
+                    {{ group.purchase_mode === 'exclusive' ? 'esclusivi' : 'condivisi' }}
+                  </p>
 
-                    <!-- Price -->
-                    <div class="text-right">
-                      <p class="text-2xl font-bold text-primary">
-                        {{ formatCurrency(item.price) }}
-                      </p>
-                      <p class="text-xs text-surface-400">
-                        {{ formatPurchaseMode(item.purchase_mode) }}
-                      </p>
-                    </div>
-
-                    <!-- Remove Button -->
-                    <PrimeButton
-                      icon="pi pi-trash"
-                      severity="danger"
-                      text
-                      size="small"
-                      @click="removeItem(item)"
-                    />
+                  <!-- Provinces -->
+                  <div class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
+                    <i class="pi pi-map-marker"></i>
+                    <span>Province: <strong>{{ formatProvinces(group.provinces) }}</strong></span>
                   </div>
                 </div>
+
+                <!-- Price & Remove -->
+                <div class="flex flex-col items-end gap-3">
+                  <div class="text-right">
+                    <p class="text-2xl font-bold text-primary">
+                      {{ formatCurrency(group.totalPrice) }}
+                    </p>
+                    <p class="text-xs text-surface-400">
+                      {{ group.totalLeads }} lead
+                    </p>
+                  </div>
+
+                  <PrimeButton
+                    icon="pi pi-trash"
+                    label="Rimuovi gruppo"
+                    severity="danger"
+                    outlined
+                    size="small"
+                    @click="removeGroup(group)"
+                  />
+                </div>
+              </div>
+
+              <!-- Provinces Details (expandable for many provinces) -->
+              <div v-if="group.provinces.length > 5" class="provinces-detail">
+                <PrimeAccordion>
+                  <PrimeAccordionPanel value="provinces">
+                    <PrimeAccordionHeader>
+                      <span class="text-sm">Vedi tutte le {{ group.provinces.length }} province</span>
+                    </PrimeAccordionHeader>
+                    <PrimeAccordionContent>
+                      <div class="flex flex-wrap gap-2">
+                        <PrimeTag
+                          v-for="province in group.provinces"
+                          :key="province.id"
+                          :value="`${province.code} - ${province.name}`"
+                          severity="secondary"
+                          size="small"
+                        />
+                      </div>
+                    </PrimeAccordionContent>
+                  </PrimeAccordionPanel>
+                </PrimeAccordion>
+              </div>
+
+              <!-- Info note -->
+              <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-3 text-sm text-surface-600 dark:text-surface-400">
+                <i class="pi pi-info-circle mr-2"></i>
+                La rimozione elimina tutti i {{ group.totalLeads }} lead di questo gruppo.
+                Non è possibile modificare i singoli lead.
               </div>
             </div>
           </template>
@@ -270,18 +308,23 @@ const proceedToCheckout = () => {
 </template>
 
 <style scoped>
-.cart-item {
+.cart-group {
   transition: box-shadow 0.2s;
 }
 
-.cart-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.cart-group:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.provinces-detail :deep(.p-accordion-header-link) {
+  padding: 0.5rem 0;
+  background: transparent;
+  border: none;
+}
+
+.provinces-detail :deep(.p-accordion-content) {
+  padding: 0.75rem 0;
+  border: none;
+  background: transparent;
 }
 </style>

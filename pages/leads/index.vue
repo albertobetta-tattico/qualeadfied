@@ -84,6 +84,15 @@ const onPageChange = async (event: any) => {
   await catalogStore.fetchLeads()
 }
 
+// Sorting
+const onSort = async (event: any) => {
+  catalogStore.setFilters({
+    sort_by: event.sortField,
+    sort_order: event.sortOrder === 1 ? 'asc' : 'desc'
+  })
+  await catalogStore.fetchLeads()
+}
+
 // Add single lead to cart
 const addToCart = async (leadId: number, mode: 'exclusive' | 'shared') => {
   const success = await cartStore.addToCart({
@@ -327,28 +336,30 @@ const bulkTotalPrice = computed(() => {
           :lazy="true"
           :rowsPerPageOptions="[10, 25, 50]"
           stripedRows
+          removableSort
           class="text-sm"
           @page="onPageChange"
+          @sort="onSort"
         >
           <!-- Checkbox Column -->
           <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
           <!-- Lead ID -->
-          <PrimeColumn field="id" header="ID" style="min-width: 80px">
+          <PrimeColumn field="id" header="ID" sortable style="min-width: 80px">
             <template #body="{ data }">
               <span class="font-mono text-primary">#{{ data.id }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Category -->
-          <PrimeColumn header="Categoria" style="min-width: 130px">
+          <PrimeColumn field="category.name" header="Categoria" sortable style="min-width: 130px">
             <template #body="{ data }">
               <PrimeTag :value="data.category?.name" severity="info" size="small" />
             </template>
           </PrimeColumn>
 
           <!-- Province -->
-          <PrimeColumn header="Provincia" style="min-width: 100px">
+          <PrimeColumn field="province.name" header="Provincia" sortable style="min-width: 100px">
             <template #body="{ data }">
               <span class="text-surface-700 dark:text-surface-300">
                 {{ data.province?.name }}
@@ -367,7 +378,7 @@ const bulkTotalPrice = computed(() => {
           </PrimeColumn>
 
           <!-- Availability -->
-          <PrimeColumn header="Disponibilità" style="min-width: 120px">
+          <PrimeColumn field="shared_slots_available" header="Disponibilità" sortable style="min-width: 120px">
             <template #body="{ data }">
               <div class="flex items-center gap-2">
                 <i class="pi pi-users text-surface-400"></i>
@@ -379,14 +390,14 @@ const bulkTotalPrice = computed(() => {
           </PrimeColumn>
 
           <!-- Date -->
-          <PrimeColumn header="Data" style="min-width: 100px">
+          <PrimeColumn field="generated_at" header="Data" sortable style="min-width: 100px">
             <template #body="{ data }">
               <span class="text-surface-500">{{ formatRelativeTime(data.generated_at) }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Pricing -->
-          <PrimeColumn header="Prezzo" style="min-width: 180px">
+          <PrimeColumn field="base_price" header="Prezzo" sortable style="min-width: 180px">
             <template #body="{ data }">
               <div class="flex gap-3">
                 <div class="text-center">

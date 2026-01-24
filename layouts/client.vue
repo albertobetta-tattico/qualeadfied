@@ -42,7 +42,8 @@ const menuItems = [
   { label: 'Catalogo Lead', icon: 'pi pi-search', to: '/leads' },
   { label: 'Pacchetti', icon: 'pi pi-box', to: '/pacchetti' },
   { label: 'I Miei Lead', icon: 'pi pi-list', to: '/i-miei-lead' },
-  { label: 'I Miei Ordini', icon: 'pi pi-shopping-cart', to: '/ordini' },
+  { label: 'I Miei Ordini', icon: 'pi pi-receipt', to: '/ordini' },
+  { label: 'Carrello', icon: 'pi pi-shopping-cart', to: '/carrello', badge: true },
   { label: 'Profilo', icon: 'pi pi-user', to: '/profilo' }
 ]
 
@@ -169,6 +170,7 @@ watch(() => route.path, () => {
                 <i :class="item.icon"></i>
               </span>
               <span class="sidebar-menu-text">{{ item.label }}</span>
+              <span v-if="item.badge && cartCount > 0" class="sidebar-badge">{{ cartCount }}</span>
             </NuxtLink>
           </li>
         </ul>
@@ -406,6 +408,35 @@ watch(() => route.path, () => {
 .sidebar-menu-text {
   font-size: 0.9375rem;
   font-weight: 500;
+}
+
+.sidebar-badge {
+  margin-left: auto;
+  min-width: 20px;
+  height: 20px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+.client-sidebar.collapsed .sidebar-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  font-size: 0.65rem;
+  padding: 0 4px;
+}
+
+.client-sidebar.collapsed .sidebar-menu-item {
+  position: relative;
 }
 
 /* Trial Banner in Sidebar */

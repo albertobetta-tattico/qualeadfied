@@ -7,6 +7,7 @@ import type { Category, Province } from '~/types/lead'
 import type {
   Cart,
   CartItem,
+  CartGroup,
   AddToCartRequest,
   PurchaseMode,
   CheckoutData,
@@ -113,6 +114,55 @@ export const useCartStore = defineStore('cart', {
 
     getItemByLeadId: (state) => (leadId: number): CartItem | undefined => {
       return state.items.find(item => item.lead_id === leadId)
+    },
+
+    /**
+     * Group cart items by category and purchase mode
+     */
+    groupedItems(state): CartGroup[] {
+      const groupsMap = new Map<string, CartGroup>()
+
+      for (const item of state.items) {
+        const categoryId = item.lead?.category_id || 0
+        const category = item.lead?.category
+        const key = `${categoryId}-${item.purchase_mode}`
+
+        if (!groupsMap.has(key)) {
+          groupsMap.set(key, {
+            key,
+            category: category || { id: categoryId, name: 'Sconosciuta', slug: '', max_shares: 0, is_active: true, sort_order: 0, deleted_at: null, created_at: '', updated_at: '' },
+            purchase_mode: item.purchase_mode,
+            items: [],
+            provinces: [],
+            totalLeads: 0,
+            totalPrice: 0
+          })
+        }
+
+        const group = groupsMap.get(key)!
+        group.items.push(item)
+        group.totalLeads++
+        group.totalPrice += item.price
+
+        // Add province if not already present
+        const province = item.lead?.province
+        if (province && !group.provinces.some(p => p.id === province.id)) {
+          group.provinces.push(province)
+        }
+      }
+
+      // Sort provinces alphabetically within each group
+      for (const group of groupsMap.values()) {
+        group.provinces.sort((a, b) => a.name.localeCompare(b.name))
+      }
+
+      // Return groups sorted by category name, then by purchase mode
+      return Array.from(groupsMap.values()).sort((a, b) => {
+        const categoryCompare = a.category.name.localeCompare(b.category.name)
+        if (categoryCompare !== 0) return categoryCompare
+        // exclusive first, then shared
+        return a.purchase_mode === 'exclusive' ? -1 : 1
+      })
     }
   },
 
@@ -263,6 +313,50 @@ export const useCartStore = defineStore('cart', {
         return true
       } catch (e: any) {
         this.error = e.data?.message || 'Errore nella rimozione'
+        return false
+      }
+    },
+
+    /**
+     * Remove entire group from cart
+     */
+    async removeGroup(groupKey: string): Promise<boolean> {
+      this.error = null
+
+      // Find all items in this group
+      const [categoryIdStr, purchaseMode] = groupKey.split('-')
+      const categoryId = parseInt(categoryIdStr, 10)
+      const itemsToRemove = this.items.filter(
+        item => item.lead?.category_id === categoryId && item.purchase_mode === purchaseMode
+      )
+
+      if (itemsToRemove.length === 0) {
+        return true
+      }
+
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 300))
+          const itemIds = new Set(itemsToRemove.map(i => i.id))
+          this.items = this.items.filter(i => !itemIds.has(i.id))
+          return true
+        }
+
+        // Remove all items in the group via API
+        const itemIds = itemsToRemove.map(i => i.id)
+        await $fetch('/api/client/cart/remove-batch', {
+          method: 'POST',
+          body: { item_ids: itemIds },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+          }
+        })
+
+        const itemIdsSet = new Set(itemIds)
+        this.items = this.items.filter(i => !itemIdsSet.has(i.id))
+        return true
+      } catch (e: any) {
+        this.error = e.data?.message || 'Errore nella rimozione del gruppo'
         return false
       }
     },

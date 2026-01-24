@@ -21,15 +21,23 @@ const {
   formatAcquisitionType,
   getAcquisitionTypeSeverity
 } = useClientFormatters()
-const { contactStatusOptions, acquisitionTypeOptions } = useClientFilterOptions()
+const { contactStatusOptions } = useClientFilterOptions()
 const { showSuccess, showError } = useClientToast()
 
 // Filter state
 const selectedCategory = ref<number | ''>('')
+const selectedProvince = ref<number | ''>('')
 const selectedStatus = ref<ContactStatus | ''>('')
-const selectedAcquisitionType = ref<AcquisitionType | ''>('')
+const selectedMode = ref<'exclusive' | 'shared' | ''>('')
 const searchQuery = ref('')
 const dateRangeFilter = ref<Date[] | null>(null)
+
+// Mode options (same as /leads page)
+const modeOptions = [
+  { label: 'Tutte le modalità', value: '' },
+  { label: 'Esclusivo', value: 'exclusive' },
+  { label: 'Condiviso', value: 'shared' }
+]
 
 // Helper to format Date to string for API
 const formatDateForApi = (date: Date | null | undefined): string => {
@@ -41,7 +49,8 @@ const formatDateForApi = (date: Date | null | undefined): string => {
 onMounted(async () => {
   await Promise.all([
     myLeadsStore.fetchLeads(),
-    catalogStore.fetchCategories()
+    catalogStore.fetchCategories(),
+    catalogStore.fetchProvinces()
   ])
 })
 
@@ -49,8 +58,9 @@ onMounted(async () => {
 const applyFilters = async () => {
   myLeadsStore.setFilters({
     category_id: selectedCategory.value || undefined,
+    province_id: selectedProvince.value || undefined,
     contact_status: selectedStatus.value || undefined,
-    acquisition_type: selectedAcquisitionType.value || undefined,
+    acquisition_type: selectedMode.value || undefined,
     search: searchQuery.value || undefined,
     purchased_from: formatDateForApi(dateRangeFilter.value?.[0]) || undefined,
     purchased_to: formatDateForApi(dateRangeFilter.value?.[1]) || undefined
@@ -61,8 +71,9 @@ const applyFilters = async () => {
 // Reset filters
 const resetFilters = async () => {
   selectedCategory.value = ''
+  selectedProvince.value = ''
   selectedStatus.value = ''
-  selectedAcquisitionType.value = ''
+  selectedMode.value = ''
   searchQuery.value = ''
   dateRangeFilter.value = null
   myLeadsStore.resetFilters()
@@ -70,7 +81,7 @@ const resetFilters = async () => {
 }
 
 // Watch filters
-watch([selectedCategory, selectedStatus, selectedAcquisitionType], () => {
+watch([selectedCategory, selectedProvince, selectedStatus, selectedMode], () => {
   applyFilters()
 })
 
@@ -183,7 +194,7 @@ const viewLead = (lead: MyLead) => {
     <!-- Filters -->
     <PrimeCard class="mb-6">
       <template #content>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
               Categoria
@@ -195,6 +206,20 @@ const viewLead = (lead: MyLead) => {
               optionValue="id"
               placeholder="Categoria"
               class="w-full"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+              Provincia
+            </label>
+            <PrimeSelect
+              v-model="selectedProvince"
+              :options="[{ id: '', name: 'Tutte' }, ...catalogStore.provinces]"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Provincia"
+              class="w-full"
+              filter
             />
           </div>
           <div>
@@ -212,14 +237,14 @@ const viewLead = (lead: MyLead) => {
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Tipo
+              Modalità
             </label>
             <PrimeSelect
-              v-model="selectedAcquisitionType"
-              :options="acquisitionTypeOptions"
+              v-model="selectedMode"
+              :options="modeOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Tipo"
+              placeholder="Modalità"
               class="w-full"
             />
           </div>

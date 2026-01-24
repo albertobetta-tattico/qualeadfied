@@ -41,6 +41,16 @@ export interface AddToCartRequest {
   purchase_mode: PurchaseMode
 }
 
+export interface CartGroup {
+  key: string // category_id-purchase_mode
+  category: Category
+  purchase_mode: PurchaseMode
+  items: CartItem[]
+  provinces: Province[]
+  totalLeads: number
+  totalPrice: number
+}
+
 // =============================================================================
 // CHECKOUT
 // =============================================================================
@@ -146,6 +156,7 @@ export interface MyLead {
 
 export interface MyLeadFilters {
   category_id?: number | ''
+  province_id?: number | ''
   contact_status?: ContactStatus | ''
   acquisition_type?: AcquisitionType | ''
   date_from?: string
