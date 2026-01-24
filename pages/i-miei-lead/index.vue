@@ -2,6 +2,7 @@
 /**
  * Page - My Leads
  * User's purchased leads portfolio with filtering and status management
+ * Table format with row actions
  */
 import type { MyLead, ContactStatus, AcquisitionType } from '~/types/clientArea'
 
@@ -260,118 +261,133 @@ const viewLead = (lead: MyLead) => {
       <PrimeProgressSpinner />
     </div>
 
-    <!-- Leads List -->
-    <div v-else-if="myLeadsStore.leads.length > 0">
-      <div class="space-y-4 mb-6">
-        <PrimeCard
-          v-for="lead in myLeadsStore.leads"
-          :key="lead.id"
-          class="lead-card cursor-pointer"
-          @click="viewLead(lead)"
-        >
-          <template #content>
-            <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-              <!-- Lead Info -->
-              <div class="flex-grow">
-                <div class="flex flex-wrap items-center gap-2 mb-2">
-                  <PrimeTag :value="lead.lead.category?.name" severity="info" size="small" />
-                  <PrimeTag :value="lead.lead.province?.code" severity="secondary" size="small" />
-                  <PrimeTag
-                    :value="formatContactStatus(lead.contact_status)"
-                    :severity="getContactStatusSeverity(lead.contact_status)"
-                    size="small"
-                  />
-                  <PrimeTag
-                    :value="formatAcquisitionType(lead.acquisition_type)"
-                    :severity="getAcquisitionTypeSeverity(lead.acquisition_type)"
-                    size="small"
-                  />
-                </div>
-                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">
-                  {{ lead.lead.first_name }} {{ lead.lead.last_name }}
-                </h3>
-                <p class="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-2">
-                  {{ lead.lead.request_text }}
-                </p>
-                <div class="flex flex-wrap items-center gap-4 text-sm text-surface-500">
-                  <span>
-                    <i class="pi pi-envelope mr-1"></i>
-                    {{ lead.lead.email }}
-                  </span>
-                  <span>
-                    <i class="pi pi-phone mr-1"></i>
-                    {{ lead.lead.phone }}
-                  </span>
-                </div>
-              </div>
-
-              <!-- Actions & Meta -->
-              <div class="flex flex-col items-end gap-3 lg:w-48">
-                <div class="text-right">
-                  <p class="text-lg font-bold text-surface-900 dark:text-surface-0">
-                    {{ formatCurrency(lead.purchase_price) }}
-                  </p>
-                  <p class="text-xs text-surface-400">
-                    {{ formatDate(lead.purchased_at) }}
-                  </p>
-                </div>
-
-                <!-- Quick Status Update -->
-                <div class="flex gap-1" @click.stop>
-                  <PrimeButton
-                    v-if="lead.contact_status === 'new'"
-                    icon="pi pi-phone"
-                    size="small"
-                    severity="info"
-                    rounded
-                    v-tooltip.top="'Segna come contattato'"
-                    @click="updateStatus(lead, 'contacted')"
-                  />
-                  <PrimeButton
-                    v-if="lead.contact_status !== 'converted' && lead.contact_status !== 'not_interested'"
-                    icon="pi pi-check"
-                    size="small"
-                    severity="success"
-                    rounded
-                    v-tooltip.top="'Segna come convertito'"
-                    @click="updateStatus(lead, 'converted')"
-                  />
-                  <PrimeButton
-                    icon="pi pi-eye"
-                    size="small"
-                    severity="secondary"
-                    rounded
-                    v-tooltip.top="'Vedi dettagli'"
-                    @click="viewLead(lead)"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Notes Preview -->
-            <div
-              v-if="lead.notes"
-              class="mt-3 pt-3 border-t border-surface-100 dark:border-surface-800"
-            >
-              <p class="text-sm text-surface-500">
-                <i class="pi pi-comment mr-1"></i>
-                {{ lead.notes }}
-              </p>
-            </div>
-          </template>
-        </PrimeCard>
-      </div>
-
-      <!-- Pagination -->
-      <div class="flex justify-center">
-        <PrimePaginator
+    <!-- Leads Table -->
+    <PrimeCard v-else-if="myLeadsStore.leads.length > 0">
+      <template #content>
+        <PrimeDataTable
+          :value="myLeadsStore.leads"
+          dataKey="id"
+          :paginator="true"
           :rows="myLeadsStore.pagination.per_page"
           :totalRecords="myLeadsStore.pagination.total"
-          :first="(myLeadsStore.pagination.current_page - 1) * myLeadsStore.pagination.per_page"
+          :lazy="true"
+          :rowsPerPageOptions="[10, 25, 50]"
+          stripedRows
+          class="text-sm"
           @page="onPageChange"
-        />
-      </div>
-    </div>
+        >
+          <!-- Lead ID -->
+          <PrimeColumn field="id" header="ID" style="min-width: 70px">
+            <template #body="{ data }">
+              <span class="font-mono text-primary">#{{ data.lead.id }}</span>
+            </template>
+          </PrimeColumn>
+
+          <!-- Contact Name -->
+          <PrimeColumn header="Contatto" style="min-width: 180px">
+            <template #body="{ data }">
+              <div>
+                <p class="font-semibold text-surface-900 dark:text-surface-0">
+                  {{ data.lead.first_name }} {{ data.lead.last_name }}
+                </p>
+                <p class="text-xs text-surface-500">{{ data.lead.email }}</p>
+              </div>
+            </template>
+          </PrimeColumn>
+
+          <!-- Phone -->
+          <PrimeColumn header="Telefono" style="min-width: 120px">
+            <template #body="{ data }">
+              <a :href="`tel:${data.lead.phone}`" class="text-surface-700 dark:text-surface-300 hover:text-primary">
+                {{ data.lead.phone }}
+              </a>
+            </template>
+          </PrimeColumn>
+
+          <!-- Category -->
+          <PrimeColumn header="Categoria" style="min-width: 130px">
+            <template #body="{ data }">
+              <PrimeTag :value="data.lead.category?.name" severity="info" size="small" />
+            </template>
+          </PrimeColumn>
+
+          <!-- Province -->
+          <PrimeColumn header="Provincia" style="min-width: 100px">
+            <template #body="{ data }">
+              <span class="text-surface-700 dark:text-surface-300">
+                {{ data.lead.province?.name }}
+                <span class="text-surface-500">({{ data.lead.province?.code }})</span>
+              </span>
+            </template>
+          </PrimeColumn>
+
+          <!-- Contact Status -->
+          <PrimeColumn header="Stato" style="min-width: 130px">
+            <template #body="{ data }">
+              <PrimeTag
+                :value="formatContactStatus(data.contact_status)"
+                :severity="getContactStatusSeverity(data.contact_status)"
+                size="small"
+              />
+            </template>
+          </PrimeColumn>
+
+          <!-- Acquisition Type -->
+          <PrimeColumn header="Modalità" style="min-width: 100px">
+            <template #body="{ data }">
+              <PrimeTag
+                :value="formatAcquisitionType(data.acquisition_type)"
+                :severity="getAcquisitionTypeSeverity(data.acquisition_type)"
+                size="small"
+              />
+            </template>
+          </PrimeColumn>
+
+          <!-- Purchase Price -->
+          <PrimeColumn header="Prezzo" style="min-width: 100px">
+            <template #body="{ data }">
+              <span class="font-semibold text-surface-900 dark:text-surface-0">
+                {{ formatCurrency(data.purchase_price) }}
+              </span>
+            </template>
+          </PrimeColumn>
+
+          <!-- Purchase Date -->
+          <PrimeColumn header="Data Acquisto" style="min-width: 120px">
+            <template #body="{ data }">
+              <span class="text-surface-500">{{ formatDate(data.purchased_at) }}</span>
+            </template>
+          </PrimeColumn>
+
+          <!-- Actions -->
+          <PrimeColumn header="Azioni" style="width: 80px" frozen alignFrozen="right">
+            <template #body="{ data }">
+              <div class="flex gap-1 justify-end">
+                <PrimeButton
+                  v-if="data.contact_status === 'new'"
+                  icon="pi pi-phone"
+                  size="small"
+                  severity="info"
+                  text
+                  rounded
+                  v-tooltip.top="'Segna come contattato'"
+                  @click.stop="updateStatus(data, 'contacted')"
+                />
+                <PrimeButton
+                  icon="pi pi-eye"
+                  size="small"
+                  severity="secondary"
+                  text
+                  rounded
+                  v-tooltip.top="'Vedi dettagli'"
+                  @click.stop="viewLead(data)"
+                />
+              </div>
+            </template>
+          </PrimeColumn>
+        </PrimeDataTable>
+      </template>
+    </PrimeCard>
 
     <!-- Empty State -->
     <div v-else class="text-center py-16">
@@ -395,19 +411,13 @@ const viewLead = (lead: MyLead) => {
 </template>
 
 <style scoped>
-.lead-card {
-  transition: transform 0.2s, box-shadow 0.2s;
+/* Table styling */
+:deep(.p-datatable .p-datatable-tbody > tr > td) {
+  padding: 0.75rem 1rem;
 }
 
-.lead-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+:deep(.p-datatable .p-datatable-thead > tr > th) {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
 }
 </style>

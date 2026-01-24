@@ -116,9 +116,9 @@ const copyToClipboard = (text: string, label: string) => {
       <div v-if="lead" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div class="flex flex-wrap items-center gap-2 mb-2">
-            <Tag :value="lead.lead.category?.name" severity="info" />
-            <Tag :value="lead.lead.province?.name" severity="secondary" />
-            <Tag
+            <PrimeTag :value="lead.lead.category?.name" severity="info" />
+            <PrimeTag :value="lead.lead.province?.name" severity="secondary" />
+            <PrimeTag
               :value="formatAcquisitionType(lead.acquisition_type)"
               :severity="getAcquisitionTypeSeverity(lead.acquisition_type)"
             />
@@ -136,7 +136,7 @@ const copyToClipboard = (text: string, label: string) => {
           <label class="text-sm font-medium text-surface-700 dark:text-surface-300">
             Stato:
           </label>
-          <Select
+          <PrimeSelect
             v-model="selectedStatus"
             :options="contactStatusOptions.filter(o => o.value)"
             optionLabel="label"
@@ -149,7 +149,7 @@ const copyToClipboard = (text: string, label: string) => {
 
     <!-- Loading State -->
     <div v-if="myLeadsStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Lead Content -->
@@ -157,7 +157,7 @@ const copyToClipboard = (text: string, label: string) => {
       <!-- Main Content -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Contact Information -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-user text-primary"></i>
@@ -180,7 +180,7 @@ const copyToClipboard = (text: string, label: string) => {
                     {{ lead.lead.email }}
                   </a>
                 </div>
-                <Button
+                <PrimeButton
                   icon="pi pi-copy"
                   text
                   rounded
@@ -202,7 +202,7 @@ const copyToClipboard = (text: string, label: string) => {
                     {{ lead.lead.phone }}
                   </a>
                 </div>
-                <Button
+                <PrimeButton
                   icon="pi pi-copy"
                   text
                   rounded
@@ -214,17 +214,17 @@ const copyToClipboard = (text: string, label: string) => {
             <!-- Quick Actions -->
             <div class="flex gap-2 mt-4">
               <a :href="formatEmailLink(lead.lead.email)">
-                <Button label="Invia Email" icon="pi pi-envelope" severity="secondary" />
+                <PrimeButton label="Invia Email" icon="pi pi-envelope" severity="secondary" />
               </a>
               <a :href="formatPhoneLink(lead.lead.phone)">
-                <Button label="Chiama" icon="pi pi-phone" severity="secondary" />
+                <PrimeButton label="Chiama" icon="pi pi-phone" severity="secondary" />
               </a>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Request Details -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
@@ -245,17 +245,17 @@ const copyToClipboard = (text: string, label: string) => {
               </p>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Notes -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <i class="pi pi-comment text-primary"></i>
                 Note
               </div>
-              <Button
+              <PrimeButton
                 v-if="!isEditingNotes"
                 icon="pi pi-pencil"
                 text
@@ -266,7 +266,7 @@ const copyToClipboard = (text: string, label: string) => {
           </template>
           <template #content>
             <div v-if="isEditingNotes">
-              <Textarea
+              <PrimeTextarea
                 v-model="editedNotes"
                 rows="5"
                 class="w-full"
@@ -274,12 +274,12 @@ const copyToClipboard = (text: string, label: string) => {
                 autoResize
               />
               <div class="flex justify-end gap-2 mt-3">
-                <Button
+                <PrimeButton
                   label="Annulla"
                   severity="secondary"
                   @click="cancelNotesEdit"
                 />
-                <Button
+                <PrimeButton
                   label="Salva"
                   icon="pi pi-check"
                   :loading="myLeadsStore.saving"
@@ -306,17 +306,17 @@ const copyToClipboard = (text: string, label: string) => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Sidebar -->
       <div class="space-y-4">
         <!-- Status Card -->
-        <Card>
+        <PrimeCard>
           <template #title>Stato Lead</template>
           <template #content>
             <div class="text-center py-4">
-              <Tag
+              <PrimeTag
                 :value="formatContactStatus(lead.contact_status)"
                 :severity="getContactStatusSeverity(lead.contact_status)"
                 class="text-lg px-4 py-2"
@@ -348,10 +348,10 @@ const copyToClipboard = (text: string, label: string) => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Purchase Info -->
-        <Card>
+        <PrimeCard>
           <template #title>Dettagli Acquisto</template>
           <template #content>
             <div class="space-y-3">
@@ -363,7 +363,7 @@ const copyToClipboard = (text: string, label: string) => {
               </div>
               <div class="flex justify-between">
                 <span class="text-surface-600 dark:text-surface-400">Modalità</span>
-                <Tag
+                <PrimeTag
                   :value="formatAcquisitionType(lead.acquisition_type)"
                   :severity="getAcquisitionTypeSeverity(lead.acquisition_type)"
                   size="small"
@@ -380,14 +380,14 @@ const copyToClipboard = (text: string, label: string) => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Actions -->
-        <Card>
+        <PrimeCard>
           <template #title>Azioni Rapide</template>
           <template #content>
             <div class="space-y-2">
-              <Button
+              <PrimeButton
                 v-if="lead.contact_status === 'new'"
                 label="Segna come contattato"
                 icon="pi pi-phone"
@@ -395,7 +395,7 @@ const copyToClipboard = (text: string, label: string) => {
                 severity="info"
                 @click="selectedStatus = 'contacted'"
               />
-              <Button
+              <PrimeButton
                 v-if="lead.contact_status !== 'in_progress' && lead.contact_status !== 'converted' && lead.contact_status !== 'not_interested'"
                 label="In lavorazione"
                 icon="pi pi-clock"
@@ -403,15 +403,7 @@ const copyToClipboard = (text: string, label: string) => {
                 severity="warning"
                 @click="selectedStatus = 'in_progress'"
               />
-              <Button
-                v-if="lead.contact_status !== 'converted'"
-                label="Segna come convertito"
-                icon="pi pi-check-circle"
-                class="w-full"
-                severity="success"
-                @click="selectedStatus = 'converted'"
-              />
-              <Button
+              <PrimeButton
                 v-if="lead.contact_status !== 'not_interested' && lead.contact_status !== 'converted'"
                 label="Non interessato"
                 icon="pi pi-times-circle"
@@ -422,7 +414,7 @@ const copyToClipboard = (text: string, label: string) => {
               />
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
     </div>
   </div>
