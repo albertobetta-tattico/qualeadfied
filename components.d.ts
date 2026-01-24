@@ -33,7 +33,6 @@ declare module 'vue' {
     PrimeProgressSpinner: typeof import('primevue/progressspinner')['default']
     PrimeRadioButton: typeof import('primevue/radiobutton')['default']
     PrimeSelect: typeof import('primevue/select')['default']
-    PrimeSelectButton: typeof import('primevue/selectbutton')['default']
     PrimeSplitButton: typeof import('primevue/splitbutton')['default']
     PrimeTabPanel: typeof import('primevue/tabpanel')['default']
     PrimeTabView: typeof import('primevue/tabview')['default']

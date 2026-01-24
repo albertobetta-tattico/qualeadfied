@@ -89,33 +89,50 @@ const canSelectMore = computed(() => {
   return selectedLeads.value.length < leadsRemaining.value
 })
 
-// Selection row class - disable selection if limit reached
-const rowClass = (data: any) => {
-  if (isSelected(data.id)) return ''
-  if (!canSelectMore.value) return 'row-disabled'
-  return ''
-}
-
 // Check if lead is selected
 const isSelected = (leadId: number): boolean => {
   return selectedLeads.value.some(l => l.id === leadId)
 }
 
-// Handle row selection change
-const onRowSelect = (event: any) => {
-  // If trying to select more than allowed, prevent it
-  if (selectedLeads.value.length > leadsRemaining.value) {
-    selectedLeads.value = selectedLeads.value.slice(0, leadsRemaining.value)
-    showError(`Puoi selezionare al massimo ${leadsRemaining.value} lead`)
+// Toggle lead selection
+const toggleSelection = (lead: any) => {
+  const index = selectedLeads.value.findIndex(l => l.id === lead.id)
+
+  if (index >= 0) {
+    // Already selected, remove it
+    selectedLeads.value.splice(index, 1)
+  } else {
+    // Not selected, check if we can add more
+    if (canSelectMore.value) {
+      selectedLeads.value.push(lead)
+    } else {
+      showError(`Puoi selezionare al massimo ${leadsRemaining.value} lead`)
+    }
   }
 }
 
-const onRowSelectAll = (event: any) => {
-  // Limit selection to remaining leads
-  if (selectedLeads.value.length > leadsRemaining.value) {
-    selectedLeads.value = selectedLeads.value.slice(0, leadsRemaining.value)
-    showError(`Puoi selezionare al massimo ${leadsRemaining.value} lead`)
+// Select all visible leads (up to the limit)
+const selectAllVisible = () => {
+  const availableSlots = leadsRemaining.value - selectedLeads.value.length
+  if (availableSlots <= 0) {
+    showError(`Hai già selezionato il massimo di ${leadsRemaining.value} lead`)
+    return
   }
+
+  const leadsToAdd = catalogStore.leads
+    .filter(lead => !isSelected(lead.id))
+    .slice(0, availableSlots)
+
+  selectedLeads.value.push(...leadsToAdd)
+
+  if (leadsToAdd.length < catalogStore.leads.filter(lead => !isSelected(lead.id)).length) {
+    showSuccess(`Aggiunti ${leadsToAdd.length} lead (limite raggiunto)`)
+  }
+}
+
+// Deselect all
+const deselectAll = () => {
+  selectedLeads.value = []
 }
 
 // Claim trial leads
@@ -302,6 +319,24 @@ const claimTrialLeads = () => {
         </template>
       </PrimeCard>
 
+      <!-- Limit Reached Warning -->
+      <Transition name="slide-down">
+        <div v-if="!canSelectMore && selectedLeads.length > 0" class="mb-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+          <div class="flex items-center gap-3">
+            <i class="pi pi-exclamation-triangle text-orange-600 text-xl"></i>
+            <div>
+              <p class="font-medium text-orange-700 dark:text-orange-300">
+                Limite di selezione raggiunto
+              </p>
+              <p class="text-sm text-orange-600 dark:text-orange-400">
+                Hai selezionato il massimo di {{ leadsRemaining }} lead disponibili per la prova gratuita.
+                Per selezionare altri lead, deseleziona prima quelli già scelti.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Transition>
+
       <!-- Bulk Actions Bar -->
       <Transition name="slide-down">
         <div v-if="selectedLeads.length > 0" class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
@@ -325,7 +360,7 @@ const claimTrialLeads = () => {
                 severity="secondary"
                 text
                 rounded
-                @click="selectedLeads = []"
+                @click="deselectAll"
                 v-tooltip.top="'Deseleziona tutti'"
               />
             </div>
@@ -341,8 +376,34 @@ const claimTrialLeads = () => {
       <!-- Leads Table -->
       <PrimeCard v-else-if="catalogStore.leads.length > 0">
         <template #content>
+          <!-- Table header with select all -->
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-surface-200 dark:border-surface-700">
+            <div class="flex items-center gap-3">
+              <PrimeButton
+                label="Seleziona visibili"
+                icon="pi pi-check-square"
+                size="small"
+                severity="secondary"
+                outlined
+                :disabled="!canSelectMore"
+                @click="selectAllVisible"
+              />
+              <PrimeButton
+                v-if="selectedLeads.length > 0"
+                label="Deseleziona tutti"
+                icon="pi pi-times"
+                size="small"
+                severity="secondary"
+                text
+                @click="deselectAll"
+              />
+            </div>
+            <div class="text-sm text-surface-600 dark:text-surface-400">
+              {{ selectedLeads.length }}/{{ leadsRemaining }} selezionati
+            </div>
+          </div>
+
           <PrimeDataTable
-            v-model:selection="selectedLeads"
             :value="catalogStore.leads"
             dataKey="id"
             :paginator="true"
@@ -352,24 +413,11 @@ const claimTrialLeads = () => {
             :rowsPerPageOptions="[10, 25, 50]"
             stripedRows
             removableSort
-            :rowClass="rowClass"
             class="text-sm trial-table"
             @page="onPageChange"
             @sort="onSort"
-            @row-select="onRowSelect"
-            @row-select-all="onRowSelectAll"
+            @row-click="(e) => toggleSelection(e.data)"
           >
-            <!-- Checkbox Column -->
-            <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem">
-              <template #body="{ data }">
-                <PrimeCheckbox
-                  :modelValue="isSelected(data.id)"
-                  :disabled="!canSelectMore && !isSelected(data.id)"
-                  @update:modelValue="() => {}"
-                />
-              </template>
-            </PrimeColumn>
-
             <!-- Lead ID -->
             <PrimeColumn field="id" header="ID" sortable style="min-width: 80px">
               <template #body="{ data }">
@@ -493,7 +541,7 @@ const claimTrialLeads = () => {
             <PrimeButton
               label="Annulla"
               severity="secondary"
-              @click="selectedLeads = []"
+              @click="deselectAll"
             />
             <PrimeButton
               label="Riscatta Lead"
@@ -528,14 +576,14 @@ const claimTrialLeads = () => {
   transform: translateY(-10px);
 }
 
-/* Disabled row style */
-.trial-table :deep(.row-disabled) {
-  opacity: 0.5;
-  pointer-events: none;
+/* Make rows clickable */
+.trial-table :deep(.p-datatable-tbody > tr) {
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.trial-table :deep(.row-disabled) td {
-  background-color: rgba(0, 0, 0, 0.02);
+.trial-table :deep(.p-datatable-tbody > tr:hover) {
+  background-color: rgba(59, 130, 246, 0.05) !important;
 }
 
 /* Add bottom padding when fixed bar is visible */
