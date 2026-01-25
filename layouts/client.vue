@@ -362,6 +362,9 @@ watch(() => route.path, () => {
 .sidebar-logo-mini {
   height: 32px;
   width: auto;
+  min-width: 38px;
+  position: relative;
+  left: -4px;
 }
 
 /* Navigation */

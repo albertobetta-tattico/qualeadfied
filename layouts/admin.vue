@@ -81,7 +81,7 @@ const currentPageTitle = computed(() => {
   <div class="admin-layout">
     <!-- Toast Notifications -->
     <PrimeToast position="top-right" />
-    
+
     <!-- Confirm Dialog -->
     <PrimeConfirmDialog />
 
@@ -95,9 +95,9 @@ const currentPageTitle = computed(() => {
     <!-- Sidebar -->
     <aside
       class="admin-sidebar"
-      :class="{ 
+      :class="{
         'collapsed': sidebarCollapsed,
-        'open': sidebarOpen 
+        'open': sidebarOpen
       }"
     >
       <!-- Logo -->
@@ -149,7 +149,7 @@ const currentPageTitle = computed(() => {
       <header class="admin-header">
         <div class="admin-header-left">
           <!-- Toggle Button -->
-          <button 
+          <button
             class="admin-header-toggle"
             @click="toggleSidebar"
             aria-label="Toggle sidebar"
@@ -169,9 +169,9 @@ const currentPageTitle = computed(() => {
           <!-- Search -->
           <div class="admin-header-search">
             <i class="pi pi-search search-icon"></i>
-            <input 
-              type="text" 
-              placeholder="Cerca..." 
+            <input
+              type="text"
+              placeholder="Cerca..."
               class="focus:w-80 transition-all"
             />
           </div>
@@ -233,5 +233,8 @@ const currentPageTitle = computed(() => {
 .sidebar-logo-mini {
   height: 32px;
   width: auto;
+  min-width: 38px;
+  position: relative;
+  left: -4px;
 }
 </style>
