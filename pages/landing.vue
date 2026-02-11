@@ -8,6 +8,8 @@ definePageMeta({
   layout: 'public'
 })
 
+const { t } = useI18n()
+
 // Store
 const catalogStore = usePublicCatalogStore()
 const homepageContent = computed(() => catalogStore.homepageContent)
@@ -20,7 +22,7 @@ onMounted(async () => {
 
 // Format number with thousands separator
 const formatNumber = (num: number): string => {
-  return num.toLocaleString('it-IT')
+  return num.toLocaleString(useI18n().locale.value === 'it' ? 'it-IT' : 'en-US')
 }
 </script>
 
@@ -31,15 +33,15 @@ const formatNumber = (num: number): string => {
       <div class="hero-container">
         <div class="hero-content">
           <h1 class="hero-title">
-            {{ homepageContent?.hero.headline || 'Lead qualificati per far crescere il tuo business' }}
+            {{ homepageContent?.hero.headline || $t('landing.hero.headline') }}
           </h1>
           <p class="hero-subtitle">
-            {{ homepageContent?.hero.subtitle || 'Accedi a richieste verificate di clienti pronti ad acquistare. Solo lead di qualità, nessuno spreco.' }}
+            {{ homepageContent?.hero.subtitle || $t('landing.hero.subtitle') }}
           </p>
           <div class="hero-cta">
             <NuxtLink to="/registrati">
               <PrimeButton
-                :label="homepageContent?.hero.cta_text || 'Inizia Gratis'"
+                :label="homepageContent?.hero.cta_text || $t('landing.hero.ctaText')"
                 icon="pi pi-arrow-right"
                 iconPos="right"
                 size="large"
@@ -48,7 +50,7 @@ const formatNumber = (num: number): string => {
             </NuxtLink>
             <NuxtLink to="/catalogo">
               <PrimeButton
-                label="Esplora il Catalogo"
+                :label="$t('landing.hero.exploreCatalog')"
                 severity="secondary"
                 outlined
                 size="large"
@@ -57,7 +59,7 @@ const formatNumber = (num: number): string => {
           </div>
           <p class="hero-note">
             <i class="pi pi-check-circle text-green-500 mr-2"></i>
-            Prova gratuita: 3 lead inclusi senza impegno
+            {{ $t('landing.hero.freeTrialNote') }}
           </p>
         </div>
         <div class="hero-image">
@@ -65,22 +67,22 @@ const formatNumber = (num: number): string => {
             <div class="hero-card hero-card-1">
               <i class="pi pi-user text-2xl text-primary-500"></i>
               <div>
-                <div class="text-sm font-semibold text-neutral-900">Nuovo Lead</div>
-                <div class="text-xs text-neutral-500">Ristrutturazione - Milano</div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.newLead') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.sampleCategory') }}</div>
               </div>
             </div>
             <div class="hero-card hero-card-2">
               <i class="pi pi-check-circle text-2xl text-green-500"></i>
               <div>
-                <div class="text-sm font-semibold text-neutral-900">Verificato</div>
-                <div class="text-xs text-neutral-500">Contatto confermato</div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.verified') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.contactConfirmed') }}</div>
               </div>
             </div>
             <div class="hero-card hero-card-3">
               <i class="pi pi-euro text-2xl text-amber-500"></i>
               <div>
-                <div class="text-sm font-semibold text-neutral-900">Esclusivo</div>
-                <div class="text-xs text-neutral-500">Solo per te</div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.exclusive') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.onlyForYou') }}</div>
               </div>
             </div>
           </div>
@@ -91,9 +93,9 @@ const formatNumber = (num: number): string => {
     <!-- Value Proposition Section -->
     <section class="value-section">
       <div class="section-container">
-        <h2 class="section-title">Perché scegliere Qualeadfied</h2>
+        <h2 class="section-title">{{ $t('landing.features.title') }}</h2>
         <p class="section-subtitle">
-          La piattaforma B2B pensata per professionisti che vogliono risultati concreti
+          {{ $t('landing.features.subtitle') }}
         </p>
         <div class="value-grid">
           <div
@@ -114,9 +116,9 @@ const formatNumber = (num: number): string => {
     <!-- How It Works Section -->
     <section class="how-section">
       <div class="section-container">
-        <h2 class="section-title">Come Funziona</h2>
+        <h2 class="section-title">{{ $t('landing.howItWorks.title') }}</h2>
         <p class="section-subtitle">
-          Tre semplici passaggi per iniziare a ricevere lead qualificati
+          {{ $t('landing.howItWorks.subtitle') }}
         </p>
         <div class="how-grid">
           <div
@@ -135,9 +137,9 @@ const formatNumber = (num: number): string => {
     <!-- Categories Preview Section -->
     <section class="categories-section">
       <div class="section-container">
-        <h2 class="section-title">Categorie Disponibili</h2>
+        <h2 class="section-title">{{ $t('landing.categories.title') }}</h2>
         <p class="section-subtitle">
-          Lead qualificati per i settori più richiesti
+          {{ $t('landing.categories.subtitle') }}
         </p>
         <div class="categories-grid">
           <NuxtLink
@@ -152,14 +154,14 @@ const formatNumber = (num: number): string => {
             <h3 class="category-name">{{ category.name }}</h3>
             <p class="category-description">{{ category.description }}</p>
             <span class="category-link">
-              Esplora <i class="pi pi-arrow-right text-sm"></i>
+              {{ $t('landing.categories.explore') }} <i class="pi pi-arrow-right text-sm"></i>
             </span>
           </NuxtLink>
         </div>
         <div class="text-center mt-8">
           <NuxtLink to="/catalogo">
             <PrimeButton
-              label="Vedi Tutte le Categorie"
+              :label="$t('landing.categories.viewAll')"
               severity="secondary"
               outlined
             />
@@ -174,19 +176,19 @@ const formatNumber = (num: number): string => {
         <div class="stats-grid">
           <div class="stat-item">
             <div class="stat-number">{{ formatNumber(homepageContent?.stats.total_leads_available || 0) }}+</div>
-            <div class="stat-label">Lead Disponibili</div>
+            <div class="stat-label">{{ $t('landing.stats.leadsAvailable') }}</div>
           </div>
           <div class="stat-item">
             <div class="stat-number">{{ homepageContent?.stats.categories_count || 0 }}</div>
-            <div class="stat-label">Categorie</div>
+            <div class="stat-label">{{ $t('landing.stats.categories') }}</div>
           </div>
           <div class="stat-item">
             <div class="stat-number">{{ homepageContent?.stats.provinces_covered || 0 }}</div>
-            <div class="stat-label">Province Coperte</div>
+            <div class="stat-label">{{ $t('landing.stats.provincesCovered') }}</div>
           </div>
           <div class="stat-item">
             <div class="stat-number">{{ formatNumber(homepageContent?.stats.satisfied_clients || 0) }}+</div>
-            <div class="stat-label">Clienti Soddisfatti</div>
+            <div class="stat-label">{{ $t('landing.stats.satisfiedClients') }}</div>
           </div>
         </div>
       </div>
@@ -196,15 +198,14 @@ const formatNumber = (num: number): string => {
     <section class="cta-section">
       <div class="section-container">
         <div class="cta-content">
-          <h2 class="cta-title">Pronto a far crescere il tuo business?</h2>
+          <h2 class="cta-title">{{ $t('landing.cta.title') }}</h2>
           <p class="cta-subtitle">
-            Registrati ora e ricevi 3 lead gratuiti per provare la qualità del nostro servizio.
-            Nessun impegno, nessuna carta di credito richiesta.
+            {{ $t('landing.cta.subtitle') }}
           </p>
           <div class="cta-buttons">
             <NuxtLink to="/registrati">
               <PrimeButton
-                label="Registrati Gratis"
+                :label="$t('landing.cta.register')"
                 icon="pi pi-user-plus"
                 size="large"
                 class="cta-btn"
@@ -212,7 +213,7 @@ const formatNumber = (num: number): string => {
             </NuxtLink>
             <NuxtLink to="/catalogo">
               <PrimeButton
-                label="Esplora il Catalogo"
+                :label="$t('landing.cta.exploreCatalog')"
                 severity="secondary"
                 size="large"
                 class="cta-btn-secondary"

@@ -9,6 +9,7 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
 const packagesStore = usePackagesStore()
 const { formatCurrency, formatDate } = useClientFormatters()
 
@@ -65,14 +66,14 @@ const selectLeads = (pkg: ActivePackage) => {
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">I Miei Pacchetti</h1>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('packages.active.title') }}</h1>
         <p class="text-surface-600 dark:text-surface-400">
-          Gestisci i tuoi pacchetti lead attivi
+          {{ $t('packages.active.subtitle') }}
         </p>
       </div>
       <NuxtLink to="/pacchetti">
         <Button
-          label="Acquista Nuovo Pacchetto"
+          :label="$t('packages.active.buyNew')"
           icon="pi pi-plus"
         />
       </NuxtLink>
@@ -96,9 +97,9 @@ const selectLeads = (pkg: ActivePackage) => {
             <div class="flex-grow">
               <div class="flex items-center gap-3 mb-2">
                 <Tag v-if="pkg.category_id" :value="`Categoria #${pkg.category_id}`" severity="info" />
-                <Tag v-else value="Tutte le categorie" severity="secondary" />
+                <Tag v-else :value="$t('packages.active.allCategories')" severity="secondary" />
                 <Tag
-                  :value="`${getDaysRemaining(pkg.expires_at)} giorni rimanenti`"
+                  :value="$t('packages.active.daysRemaining', { count: getDaysRemaining(pkg.expires_at) })"
                   :severity="getStatusSeverity(pkg)"
                 />
               </div>
@@ -106,7 +107,7 @@ const selectLeads = (pkg: ActivePackage) => {
                 {{ pkg.package_name }}
               </h3>
               <p class="text-sm text-surface-600 dark:text-surface-400">
-                Acquistato il {{ formatDate(pkg.purchased_at) }} - Scade il {{ formatDate(pkg.expires_at) }}
+                {{ $t('packages.active.purchasedOn', { date: formatDate(pkg.purchased_at), expiry: formatDate(pkg.expires_at) }) }}
               </p>
             </div>
 
@@ -114,7 +115,7 @@ const selectLeads = (pkg: ActivePackage) => {
             <div class="lg:w-64">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-sm text-surface-600 dark:text-surface-400">
-                  Lead utilizzati
+                  {{ $t('packages.active.leadsUsed') }}
                 </span>
                 <span class="font-semibold text-surface-900 dark:text-surface-0">
                   {{ getTotalLeadsUsed(pkg) }} / {{ getTotalLeads(pkg) }}
@@ -126,14 +127,14 @@ const selectLeads = (pkg: ActivePackage) => {
                 class="h-2"
               />
               <p class="text-sm text-surface-500 mt-2 text-right">
-                {{ getRemainingLeads(pkg) }} lead rimanenti
+                {{ $t('packages.active.leadsRemaining', { count: getRemainingLeads(pkg) }) }}
               </p>
             </div>
 
             <!-- Actions -->
             <div class="flex flex-col gap-2 lg:w-48">
               <Button
-                label="Seleziona Lead"
+                :label="$t('packages.active.selectLeads')"
                 icon="pi pi-list"
                 :disabled="getRemainingLeads(pkg) === 0"
                 @click="selectLeads(pkg)"
@@ -149,8 +150,7 @@ const selectLeads = (pkg: ActivePackage) => {
             <div class="flex items-center gap-2">
               <i class="pi pi-exclamation-triangle text-orange-500"></i>
               <span class="text-sm text-orange-700 dark:text-orange-300">
-                Questo pacchetto scade tra {{ getDaysRemaining(pkg.expires_at) }} giorni.
-                Utilizza i {{ getRemainingLeads(pkg) }} lead rimanenti prima della scadenza.
+                {{ $t('packages.active.expiringWarning', { days: getDaysRemaining(pkg.expires_at), remaining: getRemainingLeads(pkg) }) }}
               </span>
             </div>
           </div>
@@ -162,13 +162,13 @@ const selectLeads = (pkg: ActivePackage) => {
     <div v-else class="text-center py-16">
       <i class="pi pi-box text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
       <h2 class="text-2xl font-bold text-surface-700 dark:text-surface-300 mb-2">
-        Nessun pacchetto attivo
+        {{ $t('packages.active.empty.title') }}
       </h2>
       <p class="text-surface-500 dark:text-surface-400 mb-6">
-        Non hai ancora acquistato nessun pacchetto lead
+        {{ $t('packages.active.empty.subtitle') }}
       </p>
       <NuxtLink to="/pacchetti">
-        <Button label="Esplora Pacchetti" icon="pi pi-box" size="large" />
+        <Button :label="$t('packages.active.empty.explore')" icon="pi pi-box" size="large" />
       </NuxtLink>
     </div>
 
@@ -183,16 +183,15 @@ const selectLeads = (pkg: ActivePackage) => {
           </div>
           <div class="flex-grow text-center md:text-left">
             <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100 mb-1">
-              Perché acquistare un pacchetto?
+              {{ $t('packages.active.whyBuy.title') }}
             </h3>
             <p class="text-primary-700 dark:text-primary-300">
-              I pacchetti ti permettono di risparmiare fino al 30% rispetto all'acquisto di singoli lead.
-              Inoltre hai la flessibilità di scegliere quali lead riscattare durante il periodo di validità.
+              {{ $t('packages.active.whyBuy.description') }}
             </p>
           </div>
           <div class="flex-shrink-0">
             <NuxtLink to="/pacchetti">
-              <Button label="Scopri di più" icon="pi pi-arrow-right" />
+              <Button :label="$t('packages.active.whyBuy.learnMore')" icon="pi pi-arrow-right" />
             </NuxtLink>
           </div>
         </div>

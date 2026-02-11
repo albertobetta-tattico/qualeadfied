@@ -8,6 +8,7 @@ definePageMeta({
 })
 
 const cartStore = useCartStore()
+const { t } = useI18n()
 const profileStore = useClientProfileStore()
 const { formatCurrency, formatPurchaseMode } = useClientFormatters()
 const { showSuccess, showError } = useClientToast()
@@ -64,7 +65,7 @@ const processPayment = async () => {
 
   // Validate billing form
   if (!validateForm(billingForm.value)) {
-    showError('Correggi gli errori nel form')
+    showError(t('cart.checkout.fixErrors'))
     return
   }
 
@@ -75,7 +76,7 @@ const processPayment = async () => {
     if (!profileStore.hasBillingData) {
       const billingSuccess = await profileStore.updateBilling(billingForm.value)
       if (!billingSuccess) {
-        showError(profileStore.error || 'Errore nell\'aggiornamento dati fatturazione')
+        showError(profileStore.error || t('cart.checkout.billingUpdateError'))
         return
       }
     }
@@ -94,7 +95,7 @@ const processPayment = async () => {
     }
     const paymentIntent = await cartStore.createCheckout(checkoutData)
     if (!paymentIntent) {
-      showError(cartStore.error || 'Errore nella creazione del pagamento')
+      showError(cartStore.error || t('cart.checkout.paymentCreateError'))
       return
     }
 
@@ -102,11 +103,11 @@ const processPayment = async () => {
     const result = await cartStore.confirmPayment(paymentIntent.client_secret)
 
     if (result) {
-      showSuccess('Ordine completato con successo!')
+      showSuccess(t('cart.toast.checkoutSuccess'))
       // Redirect to order confirmation
       router.push(`/ordini/${result.orderId}`)
     } else {
-      showError(cartStore.error || 'Errore nel pagamento')
+      showError(cartStore.error || t('cart.checkout.paymentError'))
     }
   } finally {
     processing.value = false
@@ -120,11 +121,11 @@ const processPayment = async () => {
     <div class="mb-6">
       <NuxtLink to="/carrello" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
         <i class="pi pi-arrow-left"></i>
-        Torna al carrello
+        {{ $t('cart.checkout.backToCart') }}
       </NuxtLink>
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Checkout</h1>
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('cart.checkout.title') }}</h1>
       <p class="text-surface-600 dark:text-surface-400">
-        Completa il tuo ordine
+        {{ $t('cart.checkout.subtitle') }}
       </p>
     </div>
 
@@ -142,7 +143,7 @@ const processPayment = async () => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
-              Dati di Fatturazione
+              {{ $t('cart.checkout.billingData') }}
             </div>
           </template>
           <template #content>
@@ -151,13 +152,13 @@ const processPayment = async () => {
               <div class="md:col-span-2 p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <p class="text-sm text-surface-500 mb-1">Ragione Sociale</p>
+                    <p class="text-sm text-surface-500 mb-1">{{ $t('auth.register.companyName') }}</p>
                     <p class="font-medium text-surface-900 dark:text-surface-0">
                       {{ profileStore.profile?.company_name }}
                     </p>
                   </div>
                   <div>
-                    <p class="text-sm text-surface-500 mb-1">Partita IVA</p>
+                    <p class="text-sm text-surface-500 mb-1">{{ $t('auth.register.vatNumber') }}</p>
                     <p class="font-medium text-surface-900 dark:text-surface-0">
                       {{ profileStore.profile?.vat_number }}
                     </p>
@@ -168,11 +169,11 @@ const processPayment = async () => {
               <!-- Billing Address -->
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Indirizzo *
+                  {{ $t('cart.checkout.address') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_address"
-                  placeholder="Via, numero civico"
+                  :placeholder="$t('cart.checkout.addressPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.billing_address"
                 />
@@ -184,11 +185,11 @@ const processPayment = async () => {
               <!-- City -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Città *
+                  {{ $t('cart.checkout.city') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_city"
-                  placeholder="Città"
+                  :placeholder="$t('cart.checkout.cityPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.billing_city"
                 />
@@ -200,7 +201,7 @@ const processPayment = async () => {
               <!-- Province -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Provincia *
+                  {{ $t('cart.checkout.province') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_province"
@@ -217,7 +218,7 @@ const processPayment = async () => {
               <!-- ZIP -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  CAP *
+                  {{ $t('cart.checkout.zip') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_zip"
@@ -234,7 +235,7 @@ const processPayment = async () => {
               <!-- Country (readonly) -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Paese
+                  {{ $t('cart.checkout.country') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_country"
@@ -248,7 +249,7 @@ const processPayment = async () => {
               <!-- SDI Code -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Codice SDI
+                  {{ $t('cart.checkout.sdiCode') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.sdi_code"
@@ -265,11 +266,11 @@ const processPayment = async () => {
               <!-- PEC Email -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Email PEC
+                  {{ $t('cart.checkout.pecEmail') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.pec_email"
-                  placeholder="azienda@pec.it"
+                  :placeholder="$t('cart.checkout.pecPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.pec_email"
                 />
@@ -280,7 +281,7 @@ const processPayment = async () => {
 
               <div class="md:col-span-2">
                 <small class="text-surface-500">
-                  * Inserisci il Codice SDI oppure la PEC per la fatturazione elettronica
+                  {{ $t('cart.checkout.sdiPecHint') }}
                 </small>
               </div>
             </div>
@@ -292,7 +293,7 @@ const processPayment = async () => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-credit-card text-primary"></i>
-              Metodo di Pagamento
+              {{ $t('cart.checkout.paymentMethod') }}
             </div>
           </template>
           <template #content>
@@ -316,10 +317,10 @@ const processPayment = async () => {
                   </div>
                   <div class="flex-grow">
                     <p class="font-medium text-surface-900 dark:text-surface-0">
-                      Carta di Credito/Debito
+                      {{ $t('cart.checkout.creditCard') }}
                     </p>
                     <p class="text-sm text-surface-500">
-                      Visa, Mastercard, American Express
+                      {{ $t('cart.checkout.cardBrands') }}
                     </p>
                   </div>
                   <div class="flex gap-1">
@@ -347,10 +348,10 @@ const processPayment = async () => {
                   </div>
                   <div class="flex-grow">
                     <p class="font-medium text-surface-900 dark:text-surface-0">
-                      Addebito SEPA
+                      {{ $t('cart.checkout.sepa') }}
                     </p>
                     <p class="text-sm text-surface-500">
-                      Bonifico bancario diretto
+                      {{ $t('cart.checkout.sepaDescription') }}
                     </p>
                   </div>
                   <div>
@@ -365,7 +366,7 @@ const processPayment = async () => {
               <div class="flex items-center gap-2">
                 <i class="pi pi-lock text-green-500"></i>
                 <span class="text-sm text-surface-600 dark:text-surface-400">
-                  I pagamenti sono processati in modo sicuro da Stripe. Non memorizziamo i dati della tua carta.
+                  {{ $t('cart.checkout.stripeInfo') }}
                 </span>
               </div>
             </div>
@@ -376,7 +377,7 @@ const processPayment = async () => {
       <!-- Order Summary Sidebar -->
       <div>
         <PrimeCard class="sticky top-4">
-          <template #title>Riepilogo Ordine</template>
+          <template #title>{{ $t('cart.checkout.orderSummary') }}</template>
           <template #content>
             <div class="space-y-4">
               <!-- Items List -->
@@ -406,7 +407,7 @@ const processPayment = async () => {
               <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                   <span class="text-surface-600 dark:text-surface-400">
-                    Subtotale
+                    {{ $t('cart.summary.subtotal') }}
                   </span>
                   <span class="text-surface-900 dark:text-surface-0">
                     {{ formatCurrency(cartStore.cart.subtotal) }}
@@ -414,7 +415,7 @@ const processPayment = async () => {
                 </div>
                 <div class="flex justify-between text-sm">
                   <span class="text-surface-600 dark:text-surface-400">
-                    IVA ({{ cartStore.cart.vat_rate }}%)
+                    {{ $t('cart.summary.vat', { rate: cartStore.cart.vat_rate }) }}
                   </span>
                   <span class="text-surface-900 dark:text-surface-0">
                     {{ formatCurrency(cartStore.cart.vat_amount) }}
@@ -427,7 +428,7 @@ const processPayment = async () => {
               <!-- Total -->
               <div class="flex justify-between items-center">
                 <span class="text-lg font-semibold text-surface-900 dark:text-surface-0">
-                  Totale
+                  {{ $t('cart.summary.total') }}
                 </span>
                 <span class="text-2xl font-bold text-primary">
                   {{ formatCurrency(cartStore.cart.total) }}
@@ -436,7 +437,7 @@ const processPayment = async () => {
 
               <!-- Pay Button -->
               <PrimeButton
-                :label="processing ? 'Elaborazione...' : `Paga ${formatCurrency(cartStore.cart.total)}`"
+                :label="processing ? $t('cart.checkout.processing') : $t('cart.checkout.pay', { amount: formatCurrency(cartStore.cart.total) })"
                 icon="pi pi-lock"
                 class="w-full"
                 size="large"
@@ -446,10 +447,14 @@ const processPayment = async () => {
               />
 
               <!-- Terms -->
-              <p class="text-xs text-center text-surface-400">
-                Procedendo accetti i <NuxtLink to="/termini" class="text-primary hover:underline">Termini di Servizio</NuxtLink>
-                e la <NuxtLink to="/privacy" class="text-primary hover:underline">Privacy Policy</NuxtLink>
-              </p>
+              <i18n-t keypath="cart.checkout.termsAgreement" tag="p" class="text-xs text-center text-surface-400">
+                <template #terms>
+                  <NuxtLink to="/termini" class="text-primary hover:underline">{{ $t('cart.checkout.termsOfService') }}</NuxtLink>
+                </template>
+                <template #privacy>
+                  <NuxtLink to="/privacy" class="text-primary hover:underline">{{ $t('cart.checkout.privacyPolicy') }}</NuxtLink>
+                </template>
+              </i18n-t>
             </div>
           </template>
         </PrimeCard>
@@ -460,13 +465,13 @@ const processPayment = async () => {
     <div v-else class="text-center py-12">
       <i class="pi pi-shopping-cart text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
       <h2 class="text-xl font-bold text-surface-700 dark:text-surface-300 mb-2">
-        Carrello vuoto
+        {{ $t('cart.empty.title') }}
       </h2>
       <p class="text-surface-500 mb-4">
-        Aggiungi dei lead al carrello per procedere al checkout
+        {{ $t('cart.empty.subtitleCheckout') }}
       </p>
       <NuxtLink to="/leads">
-        <PrimeButton label="Vai al Catalogo" icon="pi pi-search" />
+        <PrimeButton :label="$t('cart.empty.browseCatalog')" icon="pi pi-search" />
       </NuxtLink>
     </div>
   </div>

@@ -16,6 +16,7 @@ const packageId = computed(() => {
   return Number(Array.isArray(id) ? id[0] : id)
 })
 
+const { t } = useI18n()
 const packagesStore = usePackagesStore()
 const catalogStore = usePublicCatalogStore()
 const { formatRelativeTime } = useClientFormatters()
@@ -89,7 +90,7 @@ const isSelected = (leadId: number): boolean => {
 // Redeem selected leads
 const redeemLeads = async () => {
   if (selectedLeads.value.length === 0) {
-    showError('Seleziona almeno un lead')
+    showError(t('packages.select.toast.selectAtLeast'))
     return
   }
 
@@ -105,14 +106,14 @@ const redeemLeads = async () => {
   })
 
   if (success) {
-    showSuccess(`${selectedLeads.value.length} lead riscattati con successo!`)
+    showSuccess(t('packages.select.toast.redeemed', { count: selectedLeads.value.length }))
     selectedLeads.value = []
     // Refresh packages
     await packagesStore.fetchActivePackages()
     // Redirect to my leads
     router.push('/i-miei-lead')
   } else {
-    showError(packagesStore.error || 'Errore nel riscatto')
+    showError(packagesStore.error || t('packages.select.toast.errorRedeeming'))
   }
 }
 </script>
@@ -123,24 +124,24 @@ const redeemLeads = async () => {
     <div class="mb-6">
       <NuxtLink to="/pacchetti/attivi" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
         <i class="pi pi-arrow-left"></i>
-        Torna ai pacchetti
+        {{ $t('packages.select.backToPackages') }}
       </NuxtLink>
 
       <div v-if="currentPackage" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-            Seleziona Lead
+            {{ $t('packages.select.title') }}
           </h1>
           <p class="text-surface-600 dark:text-surface-400">
-            {{ currentPackage.package_name }} - {{ getRemainingLeads(currentPackage) }} lead disponibili
+            {{ $t('packages.select.leadsAvailable', { name: currentPackage.package_name, count: getRemainingLeads(currentPackage) }) }}
           </p>
         </div>
         <div class="flex items-center gap-3">
           <span class="text-sm text-surface-500">
-            {{ selectedLeads.length }} / {{ getRemainingLeads(currentPackage) }} selezionati
+            {{ $t('packages.select.selectedCount', { selected: selectedLeads.length, total: getRemainingLeads(currentPackage) }) }}
           </span>
           <Button
-            label="Riscatta Lead"
+            :label="$t('packages.select.redeemLeads')"
             icon="pi pi-check"
             :disabled="selectedLeads.length === 0"
             :badge="selectedLeads.length > 0 ? String(selectedLeads.length) : undefined"
@@ -168,7 +169,7 @@ const redeemLeads = async () => {
                 {{ currentPackage.package_name }}
               </h3>
               <p class="text-sm text-surface-500">
-                {{ currentPackage.category_id ? `Categoria #${currentPackage.category_id}` : 'Tutte le categorie' }}
+                {{ currentPackage.category_id ? `Categoria #${currentPackage.category_id}` : $t('packages.active.allCategories') }}
               </p>
             </div>
           </div>
@@ -177,19 +178,19 @@ const redeemLeads = async () => {
               <p class="text-2xl font-bold text-primary">
                 {{ getRemainingLeads(currentPackage) }}
               </p>
-              <p class="text-xs text-surface-500">Disponibili</p>
+              <p class="text-xs text-surface-500">{{ $t('packages.select.packageInfo.available') }}</p>
             </div>
             <div class="text-center">
               <p class="text-2xl font-bold text-green-500">
                 {{ getUsedLeads(currentPackage) }}
               </p>
-              <p class="text-xs text-surface-500">Utilizzati</p>
+              <p class="text-xs text-surface-500">{{ $t('packages.select.packageInfo.used') }}</p>
             </div>
             <div class="text-center">
               <p class="text-2xl font-bold text-surface-400">
                 {{ currentPackage.total_leads }}
               </p>
-              <p class="text-xs text-surface-500">Totale</p>
+              <p class="text-xs text-surface-500">{{ $t('packages.select.packageInfo.total') }}</p>
             </div>
           </div>
         </div>
@@ -229,7 +230,7 @@ const redeemLeads = async () => {
 
               <!-- Lead Info -->
               <h4 class="font-medium text-surface-900 dark:text-surface-0 mb-1">
-                Lead #{{ lead.id }}
+                {{ $t('packages.select.leadCard.leadId', { id: lead.id }) }}
               </h4>
               <p class="text-sm text-surface-600 dark:text-surface-400 line-clamp-2 mb-2">
                 {{ lead.request_preview }}
@@ -249,10 +250,10 @@ const redeemLeads = async () => {
     <div v-else-if="!packagesStore.loading && !catalogStore.loading" class="text-center py-12">
       <i class="pi pi-inbox text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
       <h3 class="text-xl font-semibold text-surface-700 dark:text-surface-300 mb-2">
-        Nessun lead disponibile
+        {{ $t('packages.select.empty.title') }}
       </h3>
       <p class="text-surface-500 dark:text-surface-400">
-        Al momento non ci sono lead disponibili per questa categoria
+        {{ $t('packages.select.empty.subtitle') }}
       </p>
     </div>
 
@@ -264,20 +265,20 @@ const redeemLeads = async () => {
       <div class="max-w-4xl mx-auto flex items-center justify-between">
         <div>
           <p class="font-semibold text-surface-900 dark:text-surface-0">
-            {{ selectedLeads.length }} lead selezionati
+            {{ $t('packages.select.floatingBar.selected', { count: selectedLeads.length }) }}
           </p>
           <p class="text-sm text-surface-500">
-            Clicca su "Riscatta Lead" per aggiungerli al tuo portafoglio
+            {{ $t('packages.select.floatingBar.redeemHint') }}
           </p>
         </div>
         <div class="flex items-center gap-3">
           <Button
-            label="Annulla"
+            :label="$t('packages.select.floatingBar.cancel')"
             severity="secondary"
             @click="selectedLeads = []"
           />
           <Button
-            label="Riscatta Lead"
+            :label="$t('packages.select.redeemLeads')"
             icon="pi pi-check"
             @click="redeemLeads"
           />

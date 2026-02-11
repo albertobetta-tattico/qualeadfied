@@ -8,6 +8,8 @@ definePageMeta({
   layout: 'public'
 })
 
+const { t } = useI18n()
+
 const route = useRoute()
 const router = useRouter()
 
@@ -34,19 +36,19 @@ const sortOrder = ref<'desc' | 'asc'>('desc')
 const showFilters = ref(false)
 
 // Availability options
-const availabilityOptions = [
-  { label: 'Tutti', value: '' },
-  { label: 'Solo Esclusivi', value: 'exclusive' },
-  { label: 'Solo Condivisi', value: 'shared' }
-]
+const availabilityOptions = computed(() => [
+  { label: t('catalog.filterOptions.allAvailability'), value: '' },
+  { label: t('catalog.filterOptions.exclusiveOnly'), value: 'exclusive' },
+  { label: t('catalog.filterOptions.sharedOnly'), value: 'shared' }
+])
 
 // Sort options
-const sortOptions = [
-  { label: 'Più recenti', value: 'date-desc' },
-  { label: 'Meno recenti', value: 'date-asc' },
-  { label: 'Prezzo crescente', value: 'price-asc' },
-  { label: 'Prezzo decrescente', value: 'price-desc' }
-]
+const sortOptions = computed(() => [
+  { label: t('catalog.filterOptions.mostRecent'), value: 'date-desc' },
+  { label: t('catalog.filterOptions.leastRecent'), value: 'date-asc' },
+  { label: t('catalog.filterOptions.priceAsc'), value: 'price-asc' },
+  { label: t('catalog.filterOptions.priceDesc'), value: 'price-desc' }
+])
 
 const selectedSort = computed({
   get: () => `${sortBy.value}-${sortOrder.value}`,
@@ -137,10 +139,10 @@ const formatRelativeTime = (date: string): string => {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
   const diffDays = Math.floor(diffHours / 24)
 
-  if (diffHours < 1) return 'Appena aggiunto'
-  if (diffHours < 24) return `${diffHours} ore fa`
-  if (diffDays === 1) return 'Ieri'
-  if (diffDays < 7) return `${diffDays} giorni fa`
+  if (diffHours < 1) return t('common.time.justAdded')
+  if (diffHours < 24) return t('common.time.hoursAgo', { count: diffHours })
+  if (diffDays === 1) return t('common.time.yesterday')
+  if (diffDays < 7) return t('common.time.daysAgo', { count: diffDays })
   return formatDate(date)
 }
 
@@ -157,11 +159,11 @@ const formatPrice = (price: number): string => {
 // Get availability badge
 const getAvailabilityBadge = (lead: any) => {
   if (lead.is_exclusive_available) {
-    return { label: 'Esclusivo disponibile', severity: 'success' as const }
+    return { label: t('catalog.clientArea.exclusiveAvailable'), severity: 'success' as const }
   } else if (lead.shared_slots_available > 0) {
-    return { label: `Condiviso ${lead.shared_slots_total - lead.shared_slots_available}/${lead.shared_slots_total}`, severity: 'info' as const }
+    return { label: t('catalog.clientArea.sharedSlots', { used: lead.shared_slots_total - lead.shared_slots_available, total: lead.shared_slots_total }), severity: 'info' as const }
   }
-  return { label: 'Non disponibile', severity: 'secondary' as const }
+  return { label: t('catalog.clientArea.notAvailable'), severity: 'secondary' as const }
 }
 </script>
 
@@ -170,9 +172,9 @@ const getAvailabilityBadge = (lead: any) => {
     <!-- Page Header -->
     <div class="catalog-header">
       <div class="catalog-header-container">
-        <h1 class="catalog-title">Catalogo Lead</h1>
+        <h1 class="catalog-title">{{ $t('catalog.page.title') }}</h1>
         <p class="catalog-subtitle">
-          Esplora i lead disponibili. Registrati per vedere i prezzi e acquistare.
+          {{ $t('catalog.page.subtitle') }}
         </p>
       </div>
     </div>
@@ -186,7 +188,7 @@ const getAvailabilityBadge = (lead: any) => {
             <!-- Mobile filter toggle -->
             <PrimeButton
               icon="pi pi-filter"
-              :label="showFilters ? 'Nascondi Filtri' : 'Filtri'"
+              :label="showFilters ? $t('catalog.filters.hideFilters') : $t('catalog.filters.filters')"
               severity="secondary"
               outlined
               class="md:hidden"
@@ -197,7 +199,7 @@ const getAvailabilityBadge = (lead: any) => {
             <div class="hidden md:flex items-center gap-3">
               <PrimeSelect
                 v-model="selectedCategory"
-                :options="[{ id: '', name: 'Tutte le categorie' }, ...categories]"
+                :options="[{ id: '', name: $t('catalog.filters.allCategories') }, ...categories]"
                 optionLabel="name"
                 optionValue="id"
                 placeholder="Categoria"
@@ -206,7 +208,7 @@ const getAvailabilityBadge = (lead: any) => {
 
               <PrimeSelect
                 v-model="selectedProvince"
-                :options="[{ id: '', name: 'Tutte le province' }, ...provinces]"
+                :options="[{ id: '', name: $t('catalog.filters.allProvinces') }, ...provinces]"
                 optionLabel="name"
                 optionValue="id"
                 placeholder="Provincia"
@@ -227,14 +229,14 @@ const getAvailabilityBadge = (lead: any) => {
                 icon="pi pi-filter-slash"
                 severity="secondary"
                 text
-                v-tooltip.top="'Reset filtri'"
+                v-tooltip.top="$t('catalog.filters.resetFilters')"
                 @click="resetFilters"
               />
             </div>
           </div>
 
           <div class="filters-right">
-            <span class="text-neutral-500 text-sm hidden lg:inline">Ordina per:</span>
+            <span class="text-neutral-500 text-sm hidden lg:inline">{{ $t('catalog.filters.sortBy') }}</span>
             <PrimeSelect
               v-model="selectedSort"
               :options="sortOptions"
@@ -251,7 +253,7 @@ const getAvailabilityBadge = (lead: any) => {
             <div class="grid grid-cols-1 gap-3">
               <PrimeSelect
                 v-model="selectedCategory"
-                :options="[{ id: '', name: 'Tutte le categorie' }, ...categories]"
+                :options="[{ id: '', name: $t('catalog.filters.allCategories') }, ...categories]"
                 optionLabel="name"
                 optionValue="id"
                 placeholder="Categoria"
@@ -260,7 +262,7 @@ const getAvailabilityBadge = (lead: any) => {
 
               <PrimeSelect
                 v-model="selectedProvince"
-                :options="[{ id: '', name: 'Tutte le province' }, ...provinces]"
+                :options="[{ id: '', name: $t('catalog.filters.allProvinces') }, ...provinces]"
                 optionLabel="name"
                 optionValue="id"
                 placeholder="Provincia"
@@ -278,7 +280,7 @@ const getAvailabilityBadge = (lead: any) => {
 
               <PrimeButton
                 v-if="selectedCategory || selectedProvince || selectedAvailability"
-                label="Reset filtri"
+                :label="$t('catalog.filters.resetFilters')"
                 icon="pi pi-filter-slash"
                 severity="secondary"
                 outlined
@@ -292,7 +294,7 @@ const getAvailabilityBadge = (lead: any) => {
         <!-- Results count -->
         <div class="results-count">
           <span v-if="!loading">
-            {{ pagination.total }} lead trovati
+            {{ $t('catalog.results.leadsFound', { count: pagination.total }) }}
           </span>
         </div>
 
@@ -308,10 +310,10 @@ const getAvailabilityBadge = (lead: any) => {
 
         <div v-else-if="leads.length === 0" class="leads-empty">
           <i class="pi pi-search text-5xl text-neutral-300 mb-4"></i>
-          <h3 class="text-xl font-semibold text-neutral-700 mb-2">Nessun lead trovato</h3>
-          <p class="text-neutral-500 mb-4">Prova a modificare i filtri di ricerca</p>
+          <h3 class="text-xl font-semibold text-neutral-700 mb-2">{{ $t('catalog.empty.title') }}</h3>
+          <p class="text-neutral-500 mb-4">{{ $t('catalog.empty.subtitle') }}</p>
           <PrimeButton
-            label="Reset Filtri"
+            :label="$t('catalog.filters.resetFilters')"
             icon="pi pi-refresh"
             severity="secondary"
             outlined
@@ -347,7 +349,7 @@ const getAvailabilityBadge = (lead: any) => {
 
             <!-- Price -->
             <div class="lead-price">
-              <span class="lead-price-label">A partire da</span>
+              <span class="lead-price-label">{{ $t('catalog.card.startingFrom') }}</span>
               <span class="lead-price-value">{{ formatPrice(lead.base_price) }}</span>
             </div>
 
@@ -364,7 +366,7 @@ const getAvailabilityBadge = (lead: any) => {
             <div class="lead-cta">
               <NuxtLink v-if="!isLoggedIn" to="/" class="w-full">
                 <PrimeButton
-                  label="Accedi per acquistare"
+                  :label="$t('catalog.card.loginToPurchase')"
                   icon="pi pi-lock"
                   severity="primary"
                   outlined
@@ -373,7 +375,7 @@ const getAvailabilityBadge = (lead: any) => {
               </NuxtLink>
               <NuxtLink v-else :to="`/leads/${lead.id}`" class="w-full">
                 <PrimeButton
-                  label="Visualizza dettagli"
+                  :label="$t('catalog.card.viewDetails')"
                   icon="pi pi-eye"
                   severity="primary"
                   class="w-full"
@@ -400,14 +402,14 @@ const getAvailabilityBadge = (lead: any) => {
     <div v-if="!isLoggedIn" class="cta-banner">
       <div class="cta-banner-container">
         <div class="cta-banner-content">
-          <h2 class="cta-banner-title">Vuoi accedere ai lead completi?</h2>
+          <h2 class="cta-banner-title">{{ $t('catalog.ctaBanner.title') }}</h2>
           <p class="cta-banner-text">
-            Registrati gratis e ricevi 3 lead in omaggio per provare la qualità del servizio.
+            {{ $t('catalog.ctaBanner.text') }}
           </p>
         </div>
         <NuxtLink to="/registrati">
           <PrimeButton
-            label="Registrati Gratis"
+            :label="$t('catalog.ctaBanner.register')"
             icon="pi pi-user-plus"
             size="large"
           />

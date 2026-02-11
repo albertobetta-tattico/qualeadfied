@@ -4,6 +4,7 @@
  * Homepage, Catalog, Login, Register, etc.
  */
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const route = useRoute()
 
@@ -14,9 +15,9 @@ const isLoggedIn = computed(() => authStore.isLoggedIn)
 const mobileMenuOpen = ref(false)
 
 // Navigation items
-const navItems = [
-  { label: 'Catalogo Lead', to: '/catalogo', icon: 'pi pi-search' }
-]
+const navItems = computed(() => [
+  { label: t('navigation.publicMenu.catalogLead'), to: '/catalogo', icon: 'pi pi-search' }
+])
 
 // Close mobile menu on route change
 watch(() => route.path, () => {
@@ -55,10 +56,11 @@ watch(() => route.path, () => {
 
         <!-- Desktop Auth Buttons -->
         <div class="public-auth-buttons hidden md:flex">
+          <LanguageSwitcher />
           <template v-if="isLoggedIn">
             <NuxtLink to="/dashboard">
               <PrimeButton
-                label="Area Riservata"
+                :label="$t('navigation.publicMenu.reservedArea')"
                 icon="pi pi-user"
                 severity="primary"
               />
@@ -67,14 +69,14 @@ watch(() => route.path, () => {
           <template v-else>
             <NuxtLink to="/">
               <PrimeButton
-                label="Accedi"
+                :label="$t('navigation.publicMenu.login')"
                 severity="secondary"
                 text
               />
             </NuxtLink>
             <NuxtLink to="/registrati">
               <PrimeButton
-                label="Registrati"
+                :label="$t('navigation.publicMenu.register')"
                 severity="primary"
               />
             </NuxtLink>
@@ -109,7 +111,7 @@ watch(() => route.path, () => {
             <template v-if="isLoggedIn">
               <NuxtLink to="/dashboard" class="w-full">
                 <PrimeButton
-                  label="Area Riservata"
+                  :label="$t('navigation.publicMenu.reservedArea')"
                   icon="pi pi-user"
                   severity="primary"
                   class="w-full"
@@ -119,7 +121,7 @@ watch(() => route.path, () => {
             <template v-else>
               <NuxtLink to="/" class="w-full">
                 <PrimeButton
-                  label="Accedi"
+                  :label="$t('navigation.publicMenu.login')"
                   severity="secondary"
                   outlined
                   class="w-full"
@@ -127,7 +129,7 @@ watch(() => route.path, () => {
               </NuxtLink>
               <NuxtLink to="/registrati" class="w-full">
                 <PrimeButton
-                  label="Registrati Gratis"
+                  :label="$t('navigation.publicMenu.registerFree')"
                   severity="primary"
                   class="w-full"
                 />
@@ -153,35 +155,34 @@ watch(() => route.path, () => {
               <img src="/logo.png" alt="Qualeadfied" class="footer-logo-img" />
             </div>
             <p class="text-neutral-400 text-sm">
-              La piattaforma B2B per l'acquisto di lead qualificati.
-              Contatti verificati, consegna immediata.
+              {{ $t('layouts.footer.description') }}
             </p>
           </div>
 
           <!-- Links Column -->
           <div class="public-footer-links">
-            <h4 class="footer-heading">Link Utili</h4>
+            <h4 class="footer-heading">{{ $t('layouts.footer.usefulLinks') }}</h4>
             <ul>
-              <li><NuxtLink to="/catalogo">Catalogo Lead</NuxtLink></li>
-              <li><NuxtLink to="/come-funziona">Come Funziona</NuxtLink></li>
-              <li><NuxtLink to="/prezzi">Prezzi</NuxtLink></li>
-              <li><NuxtLink to="/faq">FAQ</NuxtLink></li>
+              <li><NuxtLink to="/catalogo">{{ $t('layouts.footer.catalogLead') }}</NuxtLink></li>
+              <li><NuxtLink to="/come-funziona">{{ $t('layouts.footer.howItWorks') }}</NuxtLink></li>
+              <li><NuxtLink to="/prezzi">{{ $t('layouts.footer.pricing') }}</NuxtLink></li>
+              <li><NuxtLink to="/faq">{{ $t('layouts.footer.faq') }}</NuxtLink></li>
             </ul>
           </div>
 
           <!-- Legal Column -->
           <div class="public-footer-links">
-            <h4 class="footer-heading">Legal</h4>
+            <h4 class="footer-heading">{{ $t('layouts.footer.legal') }}</h4>
             <ul>
-              <li><NuxtLink to="/privacy">Privacy Policy</NuxtLink></li>
-              <li><NuxtLink to="/termini">Termini e Condizioni</NuxtLink></li>
-              <li><NuxtLink to="/cookie">Cookie Policy</NuxtLink></li>
+              <li><NuxtLink to="/privacy">{{ $t('layouts.footer.privacyPolicy') }}</NuxtLink></li>
+              <li><NuxtLink to="/termini">{{ $t('layouts.footer.termsAndConditions') }}</NuxtLink></li>
+              <li><NuxtLink to="/cookie">{{ $t('layouts.footer.cookiePolicy') }}</NuxtLink></li>
             </ul>
           </div>
 
           <!-- Contact Column -->
           <div class="public-footer-contact">
-            <h4 class="footer-heading">Contatti</h4>
+            <h4 class="footer-heading">{{ $t('layouts.footer.contacts') }}</h4>
             <ul>
               <li>
                 <i class="pi pi-envelope mr-2"></i>
@@ -197,8 +198,8 @@ watch(() => route.path, () => {
 
         <!-- Copyright -->
         <div class="public-footer-bottom">
-          <p>&copy; {{ new Date().getFullYear() }} Qualeadfied. Tutti i diritti riservati.</p>
-          <p class="text-neutral-500 text-sm">P.IVA: IT12345678901</p>
+          <p>{{ $t('layouts.footer.allRightsReserved', { year: new Date().getFullYear() }) }}</p>
+          <p class="text-neutral-500 text-sm">{{ $t('layouts.footer.vatNumber') }}</p>
         </div>
       </div>
     </footer>

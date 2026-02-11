@@ -4,6 +4,7 @@
  * Uses the Qualeadfied Design System
  */
 
+const { t } = useI18n()
 const sidebarCollapsed = ref(false)
 const sidebarOpen = ref(false) // For mobile
 
@@ -16,43 +17,43 @@ const toggleSidebar = () => {
 }
 
 // Menu items configuration
-const menuItems = [
+const menuItems = computed(() => [
   {
-    section: 'Principale',
+    section: t('navigation.adminMenu.sections.main'),
     items: [
-      { label: 'Dashboard', icon: 'pi pi-chart-bar', to: '/admin', badge: null },
+      { label: t('navigation.adminMenu.items.dashboard'), icon: 'pi pi-chart-bar', to: '/admin', badge: null },
     ]
   },
   {
-    section: 'Gestione',
+    section: t('navigation.adminMenu.sections.management'),
     items: [
-      { label: 'Clienti', icon: 'pi pi-users', to: '/admin/clients', badge: null },
-      { label: 'Lead', icon: 'pi pi-list', to: '/admin/leads', badge: '12' },
-      { label: 'Catalogo', icon: 'pi pi-tag', to: '/admin/catalog', badge: null },
-      { label: 'Listini', icon: 'pi pi-euro', to: '/admin/pricing', badge: null },
+      { label: t('navigation.adminMenu.items.clients'), icon: 'pi pi-users', to: '/admin/clients', badge: null },
+      { label: t('navigation.adminMenu.items.leads'), icon: 'pi pi-list', to: '/admin/leads', badge: '12' },
+      { label: t('navigation.adminMenu.items.catalog'), icon: 'pi pi-tag', to: '/admin/catalog', badge: null },
+      { label: t('navigation.adminMenu.items.pricing'), icon: 'pi pi-euro', to: '/admin/pricing', badge: null },
     ]
   },
   {
-    section: 'Vendite',
+    section: t('navigation.adminMenu.sections.sales'),
     items: [
-      { label: 'Ordini', icon: 'pi pi-shopping-cart', to: '/admin/orders', badge: null },
-      { label: 'Transazioni', icon: 'pi pi-credit-card', to: '/admin/transactions', badge: null },
-      { label: 'Fatture', icon: 'pi pi-file', to: '/admin/invoices', badge: null },
+      { label: t('navigation.adminMenu.items.orders'), icon: 'pi pi-shopping-cart', to: '/admin/orders', badge: null },
+      { label: t('navigation.adminMenu.items.transactions'), icon: 'pi pi-credit-card', to: '/admin/transactions', badge: null },
+      { label: t('navigation.adminMenu.items.invoices'), icon: 'pi pi-file', to: '/admin/invoices', badge: null },
     ]
   },
   {
-    section: 'Analytics',
+    section: t('navigation.adminMenu.sections.analytics'),
     items: [
-      { label: 'Report', icon: 'pi pi-chart-line', to: '/admin/reports', badge: null },
+      { label: t('navigation.adminMenu.items.reports'), icon: 'pi pi-chart-line', to: '/admin/reports', badge: null },
     ]
   },
   {
-    section: 'Sistema',
+    section: t('navigation.adminMenu.sections.system'),
     items: [
-      { label: 'Impostazioni', icon: 'pi pi-cog', to: '/admin/settings', badge: null },
+      { label: t('navigation.adminMenu.items.settings'), icon: 'pi pi-cog', to: '/admin/settings', badge: null },
     ]
   }
-]
+])
 
 // Current route for active state
 const route = useRoute()
@@ -66,14 +67,14 @@ const isActive = (path: string) => {
 // Get current page title for breadcrumb
 const currentPageTitle = computed(() => {
   const path = route.path
-  for (const section of menuItems) {
+  for (const section of menuItems.value) {
     for (const item of section.items) {
       if (path.startsWith(item.to) && item.to !== '/admin') {
         return item.label
       }
     }
   }
-  return 'Dashboard'
+  return t('navigation.adminMenu.items.dashboard')
 })
 </script>
 
@@ -138,7 +139,7 @@ const currentPageTitle = computed(() => {
           <span class="sidebar-menu-icon">
             <i class="pi pi-question-circle"></i>
           </span>
-          <span class="sidebar-menu-text">Supporto</span>
+          <span class="sidebar-menu-text">{{ $t('navigation.adminMenu.items.support') }}</span>
         </div>
       </div>
     </aside>
@@ -159,7 +160,7 @@ const currentPageTitle = computed(() => {
 
           <!-- Breadcrumb -->
           <nav class="admin-header-breadcrumb">
-            <NuxtLink to="/admin">Home</NuxtLink>
+            <NuxtLink to="/admin">{{ $t('navigation.breadcrumb.home') }}</NuxtLink>
             <span class="separator">/</span>
             <span class="current">{{ currentPageTitle }}</span>
           </nav>
@@ -171,10 +172,12 @@ const currentPageTitle = computed(() => {
             <i class="pi pi-search search-icon"></i>
             <input
               type="text"
-              placeholder="Cerca..."
+              :placeholder="$t('layouts.adminHeader.search')"
               class="focus:w-80 transition-all"
             />
           </div>
+
+          <LanguageSwitcher />
 
           <!-- Notifications -->
           <button class="admin-header-icon-btn">
@@ -187,7 +190,7 @@ const currentPageTitle = computed(() => {
             <div class="avatar">AM</div>
             <div class="user-info">
               <div class="name">Admin User</div>
-              <div class="role">Amministratore</div>
+              <div class="role">{{ $t('layouts.adminHeader.administrator') }}</div>
             </div>
             <i class="pi pi-chevron-down text-neutral-400 hidden lg:block"></i>
           </div>

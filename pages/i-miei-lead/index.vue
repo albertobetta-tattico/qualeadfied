@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
+
 const myLeadsStore = useMyLeadsStore()
 const catalogStore = usePublicCatalogStore()
 const {
@@ -32,11 +34,11 @@ const selectedMode = ref<'exclusive' | 'shared' | ''>('')
 const dateRangeFilter = ref<Date[] | null>(null)
 
 // Mode options (same as /leads page)
-const modeOptions = [
-  { label: 'Tutte le modalità', value: '' },
-  { label: 'Esclusivo', value: 'exclusive' },
-  { label: 'Condiviso', value: 'shared' }
-]
+const modeOptions = computed(() => [
+  { label: t('leads.myLeads.filters.allModes'), value: '' },
+  { label: t('leads.myLeads.filters.exclusive'), value: 'exclusive' },
+  { label: t('leads.myLeads.filters.shared'), value: 'shared' }
+])
 
 // Helper to format Date to string for API
 const formatDateForApi = (date: Date | null | undefined): string => {
@@ -101,9 +103,9 @@ const onSort = async (event: any) => {
 const updateStatus = async (lead: MyLead, status: ContactStatus) => {
   const success = await myLeadsStore.updateLead(lead.id, { contact_status: status })
   if (success) {
-    showSuccess('Stato aggiornato')
+    showSuccess(t('leads.myLeads.toast.statusUpdated'))
   } else {
-    showError(myLeadsStore.error || 'Errore nell\'aggiornamento')
+    showError(myLeadsStore.error || t('leads.myLeads.toast.errorUpdating'))
   }
 }
 
@@ -111,11 +113,11 @@ const updateStatus = async (lead: MyLead, status: ContactStatus) => {
 const exportLeads = async (format: 'csv' | 'excel') => {
   const url = await myLeadsStore.exportLeads(format)
   if (url) {
-    showSuccess('Export completato')
+    showSuccess(t('leads.myLeads.toast.exportCompleted'))
     // In production, this would trigger a download
     window.open(url, '_blank')
   } else {
-    showError(myLeadsStore.error || 'Errore nell\'export')
+    showError(myLeadsStore.error || t('leads.myLeads.toast.errorExport'))
   }
 }
 
@@ -131,23 +133,23 @@ const viewLead = (lead: MyLead) => {
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">I Miei Lead</h1>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ t('leads.myLeads.title') }}</h1>
         <p class="text-surface-600 dark:text-surface-400">
-          {{ myLeadsStore.pagination.total }} lead nel tuo portafoglio
+          {{ t('leads.myLeads.subtitle', { count: myLeadsStore.pagination.total }) }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <PrimeSplitButton
-          label="Esporta"
+          :label="t('leads.myLeads.export.button')"
           icon="pi pi-download"
           severity="secondary"
           :model="[
-            { label: 'Esporta CSV', icon: 'pi pi-file', command: () => exportLeads('csv') },
-            { label: 'Esporta Excel', icon: 'pi pi-file-excel', command: () => exportLeads('excel') }
+            { label: t('leads.myLeads.export.csv'), icon: 'pi pi-file', command: () => exportLeads('csv') },
+            { label: t('leads.myLeads.export.excel'), icon: 'pi pi-file-excel', command: () => exportLeads('excel') }
           ]"
         />
         <NuxtLink to="/leads">
-          <PrimeButton label="Acquista Lead" icon="pi pi-plus" />
+          <PrimeButton :label="t('leads.myLeads.buyLead')" icon="pi pi-plus" />
         </NuxtLink>
       </div>
     </div>
@@ -159,7 +161,7 @@ const viewLead = (lead: MyLead) => {
           <p class="text-3xl font-bold text-surface-900 dark:text-surface-0">
             {{ myLeadsStore.pagination.total }}
           </p>
-          <p class="text-sm text-surface-500">Totale Lead</p>
+          <p class="text-sm text-surface-500">{{ t('leads.myLeads.stats.total') }}</p>
         </template>
       </PrimeCard>
       <PrimeCard class="text-center">
@@ -167,7 +169,7 @@ const viewLead = (lead: MyLead) => {
           <p class="text-3xl font-bold text-blue-500">
             {{ myLeadsStore.newLeadsCount }}
           </p>
-          <p class="text-sm text-surface-500">Da Contattare</p>
+          <p class="text-sm text-surface-500">{{ t('leads.myLeads.stats.toContact') }}</p>
         </template>
       </PrimeCard>
       <PrimeCard class="text-center">
@@ -175,7 +177,7 @@ const viewLead = (lead: MyLead) => {
           <p class="text-3xl font-bold text-green-500">
             {{ myLeadsStore.convertedLeadsCount }}
           </p>
-          <p class="text-sm text-surface-500">Convertiti</p>
+          <p class="text-sm text-surface-500">{{ t('leads.myLeads.stats.converted') }}</p>
         </template>
       </PrimeCard>
       <PrimeCard class="text-center">
@@ -183,7 +185,7 @@ const viewLead = (lead: MyLead) => {
           <p class="text-3xl font-bold text-primary">
             {{ myLeadsStore.conversionRate }}%
           </p>
-          <p class="text-sm text-surface-500">Conversione</p>
+          <p class="text-sm text-surface-500">{{ t('leads.myLeads.stats.conversionRate') }}</p>
         </template>
       </PrimeCard>
     </div>
@@ -194,66 +196,66 @@ const viewLead = (lead: MyLead) => {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Categoria
+              {{ t('leads.myLeads.filters.category') }}
             </label>
             <PrimeSelect
               v-model="selectedCategory"
-              :options="[{ id: '', name: 'Tutte' }, ...catalogStore.categories]"
+              :options="[{ id: '', name: t('leads.myLeads.filters.categoryAll') }, ...catalogStore.categories]"
               optionLabel="name"
               optionValue="id"
-              placeholder="Categoria"
+              :placeholder="t('leads.myLeads.filters.category')"
               class="w-full"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Provincia
+              {{ t('leads.myLeads.filters.province') }}
             </label>
             <PrimeSelect
               v-model="selectedProvince"
-              :options="[{ id: '', name: 'Tutte' }, ...catalogStore.provinces]"
+              :options="[{ id: '', name: t('leads.myLeads.filters.provinceAll') }, ...catalogStore.provinces]"
               optionLabel="name"
               optionValue="id"
-              placeholder="Provincia"
+              :placeholder="t('leads.myLeads.filters.province')"
               class="w-full"
               filter
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Stato
+              {{ t('leads.myLeads.filters.status') }}
             </label>
             <PrimeSelect
               v-model="selectedStatus"
               :options="contactStatusOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Stato"
+              :placeholder="t('leads.myLeads.filters.status')"
               class="w-full"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Modalità
+              {{ t('leads.myLeads.filters.mode') }}
             </label>
             <PrimeSelect
               v-model="selectedMode"
               :options="modeOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Modalità"
+              :placeholder="t('leads.myLeads.filters.mode')"
               class="w-full"
             />
           </div>
           <div class="lg:col-span-2">
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Data acquisto
+              {{ t('leads.myLeads.filters.purchaseDate') }}
             </label>
             <PrimeDatePicker
               v-model="dateRangeFilter"
               selectionMode="range"
               dateFormat="dd/mm/yy"
-              placeholder="Seleziona periodo"
+              :placeholder="t('leads.myLeads.filters.datePlaceholder')"
               class="w-full"
               showIcon
               showButtonBar
@@ -262,7 +264,7 @@ const viewLead = (lead: MyLead) => {
           </div>
           <div class="flex items-end gap-2">
             <PrimeButton
-              label="Filtra"
+              :label="t('leads.myLeads.filters.filter')"
               icon="pi pi-search"
               @click="applyFilters"
             />
@@ -299,14 +301,14 @@ const viewLead = (lead: MyLead) => {
           @sort="onSort"
         >
           <!-- Lead ID -->
-          <PrimeColumn field="lead.id" header="ID" sortable style="min-width: 70px">
+          <PrimeColumn field="lead.id" :header="t('leads.myLeads.table.id')" sortable style="min-width: 70px">
             <template #body="{ data }">
               <span class="font-mono text-primary">#{{ data.lead.id }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Contact Name -->
-          <PrimeColumn field="lead.first_name" header="Contatto" sortable style="min-width: 180px">
+          <PrimeColumn field="lead.first_name" :header="t('leads.myLeads.table.contact')" sortable style="min-width: 180px">
             <template #body="{ data }">
               <div>
                 <p class="font-semibold text-surface-900 dark:text-surface-0">
@@ -318,7 +320,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Phone -->
-          <PrimeColumn field="lead.phone" header="Telefono" style="min-width: 120px">
+          <PrimeColumn field="lead.phone" :header="t('leads.myLeads.table.phone')" style="min-width: 120px">
             <template #body="{ data }">
               <a :href="`tel:${data.lead.phone}`" class="text-surface-700 dark:text-surface-300 hover:text-primary">
                 {{ data.lead.phone }}
@@ -327,14 +329,14 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Category -->
-          <PrimeColumn field="lead.category.name" header="Categoria" sortable style="min-width: 130px">
+          <PrimeColumn field="lead.category.name" :header="t('leads.myLeads.table.category')" sortable style="min-width: 130px">
             <template #body="{ data }">
               <PrimeTag :value="data.lead.category?.name" severity="info" size="small" />
             </template>
           </PrimeColumn>
 
           <!-- Province -->
-          <PrimeColumn field="lead.province.name" header="Provincia" sortable style="min-width: 100px">
+          <PrimeColumn field="lead.province.name" :header="t('leads.myLeads.table.province')" sortable style="min-width: 100px">
             <template #body="{ data }">
               <span class="text-surface-700 dark:text-surface-300">
                 {{ data.lead.province?.name }}
@@ -344,7 +346,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Contact Status -->
-          <PrimeColumn field="contact_status" header="Stato" sortable style="min-width: 130px">
+          <PrimeColumn field="contact_status" :header="t('leads.myLeads.table.status')" sortable style="min-width: 130px">
             <template #body="{ data }">
               <PrimeTag
                 :value="formatContactStatus(data.contact_status)"
@@ -355,7 +357,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Acquisition Type -->
-          <PrimeColumn field="acquisition_type" header="Modalità" sortable style="min-width: 100px">
+          <PrimeColumn field="acquisition_type" :header="t('leads.myLeads.table.mode')" sortable style="min-width: 100px">
             <template #body="{ data }">
               <PrimeTag
                 :value="formatAcquisitionType(data.acquisition_type)"
@@ -366,7 +368,7 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Purchase Price -->
-          <PrimeColumn field="purchase_price" header="Prezzo" sortable style="min-width: 100px">
+          <PrimeColumn field="purchase_price" :header="t('leads.myLeads.table.price')" sortable style="min-width: 100px">
             <template #body="{ data }">
               <span class="font-semibold text-surface-900 dark:text-surface-0">
                 {{ formatCurrency(data.purchase_price) }}
@@ -375,14 +377,14 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Purchase Date -->
-          <PrimeColumn field="purchased_at" header="Data Acquisto" sortable style="min-width: 120px">
+          <PrimeColumn field="purchased_at" :header="t('leads.myLeads.table.purchaseDate')" sortable style="min-width: 120px">
             <template #body="{ data }">
               <span class="text-surface-500">{{ formatDate(data.purchased_at) }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Actions -->
-          <PrimeColumn header="Azioni" style="width: 80px" frozen alignFrozen="right">
+          <PrimeColumn :header="t('leads.myLeads.table.actions')" style="width: 80px" frozen alignFrozen="right">
             <template #body="{ data }">
               <div class="flex gap-1 justify-end">
                 <PrimeButton
@@ -392,7 +394,7 @@ const viewLead = (lead: MyLead) => {
                   severity="info"
                   text
                   rounded
-                  v-tooltip.top="'Segna come contattato'"
+                  v-tooltip.top="t('leads.myLeads.actions.markContacted')"
                   @click.stop="updateStatus(data, 'contacted')"
                 />
                 <PrimeButton
@@ -401,7 +403,7 @@ const viewLead = (lead: MyLead) => {
                   severity="secondary"
                   text
                   rounded
-                  v-tooltip.top="'Vedi dettagli'"
+                  v-tooltip.top="t('leads.myLeads.actions.viewDetails')"
                   @click.stop="viewLead(data)"
                 />
               </div>
@@ -415,17 +417,17 @@ const viewLead = (lead: MyLead) => {
     <div v-else class="text-center py-16">
       <i class="pi pi-users text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
       <h2 class="text-2xl font-bold text-surface-700 dark:text-surface-300 mb-2">
-        Nessun lead nel portafoglio
+        {{ t('leads.myLeads.empty.title') }}
       </h2>
       <p class="text-surface-500 dark:text-surface-400 mb-6">
-        Inizia ad acquistare lead per costruire il tuo portafoglio clienti
+        {{ t('leads.myLeads.empty.subtitle') }}
       </p>
       <div class="flex justify-center gap-3">
         <NuxtLink to="/leads">
-          <PrimeButton label="Vai al Catalogo" icon="pi pi-search" size="large" />
+          <PrimeButton :label="t('leads.myLeads.empty.catalog')" icon="pi pi-search" size="large" />
         </NuxtLink>
         <NuxtLink to="/pacchetti">
-          <PrimeButton label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" size="large" />
+          <PrimeButton :label="t('leads.myLeads.empty.buyPackage')" icon="pi pi-box" severity="secondary" size="large" />
         </NuxtLink>
       </div>
     </div>

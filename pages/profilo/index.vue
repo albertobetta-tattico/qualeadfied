@@ -7,6 +7,7 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
 const profileStore = useClientProfileStore()
 const authStore = useAuthStore()
 const { formatDate } = useClientFormatters()
@@ -38,10 +39,10 @@ onMounted(async () => {
 const saveProfile = async () => {
   const success = await profileStore.updateProfile(profileForm.value)
   if (success) {
-    showSuccess('Profilo aggiornato')
+    showSuccess(t('profile.toast.profileUpdated'))
     isEditing.value = false
   } else {
-    showError(profileStore.error || 'Errore nell\'aggiornamento')
+    showError(profileStore.error || t('profile.toast.errorUpdating'))
   }
 }
 
@@ -70,13 +71,13 @@ const logout = async () => {
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Il Mio Profilo</h1>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('profile.title') }}</h1>
         <p class="text-surface-600 dark:text-surface-400">
-          Gestisci le tue informazioni personali
+          {{ $t('profile.subtitle') }}
         </p>
       </div>
       <PrimeButton
-        label="Esci"
+        :label="$t('profile.logout')"
         icon="pi pi-sign-out"
         severity="secondary"
         @click="logout"
@@ -96,25 +97,25 @@ const logout = async () => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-building text-primary"></i>
-              Dati Azienda
+              {{ $t('profile.company.title') }}
             </div>
           </template>
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p class="text-sm text-surface-500 mb-1">Ragione Sociale</p>
+                <p class="text-sm text-surface-500 mb-1">{{ $t('profile.company.companyName') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
                   {{ profileStore.profile.company_name }}
                 </p>
               </div>
               <div>
-                <p class="text-sm text-surface-500 mb-1">Partita IVA</p>
+                <p class="text-sm text-surface-500 mb-1">{{ $t('profile.company.vatNumber') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
                   {{ profileStore.profile.vat_number }}
                 </p>
               </div>
               <div>
-                <p class="text-sm text-surface-500 mb-1">Email</p>
+                <p class="text-sm text-surface-500 mb-1">{{ $t('profile.company.email') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
                   {{ profileStore.profile.email }}
                 </p>
@@ -122,7 +123,7 @@ const logout = async () => {
             </div>
             <p class="text-xs text-surface-400 mt-4">
               <i class="pi pi-info-circle mr-1"></i>
-              Per modificare i dati aziendali contatta il supporto
+              {{ $t('profile.company.editNote') }}
             </p>
           </template>
         </PrimeCard>
@@ -133,7 +134,7 @@ const logout = async () => {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <i class="pi pi-user text-primary"></i>
-                Dati Personali
+                {{ $t('profile.personalInfo.title') }}
               </div>
               <PrimeButton
                 v-if="!isEditing"
@@ -148,7 +149,7 @@ const logout = async () => {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                    Nome
+                    {{ $t('profile.personalInfo.firstName') }}
                   </label>
                   <PrimeInputText
                     v-model="profileForm.first_name"
@@ -157,7 +158,7 @@ const logout = async () => {
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                    Cognome
+                    {{ $t('profile.personalInfo.lastName') }}
                   </label>
                   <PrimeInputText
                     v-model="profileForm.last_name"
@@ -166,7 +167,7 @@ const logout = async () => {
                 </div>
                 <div class="md:col-span-2">
                   <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                    Telefono
+                    {{ $t('profile.personalInfo.phone') }}
                   </label>
                   <PrimeInputText
                     v-model="profileForm.phone"
@@ -176,12 +177,12 @@ const logout = async () => {
               </div>
               <div class="flex justify-end gap-2">
                 <PrimeButton
-                  label="Annulla"
+                  :label="$t('profile.personalInfo.cancel')"
                   severity="secondary"
                   @click="cancelEdit"
                 />
                 <PrimeButton
-                  label="Salva"
+                  :label="$t('profile.personalInfo.save')"
                   icon="pi pi-check"
                   :loading="profileStore.saving"
                   @click="saveProfile"
@@ -191,19 +192,19 @@ const logout = async () => {
 
             <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p class="text-sm text-surface-500 mb-1">Nome</p>
+                <p class="text-sm text-surface-500 mb-1">{{ $t('profile.personalInfo.firstName') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
                   {{ profileStore.profile.first_name }}
                 </p>
               </div>
               <div>
-                <p class="text-sm text-surface-500 mb-1">Cognome</p>
+                <p class="text-sm text-surface-500 mb-1">{{ $t('profile.personalInfo.lastName') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
                   {{ profileStore.profile.last_name }}
                 </p>
               </div>
               <div>
-                <p class="text-sm text-surface-500 mb-1">Telefono</p>
+                <p class="text-sm text-surface-500 mb-1">{{ $t('profile.personalInfo.phone') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
                   {{ profileStore.profile.phone }}
                 </p>
@@ -217,12 +218,12 @@ const logout = async () => {
       <div class="space-y-4">
         <!-- Quick Links -->
         <PrimeCard>
-          <template #title>Gestione Account</template>
+          <template #title>{{ $t('profile.accountManagement.title') }}</template>
           <template #content>
             <div class="flex flex-col gap-2">
               <NuxtLink to="/profilo/fatturazione" class="block">
                 <PrimeButton
-                  label="Dati Fatturazione"
+                  :label="$t('profile.accountManagement.billingData')"
                   icon="pi pi-file-edit"
                   class="w-full"
                   severity="secondary"
@@ -230,7 +231,7 @@ const logout = async () => {
               </NuxtLink>
               <NuxtLink to="/profilo/sicurezza" class="block">
                 <PrimeButton
-                  label="Sicurezza"
+                  :label="$t('profile.accountManagement.security')"
                   icon="pi pi-shield"
                   class="w-full"
                   severity="secondary"
@@ -238,7 +239,7 @@ const logout = async () => {
               </NuxtLink>
               <NuxtLink to="/profilo/preferenze" class="block">
                 <PrimeButton
-                  label="Preferenze"
+                  :label="$t('profile.accountManagement.preferences')"
                   icon="pi pi-cog"
                   class="w-full"
                   severity="secondary"
@@ -250,29 +251,29 @@ const logout = async () => {
 
         <!-- Account Status -->
         <PrimeCard>
-          <template #title>Stato Account</template>
+          <template #title>{{ $t('profile.accountStatus.title') }}</template>
           <template #content>
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Dati fatturazione</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('profile.accountStatus.billingData') }}</span>
                 <PrimeTag
-                  :value="profileStore.hasBillingData ? 'Completi' : 'Da completare'"
+                  :value="profileStore.hasBillingData ? $t('profile.accountStatus.billingComplete') : $t('profile.accountStatus.billingIncomplete')"
                   :severity="profileStore.hasBillingData ? 'success' : 'warning'"
                   size="small"
                 />
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Prova gratuita</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('profile.accountStatus.freeTrial') }}</span>
                 <PrimeTag
-                  :value="profileStore.hasFreeTrial ? `${profileStore.freeTrialLeadsRemaining} lead` : 'Esaurita'"
+                  :value="profileStore.hasFreeTrial ? $t('profile.accountStatus.freeTrialLeads', { count: profileStore.freeTrialLeadsRemaining }) : $t('profile.accountStatus.freeTrialExhausted')"
                   :severity="profileStore.hasFreeTrial ? 'info' : 'secondary'"
                   size="small"
                 />
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Notifiche</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('profile.accountStatus.notifications') }}</span>
                 <PrimeTag
-                  :value="profileStore.profile.email_notifications_enabled ? 'Attive' : 'Disattive'"
+                  :value="profileStore.profile.email_notifications_enabled ? $t('profile.accountStatus.notificationsActive') : $t('profile.accountStatus.notificationsInactive')"
                   :severity="profileStore.profile.email_notifications_enabled ? 'success' : 'secondary'"
                   size="small"
                 />
@@ -287,10 +288,10 @@ const logout = async () => {
             <div class="text-center">
               <i class="pi pi-headphones text-2xl text-surface-400 mb-2"></i>
               <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">
-                Hai bisogno di aiuto?
+                {{ $t('profile.support.needHelp') }}
               </p>
               <PrimeButton
-                label="Contatta Supporto"
+                :label="$t('profile.support.contactSupport')"
                 icon="pi pi-envelope"
                 severity="secondary"
                 size="small"

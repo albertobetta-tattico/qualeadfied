@@ -7,6 +7,8 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
+
 const profileStore = useClientProfileStore()
 const { formatCurrency, formatDate } = useClientFormatters()
 
@@ -37,11 +39,11 @@ const goToOrders = () => {
 // Status label helpers
 const getContactStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    new: 'Nuovo',
-    contacted: 'Contattato',
-    in_progress: 'In corso',
-    not_interested: 'Non interessato',
-    converted: 'Convertito'
+    new: t('dashboard.recentLeads.statusNew'),
+    contacted: t('dashboard.recentLeads.statusContacted'),
+    in_progress: t('dashboard.recentLeads.statusInProgress'),
+    not_interested: t('dashboard.recentLeads.statusNotInterested'),
+    converted: t('dashboard.recentLeads.statusConverted')
   }
   return labels[status] || status
 }
@@ -59,21 +61,21 @@ const getContactStatusSeverity = (status: string) => {
 
 const getAcquisitionTypeLabel = (type: string) => {
   const labels: Record<string, string> = {
-    exclusive: 'Esclusivo',
-    shared: 'Condiviso',
-    free_trial: 'Prova gratuita'
+    exclusive: t('common.labels.exclusive'),
+    shared: t('common.labels.shared'),
+    free_trial: t('common.labels.freeTrial')
   }
   return labels[type] || type
 }
 
 const getOrderStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
-    pending: 'In attesa',
-    paid: 'Pagato',
-    processing: 'In elaborazione',
-    completed: 'Completato',
-    failed: 'Fallito',
-    refunded: 'Rimborsato'
+    pending: t('orders.statuses.pending'),
+    paid: t('orders.statuses.paid'),
+    processing: t('orders.statuses.processing'),
+    completed: t('orders.statuses.completed'),
+    failed: t('orders.statuses.failed'),
+    refunded: t('orders.statuses.refunded')
   }
   return labels[status] || status
 }
@@ -108,7 +110,7 @@ const getTrendInfo = (current: number, previous: number) => {
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-            Benvenuto, {{ profileStore.fullName }}
+            {{ $t('dashboard.welcome.title', { name: profileStore.fullName }) }}
           </h1>
           <p class="text-surface-600 dark:text-surface-400">
             {{ profileStore.companyName }}
@@ -116,12 +118,12 @@ const getTrendInfo = (current: number, previous: number) => {
         </div>
         <div class="flex gap-2">
           <PrimeButton
-            label="Cerca Lead"
+            :label="$t('dashboard.quickActions.searchLeads')"
             icon="pi pi-search"
             @click="goToLeads"
           />
           <PrimeButton
-            label="Acquista Pacchetto"
+            :label="$t('dashboard.quickActions.buyPackage')"
             icon="pi pi-box"
             severity="secondary"
             @click="goToPackages"
@@ -141,15 +143,14 @@ const getTrendInfo = (current: number, previous: number) => {
               </div>
               <div>
                 <h3 class="text-lg font-semibold text-primary-900 dark:text-primary-100">
-                  Prova Gratuita Attiva
+                  {{ $t('dashboard.trialBanner.title') }}
                 </h3>
-                <p class="text-primary-700 dark:text-primary-300">
-                  Hai ancora <strong>{{ profileStore.freeTrialLeadsRemaining }}</strong> lead gratuiti da riscattare
+                <p class="text-primary-700 dark:text-primary-300" v-html="$t('dashboard.trialBanner.subtitle', { count: profileStore.freeTrialLeadsRemaining })">
                 </p>
               </div>
             </div>
             <PrimeButton
-              label="Riscatta Ora"
+              :label="$t('dashboard.trialBanner.redeem')"
               icon="pi pi-arrow-right"
               @click="router.push('/prova-gratuita')"
             />
@@ -180,11 +181,11 @@ const getTrendInfo = (current: number, previous: number) => {
                 {{ profileStore.dashboardStats?.total_leads_purchased || 0 }}
               </div>
               <div class="text-sm text-surface-500 dark:text-surface-400 mb-2">
-                Lead Acquistati
+                {{ $t('dashboard.kpi.leadsPurchased') }}
               </div>
               <div class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
                 <i class="pi pi-arrow-up"></i>
-                <span>+{{ profileStore.dashboardStats?.leads_this_month || 0 }} questo mese</span>
+                <span>{{ $t('dashboard.kpi.thisMonth', { count: profileStore.dashboardStats?.leads_this_month || 0 }) }}</span>
               </div>
             </div>
           </template>
@@ -203,11 +204,11 @@ const getTrendInfo = (current: number, previous: number) => {
                 {{ formatCurrency(profileStore.dashboardStats?.total_spent || 0) }}
               </div>
               <div class="text-sm text-surface-500 dark:text-surface-400 mb-2">
-                Spesa Totale
+                {{ $t('dashboard.kpi.totalSpent') }}
               </div>
               <div class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
                 <i class="pi pi-arrow-up"></i>
-                <span>+{{ formatCurrency(profileStore.dashboardStats?.spent_this_month || 0) }} questo mese</span>
+                <span>{{ $t('dashboard.kpi.thisMonth', { count: formatCurrency(profileStore.dashboardStats?.spent_this_month || 0) }) }}</span>
               </div>
             </div>
           </template>
@@ -226,10 +227,10 @@ const getTrendInfo = (current: number, previous: number) => {
                 {{ profileStore.dashboardStats?.active_packages || 0 }}
               </div>
               <div class="text-sm text-surface-500 dark:text-surface-400 mb-2">
-                Pacchetti Attivi
+                {{ $t('dashboard.kpi.activePackages') }}
               </div>
               <NuxtLink to="/pacchetti" class="text-xs text-primary hover:underline">
-                Gestisci pacchetti
+                {{ $t('dashboard.kpi.managePackages') }}
               </NuxtLink>
             </div>
           </template>
@@ -242,18 +243,18 @@ const getTrendInfo = (current: number, previous: number) => {
         <PrimeCard>
           <template #title>
             <div class="flex items-center justify-between">
-              <span>I Miei Lead Recenti</span>
+              <span>{{ $t('dashboard.recentLeads.title') }}</span>
               <NuxtLink to="/i-miei-lead" class="text-sm text-primary hover:text-primary-600 font-normal flex items-center gap-1">
-                Vedi tutti <i class="pi pi-arrow-right"></i>
+                {{ $t('dashboard.recentLeads.viewAll') }} <i class="pi pi-arrow-right"></i>
               </NuxtLink>
             </div>
           </template>
           <template #content>
             <div v-if="profileStore.recentLeads.length === 0" class="text-center py-8">
               <i class="pi pi-inbox text-4xl text-surface-300 dark:text-surface-600 mb-4"></i>
-              <p class="text-surface-500 dark:text-surface-400">Nessun lead acquistato</p>
+              <p class="text-surface-500 dark:text-surface-400">{{ $t('dashboard.recentLeads.empty') }}</p>
               <PrimeButton
-                label="Cerca Lead"
+                :label="$t('dashboard.quickActions.searchLeads')"
                 icon="pi pi-search"
                 class="mt-4"
                 size="small"
@@ -267,7 +268,7 @@ const getTrendInfo = (current: number, previous: number) => {
               stripedRows
               class="text-sm"
             >
-              <PrimeColumn field="name" header="Nome">
+              <PrimeColumn field="name" :header="$t('dashboard.recentLeads.columnName')">
                 <template #body="{ data }">
                   <div>
                     <div class="font-medium text-surface-900 dark:text-surface-0">{{ data.name }}</div>
@@ -275,17 +276,17 @@ const getTrendInfo = (current: number, previous: number) => {
                   </div>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="category" header="Categoria">
+              <PrimeColumn field="category" :header="$t('dashboard.recentLeads.columnCategory')">
                 <template #body="{ data }">
                   <span class="text-surface-700 dark:text-surface-300">{{ data.category }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="province" header="Provincia">
+              <PrimeColumn field="province" :header="$t('dashboard.recentLeads.columnProvince')">
                 <template #body="{ data }">
                   <span class="text-surface-600 dark:text-surface-400">{{ data.province }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="status" header="Stato">
+              <PrimeColumn field="status" :header="$t('dashboard.recentLeads.columnStatus')">
                 <template #body="{ data }">
                   <PrimeTag
                     :value="getContactStatusLabel(data.status)"
@@ -301,18 +302,18 @@ const getTrendInfo = (current: number, previous: number) => {
         <PrimeCard>
           <template #title>
             <div class="flex items-center justify-between">
-              <span>Ordini Recenti</span>
+              <span>{{ $t('dashboard.recentOrders.title') }}</span>
               <NuxtLink to="/i-miei-ordini" class="text-sm text-primary hover:text-primary-600 font-normal flex items-center gap-1">
-                Vedi tutti <i class="pi pi-arrow-right"></i>
+                {{ $t('dashboard.recentLeads.viewAll') }} <i class="pi pi-arrow-right"></i>
               </NuxtLink>
             </div>
           </template>
           <template #content>
             <div v-if="profileStore.recentOrders.length === 0" class="text-center py-8">
               <i class="pi pi-shopping-cart text-4xl text-surface-300 dark:text-surface-600 mb-4"></i>
-              <p class="text-surface-500 dark:text-surface-400">Nessun ordine effettuato</p>
+              <p class="text-surface-500 dark:text-surface-400">{{ $t('dashboard.recentOrders.empty') }}</p>
               <PrimeButton
-                label="Acquista Lead"
+                :label="$t('dashboard.quickActions.buyLeads')"
                 icon="pi pi-shopping-cart"
                 class="mt-4"
                 size="small"
@@ -326,22 +327,22 @@ const getTrendInfo = (current: number, previous: number) => {
               stripedRows
               class="text-sm"
             >
-              <PrimeColumn field="id" header="Ordine">
+              <PrimeColumn field="id" :header="$t('dashboard.recentOrders.columnOrder')">
                 <template #body="{ data }">
                   <span class="font-mono text-primary">{{ data.id }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="items_count" header="Lead">
+              <PrimeColumn field="items_count" :header="$t('dashboard.recentOrders.columnLead')">
                 <template #body="{ data }">
                   <span class="font-medium text-surface-900 dark:text-surface-0">{{ data.items_count }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="amount" header="Importo">
+              <PrimeColumn field="amount" :header="$t('dashboard.recentOrders.columnAmount')">
                 <template #body="{ data }">
                   <span class="font-semibold text-surface-900 dark:text-surface-0">{{ formatCurrency(data.amount) }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="status" header="Stato">
+              <PrimeColumn field="status" :header="$t('dashboard.recentOrders.columnStatus')">
                 <template #body="{ data }">
                   <PrimeTag
                     :value="getOrderStatusLabel(data.status)"
@@ -349,7 +350,7 @@ const getTrendInfo = (current: number, previous: number) => {
                   />
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="date" header="Data">
+              <PrimeColumn field="date" :header="$t('dashboard.recentOrders.columnDate')">
                 <template #body="{ data }">
                   <span class="text-surface-600 dark:text-surface-400">{{ data.date }}</span>
                 </template>
@@ -363,31 +364,31 @@ const getTrendInfo = (current: number, previous: number) => {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Quick Actions -->
         <PrimeCard>
-          <template #title>Azioni Rapide</template>
+          <template #title>{{ $t('dashboard.quickActions.title') }}</template>
           <template #content>
             <div class="space-y-3">
               <PrimeButton
-                label="Cerca nuovi lead"
+                :label="$t('dashboard.quickActions.searchLeads')"
                 icon="pi pi-search"
                 class="w-full"
                 @click="goToLeads"
               />
               <PrimeButton
-                label="I miei lead"
+                :label="$t('dashboard.quickActions.myLeads')"
                 icon="pi pi-list"
                 class="w-full"
                 severity="secondary"
                 @click="goToMyLeads"
               />
               <PrimeButton
-                label="I miei ordini"
+                :label="$t('dashboard.quickActions.myOrders')"
                 icon="pi pi-shopping-cart"
                 class="w-full"
                 severity="secondary"
                 @click="goToOrders"
               />
               <PrimeButton
-                label="Acquista pacchetto"
+                :label="$t('dashboard.quickActions.buyPackage')"
                 icon="pi pi-box"
                 class="w-full"
                 severity="secondary"
@@ -399,27 +400,27 @@ const getTrendInfo = (current: number, previous: number) => {
 
         <!-- Account Status -->
         <PrimeCard>
-          <template #title>Stato Account</template>
+          <template #title>{{ $t('dashboard.accountStatus.title') }}</template>
           <template #content>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Dati fatturazione</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('dashboard.accountStatus.billingData') }}</span>
                 <PrimeTag
-                  :value="profileStore.hasBillingData ? 'Completi' : 'Da completare'"
+                  :value="profileStore.hasBillingData ? $t('dashboard.accountStatus.complete') : $t('dashboard.accountStatus.incomplete')"
                   :severity="profileStore.hasBillingData ? 'success' : 'warn'"
                 />
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Prova gratuita</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('dashboard.accountStatus.freeTrial') }}</span>
                 <PrimeTag
-                  :value="profileStore.hasFreeTrial ? `${profileStore.freeTrialLeadsRemaining} lead` : 'Esaurita'"
+                  :value="profileStore.hasFreeTrial ? `${profileStore.freeTrialLeadsRemaining} lead` : $t('dashboard.accountStatus.exhausted')"
                   :severity="profileStore.hasFreeTrial ? 'info' : 'secondary'"
                 />
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Notifiche email</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('dashboard.accountStatus.emailNotifications') }}</span>
                 <PrimeTag
-                  :value="profileStore.profile?.email_notifications_enabled ? 'Attive' : 'Disattive'"
+                  :value="profileStore.profile?.email_notifications_enabled ? $t('dashboard.accountStatus.active') : $t('dashboard.accountStatus.inactive')"
                   :severity="profileStore.profile?.email_notifications_enabled ? 'success' : 'secondary'"
                 />
               </div>
@@ -431,7 +432,7 @@ const getTrendInfo = (current: number, previous: number) => {
         <PrimeCard>
           <template #title>
             <div class="flex items-center justify-between">
-              <span>Notifiche</span>
+              <span>{{ $t('dashboard.notifications.title') }}</span>
               <span v-if="profileStore.unreadNotificationsCount > 0" class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                 {{ profileStore.unreadNotificationsCount }}
               </span>
@@ -440,7 +441,7 @@ const getTrendInfo = (current: number, previous: number) => {
           <template #content>
             <div v-if="profileStore.notifications.length === 0" class="text-center py-4">
               <i class="pi pi-bell-slash text-3xl text-surface-300 dark:text-surface-600 mb-2"></i>
-              <p class="text-surface-500 dark:text-surface-400 text-sm">Nessuna notifica</p>
+              <p class="text-surface-500 dark:text-surface-400 text-sm">{{ $t('dashboard.notifications.empty') }}</p>
             </div>
             <div v-else class="space-y-3">
               <div

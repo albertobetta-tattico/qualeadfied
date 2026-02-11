@@ -11,6 +11,7 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
+const { t } = useI18n()
 const { errors, validateForgotPasswordForm, clearErrors } = usePasswordResetValidation()
 const { showError, showSuccess } = useAuthToast()
 
@@ -35,9 +36,9 @@ const handleSubmit = async () => {
 
   if (success) {
     emailSent.value = true
-    showSuccess('Email inviata con successo')
+    showSuccess(t('notifications.auth.passwordResetSent'))
   } else {
-    showError(authStore.error || 'Errore durante l\'invio dell\'email')
+    showError(authStore.error || t('notifications.auth.passwordResetError'))
   }
 }
 
@@ -45,9 +46,9 @@ const handleSubmit = async () => {
 const resendEmail = async () => {
   const success = await authStore.forgotPassword(form)
   if (success) {
-    showSuccess('Email inviata nuovamente')
+    showSuccess(t('notifications.auth.emailResent'))
   } else {
-    showError(authStore.error || 'Errore durante l\'invio')
+    showError(authStore.error || t('notifications.auth.sendError'))
   }
 }
 </script>
@@ -66,18 +67,15 @@ const resendEmail = async () => {
           <div class="sent-icon">
             <i class="pi pi-envelope"></i>
           </div>
-          <h1 class="forgot-title">Controlla la tua email</h1>
-          <p class="forgot-text">
-            Abbiamo inviato le istruzioni per il reset della password a
-            <strong>{{ form.email }}</strong>
-          </p>
+          <h1 class="forgot-title">{{ $t('auth.forgotPassword.checkEmail') }}</h1>
+          <p class="forgot-text" v-html="$t('auth.forgotPassword.instructionsSent', { email: form.email })"></p>
           <p class="forgot-hint">
-            Il link scadrà tra 60 minuti. Se non ricevi l'email, controlla la cartella spam.
+            {{ $t('auth.forgotPassword.linkExpiry') }}
           </p>
 
           <div class="sent-actions">
             <PrimeButton
-              label="Invia di nuovo"
+              :label="$t('auth.forgotPassword.resend')"
               severity="secondary"
               outlined
               :loading="loading"
@@ -86,7 +84,7 @@ const resendEmail = async () => {
             />
             <NuxtLink to="/" class="w-full">
               <PrimeButton
-                label="Torna al Login"
+                :label="$t('auth.forgotPassword.backToLogin')"
                 severity="primary"
                 class="w-full"
               />
@@ -100,19 +98,19 @@ const resendEmail = async () => {
             <i class="pi pi-lock"></i>
           </div>
 
-          <h1 class="forgot-title">Password dimenticata?</h1>
+          <h1 class="forgot-title">{{ $t('auth.forgotPassword.title') }}</h1>
           <p class="forgot-text">
-            Inserisci l'email associata al tuo account e ti invieremo le istruzioni per reimpostare la password.
+            {{ $t('auth.forgotPassword.subtitle') }}
           </p>
 
           <form @submit.prevent="handleSubmit" class="forgot-form">
             <div class="form-group">
-              <label for="email">Email</label>
+              <label for="email">{{ $t('common.labels.email') }}</label>
               <PrimeInputText
                 id="email"
                 v-model="form.email"
                 type="email"
-                placeholder="nome@azienda.it"
+                :placeholder="$t('auth.login.emailPlaceholder')"
                 :class="{ 'p-invalid': errors.email }"
                 class="w-full"
                 autocomplete="email"
@@ -122,7 +120,7 @@ const resendEmail = async () => {
 
             <PrimeButton
               type="submit"
-              label="Invia Istruzioni"
+              :label="$t('auth.forgotPassword.submit')"
               icon="pi pi-send"
               :loading="loading"
               class="w-full submit-btn"
@@ -131,7 +129,7 @@ const resendEmail = async () => {
 
           <NuxtLink to="/" class="back-link">
             <i class="pi pi-arrow-left mr-2"></i>
-            Torna al Login
+            {{ $t('auth.forgotPassword.backToLogin') }}
           </NuxtLink>
         </template>
       </div>

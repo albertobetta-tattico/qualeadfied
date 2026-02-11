@@ -8,6 +8,8 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
+
 const catalogStore = usePublicCatalogStore()
 const cartStore = useCartStore()
 const { formatCurrency, formatRelativeTime, formatDate } = useClientFormatters()
@@ -24,17 +26,17 @@ const selectedMode = ref<'exclusive' | 'shared' | ''>('')
 const dateRangeFilter = ref<Date[] | null>(null)
 
 // Mode options
-const modeOptions = [
-  { label: 'Tutte le modalità', value: '' },
-  { label: 'Esclusivo', value: 'exclusive' },
-  { label: 'Condiviso', value: 'shared' }
-]
+const modeOptions = computed(() => [
+  { label: t('catalog.filterOptions.allModes'), value: '' },
+  { label: t('common.labels.exclusive'), value: 'exclusive' },
+  { label: t('common.labels.shared'), value: 'shared' }
+])
 
 // Bulk purchase mode options
-const bulkModeOptions = [
-  { label: 'Condiviso', value: 'shared' },
-  { label: 'Esclusivo', value: 'exclusive' }
-]
+const bulkModeOptions = computed(() => [
+  { label: t('common.labels.shared'), value: 'shared' },
+  { label: t('common.labels.exclusive'), value: 'exclusive' }
+])
 
 // Helper to format Date to string for API
 const formatDateForApi = (date: Date | null | undefined): string => {
@@ -103,14 +105,14 @@ const addToCart = async (leadId: number, mode: 'exclusive' | 'shared') => {
   if (success) {
     showAddedToCart()
   } else {
-    showError(cartStore.error || 'Errore nell\'aggiunta al carrello')
+    showError(cartStore.error || t('cart.toast.addError'))
   }
 }
 
 // Add multiple leads to cart
 const addSelectedToCart = async () => {
   if (selectedLeads.value.length === 0) {
-    showError('Seleziona almeno un lead')
+    showError(t('leads.catalog.selectAtLeastOne'))
     return
   }
 
@@ -136,10 +138,10 @@ const addSelectedToCart = async () => {
   }
 
   if (addedCount > 0) {
-    showSuccess(`${addedCount} lead aggiunti al carrello`)
+    showSuccess(t('cart.toast.bulkAddSuccess', { count: addedCount }))
   }
   if (errorCount > 0) {
-    showError(`${errorCount} lead non aggiunti`)
+    showError(t('cart.toast.bulkAddError', { count: errorCount }))
   }
 
   selectedLeads.value = []
@@ -179,15 +181,15 @@ const bulkTotalPrice = computed(() => {
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Catalogo Lead</h1>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('catalog.page.title') }}</h1>
         <p class="text-surface-600 dark:text-surface-400">
-          {{ catalogStore.pagination.total }} lead disponibili
+          {{ $t('leads.catalog.leadsAvailable', { count: catalogStore.pagination.total }) }}
         </p>
       </div>
       <div class="flex items-center gap-2">
         <NuxtLink to="/carrello">
           <PrimeButton
-            :label="`Carrello (${cartStore.itemCount})`"
+            :label="$t('cart.title') + ' (' + cartStore.itemCount + ')'"
             icon="pi pi-shopping-cart"
             :badge="cartStore.itemCount > 0 ? String(cartStore.itemCount) : undefined"
             :severity="cartStore.itemCount > 0 ? 'primary' : 'secondary'"
@@ -202,52 +204,52 @@ const bulkTotalPrice = computed(() => {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Categoria
+              {{ $t('catalog.filters.category') }}
             </label>
             <PrimeSelect
               v-model="selectedCategory"
-              :options="[{ id: '', name: 'Tutte le categorie' }, ...catalogStore.categories]"
+              :options="[{ id: '', name: $t('catalog.filters.allCategories') }, ...catalogStore.categories]"
               optionLabel="name"
               optionValue="id"
-              placeholder="Seleziona categoria"
+              :placeholder="$t('catalog.filters.selectCategory')"
               class="w-full"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Provincia
+              {{ $t('catalog.filters.province') }}
             </label>
             <PrimeSelect
               v-model="selectedProvince"
-              :options="[{ id: '', name: 'Tutte le province' }, ...catalogStore.provinces]"
+              :options="[{ id: '', name: $t('catalog.filters.allProvinces') }, ...catalogStore.provinces]"
               optionLabel="name"
               optionValue="id"
-              placeholder="Seleziona provincia"
+              :placeholder="$t('catalog.filters.selectProvince')"
               class="w-full"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Modalità
+              {{ $t('catalog.filters.mode') }}
             </label>
             <PrimeSelect
               v-model="selectedMode"
               :options="modeOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Seleziona modalità"
+              :placeholder="$t('catalog.filters.selectMode')"
               class="w-full"
             />
           </div>
           <div class="lg:col-span-2">
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Data generazione
+              {{ $t('catalog.filters.generationDate') }}
             </label>
             <PrimeDatePicker
               v-model="dateRangeFilter"
               selectionMode="range"
               dateFormat="dd/mm/yy"
-              placeholder="Seleziona periodo"
+              :placeholder="$t('catalog.filters.selectPeriod')"
               class="w-full"
               showIcon
               showButtonBar
@@ -256,7 +258,7 @@ const bulkTotalPrice = computed(() => {
           </div>
           <div class="flex items-end gap-2">
             <PrimeButton
-              label="Filtra"
+              :label="$t('common.actions.filter')"
               icon="pi pi-search"
               @click="applyFilters"
             />
@@ -276,15 +278,15 @@ const bulkTotalPrice = computed(() => {
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div class="flex items-center gap-4">
             <span class="text-primary-700 dark:text-primary-300 font-medium">
-              {{ selectedLeads.length }} lead selezionati
+              {{ $t('leads.catalog.leadsSelected', { count: selectedLeads.length }) }}
               <span v-if="selectableCount < selectedLeads.length" class="text-sm text-primary-500">
-                ({{ selectableCount }} acquistabili)
+                {{ $t('leads.catalog.purchasable', { count: selectableCount }) }}
               </span>
             </span>
           </div>
           <div class="flex items-center gap-3">
             <div class="flex items-center gap-2">
-              <label class="text-sm text-primary-700 dark:text-primary-300">Modalità:</label>
+              <label class="text-sm text-primary-700 dark:text-primary-300">{{ $t('catalog.filters.mode') }}:</label>
               <PrimeSelect
                 v-model="bulkPurchaseMode"
                 :options="bulkModeOptions"
@@ -294,13 +296,13 @@ const bulkTotalPrice = computed(() => {
               />
             </div>
             <div class="text-right">
-              <span class="text-sm text-primary-600 dark:text-primary-400">Totale:</span>
+              <span class="text-sm text-primary-600 dark:text-primary-400">{{ $t('cart.summary.total') }}:</span>
               <span class="ml-2 text-lg font-bold text-primary-700 dark:text-primary-300">
                 {{ formatCurrency(bulkTotalPrice) }}
               </span>
             </div>
             <PrimeButton
-              :label="`Aggiungi ${selectableCount} al carrello`"
+              :label="$t('leads.catalog.addToCart', { count: selectableCount })"
               icon="pi pi-shopping-cart"
               @click="addSelectedToCart"
               :disabled="selectableCount === 0"
@@ -311,7 +313,7 @@ const bulkTotalPrice = computed(() => {
               text
               rounded
               @click="selectedLeads = []"
-              v-tooltip.top="'Deseleziona tutti'"
+              v-tooltip.top="$t('common.actions.deselectAll')"
             />
           </div>
         </div>
@@ -345,21 +347,21 @@ const bulkTotalPrice = computed(() => {
           <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
           <!-- Lead ID -->
-          <PrimeColumn field="id" header="ID" sortable style="min-width: 80px">
+          <PrimeColumn field="id" :header="$t('catalog.table.id')" sortable style="min-width: 80px">
             <template #body="{ data }">
               <span class="font-mono text-primary">#{{ data.id }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Category -->
-          <PrimeColumn field="category.name" header="Categoria" sortable style="min-width: 130px">
+          <PrimeColumn field="category.name" :header="$t('catalog.table.category')" sortable style="min-width: 130px">
             <template #body="{ data }">
               <PrimeTag :value="data.category?.name" severity="info" size="small" />
             </template>
           </PrimeColumn>
 
           <!-- Province -->
-          <PrimeColumn field="province.name" header="Provincia" sortable style="min-width: 100px">
+          <PrimeColumn field="province.name" :header="$t('catalog.table.province')" sortable style="min-width: 100px">
             <template #body="{ data }">
               <span class="text-surface-700 dark:text-surface-300">
                 {{ data.province?.name }}
@@ -369,7 +371,7 @@ const bulkTotalPrice = computed(() => {
           </PrimeColumn>
 
           <!-- Request Preview -->
-          <PrimeColumn header="Richiesta" style="min-width: 250px">
+          <PrimeColumn :header="$t('catalog.table.request')" style="min-width: 250px">
             <template #body="{ data }">
               <p class="text-surface-600 dark:text-surface-400 line-clamp-2">
                 {{ data.request_preview }}
@@ -378,7 +380,7 @@ const bulkTotalPrice = computed(() => {
           </PrimeColumn>
 
           <!-- Availability -->
-          <PrimeColumn field="shared_slots_available" header="Disponibilità" sortable style="min-width: 120px">
+          <PrimeColumn field="shared_slots_available" :header="$t('catalog.table.availability')" sortable style="min-width: 120px">
             <template #body="{ data }">
               <div class="flex items-center gap-2">
                 <i class="pi pi-users text-surface-400"></i>
@@ -390,22 +392,22 @@ const bulkTotalPrice = computed(() => {
           </PrimeColumn>
 
           <!-- Date -->
-          <PrimeColumn field="generated_at" header="Data" sortable style="min-width: 100px">
+          <PrimeColumn field="generated_at" :header="$t('catalog.table.date')" sortable style="min-width: 100px">
             <template #body="{ data }">
               <span class="text-surface-500">{{ formatRelativeTime(data.generated_at) }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Pricing -->
-          <PrimeColumn field="base_price" header="Prezzo" sortable style="min-width: 180px">
+          <PrimeColumn field="base_price" :header="$t('catalog.table.price')" sortable style="min-width: 180px">
             <template #body="{ data }">
               <div class="flex gap-3">
                 <div class="text-center">
-                  <p class="text-xs text-surface-500">Esclusivo</p>
+                  <p class="text-xs text-surface-500">{{ $t('common.labels.exclusive') }}</p>
                   <p class="font-bold text-primary">{{ formatCurrency(data.base_price * 3) }}</p>
                 </div>
                 <div class="text-center">
-                  <p class="text-xs text-surface-500">Condiviso</p>
+                  <p class="text-xs text-surface-500">{{ $t('common.labels.shared') }}</p>
                   <p class="font-bold text-surface-700 dark:text-surface-300">{{ formatCurrency(data.base_price) }}</p>
                 </div>
               </div>
@@ -413,23 +415,23 @@ const bulkTotalPrice = computed(() => {
           </PrimeColumn>
 
           <!-- Actions -->
-          <PrimeColumn header="Azioni" style="min-width: 200px" frozen alignFrozen="right">
+          <PrimeColumn :header="$t('catalog.table.actions')" style="min-width: 200px" frozen alignFrozen="right">
             <template #body="{ data }">
               <div v-if="isInCart(data.id)" class="flex items-center gap-2">
                 <i class="pi pi-check-circle text-green-500"></i>
                 <span class="text-green-700 dark:text-green-400 text-sm font-medium">
-                  Nel carrello ({{ getCartItemMode(data.id) === 'exclusive' ? 'Escl.' : 'Cond.' }})
+                  {{ getCartItemMode(data.id) === 'exclusive' ? $t('leads.catalog.inCartExclusive') : $t('leads.catalog.inCartShared') }}
                 </span>
               </div>
               <div v-else class="flex gap-2">
                 <PrimeButton
-                  label="Esclusivo"
+                  :label="$t('common.labels.exclusive')"
                   icon="pi pi-star"
                   size="small"
                   @click="addToCart(data.id, 'exclusive')"
                 />
                 <PrimeButton
-                  label="Condiviso"
+                  :label="$t('common.labels.shared')"
                   icon="pi pi-users"
                   size="small"
                   severity="secondary"
@@ -446,13 +448,13 @@ const bulkTotalPrice = computed(() => {
     <div v-else class="text-center py-12">
       <i class="pi pi-inbox text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
       <h3 class="text-xl font-semibold text-surface-700 dark:text-surface-300 mb-2">
-        Nessun lead trovato
+        {{ $t('catalog.empty.title') }}
       </h3>
       <p class="text-surface-500 dark:text-surface-400 mb-4">
-        Prova a modificare i filtri di ricerca
+        {{ $t('catalog.empty.subtitle') }}
       </p>
       <PrimeButton
-        label="Reset filtri"
+        :label="$t('catalog.filters.resetFilters')"
         icon="pi pi-refresh"
         @click="resetFilters"
       />

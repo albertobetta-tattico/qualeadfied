@@ -7,6 +7,7 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
 const profileStore = useClientProfileStore()
 const { showSuccess, showError } = useClientToast()
 const { validateForm, errors, clearErrors } = useBillingValidation()
@@ -43,15 +44,15 @@ const saveBillingData = async () => {
   clearErrors()
 
   if (!validateForm(billingForm.value)) {
-    showError('Correggi gli errori nel form')
+    showError(t('profile.billing.toast.errorFormValidation'))
     return
   }
 
   const success = await profileStore.updateBilling(billingForm.value)
   if (success) {
-    showSuccess('Dati fatturazione aggiornati')
+    showSuccess(t('profile.billing.toast.billingUpdated'))
   } else {
-    showError(profileStore.error || 'Errore nell\'aggiornamento')
+    showError(profileStore.error || t('profile.billing.toast.errorUpdating'))
   }
 }
 </script>
@@ -62,11 +63,11 @@ const saveBillingData = async () => {
     <div class="mb-6">
       <NuxtLink to="/profilo" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
         <i class="pi pi-arrow-left"></i>
-        Torna al profilo
+        {{ $t('profile.billing.backToProfile') }}
       </NuxtLink>
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Dati di Fatturazione</h1>
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('profile.billing.title') }}</h1>
       <p class="text-surface-600 dark:text-surface-400">
-        Gestisci i dati per la fatturazione elettronica
+        {{ $t('profile.billing.subtitle') }}
       </p>
     </div>
 
@@ -82,7 +83,7 @@ const saveBillingData = async () => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
-              Indirizzo di Fatturazione
+              {{ $t('profile.billing.addressTitle') }}
             </div>
           </template>
           <template #content>
@@ -91,13 +92,13 @@ const saveBillingData = async () => {
               <div class="md:col-span-2 p-4 bg-surface-50 dark:bg-surface-800 rounded-lg mb-4">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <p class="text-sm text-surface-500 mb-1">Ragione Sociale</p>
+                    <p class="text-sm text-surface-500 mb-1">{{ $t('profile.billing.companyName') }}</p>
                     <p class="font-medium text-surface-900 dark:text-surface-0">
                       {{ profileStore.profile.company_name }}
                     </p>
                   </div>
                   <div>
-                    <p class="text-sm text-surface-500 mb-1">Partita IVA</p>
+                    <p class="text-sm text-surface-500 mb-1">{{ $t('profile.billing.vatNumber') }}</p>
                     <p class="font-medium text-surface-900 dark:text-surface-0">
                       {{ profileStore.profile.vat_number }}
                     </p>
@@ -108,11 +109,11 @@ const saveBillingData = async () => {
               <!-- Billing Address -->
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Indirizzo *
+                  {{ $t('profile.billing.address') }} *
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_address"
-                  placeholder="Via, numero civico"
+                  :placeholder="$t('profile.billing.addressPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.billing_address"
                 />
@@ -124,11 +125,11 @@ const saveBillingData = async () => {
               <!-- City -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Città *
+                  {{ $t('profile.billing.city') }} *
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_city"
-                  placeholder="Città"
+                  :placeholder="$t('profile.billing.cityPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.billing_city"
                 />
@@ -140,11 +141,11 @@ const saveBillingData = async () => {
               <!-- Province -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Provincia *
+                  {{ $t('profile.billing.province') }} *
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_province"
-                  placeholder="MI"
+                  :placeholder="$t('profile.billing.provincePlaceholder')"
                   maxlength="2"
                   class="w-full uppercase"
                   :invalid="!!errors.billing_province"
@@ -157,11 +158,11 @@ const saveBillingData = async () => {
               <!-- ZIP -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  CAP *
+                  {{ $t('profile.billing.zip') }} *
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_zip"
-                  placeholder="20100"
+                  :placeholder="$t('profile.billing.zipPlaceholder')"
                   maxlength="5"
                   class="w-full"
                   :invalid="!!errors.billing_zip"
@@ -174,7 +175,7 @@ const saveBillingData = async () => {
               <!-- Country -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Paese
+                  {{ $t('profile.billing.country') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_country"
@@ -191,23 +192,23 @@ const saveBillingData = async () => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-send text-primary"></i>
-              Fatturazione Elettronica
+              {{ $t('profile.billing.electronicInvoicing.title') }}
             </div>
           </template>
           <template #content>
             <p class="text-sm text-surface-600 dark:text-surface-400 mb-4">
-              Inserisci il Codice SDI oppure l'indirizzo PEC per la ricezione delle fatture elettroniche.
+              {{ $t('profile.billing.electronicInvoicing.description') }}
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- SDI Code -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Codice SDI
+                  {{ $t('profile.billing.electronicInvoicing.sdiCode') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.sdi_code"
-                  placeholder="ABC1234"
+                  :placeholder="$t('profile.billing.electronicInvoicing.sdiCodePlaceholder')"
                   maxlength="7"
                   class="w-full uppercase"
                   :invalid="!!errors.sdi_code"
@@ -216,18 +217,18 @@ const saveBillingData = async () => {
                   {{ errors.sdi_code }}
                 </small>
                 <small v-else class="text-surface-400">
-                  7 caratteri alfanumerici
+                  {{ $t('profile.billing.electronicInvoicing.sdiCodeHelp') }}
                 </small>
               </div>
 
               <!-- PEC Email -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Email PEC
+                  {{ $t('profile.billing.electronicInvoicing.pecEmail') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.pec_email"
-                  placeholder="azienda@pec.it"
+                  :placeholder="$t('profile.billing.electronicInvoicing.pecEmailPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.pec_email"
                 />
@@ -239,7 +240,7 @@ const saveBillingData = async () => {
 
             <div class="flex justify-end mt-6">
               <PrimeButton
-                label="Salva Modifiche"
+                :label="$t('profile.billing.saveChanges')"
                 icon="pi pi-check"
                 :loading="profileStore.saving"
                 @click="saveBillingData"
@@ -258,10 +259,10 @@ const saveBillingData = async () => {
               <i class="pi pi-info-circle text-blue-500 mt-1"></i>
               <div>
                 <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                  Fatturazione Elettronica
+                  {{ $t('profile.billing.infoTitle') }}
                 </h4>
                 <p class="text-sm text-blue-700 dark:text-blue-300">
-                  Le fatture vengono emesse e inviate elettronicamente al Sistema di Interscambio (SDI) dell'Agenzia delle Entrate.
+                  {{ $t('profile.billing.infoDescription') }}
                 </p>
               </div>
             </div>
@@ -270,19 +271,19 @@ const saveBillingData = async () => {
 
         <!-- Help -->
         <PrimeCard>
-          <template #title>Aiuto</template>
+          <template #title>{{ $t('profile.billing.help.title') }}</template>
           <template #content>
             <div class="space-y-3 text-sm">
               <div>
-                <p class="font-medium text-surface-900 dark:text-surface-0">Cos'è il Codice SDI?</p>
+                <p class="font-medium text-surface-900 dark:text-surface-0">{{ $t('profile.billing.help.whatIsSdi') }}</p>
                 <p class="text-surface-600 dark:text-surface-400">
-                  È il codice univoco che identifica il canale di ricezione delle fatture elettroniche.
+                  {{ $t('profile.billing.help.sdiDescription') }}
                 </p>
               </div>
               <div>
-                <p class="font-medium text-surface-900 dark:text-surface-0">Non ho il Codice SDI</p>
+                <p class="font-medium text-surface-900 dark:text-surface-0">{{ $t('profile.billing.help.noSdi') }}</p>
                 <p class="text-surface-600 dark:text-surface-400">
-                  Puoi usare l'indirizzo PEC della tua azienda come alternativa.
+                  {{ $t('profile.billing.help.noSdiDescription') }}
                 </p>
               </div>
             </div>

@@ -7,6 +7,7 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
 const profileStore = useClientProfileStore()
 const { showSuccess, showError } = useClientToast()
 const { validateForm, errors, clearErrors } = usePasswordChangeValidation()
@@ -28,13 +29,13 @@ const changePassword = async () => {
   clearErrors()
 
   if (!validateForm(passwordForm.value)) {
-    showError('Correggi gli errori nel form')
+    showError(t('profile.security.toast.errorFormValidation'))
     return
   }
 
   const success = await profileStore.changePassword(passwordForm.value)
   if (success) {
-    showSuccess('Password modificata con successo')
+    showSuccess(t('profile.security.toast.passwordChanged'))
     // Reset form
     passwordForm.value = {
       current_password: '',
@@ -42,7 +43,7 @@ const changePassword = async () => {
       password_confirmation: ''
     }
   } else {
-    showError(profileStore.error || 'Errore nel cambio password')
+    showError(profileStore.error || t('profile.security.toast.errorChanging'))
   }
 }
 
@@ -68,10 +69,10 @@ const passwordStrengthColor = computed(() => {
 })
 
 const passwordStrengthLabel = computed(() => {
-  if (passwordStrength.value <= 25) return 'Debole'
-  if (passwordStrength.value <= 50) return 'Discreta'
-  if (passwordStrength.value <= 75) return 'Buona'
-  return 'Forte'
+  if (passwordStrength.value <= 25) return t('profile.security.strength.weak')
+  if (passwordStrength.value <= 50) return t('profile.security.strength.fair')
+  if (passwordStrength.value <= 75) return t('profile.security.strength.good')
+  return t('profile.security.strength.strong')
 })
 </script>
 
@@ -81,11 +82,11 @@ const passwordStrengthLabel = computed(() => {
     <div class="mb-6">
       <NuxtLink to="/profilo" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
         <i class="pi pi-arrow-left"></i>
-        Torna al profilo
+        {{ $t('profile.security.backToProfile') }}
       </NuxtLink>
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Sicurezza</h1>
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('profile.security.title') }}</h1>
       <p class="text-surface-600 dark:text-surface-400">
-        Gestisci la password e le impostazioni di sicurezza
+        {{ $t('profile.security.subtitle') }}
       </p>
     </div>
 
@@ -96,7 +97,7 @@ const passwordStrengthLabel = computed(() => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-lock text-primary"></i>
-              Cambia Password
+              {{ $t('profile.security.changePassword.title') }}
             </div>
           </template>
           <template #content>
@@ -104,13 +105,13 @@ const passwordStrengthLabel = computed(() => {
               <!-- Current Password -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Password Attuale *
+                  {{ $t('profile.security.changePassword.currentPassword') }} *
                 </label>
                 <div class="relative">
                   <PrimeInputText
                     v-model="passwordForm.current_password"
                     :type="showCurrentPassword ? 'text' : 'password'"
-                    placeholder="Inserisci la password attuale"
+                    :placeholder="$t('profile.security.changePassword.currentPasswordPlaceholder')"
                     class="w-full pr-10"
                     :invalid="!!errors.current_password"
                   />
@@ -130,13 +131,13 @@ const passwordStrengthLabel = computed(() => {
               <!-- New Password -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Nuova Password *
+                  {{ $t('profile.security.changePassword.newPassword') }} *
                 </label>
                 <div class="relative">
                   <PrimeInputText
                     v-model="passwordForm.password"
                     :type="showNewPassword ? 'text' : 'password'"
-                    placeholder="Inserisci la nuova password"
+                    :placeholder="$t('profile.security.changePassword.newPasswordPlaceholder')"
                     class="w-full pr-10"
                     :invalid="!!errors.password"
                   />
@@ -172,13 +173,13 @@ const passwordStrengthLabel = computed(() => {
               <!-- Confirm Password -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Conferma Password *
+                  {{ $t('profile.security.changePassword.confirmPassword') }} *
                 </label>
                 <div class="relative">
                   <PrimeInputText
                     v-model="passwordForm.password_confirmation"
                     :type="showConfirmPassword ? 'text' : 'password'"
-                    placeholder="Conferma la nuova password"
+                    :placeholder="$t('profile.security.changePassword.confirmPasswordPlaceholder')"
                     class="w-full pr-10"
                     :invalid="!!errors.password_confirmation"
                   />
@@ -197,7 +198,7 @@ const passwordStrengthLabel = computed(() => {
 
               <div class="flex justify-end pt-4">
                 <PrimeButton
-                  label="Cambia Password"
+                  :label="$t('profile.security.changePassword.submit')"
                   icon="pi pi-check"
                   :loading="profileStore.saving"
                   @click="changePassword"
@@ -212,7 +213,7 @@ const passwordStrengthLabel = computed(() => {
       <div class="space-y-4">
         <!-- Requirements -->
         <PrimeCard>
-          <template #title>Requisiti Password</template>
+          <template #title>{{ $t('profile.security.requirements.title') }}</template>
           <template #content>
             <ul class="space-y-2 text-sm">
               <li class="flex items-center gap-2">
@@ -223,7 +224,7 @@ const passwordStrengthLabel = computed(() => {
                     : 'pi-circle text-surface-300'"
                 ></i>
                 <span :class="passwordForm.password.length >= 8 ? 'text-green-700 dark:text-green-400' : 'text-surface-500'">
-                  Almeno 8 caratteri
+                  {{ $t('profile.security.requirements.minLength') }}
                 </span>
               </li>
               <li class="flex items-center gap-2">
@@ -234,7 +235,7 @@ const passwordStrengthLabel = computed(() => {
                     : 'pi-circle text-surface-300'"
                 ></i>
                 <span :class="/[A-Z]/.test(passwordForm.password) ? 'text-green-700 dark:text-green-400' : 'text-surface-500'">
-                  Una lettera maiuscola
+                  {{ $t('profile.security.requirements.uppercase') }}
                 </span>
               </li>
               <li class="flex items-center gap-2">
@@ -245,7 +246,7 @@ const passwordStrengthLabel = computed(() => {
                     : 'pi-circle text-surface-300'"
                 ></i>
                 <span :class="/[a-z]/.test(passwordForm.password) ? 'text-green-700 dark:text-green-400' : 'text-surface-500'">
-                  Una lettera minuscola
+                  {{ $t('profile.security.requirements.lowercase') }}
                 </span>
               </li>
               <li class="flex items-center gap-2">
@@ -256,7 +257,7 @@ const passwordStrengthLabel = computed(() => {
                     : 'pi-circle text-surface-300'"
                 ></i>
                 <span :class="/\d/.test(passwordForm.password) ? 'text-green-700 dark:text-green-400' : 'text-surface-500'">
-                  Almeno un numero
+                  {{ $t('profile.security.requirements.number') }}
                 </span>
               </li>
             </ul>
@@ -270,12 +271,12 @@ const passwordStrengthLabel = computed(() => {
               <i class="pi pi-shield text-blue-500 mt-1"></i>
               <div>
                 <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                  Consigli di Sicurezza
+                  {{ $t('profile.security.tips.title') }}
                 </h4>
                 <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                  <li>Non riutilizzare password di altri siti</li>
-                  <li>Usa un password manager</li>
-                  <li>Non condividere la tua password</li>
+                  <li>{{ $t('profile.security.tips.noReuse') }}</li>
+                  <li>{{ $t('profile.security.tips.useManager') }}</li>
+                  <li>{{ $t('profile.security.tips.noShare') }}</li>
                 </ul>
               </div>
             </div>

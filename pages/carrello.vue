@@ -10,6 +10,7 @@ definePageMeta({
 })
 
 const cartStore = useCartStore()
+const { t } = useI18n()
 const { formatCurrency, formatPurchaseMode } = useClientFormatters()
 const { showSuccess, showError } = useClientToast()
 const { confirmClearCart } = useClientConfirm()
@@ -22,20 +23,20 @@ onMounted(async () => {
 
 // Remove entire group from cart
 const removeGroup = (group: CartGroup) => {
-  const modeLabel = group.purchase_mode === 'exclusive' ? 'esclusivi' : 'condivisi'
+  const modeLabel = group.purchase_mode === 'exclusive' ? t('common.labels.exclusivePlural') : t('common.labels.sharedPlural')
   confirm.require({
-    message: `Vuoi rimuovere tutti i ${group.totalLeads} lead ${modeLabel} della categoria "${group.category.name}"?`,
-    header: 'Rimuovi gruppo',
+    message: t('cart.confirm.removeGroupMessage', { count: group.totalLeads, mode: modeLabel, category: group.category.name }),
+    header: t('cart.confirm.removeGroupHeader'),
     icon: 'pi pi-exclamation-triangle',
-    acceptLabel: 'Rimuovi',
-    rejectLabel: 'Annulla',
+    acceptLabel: t('common.actions.remove'),
+    rejectLabel: t('common.actions.cancel'),
     acceptClass: 'p-button-danger',
     accept: async () => {
       const success = await cartStore.removeGroup(group.key)
       if (success) {
-        showSuccess(`Gruppo rimosso (${group.totalLeads} lead)`)
+        showSuccess(t('cart.toast.groupRemoved', { count: group.totalLeads }))
       } else {
-        showError(cartStore.error || 'Errore nella rimozione')
+        showError(cartStore.error || t('cart.toast.removeError'))
       }
     }
   })
@@ -46,9 +47,9 @@ const clearCart = () => {
   confirmClearCart(async () => {
     const success = await cartStore.clearCart()
     if (success) {
-      showSuccess('Carrello svuotato')
+      showSuccess(t('cart.toast.cartCleared'))
     } else {
-      showError(cartStore.error || 'Errore nello svuotamento')
+      showError(cartStore.error || t('cart.toast.clearError'))
     }
   })
 }
@@ -66,14 +67,14 @@ const formatProvinces = (provinces: { code: string; name: string }[]): string =>
     return provinces.map(p => p.code).join(', ')
   }
   const first5 = provinces.slice(0, 5).map(p => p.code).join(', ')
-  return `${first5} e altre ${provinces.length - 5}`
+  return t('cart.item.andMore', { list: first5, count: provinces.length - 5 })
 }
 
 // Build group summary text
 const buildGroupSummary = (group: CartGroup): string => {
-  const modeLabel = group.purchase_mode === 'exclusive' ? 'esclusivi' : 'condivisi'
+  const modeLabel = group.purchase_mode === 'exclusive' ? t('common.labels.exclusivePlural') : t('common.labels.sharedPlural')
   const provinceCodes = formatProvinces(group.provinces)
-  return `${group.totalLeads} lead ${modeLabel} per le province: ${provinceCodes}`
+  return t('cart.item.groupSummary', { count: group.totalLeads, mode: modeLabel, provinces: provinceCodes })
 }
 </script>
 
@@ -82,21 +83,21 @@ const buildGroupSummary = (group: CartGroup): string => {
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Carrello</h1>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('cart.title') }}</h1>
         <p class="text-surface-600 dark:text-surface-400">
-          {{ cartStore.itemCount }} {{ cartStore.itemCount === 1 ? 'lead' : 'lead' }} nel carrello
+          {{ $t('cart.subtitle', { count: cartStore.itemCount }) }}
         </p>
       </div>
       <div v-if="cartStore.itemCount > 0" class="flex items-center gap-2">
         <NuxtLink to="/leads">
           <PrimeButton
-            label="Continua lo shopping"
+            :label="$t('cart.continueShopping')"
             icon="pi pi-arrow-left"
             severity="secondary"
           />
         </NuxtLink>
         <PrimeButton
-          label="Svuota carrello"
+          :label="$t('cart.clearCart')"
           icon="pi pi-trash"
           severity="danger"
           outlined
@@ -114,13 +115,13 @@ const buildGroupSummary = (group: CartGroup): string => {
     <div v-else-if="!cartStore.cart || cartStore.itemCount === 0" class="text-center py-16">
       <i class="pi pi-shopping-cart text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
       <h2 class="text-2xl font-bold text-surface-700 dark:text-surface-300 mb-2">
-        Il carrello è vuoto
+        {{ $t('cart.empty.title') }}
       </h2>
       <p class="text-surface-500 dark:text-surface-400 mb-6">
-        Inizia ad aggiungere lead dal catalogo
+        {{ $t('cart.empty.subtitle') }}
       </p>
       <NuxtLink to="/leads">
-        <PrimeButton label="Vai al Catalogo" icon="pi pi-search" size="large" />
+        <PrimeButton :label="$t('cart.empty.browseCatalog')" icon="pi pi-search" size="large" />
       </NuxtLink>
     </div>
 
@@ -151,16 +152,13 @@ const buildGroupSummary = (group: CartGroup): string => {
                   </div>
 
                   <!-- Summary Text -->
-                  <p class="text-surface-700 dark:text-surface-300 mb-2">
-                    Acquisto di <strong>{{ group.totalLeads }}</strong> lead categoria
-                    <strong>{{ group.category.name }}</strong>
-                    {{ group.purchase_mode === 'exclusive' ? 'esclusivi' : 'condivisi' }}
+                  <p class="text-surface-700 dark:text-surface-300 mb-2" v-html="$t('cart.item.purchaseSummary', { count: group.totalLeads, category: group.category.name, mode: group.purchase_mode === 'exclusive' ? $t('common.labels.exclusivePlural') : $t('common.labels.sharedPlural') })">
                   </p>
 
                   <!-- Provinces -->
                   <div class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
                     <i class="pi pi-map-marker"></i>
-                    <span>Province: <strong>{{ formatProvinces(group.provinces) }}</strong></span>
+                    <span>{{ $t('cart.item.provinces') }} <strong>{{ formatProvinces(group.provinces) }}</strong></span>
                   </div>
                 </div>
 
@@ -177,7 +175,7 @@ const buildGroupSummary = (group: CartGroup): string => {
 
                   <PrimeButton
                     icon="pi pi-trash"
-                    label="Rimuovi gruppo"
+                    :label="$t('cart.item.removeGroup')"
                     severity="danger"
                     outlined
                     size="small"
@@ -191,7 +189,7 @@ const buildGroupSummary = (group: CartGroup): string => {
                 <PrimeAccordion>
                   <PrimeAccordionPanel value="provinces">
                     <PrimeAccordionHeader>
-                      <span class="text-sm">Vedi tutte le {{ group.provinces.length }} province</span>
+                      <span class="text-sm">{{ $t('cart.item.viewAllProvinces', { count: group.provinces.length }) }}</span>
                     </PrimeAccordionHeader>
                     <PrimeAccordionContent>
                       <div class="flex flex-wrap gap-2">
@@ -211,8 +209,7 @@ const buildGroupSummary = (group: CartGroup): string => {
               <!-- Info note -->
               <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-3 text-sm text-surface-600 dark:text-surface-400">
                 <i class="pi pi-info-circle mr-2"></i>
-                La rimozione elimina tutti i {{ group.totalLeads }} lead di questo gruppo.
-                Non è possibile modificare i singoli lead.
+                {{ $t('cart.item.removeWarning', { count: group.totalLeads }) }}
               </div>
             </div>
           </template>
@@ -222,14 +219,14 @@ const buildGroupSummary = (group: CartGroup): string => {
       <!-- Order Summary -->
       <div>
         <PrimeCard class="sticky top-4">
-          <template #title>Riepilogo Ordine</template>
+          <template #title>{{ $t('cart.summary.title') }}</template>
           <template #content>
             <div class="space-y-4">
               <!-- Items Summary -->
               <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                   <span class="text-surface-600 dark:text-surface-400">
-                    Subtotale ({{ cartStore.itemCount }} lead)
+                    {{ $t('cart.summary.subtotalWithCount', { count: cartStore.itemCount }) }}
                   </span>
                   <span class="text-surface-900 dark:text-surface-0">
                     {{ formatCurrency(cartStore.cart.subtotal) }}
@@ -237,7 +234,7 @@ const buildGroupSummary = (group: CartGroup): string => {
                 </div>
                 <div class="flex justify-between text-sm">
                   <span class="text-surface-600 dark:text-surface-400">
-                    IVA ({{ cartStore.cart.vat_rate }}%)
+                    {{ $t('cart.summary.vat', { rate: cartStore.cart.vat_rate }) }}
                   </span>
                   <span class="text-surface-900 dark:text-surface-0">
                     {{ formatCurrency(cartStore.cart.vat_amount) }}
@@ -250,7 +247,7 @@ const buildGroupSummary = (group: CartGroup): string => {
               <!-- Total -->
               <div class="flex justify-between items-center">
                 <span class="text-lg font-semibold text-surface-900 dark:text-surface-0">
-                  Totale
+                  {{ $t('cart.summary.total') }}
                 </span>
                 <span class="text-2xl font-bold text-primary">
                   {{ formatCurrency(cartStore.cart.total) }}
@@ -259,7 +256,7 @@ const buildGroupSummary = (group: CartGroup): string => {
 
               <!-- Checkout Button -->
               <PrimeButton
-                label="Procedi al Checkout"
+                :label="$t('cart.summary.proceedToCheckout')"
                 icon="pi pi-credit-card"
                 class="w-full"
                 size="large"
@@ -270,7 +267,7 @@ const buildGroupSummary = (group: CartGroup): string => {
               <div class="text-center">
                 <p class="text-xs text-surface-400">
                   <i class="pi pi-lock mr-1"></i>
-                  Pagamento sicuro con Stripe
+                  {{ $t('cart.summary.securePayment') }}
                 </p>
               </div>
             </div>
@@ -284,19 +281,19 @@ const buildGroupSummary = (group: CartGroup): string => {
               <div class="flex items-center gap-3">
                 <i class="pi pi-verified text-green-500"></i>
                 <span class="text-sm text-surface-600 dark:text-surface-400">
-                  Lead verificati e di qualità
+                  {{ $t('cart.benefits.verified') }}
                 </span>
               </div>
               <div class="flex items-center gap-3">
                 <i class="pi pi-bolt text-yellow-500"></i>
                 <span class="text-sm text-surface-600 dark:text-surface-400">
-                  Accesso immediato dopo il pagamento
+                  {{ $t('cart.benefits.immediateAccess') }}
                 </span>
               </div>
               <div class="flex items-center gap-3">
                 <i class="pi pi-shield text-blue-500"></i>
                 <span class="text-sm text-surface-600 dark:text-surface-400">
-                  Garanzia soddisfatti o rimborsati
+                  {{ $t('cart.benefits.moneyBackGuarantee') }}
                 </span>
               </div>
             </div>

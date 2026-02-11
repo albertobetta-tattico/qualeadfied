@@ -55,8 +55,40 @@ export default defineNuxtConfig({
     '@primevue/nuxt-module',
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    '@nuxtjs/i18n'
   ],
+
+  // ============================================
+  // I18N (Internationalization)
+  // ============================================
+  i18n: {
+    locales: [
+      {
+        code: 'it',
+        iso: 'it-IT',
+        name: 'Italiano',
+        file: 'it/index.ts'
+      },
+      {
+        code: 'en',
+        iso: 'en-US',
+        name: 'English',
+        file: 'en/index.ts'
+      }
+    ],
+    lazy: true,
+    langDir: 'locales',
+    defaultLocale: 'it',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_locale',
+      redirectOn: 'root',
+      alwaysRedirect: false
+    },
+    vueI18n: './i18n.config.ts'
+  },
 
   // ============================================
   // PRIMEVUE CONFIGURATION

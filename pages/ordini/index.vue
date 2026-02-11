@@ -9,6 +9,8 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
+
 const ordersStore = useClientOrdersStore()
 const {
   formatCurrency,
@@ -62,9 +64,9 @@ const downloadInvoice = async (orderId: number) => {
   const url = await ordersStore.downloadInvoice(orderId)
   if (url) {
     window.open(url, '_blank')
-    showSuccess('Download avviato')
+    showSuccess(t('orders.list.toast.downloadStarted'))
   } else {
-    showError(ordersStore.error || 'Errore nel download')
+    showError(ordersStore.error || t('orders.list.toast.errorDownload'))
   }
 }
 
@@ -80,13 +82,13 @@ const viewOrder = (orderId: number) => {
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">I Miei Ordini</h1>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ t('orders.list.title') }}</h1>
         <p class="text-surface-600 dark:text-surface-400">
-          Storico dei tuoi ordini e fatture
+          {{ t('orders.list.subtitle') }}
         </p>
       </div>
       <NuxtLink to="/leads">
-        <PrimeButton label="Acquista Lead" icon="pi pi-plus" />
+        <PrimeButton :label="t('orders.list.buyLead')" icon="pi pi-plus" />
       </NuxtLink>
     </div>
 
@@ -96,38 +98,38 @@ const viewOrder = (orderId: number) => {
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Stato
+              {{ t('orders.list.filters.status') }}
             </label>
             <PrimeSelect
               v-model="selectedStatus"
               :options="orderStatusOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Tutti gli stati"
+              :placeholder="t('orders.list.filters.allStatuses')"
               class="w-full"
             />
           </div>
           <div>
             <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-              Tipo Ordine
+              {{ t('orders.list.filters.orderType') }}
             </label>
             <PrimeSelect
               v-model="selectedType"
               :options="orderTypeOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Tutti i tipi"
+              :placeholder="t('orders.list.filters.allTypes')"
               class="w-full"
             />
           </div>
           <div class="md:col-span-2 flex items-end gap-2">
             <PrimeButton
-              label="Filtra"
+              :label="t('orders.list.filters.filter')"
               icon="pi pi-search"
               @click="applyFilters"
             />
             <PrimeButton
-              label="Reset"
+              :label="t('orders.list.filters.reset')"
               icon="pi pi-times"
               severity="secondary"
               @click="resetFilters"
@@ -152,7 +154,7 @@ const viewOrder = (orderId: number) => {
             class="orders-table"
             @row-click="(e: any) => viewOrder(e.data.id)"
           >
-            <PrimeColumn field="order_number" header="Ordine" sortable>
+            <PrimeColumn field="order_number" :header="t('orders.list.table.order')" sortable>
               <template #body="{ data }">
                 <span class="font-medium text-primary cursor-pointer hover:underline">
                   {{ data.order_number }}
@@ -160,13 +162,13 @@ const viewOrder = (orderId: number) => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="created_at" header="Data" sortable>
+            <PrimeColumn field="created_at" :header="t('orders.list.table.date')" sortable>
               <template #body="{ data }">
                 {{ formatDate(data.created_at) }}
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="order_type" header="Tipo">
+            <PrimeColumn field="order_type" :header="t('orders.list.table.type')">
               <template #body="{ data }">
                 <PrimeTag
                   :value="formatOrderType(data.order_type)"
@@ -176,13 +178,13 @@ const viewOrder = (orderId: number) => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="items_count" header="Lead">
+            <PrimeColumn field="items_count" :header="t('orders.list.table.leads')">
               <template #body="{ data }">
                 {{ data.items_count }}
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="total" header="Totale" sortable>
+            <PrimeColumn field="total" :header="t('orders.list.table.total')" sortable>
               <template #body="{ data }">
                 <span class="font-semibold">
                   {{ formatCurrency(data.total) }}
@@ -190,7 +192,7 @@ const viewOrder = (orderId: number) => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="status" header="Stato">
+            <PrimeColumn field="status" :header="t('orders.list.table.status')">
               <template #body="{ data }">
                 <PrimeTag
                   :value="formatOrderStatus(data.status)"
@@ -200,7 +202,7 @@ const viewOrder = (orderId: number) => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn header="Azioni" style="width: 150px">
+            <PrimeColumn :header="t('orders.list.table.actions')" style="width: 150px">
               <template #body="{ data }">
                 <div class="flex gap-1">
                   <PrimeButton
@@ -208,7 +210,7 @@ const viewOrder = (orderId: number) => {
                     size="small"
                     rounded
                     text
-                    v-tooltip.top="'Dettagli'"
+                    v-tooltip.top="t('orders.list.actions.details')"
                     @click.stop="viewOrder(data.id)"
                   />
                   <PrimeButton
@@ -218,7 +220,7 @@ const viewOrder = (orderId: number) => {
                     rounded
                     text
                     severity="secondary"
-                    v-tooltip.top="'Scarica fattura'"
+                    v-tooltip.top="t('orders.list.actions.downloadInvoice')"
                     @click.stop="downloadInvoice(data.id)"
                   />
                 </div>
@@ -243,17 +245,17 @@ const viewOrder = (orderId: number) => {
     <div v-else class="text-center py-16">
       <i class="pi pi-shopping-cart text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
       <h2 class="text-2xl font-bold text-surface-700 dark:text-surface-300 mb-2">
-        Nessun ordine
+        {{ t('orders.list.empty.title') }}
       </h2>
       <p class="text-surface-500 dark:text-surface-400 mb-6">
-        Non hai ancora effettuato nessun ordine
+        {{ t('orders.list.empty.subtitle') }}
       </p>
       <div class="flex justify-center gap-3">
         <NuxtLink to="/leads">
-          <PrimeButton label="Vai al Catalogo" icon="pi pi-search" size="large" />
+          <PrimeButton :label="t('orders.list.empty.catalog')" icon="pi pi-search" size="large" />
         </NuxtLink>
         <NuxtLink to="/pacchetti">
-          <PrimeButton label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" size="large" />
+          <PrimeButton :label="t('orders.list.empty.buyPackage')" icon="pi pi-box" severity="secondary" size="large" />
         </NuxtLink>
       </div>
     </div>
@@ -266,19 +268,19 @@ const viewOrder = (orderId: number) => {
             <p class="text-3xl font-bold text-surface-900 dark:text-surface-0">
               {{ ordersStore.totalOrders }}
             </p>
-            <p class="text-sm text-surface-500">Ordini totali</p>
+            <p class="text-sm text-surface-500">{{ t('orders.list.stats.totalOrders') }}</p>
           </div>
           <div>
             <p class="text-3xl font-bold text-primary">
               {{ formatCurrency(ordersStore.totalSpent) }}
             </p>
-            <p class="text-sm text-surface-500">Spesa totale</p>
+            <p class="text-sm text-surface-500">{{ t('orders.list.stats.totalSpent') }}</p>
           </div>
           <div>
             <p class="text-3xl font-bold text-green-500">
               {{ ordersStore.completedOrders.length }}
             </p>
-            <p class="text-sm text-surface-500">Ordini completati</p>
+            <p class="text-sm text-surface-500">{{ t('orders.list.stats.completedOrders') }}</p>
           </div>
         </div>
       </template>

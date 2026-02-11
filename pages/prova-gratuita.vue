@@ -8,6 +8,8 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
+
 const profileStore = useClientProfileStore()
 const catalogStore = usePublicCatalogStore()
 const { formatCurrency, formatRelativeTime } = useClientFormatters()
@@ -106,7 +108,7 @@ const toggleSelection = (lead: any) => {
     if (canSelectMore.value) {
       selectedLeads.value.push(lead)
     } else {
-      showError(`Puoi selezionare al massimo ${leadsRemaining.value} lead`)
+      showError(t('catalog.trial.maxSelectionError', { count: leadsRemaining.value }))
     }
   }
 }
@@ -115,7 +117,7 @@ const toggleSelection = (lead: any) => {
 const selectAllVisible = () => {
   const availableSlots = leadsRemaining.value - selectedLeads.value.length
   if (availableSlots <= 0) {
-    showError(`Hai già selezionato il massimo di ${leadsRemaining.value} lead`)
+    showError(t('catalog.trial.alreadyMaxError', { count: leadsRemaining.value }))
     return
   }
 
@@ -126,7 +128,7 @@ const selectAllVisible = () => {
   selectedLeads.value.push(...leadsToAdd)
 
   if (leadsToAdd.length < catalogStore.leads.filter(lead => !isSelected(lead.id)).length) {
-    showSuccess(`Aggiunti ${leadsToAdd.length} lead (limite raggiunto)`)
+    showSuccess(t('catalog.trial.addedLimitReached', { count: leadsToAdd.length }))
   }
 }
 
@@ -138,7 +140,7 @@ const deselectAll = () => {
 // Claim trial leads
 const claimTrialLeads = () => {
   if (selectedLeads.value.length === 0) {
-    showError('Seleziona almeno un lead')
+    showError(t('catalog.trial.selectAtLeastOne'))
     return
   }
 
@@ -149,12 +151,12 @@ const claimTrialLeads = () => {
     })
 
     if (success) {
-      showSuccess(`${selectedLeads.value.length} lead riscattati con successo!`)
+      showSuccess(t('catalog.trial.claimSuccess', { count: selectedLeads.value.length }))
       selectedLeads.value = []
       // Redirect to my leads
       navigateTo('/i-miei-lead')
     } else {
-      showError(profileStore.error || 'Errore nel riscatto')
+      showError(profileStore.error || t('catalog.trial.claimError'))
     }
   })
 }
@@ -169,15 +171,15 @@ const claimTrialLeads = () => {
           <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
             <i class="pi pi-gift text-primary text-xl"></i>
           </div>
-          <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Prova Gratuita</h1>
+          <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('catalog.trial.title') }}</h1>
         </div>
         <p class="text-surface-600 dark:text-surface-400">
-          Seleziona fino a {{ leadsRemaining }} lead gratuiti in modalità condivisa
+          {{ $t('catalog.trial.subtitle', { count: leadsRemaining }) }}
         </p>
       </div>
       <NuxtLink to="/i-miei-lead">
         <PrimeButton
-          label="I Miei Lead"
+          :label="$t('navigation.clientMenu.myLeads')"
           icon="pi pi-list"
           severity="secondary"
         />
@@ -193,26 +195,26 @@ const claimTrialLeads = () => {
               <p class="text-3xl font-bold text-primary">
                 {{ leadsRemaining }}
               </p>
-              <p class="text-sm text-surface-500">Disponibili</p>
+              <p class="text-sm text-surface-500">{{ $t('catalog.trial.available') }}</p>
             </div>
             <div class="text-center">
               <p class="text-3xl font-bold text-green-500">
                 {{ leadsClaimed }}
               </p>
-              <p class="text-sm text-surface-500">Riscattati</p>
+              <p class="text-sm text-surface-500">{{ $t('catalog.trial.claimed') }}</p>
             </div>
             <div class="text-center">
               <p class="text-3xl font-bold text-surface-400">
                 {{ leadsTotal }}
               </p>
-              <p class="text-sm text-surface-500">Totali</p>
+              <p class="text-sm text-surface-500">{{ $t('catalog.trial.total') }}</p>
             </div>
           </div>
 
           <!-- Progress bar -->
           <div class="flex-grow max-w-xs w-full">
             <div class="flex justify-between text-sm mb-1">
-              <span class="text-surface-600 dark:text-surface-400">Progresso</span>
+              <span class="text-surface-600 dark:text-surface-400">{{ $t('catalog.trial.progress') }}</span>
               <span class="text-surface-900 dark:text-surface-0 font-medium">
                 {{ leadsClaimed }}/{{ leadsTotal }}
               </span>
@@ -228,8 +230,7 @@ const claimTrialLeads = () => {
         <!-- Info note -->
         <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
           <i class="pi pi-info-circle mr-2"></i>
-          I lead della prova gratuita vengono assegnati in modalità <strong>condivisa</strong>.
-          Non è possibile selezionarli in modalità esclusiva.
+          <span v-html="$t('catalog.trial.sharedModeInfo')"></span>
         </div>
       </template>
     </PrimeCard>
@@ -241,17 +242,17 @@ const claimTrialLeads = () => {
     >
       <i class="pi pi-check-circle text-6xl text-green-500 mb-4"></i>
       <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-        Prova gratuita completata
+        {{ $t('catalog.trial.completed') }}
       </h2>
       <p class="text-surface-600 dark:text-surface-400 mb-6">
-        Hai già utilizzato tutti i tuoi lead gratuiti. Ora puoi acquistare lead dal catalogo.
+        {{ $t('catalog.trial.completedText') }}
       </p>
       <div class="flex justify-center gap-3">
         <NuxtLink to="/leads">
-          <PrimeButton label="Vai al Catalogo" icon="pi pi-search" />
+          <PrimeButton :label="$t('catalog.trial.goToCatalog')" icon="pi pi-search" />
         </NuxtLink>
         <NuxtLink to="/pacchetti">
-          <PrimeButton label="Acquista Pacchetto" icon="pi pi-box" severity="secondary" />
+          <PrimeButton :label="$t('catalog.trial.buyPackage')" icon="pi pi-box" severity="secondary" />
         </NuxtLink>
       </div>
     </div>
@@ -264,39 +265,39 @@ const claimTrialLeads = () => {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
               <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                Categoria
+                {{ $t('catalog.filters.category') }}
               </label>
               <PrimeSelect
                 v-model="selectedCategory"
-                :options="[{ id: '', name: 'Tutte le categorie' }, ...catalogStore.categories]"
+                :options="[{ id: '', name: $t('catalog.filters.allCategories') }, ...catalogStore.categories]"
                 optionLabel="name"
                 optionValue="id"
-                placeholder="Seleziona categoria"
+                :placeholder="$t('catalog.filters.selectCategory')"
                 class="w-full"
               />
             </div>
             <div>
               <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                Provincia
+                {{ $t('catalog.filters.province') }}
               </label>
               <PrimeSelect
                 v-model="selectedProvince"
-                :options="[{ id: '', name: 'Tutte le province' }, ...catalogStore.provinces]"
+                :options="[{ id: '', name: $t('catalog.filters.allProvinces') }, ...catalogStore.provinces]"
                 optionLabel="name"
                 optionValue="id"
-                placeholder="Seleziona provincia"
+                :placeholder="$t('catalog.filters.selectProvince')"
                 class="w-full"
               />
             </div>
             <div class="lg:col-span-2">
               <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                Data generazione
+                {{ $t('catalog.trial.generationDate') }}
               </label>
               <PrimeDatePicker
                 v-model="dateRangeFilter"
                 selectionMode="range"
                 dateFormat="dd/mm/yy"
-                placeholder="Seleziona periodo"
+                :placeholder="$t('catalog.trial.selectPeriod')"
                 class="w-full"
                 showIcon
                 showButtonBar
@@ -305,7 +306,7 @@ const claimTrialLeads = () => {
             </div>
             <div class="flex items-end gap-2">
               <PrimeButton
-                label="Filtra"
+                :label="$t('common.actions.filter')"
                 icon="pi pi-search"
                 @click="applyFilters"
               />
@@ -326,11 +327,10 @@ const claimTrialLeads = () => {
             <i class="pi pi-exclamation-triangle text-orange-600 text-xl"></i>
             <div>
               <p class="font-medium text-orange-700 dark:text-orange-300">
-                Limite di selezione raggiunto
+                {{ $t('catalog.trial.limitReached') }}
               </p>
               <p class="text-sm text-orange-600 dark:text-orange-400">
-                Hai selezionato il massimo di {{ leadsRemaining }} lead disponibili per la prova gratuita.
-                Per selezionare altri lead, deseleziona prima quelli già scelti.
+                {{ $t('catalog.trial.limitReachedText', { count: leadsRemaining }) }}
               </p>
             </div>
           </div>
@@ -344,13 +344,13 @@ const claimTrialLeads = () => {
             <div class="flex items-center gap-4">
               <i class="pi pi-gift text-green-600 text-xl"></i>
               <span class="text-green-700 dark:text-green-300 font-medium">
-                {{ selectedLeads.length }} di {{ leadsRemaining }} lead selezionati
+                {{ $t('catalog.trial.selectedOf', { selected: selectedLeads.length, total: leadsRemaining }) }}
               </span>
-              <PrimeTag value="Modalità Condivisa" severity="info" />
+              <PrimeTag :value="$t('catalog.trial.sharedMode')" severity="info" />
             </div>
             <div class="flex items-center gap-3">
               <PrimeButton
-                :label="`Riscatta ${selectedLeads.length} lead`"
+                :label="$t('catalog.trial.claimLeads', { count: selectedLeads.length })"
                 icon="pi pi-gift"
                 severity="success"
                 @click="claimTrialLeads"
@@ -361,7 +361,7 @@ const claimTrialLeads = () => {
                 text
                 rounded
                 @click="deselectAll"
-                v-tooltip.top="'Deseleziona tutti'"
+                v-tooltip.top="$t('catalog.trial.deselectAll')"
               />
             </div>
           </div>
@@ -380,7 +380,7 @@ const claimTrialLeads = () => {
           <div class="flex items-center justify-between mb-4 pb-3 border-b border-surface-200 dark:border-surface-700">
             <div class="flex items-center gap-3">
               <PrimeButton
-                label="Seleziona visibili"
+                :label="$t('catalog.trial.selectVisible')"
                 icon="pi pi-check-square"
                 size="small"
                 severity="secondary"
@@ -390,7 +390,7 @@ const claimTrialLeads = () => {
               />
               <PrimeButton
                 v-if="selectedLeads.length > 0"
-                label="Deseleziona tutti"
+                :label="$t('catalog.trial.deselectAll')"
                 icon="pi pi-times"
                 size="small"
                 severity="secondary"
@@ -399,7 +399,7 @@ const claimTrialLeads = () => {
               />
             </div>
             <div class="text-sm text-surface-600 dark:text-surface-400">
-              {{ selectedLeads.length }}/{{ leadsRemaining }} selezionati
+              {{ selectedLeads.length }}/{{ leadsRemaining }} {{ $t('catalog.trial.selected') }}
             </div>
           </div>
 
@@ -419,21 +419,21 @@ const claimTrialLeads = () => {
             @row-click="(e) => toggleSelection(e.data)"
           >
             <!-- Lead ID -->
-            <PrimeColumn field="id" header="ID" sortable style="min-width: 80px">
+            <PrimeColumn field="id" :header="$t('catalog.columns.id')" sortable style="min-width: 80px">
               <template #body="{ data }">
                 <span class="font-mono text-primary">#{{ data.id }}</span>
               </template>
             </PrimeColumn>
 
             <!-- Category -->
-            <PrimeColumn field="category.name" header="Categoria" sortable style="min-width: 130px">
+            <PrimeColumn field="category.name" :header="$t('catalog.columns.category')" sortable style="min-width: 130px">
               <template #body="{ data }">
                 <PrimeTag :value="data.category?.name" severity="info" size="small" />
               </template>
             </PrimeColumn>
 
             <!-- Province -->
-            <PrimeColumn field="province.name" header="Provincia" sortable style="min-width: 100px">
+            <PrimeColumn field="province.name" :header="$t('catalog.columns.province')" sortable style="min-width: 100px">
               <template #body="{ data }">
                 <span class="text-surface-700 dark:text-surface-300">
                   {{ data.province?.name }}
@@ -443,7 +443,7 @@ const claimTrialLeads = () => {
             </PrimeColumn>
 
             <!-- Request Preview -->
-            <PrimeColumn header="Richiesta" style="min-width: 250px">
+            <PrimeColumn :header="$t('catalog.columns.request')" style="min-width: 250px">
               <template #body="{ data }">
                 <p class="text-surface-600 dark:text-surface-400 line-clamp-2">
                   {{ data.request_preview }}
@@ -452,7 +452,7 @@ const claimTrialLeads = () => {
             </PrimeColumn>
 
             <!-- Availability -->
-            <PrimeColumn field="shared_slots_available" header="Disponibilità" sortable style="min-width: 120px">
+            <PrimeColumn field="shared_slots_available" :header="$t('catalog.columns.availability')" sortable style="min-width: 120px">
               <template #body="{ data }">
                 <div class="flex items-center gap-2">
                   <i class="pi pi-users text-surface-400"></i>
@@ -464,41 +464,41 @@ const claimTrialLeads = () => {
             </PrimeColumn>
 
             <!-- Date -->
-            <PrimeColumn field="generated_at" header="Data" sortable style="min-width: 100px">
+            <PrimeColumn field="generated_at" :header="$t('catalog.columns.date')" sortable style="min-width: 100px">
               <template #body="{ data }">
                 <span class="text-surface-500">{{ formatRelativeTime(data.generated_at) }}</span>
               </template>
             </PrimeColumn>
 
             <!-- Price (Free) -->
-            <PrimeColumn header="Prezzo" style="min-width: 100px">
+            <PrimeColumn :header="$t('catalog.columns.price')" style="min-width: 100px">
               <template #body>
                 <div class="flex items-center gap-2">
-                  <span class="text-green-600 dark:text-green-400 font-bold">Gratuito</span>
-                  <PrimeTag value="Condiviso" severity="secondary" size="small" />
+                  <span class="text-green-600 dark:text-green-400 font-bold">{{ $t('catalog.trial.free') }}</span>
+                  <PrimeTag :value="$t('catalog.trial.shared')" severity="secondary" size="small" />
                 </div>
               </template>
             </PrimeColumn>
 
             <!-- Status -->
-            <PrimeColumn header="Stato" style="min-width: 120px" frozen alignFrozen="right">
+            <PrimeColumn :header="$t('catalog.columns.status')" style="min-width: 120px" frozen alignFrozen="right">
               <template #body="{ data }">
                 <div v-if="isSelected(data.id)" class="flex items-center gap-2">
                   <i class="pi pi-check-circle text-green-500"></i>
                   <span class="text-green-700 dark:text-green-400 text-sm font-medium">
-                    Selezionato
+                    {{ $t('catalog.trial.statusSelected') }}
                   </span>
                 </div>
                 <div v-else-if="!canSelectMore" class="flex items-center gap-2">
                   <i class="pi pi-ban text-surface-400"></i>
                   <span class="text-surface-500 text-sm">
-                    Limite raggiunto
+                    {{ $t('catalog.trial.statusLimitReached') }}
                   </span>
                 </div>
                 <div v-else class="flex items-center gap-2">
                   <i class="pi pi-circle text-surface-300"></i>
                   <span class="text-surface-500 text-sm">
-                    Disponibile
+                    {{ $t('catalog.trial.statusAvailable') }}
                   </span>
                 </div>
               </template>
@@ -511,13 +511,13 @@ const claimTrialLeads = () => {
       <div v-else class="text-center py-12">
         <i class="pi pi-inbox text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
         <h3 class="text-xl font-semibold text-surface-700 dark:text-surface-300 mb-2">
-          Nessun lead trovato
+          {{ $t('catalog.empty.title') }}
         </h3>
         <p class="text-surface-500 dark:text-surface-400 mb-4">
-          Prova a modificare i filtri di ricerca
+          {{ $t('catalog.empty.subtitle') }}
         </p>
         <PrimeButton
-          label="Reset filtri"
+          :label="$t('catalog.filters.resetFilters')"
           icon="pi pi-refresh"
           @click="resetFilters"
         />
@@ -531,20 +531,20 @@ const claimTrialLeads = () => {
         <div class="max-w-4xl mx-auto flex items-center justify-between">
           <div>
             <p class="font-semibold text-surface-900 dark:text-surface-0">
-              {{ selectedLeads.length }} lead selezionati
+              {{ $t('catalog.trial.leadsSelected', { count: selectedLeads.length }) }}
             </p>
             <p class="text-sm text-surface-500">
-              Verranno assegnati in modalità condivisa
+              {{ $t('catalog.trial.willBeShared') }}
             </p>
           </div>
           <div class="flex items-center gap-3">
             <PrimeButton
-              label="Annulla"
+              :label="$t('common.actions.cancel')"
               severity="secondary"
               @click="deselectAll"
             />
             <PrimeButton
-              label="Riscatta Lead"
+              :label="$t('catalog.trial.redeemLeads')"
               icon="pi pi-gift"
               severity="success"
               @click="claimTrialLeads"

@@ -3,6 +3,8 @@
  * Page - Order Detail
  * Detailed view of an order with items, billing data and invoice
  */
+const { t } = useI18n()
+
 definePageMeta({
   layout: 'client'
 })
@@ -51,18 +53,18 @@ const downloadInvoice = async () => {
   const url = await ordersStore.downloadInvoice(order.value.id)
   if (url) {
     window.open(url, '_blank')
-    showSuccess('Download avviato')
+    showSuccess(t('orders.list.toast.downloadStarted'))
   } else {
-    showError(ordersStore.error || 'Errore nel download')
+    showError(ordersStore.error || t('orders.list.toast.errorDownload'))
   }
 }
 
 // Payment method label
 const getPaymentMethodLabel = (method: string): string => {
   const labels: Record<string, string> = {
-    card: 'Carta di credito',
-    sepa: 'Addebito SEPA',
-    free: 'Gratuito'
+    card: t('orders.paymentMethod.cardFull'),
+    sepa: t('orders.paymentMethod.sepa'),
+    free: t('orders.paymentMethod.free')
   }
   return labels[method] || method
 }
@@ -74,7 +76,7 @@ const getPaymentMethodLabel = (method: string): string => {
     <div class="mb-6">
       <NuxtLink to="/ordini" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
         <i class="pi pi-arrow-left"></i>
-        Torna agli ordini
+        {{ $t('orders.detail.backToOrders') }}
       </NuxtLink>
 
       <div v-if="order" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -90,22 +92,22 @@ const getPaymentMethodLabel = (method: string): string => {
             />
           </div>
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-            Ordine {{ order.order_number }}
+            {{ $t('orders.detail.orderTitle', { number: order.order_number }) }}
           </h1>
           <p class="text-surface-600 dark:text-surface-400">
-            Effettuato il {{ formatDateTime(order.created_at) }}
+            {{ $t('orders.detail.createdAt', { date: formatDateTime(order.created_at) }) }}
           </p>
         </div>
 
         <div class="flex gap-2">
           <Button
             v-if="order.invoice_url"
-            label="Scarica Fattura"
+            :label="$t('orders.detail.downloadInvoice')"
             icon="pi pi-download"
             @click="downloadInvoice"
           />
           <Button
-            label="Stampa"
+            :label="$t('orders.detail.print')"
             icon="pi pi-print"
             severity="secondary"
             @click="printPage"
@@ -128,7 +130,7 @@ const getPaymentMethodLabel = (method: string): string => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-list text-primary"></i>
-              Lead Acquistati ({{ order.items_count }})
+              {{ $t('orders.detail.items.title', { count: order.items_count }) }}
             </div>
           </template>
           <template #content>
@@ -162,7 +164,7 @@ const getPaymentMethodLabel = (method: string): string => {
             </div>
             <div v-else class="text-center py-8 text-surface-500">
               <i class="pi pi-info-circle text-2xl mb-2"></i>
-              <p>Dettagli lead non disponibili</p>
+              <p>{{ $t('orders.detail.items.emptyMessage') }}</p>
             </div>
           </template>
         </Card>
@@ -172,19 +174,19 @@ const getPaymentMethodLabel = (method: string): string => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
-              Dati di Fatturazione
+              {{ $t('orders.detail.billing.title') }}
             </div>
           </template>
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p class="text-sm text-surface-500 mb-1">Ragione Sociale</p>
+                <p class="text-sm text-surface-500 mb-1">{{ $t('orders.detail.billing.companyName') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
                   {{ order.billing_data.company_name }}
                 </p>
               </div>
               <div>
-                <p class="text-sm text-surface-500 mb-1">Partita IVA</p>
+                <p class="text-sm text-surface-500 mb-1">{{ $t('orders.detail.billing.vatNumber') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
                   {{ order.billing_data.vat_number }}
                 </p>

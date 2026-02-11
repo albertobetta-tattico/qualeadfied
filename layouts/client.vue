@@ -4,6 +4,7 @@
  * Sidebar + header + content
  */
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -37,15 +38,15 @@ const hasFreeTrial = computed(() => clientProfileStore.hasFreeTrial)
 const freeTrialLeads = computed(() => clientProfileStore.freeTrialLeadsRemaining)
 
 // Menu items
-const menuItems = [
-  { label: 'Dashboard', icon: 'pi pi-home', to: '/dashboard' },
-  { label: 'Catalogo Lead', icon: 'pi pi-search', to: '/leads' },
-  { label: 'Pacchetti', icon: 'pi pi-box', to: '/pacchetti' },
-  { label: 'I Miei Lead', icon: 'pi pi-list', to: '/i-miei-lead' },
-  { label: 'I Miei Ordini', icon: 'pi pi-receipt', to: '/ordini' },
-  { label: 'Carrello', icon: 'pi pi-shopping-cart', to: '/carrello', badge: true },
-  { label: 'Profilo', icon: 'pi pi-user', to: '/profilo' }
-]
+const menuItems = computed(() => [
+  { label: t('navigation.clientMenu.dashboard'), icon: 'pi pi-home', to: '/dashboard' },
+  { label: t('navigation.clientMenu.catalogLead'), icon: 'pi pi-search', to: '/leads' },
+  { label: t('navigation.clientMenu.packages'), icon: 'pi pi-box', to: '/pacchetti' },
+  { label: t('navigation.clientMenu.myLeads'), icon: 'pi pi-list', to: '/i-miei-lead' },
+  { label: t('navigation.clientMenu.myOrders'), icon: 'pi pi-receipt', to: '/ordini' },
+  { label: t('navigation.clientMenu.cart'), icon: 'pi pi-shopping-cart', to: '/carrello', badge: true },
+  { label: t('navigation.clientMenu.profile'), icon: 'pi pi-user', to: '/profilo' }
+])
 
 // Check if route is active
 const isActive = (path: string): boolean => {
@@ -72,20 +73,20 @@ const handleLogout = async () => {
 
 // User menu ref
 const userMenuRef = ref()
-const userMenuItems = ref([
+const userMenuItems = computed(() => [
   {
-    label: 'Il mio profilo',
+    label: t('navigation.clientMenu.myProfile'),
     icon: 'pi pi-user',
     command: () => router.push('/profilo')
   },
   {
-    label: 'Impostazioni',
+    label: t('navigation.clientMenu.settings'),
     icon: 'pi pi-cog',
     command: () => router.push('/profilo/preferenze')
   },
   { separator: true },
   {
-    label: 'Esci',
+    label: t('navigation.clientMenu.logout'),
     icon: 'pi pi-sign-out',
     command: handleLogout
   }
@@ -180,12 +181,12 @@ watch(() => route.path, () => {
       <div v-if="hasFreeTrial && !sidebarCollapsed" class="sidebar-trial-banner">
         <i class="pi pi-gift"></i>
         <div>
-          <span class="font-medium">Prova Gratuita</span>
-          <span class="text-xs opacity-80 block">{{ freeTrialLeads }} lead disponibili</span>
+          <span class="font-medium">{{ $t('layouts.trialBanner.title') }}</span>
+          <span class="text-xs opacity-80 block">{{ $t('layouts.trialBanner.leadsAvailable', { count: freeTrialLeads }) }}</span>
         </div>
         <NuxtLink to="/prova-gratuita">
           <PrimeButton
-            label="Riscatta"
+            :label="$t('layouts.trialBanner.redeem')"
             size="small"
             class="trial-btn"
           />
@@ -221,6 +222,8 @@ watch(() => route.path, () => {
         </div>
 
         <div class="client-header-right">
+          <LanguageSwitcher />
+
           <!-- Cart -->
           <NuxtLink to="/carrello" class="client-header-icon-btn">
             <i class="pi pi-shopping-cart text-lg"></i>
@@ -235,19 +238,19 @@ watch(() => route.path, () => {
           <PrimeMenu ref="notificationsMenuRef" :popup="true" class="notifications-menu">
             <template #start>
               <div class="notifications-header">
-                <span class="font-semibold">Notifiche</span>
+                <span class="font-semibold">{{ $t('layouts.clientHeader.notifications') }}</span>
                 <button
                   v-if="unreadNotifications > 0"
                   class="text-xs text-primary-600 hover:underline"
                   @click="clientProfileStore.markAllNotificationsRead()"
                 >
-                  Segna tutte come lette
+                  {{ $t('layouts.clientHeader.markAllRead') }}
                 </button>
               </div>
             </template>
             <template #item>
               <div v-if="notifications.length === 0" class="notification-empty">
-                Nessuna notifica
+                {{ $t('layouts.clientHeader.noNotifications') }}
               </div>
               <div
                 v-for="notif in notifications.slice(0, 5)"
@@ -288,9 +291,9 @@ watch(() => route.path, () => {
       <!-- Trial Banner (top of content, for mobile) -->
       <div v-if="hasFreeTrial" class="trial-banner-top lg:hidden">
         <i class="pi pi-gift"></i>
-        <span><strong>{{ freeTrialLeads }} lead gratuiti</strong> disponibili!</span>
+        <span v-html="$t('layouts.trialBanner.freeLeadsAvailableExclamation', { count: freeTrialLeads })"></span>
         <NuxtLink to="/prova-gratuita">
-          <PrimeButton label="Riscatta" size="small" />
+          <PrimeButton :label="$t('layouts.trialBanner.redeem')" size="small" />
         </NuxtLink>
       </div>
 

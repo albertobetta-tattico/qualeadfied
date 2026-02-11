@@ -10,6 +10,7 @@ definePageMeta({
   layout: 'public'
 })
 
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
@@ -42,10 +43,10 @@ const handleSubmit = async () => {
   const success = await authStore.login(form)
 
   if (success) {
-    showSuccess('Accesso effettuato con successo')
+    showSuccess(t('notifications.auth.loginSuccess'))
     router.push(redirectUrl.value)
   } else {
-    showError(authStore.error || 'Credenziali non valide')
+    showError(authStore.error || t('notifications.auth.loginError'))
   }
 }
 
@@ -74,24 +75,24 @@ onMounted(async () => {
             <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
           </NuxtLink>
 
-          <h1 class="login-title">Bentornato</h1>
-          <p class="login-subtitle">Accedi al tuo account per gestire i tuoi lead</p>
+          <h1 class="login-title">{{ $t('auth.login.title') }}</h1>
+          <p class="login-subtitle">{{ $t('auth.login.subtitle') }}</p>
 
           <!-- Demo credentials hint -->
           <div class="demo-hint">
             <i class="pi pi-info-circle mr-2"></i>
-            <span>Demo: <strong>demo@example.com</strong> / qualsiasi password</span>
+            <span v-html="$t('auth.login.demoHint')"></span>
           </div>
 
           <form @submit.prevent="handleSubmit" class="login-form">
             <!-- Email -->
             <div class="form-group">
-              <label for="email">Email</label>
+              <label for="email">{{ $t('common.labels.email') }}</label>
               <PrimeInputText
                 id="email"
                 v-model="form.email"
                 type="email"
-                placeholder="nome@azienda.it"
+                :placeholder="$t('auth.login.emailPlaceholder')"
                 :class="{ 'p-invalid': errors.email }"
                 class="w-full"
                 autocomplete="email"
@@ -102,15 +103,15 @@ onMounted(async () => {
             <!-- Password -->
             <div class="form-group">
               <div class="flex justify-between items-center mb-2">
-                <label for="password">Password</label>
+                <label for="password">{{ $t('common.labels.password') }}</label>
                 <NuxtLink to="/password-dimenticata" class="forgot-link">
-                  Password dimenticata?
+                  {{ $t('auth.login.forgotPassword') }}
                 </NuxtLink>
               </div>
               <PrimePassword
                 id="password"
                 v-model="form.password"
-                placeholder="La tua password"
+                :placeholder="$t('auth.login.passwordPlaceholder')"
                 :class="{ 'p-invalid': errors.password }"
                 class="w-full"
                 :feedback="false"
@@ -127,13 +128,13 @@ onMounted(async () => {
                 v-model="form.remember"
                 binary
               />
-              <label for="remember" class="ml-2">Ricordami</label>
+              <label for="remember" class="ml-2">{{ $t('auth.login.rememberMe') }}</label>
             </div>
 
             <!-- Submit Button -->
             <PrimeButton
               type="submit"
-              label="Accedi"
+              :label="$t('auth.login.submit')"
               icon="pi pi-sign-in"
               :loading="loading"
               class="w-full login-btn"
@@ -142,8 +143,8 @@ onMounted(async () => {
 
           <!-- Register link -->
           <p class="register-link">
-            Non hai un account?
-            <NuxtLink to="/registrati">Registrati gratis</NuxtLink>
+            {{ $t('auth.login.noAccount') }}
+            <NuxtLink to="/registrati">{{ $t('auth.login.registerFree') }}</NuxtLink>
           </p>
         </div>
       </div>
@@ -151,22 +152,22 @@ onMounted(async () => {
       <!-- Right Side - Illustration -->
       <div class="login-illustration-section">
         <div class="illustration-content">
-          <h2 class="illustration-title">Accedi alla tua area riservata</h2>
+          <h2 class="illustration-title">{{ $t('auth.login.illustrationTitle') }}</h2>
           <p class="illustration-text">
-            Gestisci i tuoi lead, monitora gli acquisti e trova nuovi clienti qualificati.
+            {{ $t('auth.login.illustrationText') }}
           </p>
           <div class="illustration-features">
             <div class="feature-item">
               <i class="pi pi-check-circle"></i>
-              <span>Lead verificati e di qualità</span>
+              <span>{{ $t('auth.login.feature1') }}</span>
             </div>
             <div class="feature-item">
               <i class="pi pi-check-circle"></i>
-              <span>Consegna dati immediata</span>
+              <span>{{ $t('auth.login.feature2') }}</span>
             </div>
             <div class="feature-item">
               <i class="pi pi-check-circle"></i>
-              <span>Supporto dedicato</span>
+              <span>{{ $t('auth.login.feature3') }}</span>
             </div>
           </div>
         </div>

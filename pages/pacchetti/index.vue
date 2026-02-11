@@ -9,6 +9,7 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
 const packagesStore = usePackagesStore()
 const { formatCurrency } = useClientFormatters()
 const { showSuccess, showError } = useClientToast()
@@ -40,6 +41,12 @@ const categories = computed(() => {
   return Array.from(categoryMap.values())
 })
 
+// Category options for select (needs computed because t() is reactive)
+const categoryOptions = computed(() => [
+  { id: '', name: t('packages.filters.allCategories') },
+  ...categories.value
+])
+
 // Calculate savings
 const calculateSavings = (pkg: LeadPackage): number => {
   return pkg.original_price - pkg.price
@@ -58,10 +65,10 @@ const purchasePackage = async (pkg: LeadPackage) => {
     <!-- Header -->
     <div class="text-center mb-8">
       <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-        Pacchetti Lead
+        {{ $t('packages.title') }}
       </h1>
       <p class="text-lg text-surface-600 dark:text-surface-400 max-w-2xl mx-auto">
-        Acquista pacchetti di lead a prezzi scontati. Più lead acquisti, più risparmi.
+        {{ $t('packages.subtitle') }}
       </p>
     </div>
 
@@ -70,16 +77,16 @@ const purchasePackage = async (pkg: LeadPackage) => {
       <div class="flex items-center gap-4">
         <PrimeSelect
           v-model="selectedCategory"
-          :options="[{ id: '', name: 'Tutte le categorie' }, ...categories]"
+          :options="categoryOptions"
           optionLabel="name"
           optionValue="id"
-          placeholder="Filtra per categoria"
+          :placeholder="$t('packages.filters.filterByCategory')"
           class="w-64"
         />
       </div>
       <NuxtLink to="/pacchetti/attivi">
         <PrimeButton
-          label="I miei pacchetti attivi"
+          :label="$t('packages.myActivePackages')"
           icon="pi pi-box"
           severity="secondary"
         />
@@ -102,7 +109,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
           <div class="text-center mb-6">
             <!-- Category Badge -->
             <PrimeTag v-if="pkg.category" :value="pkg.category.name" severity="info" class="mb-4" />
-            <PrimeTag v-else value="Tutte le categorie" severity="secondary" class="mb-4" />
+            <PrimeTag v-else :value="$t('packages.card.allCategories')" severity="secondary" class="mb-4" />
 
             <!-- Package Name -->
             <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">
@@ -120,7 +127,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
               <span class="text-3xl font-bold text-surface-900 dark:text-surface-0">
                 {{ pkg.total_leads }}
               </span>
-              <span class="text-surface-500">lead</span>
+              <span class="text-surface-500">{{ $t('packages.card.leads') }}</span>
             </div>
 
             <!-- Pricing -->
@@ -139,7 +146,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
                 {{ formatCurrency(pkg.price) }}
               </p>
               <p class="text-sm text-surface-500">
-                {{ formatCurrency(Math.round(pkg.price / pkg.total_leads)) }} / lead
+                {{ formatCurrency(Math.round(pkg.price / pkg.total_leads)) }} {{ $t('packages.card.perLead') }}
               </p>
             </div>
           </div>
@@ -149,32 +156,32 @@ const purchasePackage = async (pkg: LeadPackage) => {
             <div class="flex items-center gap-2">
               <i class="pi pi-check-circle text-green-500"></i>
               <span class="text-sm text-surface-600 dark:text-surface-400">
-                {{ pkg.exclusive_leads }} lead esclusivi + {{ pkg.shared_leads }} condivisi
+                {{ $t('packages.card.exclusiveLeads', { count: pkg.exclusive_leads, shared: pkg.shared_leads }) }}
               </span>
             </div>
             <div class="flex items-center gap-2">
               <i class="pi pi-check-circle text-green-500"></i>
               <span class="text-sm text-surface-600 dark:text-surface-400">
-                Validità {{ pkg.valid_days }} giorni
+                {{ $t('packages.card.validity', { days: pkg.valid_days }) }}
               </span>
             </div>
             <div class="flex items-center gap-2">
               <i class="pi pi-check-circle text-green-500"></i>
               <span class="text-sm text-surface-600 dark:text-surface-400">
-                Risparmi {{ formatCurrency(calculateSavings(pkg)) }}
+                {{ $t('packages.card.savings', { amount: formatCurrency(calculateSavings(pkg)) }) }}
               </span>
             </div>
             <div class="flex items-center gap-2">
               <i class="pi pi-check-circle text-green-500"></i>
               <span class="text-sm text-surface-600 dark:text-surface-400">
-                Selezione libera dal catalogo
+                {{ $t('packages.card.freeSelection') }}
               </span>
             </div>
           </div>
 
           <!-- CTA -->
           <PrimeButton
-            label="Acquista Pacchetto"
+            :label="$t('packages.card.buyPackage')"
             icon="pi pi-shopping-cart"
             class="w-full"
             @click="purchasePackage(pkg)"
@@ -187,10 +194,10 @@ const purchasePackage = async (pkg: LeadPackage) => {
     <div v-else class="text-center py-12">
       <i class="pi pi-box text-6xl text-surface-300 dark:text-surface-600 mb-4"></i>
       <h3 class="text-xl font-semibold text-surface-700 dark:text-surface-300 mb-2">
-        Nessun pacchetto disponibile
+        {{ $t('packages.empty.title') }}
       </h3>
       <p class="text-surface-500 dark:text-surface-400">
-        Al momento non ci sono pacchetti disponibili per questa categoria
+        {{ $t('packages.empty.subtitle') }}
       </p>
     </div>
 
@@ -203,10 +210,10 @@ const purchasePackage = async (pkg: LeadPackage) => {
               <i class="pi pi-percentage text-primary text-xl"></i>
             </div>
             <h4 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">
-              Risparmia fino al 30%
+              {{ $t('packages.info.savingsTitle') }}
             </h4>
             <p class="text-sm text-surface-600 dark:text-surface-400">
-              I pacchetti offrono sconti significativi rispetto all'acquisto singolo
+              {{ $t('packages.info.savingsDescription') }}
             </p>
           </div>
           <div class="text-center">
@@ -214,10 +221,10 @@ const purchasePackage = async (pkg: LeadPackage) => {
               <i class="pi pi-check-circle text-green-500 text-xl"></i>
             </div>
             <h4 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">
-              Selezione Libera
+              {{ $t('packages.info.freeSelectionTitle') }}
             </h4>
             <p class="text-sm text-surface-600 dark:text-surface-400">
-              Scegli tu quali lead riscattare dal catalogo durante la validità
+              {{ $t('packages.info.freeSelectionDescription') }}
             </p>
           </div>
           <div class="text-center">
@@ -225,10 +232,10 @@ const purchasePackage = async (pkg: LeadPackage) => {
               <i class="pi pi-clock text-blue-500 text-xl"></i>
             </div>
             <h4 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">
-              Validità Flessibile
+              {{ $t('packages.info.flexibleTitle') }}
             </h4>
             <p class="text-sm text-surface-600 dark:text-surface-400">
-              Hai tempo per utilizzare i tuoi lead, senza fretta
+              {{ $t('packages.info.flexibleDescription') }}
             </p>
           </div>
         </div>

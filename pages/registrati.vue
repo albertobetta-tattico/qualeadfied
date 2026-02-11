@@ -12,6 +12,7 @@ definePageMeta({
 })
 
 const router = useRouter()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const catalogStore = useCatalogStore()
 const { errors, hasErrors, validateField, validateForm, clearErrors } = useRegisterValidation()
@@ -94,7 +95,7 @@ const handleSubmit = async () => {
   clearErrors()
 
   if (!validateForm(form)) {
-    showError('Correggi gli errori nel form')
+    showError(t('auth.register.fixErrors'))
     return
   }
 
@@ -102,9 +103,9 @@ const handleSubmit = async () => {
 
   if (success) {
     registrationComplete.value = true
-    showSuccess('Registrazione completata!')
+    showSuccess(t('notifications.auth.registerSuccess'))
   } else {
-    showError(authStore.error || 'Errore durante la registrazione')
+    showError(authStore.error || t('notifications.auth.registerError'))
   }
 }
 
@@ -150,30 +151,27 @@ onMounted(async () => {
             <div class="complete-icon">
               <i class="pi pi-envelope"></i>
             </div>
-            <h2 class="complete-title">Controlla la tua email</h2>
-            <p class="complete-text">
-              Abbiamo inviato un'email di conferma a <strong>{{ form.email }}</strong>.
-              Clicca sul link nell'email per attivare il tuo account.
-            </p>
+            <h2 class="complete-title">{{ $t('auth.register.checkEmail') }}</h2>
+            <p class="complete-text" v-html="$t('auth.register.emailSentText', { email: form.email })"></p>
             <div class="complete-actions">
               <NuxtLink to="/">
                 <PrimeButton
-                  label="Vai al Login"
+                  :label="$t('auth.register.goToLogin')"
                   severity="primary"
                   class="w-full"
                 />
               </NuxtLink>
             </div>
             <p class="complete-note">
-              Non hai ricevuto l'email?
-              <a href="#" @click.prevent="showInfo('Email inviata nuovamente')">Invia di nuovo</a>
+              {{ $t('auth.register.noEmailReceived') }}
+              <a href="#" @click.prevent="showInfo(t('notifications.auth.emailResent'))">{{ $t('auth.register.resend') }}</a>
             </p>
           </div>
 
           <!-- Registration Form -->
           <template v-else>
-            <h1 class="register-title">Registrati gratis</h1>
-            <p class="register-subtitle">Crea il tuo account e ricevi 3 lead gratuiti</p>
+            <h1 class="register-title">{{ $t('auth.register.title') }}</h1>
+            <p class="register-subtitle">{{ $t('auth.register.subtitle') }}</p>
 
             <!-- Progress Steps -->
             <div class="steps-indicator">
@@ -191,14 +189,14 @@ onMounted(async () => {
             <form @submit.prevent="handleSubmit" class="register-form">
               <!-- Step 1: Company Data -->
               <div v-show="currentStep === 1" class="form-step">
-                <h3 class="step-title">Dati Azienda</h3>
+                <h3 class="step-title">{{ $t('auth.register.step1Title') }}</h3>
 
                 <div class="form-group">
-                  <label for="company_name">Ragione Sociale *</label>
+                  <label for="company_name">{{ $t('auth.register.companyName') }}</label>
                   <PrimeInputText
                     id="company_name"
                     v-model="form.company_name"
-                    placeholder="Nome della tua azienda"
+                    :placeholder="$t('auth.register.companyNamePlaceholder')"
                     :class="{ 'p-invalid': errors.company_name }"
                     class="w-full"
                   />
@@ -206,7 +204,7 @@ onMounted(async () => {
                 </div>
 
                 <div class="form-group">
-                  <label for="vat_number">Partita IVA *</label>
+                  <label for="vat_number">{{ $t('auth.register.vatNumber') }}</label>
                   <PrimeInputText
                     id="vat_number"
                     v-model="form.vat_number"
@@ -217,12 +215,12 @@ onMounted(async () => {
                     @input="formatVatNumber"
                   />
                   <small v-if="errors.vat_number" class="p-error">{{ errors.vat_number }}</small>
-                  <small v-else class="field-hint">11 cifre, senza prefisso IT</small>
+                  <small v-else class="field-hint">{{ $t('auth.register.vatHint') }}</small>
                 </div>
 
                 <PrimeButton
                   type="button"
-                  label="Continua"
+                  :label="$t('common.actions.continue')"
                   icon="pi pi-arrow-right"
                   iconPos="right"
                   class="w-full step-btn"
@@ -232,15 +230,15 @@ onMounted(async () => {
 
               <!-- Step 2: Contact Data -->
               <div v-show="currentStep === 2" class="form-step">
-                <h3 class="step-title">Dati Referente</h3>
+                <h3 class="step-title">{{ $t('auth.register.step2Title') }}</h3>
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="first_name">Nome *</label>
+                    <label for="first_name">{{ $t('auth.register.firstName') }}</label>
                     <PrimeInputText
                       id="first_name"
                       v-model="form.first_name"
-                      placeholder="Mario"
+                      :placeholder="$t('auth.register.firstNamePlaceholder')"
                       :class="{ 'p-invalid': errors.first_name }"
                       class="w-full"
                     />
@@ -248,11 +246,11 @@ onMounted(async () => {
                   </div>
 
                   <div class="form-group">
-                    <label for="last_name">Cognome *</label>
+                    <label for="last_name">{{ $t('auth.register.lastName') }}</label>
                     <PrimeInputText
                       id="last_name"
                       v-model="form.last_name"
-                      placeholder="Rossi"
+                      :placeholder="$t('auth.register.lastNamePlaceholder')"
                       :class="{ 'p-invalid': errors.last_name }"
                       class="w-full"
                     />
@@ -261,12 +259,12 @@ onMounted(async () => {
                 </div>
 
                 <div class="form-group">
-                  <label for="email">Email *</label>
+                  <label for="email">{{ $t('auth.register.email') }}</label>
                   <PrimeInputText
                     id="email"
                     v-model="form.email"
                     type="email"
-                    placeholder="mario.rossi@azienda.it"
+                    :placeholder="$t('auth.register.emailPlaceholder')"
                     :class="{ 'p-invalid': errors.email }"
                     class="w-full"
                   />
@@ -274,12 +272,12 @@ onMounted(async () => {
                 </div>
 
                 <div class="form-group">
-                  <label for="phone">Telefono *</label>
+                  <label for="phone">{{ $t('auth.register.phone') }}</label>
                   <PrimeInputText
                     id="phone"
                     v-model="form.phone"
                     type="tel"
-                    placeholder="+39 02 1234567"
+                    :placeholder="$t('auth.register.phonePlaceholder')"
                     :class="{ 'p-invalid': errors.phone }"
                     class="w-full"
                   />
@@ -290,7 +288,7 @@ onMounted(async () => {
                 <div class="form-group">
                   <label for="category_ids">
                     <i class="pi pi-tags mr-1"></i>
-                    Categorie di interesse
+                    {{ $t('auth.register.categoriesOfInterest') }}
                   </label>
                   <PrimeMultiSelect
                     id="category_ids"
@@ -298,21 +296,21 @@ onMounted(async () => {
                     :options="categories"
                     optionLabel="name"
                     optionValue="id"
-                    placeholder="Seleziona le categorie di tuo interesse..."
+                    :placeholder="$t('auth.register.categoriesPlaceholder')"
                     class="w-full"
                     display="chip"
                     :filter="true"
-                    filterPlaceholder="Cerca categoria..."
+                    :filterPlaceholder="$t('auth.register.searchCategory')"
                   />
                   <small class="field-hint">
-                    Riceverai notifiche per i lead disponibili nelle categorie selezionate
+                    {{ $t('auth.register.categoriesHint') }}
                   </small>
                 </div>
 
                 <div class="form-buttons">
                   <PrimeButton
                     type="button"
-                    label="Indietro"
+                    :label="$t('common.actions.back')"
                     icon="pi pi-arrow-left"
                     severity="secondary"
                     outlined
@@ -320,7 +318,7 @@ onMounted(async () => {
                   />
                   <PrimeButton
                     type="button"
-                    label="Continua"
+                    :label="$t('common.actions.continue')"
                     icon="pi pi-arrow-right"
                     iconPos="right"
                     class="step-btn"
@@ -331,14 +329,14 @@ onMounted(async () => {
 
               <!-- Step 3: Password & Consent -->
               <div v-show="currentStep === 3" class="form-step">
-                <h3 class="step-title">Sicurezza e Consensi</h3>
+                <h3 class="step-title">{{ $t('auth.register.step3Title') }}</h3>
 
                 <div class="form-group">
-                  <label for="password">Password *</label>
+                  <label for="password">{{ $t('auth.register.password') }}</label>
                   <PrimePassword
                     id="password"
                     v-model="form.password"
-                    placeholder="Crea una password sicura"
+                    :placeholder="$t('auth.register.passwordPlaceholder')"
                     :class="{ 'p-invalid': errors.password }"
                     class="w-full"
                     toggleMask
@@ -355,15 +353,15 @@ onMounted(async () => {
                     </div>
                     <span :class="`text-${passwordStrength.color}`">{{ passwordStrength.label }}</span>
                   </div>
-                  <small class="field-hint">Min. 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero</small>
+                  <small class="field-hint">{{ $t('auth.register.passwordHint') }}</small>
                 </div>
 
                 <div class="form-group">
-                  <label for="password_confirmation">Conferma Password *</label>
+                  <label for="password_confirmation">{{ $t('auth.register.confirmPassword') }}</label>
                   <PrimePassword
                     id="password_confirmation"
                     v-model="form.password_confirmation"
-                    placeholder="Ripeti la password"
+                    :placeholder="$t('auth.register.confirmPasswordPlaceholder')"
                     :class="{ 'p-invalid': errors.password_confirmation }"
                     class="w-full"
                     toggleMask
@@ -380,9 +378,7 @@ onMounted(async () => {
                       v-model="form.terms_accepted"
                       binary
                     />
-                    <label for="terms">
-                      Accetto i <a href="/termini" target="_blank">Termini e Condizioni</a> *
-                    </label>
+                    <label for="terms" v-html="$t('auth.register.acceptTerms')"></label>
                   </div>
                   <small v-if="errors.terms_accepted" class="p-error">{{ errors.terms_accepted }}</small>
 
@@ -392,9 +388,7 @@ onMounted(async () => {
                       v-model="form.privacy_accepted"
                       binary
                     />
-                    <label for="privacy">
-                      Ho letto e accetto la <a href="/privacy" target="_blank">Privacy Policy</a> *
-                    </label>
+                    <label for="privacy" v-html="$t('auth.register.acceptPrivacy')"></label>
                   </div>
                   <small v-if="errors.privacy_accepted" class="p-error">{{ errors.privacy_accepted }}</small>
 
@@ -405,7 +399,7 @@ onMounted(async () => {
                       binary
                     />
                     <label for="marketing">
-                      Acconsento a ricevere comunicazioni commerciali (opzionale)
+                      {{ $t('auth.register.marketingConsent') }}
                     </label>
                   </div>
                 </div>
@@ -413,7 +407,7 @@ onMounted(async () => {
                 <div class="form-buttons">
                   <PrimeButton
                     type="button"
-                    label="Indietro"
+                    :label="$t('common.actions.back')"
                     icon="pi pi-arrow-left"
                     severity="secondary"
                     outlined
@@ -421,7 +415,7 @@ onMounted(async () => {
                   />
                   <PrimeButton
                     type="submit"
-                    label="Completa Registrazione"
+                    :label="$t('auth.register.submit')"
                     icon="pi pi-check"
                     :loading="loading"
                     class="step-btn"
@@ -432,8 +426,8 @@ onMounted(async () => {
 
             <!-- Login link -->
             <p class="login-link">
-              Hai già un account?
-              <NuxtLink to="/">Accedi</NuxtLink>
+              {{ $t('auth.register.hasAccount') }}
+              <NuxtLink to="/">{{ $t('auth.register.login') }}</NuxtLink>
             </p>
           </template>
         </div>
@@ -442,7 +436,7 @@ onMounted(async () => {
       <!-- Right Side - Benefits -->
       <div class="register-benefits-section">
         <div class="benefits-content">
-          <h2 class="benefits-title">Perché registrarsi?</h2>
+          <h2 class="benefits-title">{{ $t('auth.register.whyRegister') }}</h2>
 
           <div class="benefits-list">
             <div class="benefit-item">
@@ -450,8 +444,8 @@ onMounted(async () => {
                 <i class="pi pi-gift"></i>
               </div>
               <div class="benefit-text">
-                <h4>3 Lead Gratuiti</h4>
-                <p>Prova il servizio senza impegno. Nessuna carta di credito richiesta.</p>
+                <h4>{{ $t('auth.register.benefit1Title') }}</h4>
+                <p>{{ $t('auth.register.benefit1Text') }}</p>
               </div>
             </div>
 
@@ -460,8 +454,8 @@ onMounted(async () => {
                 <i class="pi pi-verified"></i>
               </div>
               <div class="benefit-text">
-                <h4>Lead Verificati</h4>
-                <p>Ogni lead è validato e verificato prima di essere messo in vendita.</p>
+                <h4>{{ $t('auth.register.benefit2Title') }}</h4>
+                <p>{{ $t('auth.register.benefit2Text') }}</p>
               </div>
             </div>
 
@@ -470,8 +464,8 @@ onMounted(async () => {
                 <i class="pi pi-bolt"></i>
               </div>
               <div class="benefit-text">
-                <h4>Accesso Immediato</h4>
-                <p>Ricevi i dati completi del cliente subito dopo l'acquisto.</p>
+                <h4>{{ $t('auth.register.benefit3Title') }}</h4>
+                <p>{{ $t('auth.register.benefit3Text') }}</p>
               </div>
             </div>
 
@@ -480,8 +474,8 @@ onMounted(async () => {
                 <i class="pi pi-shield"></i>
               </div>
               <div class="benefit-text">
-                <h4>Esclusività</h4>
-                <p>Scegli lead esclusivi per avere zero concorrenza.</p>
+                <h4>{{ $t('auth.register.benefit4Title') }}</h4>
+                <p>{{ $t('auth.register.benefit4Text') }}</p>
               </div>
             </div>
           </div>
