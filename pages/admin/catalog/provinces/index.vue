@@ -11,6 +11,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const catalogStore = useCatalogStore()
 const { formatNumber, formatActiveStatus, getActiveStatusSeverity } = useCatalogFormatters()
@@ -27,16 +29,16 @@ const regionFilter = ref('')
 const activeFilter = ref<boolean | ''>('')
 
 // Filter options
-const regionOptions = [
-  { label: 'Tutte le regioni', value: '' },
+const regionOptions = computed(() => [
+  { label: t('admin.catalog.provinces.filters.allRegions'), value: '' },
   ...ITALIAN_REGIONS.map(r => ({ label: r, value: r }))
-]
+])
 
-const activeOptions = [
-  { label: 'Tutte', value: '' },
-  { label: 'Attive', value: true },
-  { label: 'Non attive', value: false }
-]
+const activeOptions = computed(() => [
+  { label: t('admin.catalog.provinces.filters.all'), value: '' },
+  { label: t('admin.catalog.provinces.filters.active'), value: true },
+  { label: t('admin.catalog.provinces.filters.inactive'), value: false }
+])
 
 // Computed
 const provinces = computed(() => catalogStore.provinces)
@@ -92,28 +94,27 @@ const onSort = (event: any) => {
 const handleToggleActive = async (province: Province) => {
   const success = await catalogStore.toggleProvinceActive(province.id)
   if (success) {
-    const action = province.is_active ? 'disattivata' : 'attivata'
-    showSuccess(`Provincia "${province.name}" ${action} con successo`)
+    const action = province.is_active ? t('admin.catalog.provinces.toast.deactivated') : t('admin.catalog.provinces.toast.activated')
+    showSuccess(t('admin.catalog.provinces.toast.toggleSuccess', { name: province.name, action }))
   } else {
-    showError(catalogStore.error || 'Errore nel cambio stato')
+    showError(catalogStore.error || t('admin.catalog.provinces.toast.toggleError'))
   }
 }
 
 const bulkToggle = async (active: boolean) => {
   if (selectedProvinces.value.length === 0) return
-  
-  const action = active ? 'attivazione' : 'disattivazione'
+
   let successCount = 0
-  
+
   for (const province of selectedProvinces.value) {
     if (province.is_active !== active) {
       const success = await catalogStore.toggleProvinceActive(province.id)
       if (success) successCount++
     }
   }
-  
+
   if (successCount > 0) {
-    showSuccess(`${successCount} province ${active ? 'attivate' : 'disattivate'} con successo`)
+    showSuccess(t('admin.catalog.provinces.toast.bulkToggleSuccess', { count: successCount, action: active ? t('admin.catalog.provinces.toast.activatedPlural') : t('admin.catalog.provinces.toast.deactivatedPlural') }))
     selectedProvinces.value = []
   }
 }
@@ -154,23 +155,23 @@ onUnmounted(() => {
             rounded
             @click="router.push('/admin/catalog')"
           />
-          <h1 class="page-title mb-0">Province</h1>
+          <h1 class="page-title mb-0">{{ $t('admin.catalog.provinces.title') }}</h1>
         </div>
-        <p class="page-subtitle ml-12">Anagrafica province italiane per filtro geografico lead</p>
+        <p class="page-subtitle ml-12">{{ $t('admin.catalog.provinces.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
-        <PrimeButton 
+        <PrimeButton
           v-if="selectedProvinces.length > 0"
-          label="Attiva Selezionate" 
-          icon="pi pi-check" 
+          :label="$t('admin.catalog.provinces.actions.activateSelected')"
+          icon="pi pi-check"
           severity="success"
           size="small"
           @click="bulkToggle(true)"
         />
-        <PrimeButton 
+        <PrimeButton
           v-if="selectedProvinces.length > 0"
-          label="Disattiva Selezionate" 
-          icon="pi pi-times" 
+          :label="$t('admin.catalog.provinces.actions.deactivateSelected')"
+          icon="pi pi-times"
           severity="warning"
           size="small"
           outlined
@@ -186,31 +187,31 @@ onUnmounted(() => {
           <i class="pi pi-map-marker"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.total || 0) }}</div>
-        <div class="kpi-card-label">Province Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.provinces.stats.totalProvinces') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon success">
           <i class="pi pi-check-circle"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.active || 0) }}</div>
-        <div class="kpi-card-label">Province Attive</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.provinces.stats.activeProvinces') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon warning">
           <i class="pi pi-times-circle"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.inactive || 0) }}</div>
-        <div class="kpi-card-label">Province Non Attive</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.provinces.stats.inactiveProvinces') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon info">
           <i class="pi pi-globe"></i>
         </div>
         <div class="kpi-card-value">{{ Object.keys(stats?.by_region || {}).length }}</div>
-        <div class="kpi-card-label">Regioni</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.provinces.regions') }}</div>
       </div>
     </div>
 
@@ -219,11 +220,9 @@ onUnmounted(() => {
       <div class="flex items-start gap-3">
         <i class="pi pi-info-circle text-info text-xl mt-0.5"></i>
         <div>
-          <h4 class="font-medium text-info-dark mb-1">Gestione Province</h4>
+          <h4 class="font-medium text-info-dark mb-1">{{ $t('admin.catalog.provinces.info.title') }}</h4>
           <p class="text-sm text-info-dark/80">
-            Le province sono pre-popolate con l'anagrafica italiana completa. 
-            Puoi attivare o disattivare singole province per gestire la copertura geografica dei lead. 
-            Le province disattivate non saranno disponibili come filtro per i clienti.
+            {{ $t('admin.catalog.provinces.info.description') }}
           </p>
         </div>
       </div>
@@ -238,7 +237,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per nome o sigla provincia..."
+              :placeholder="$t('admin.catalog.provinces.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -248,16 +247,16 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('admin.common.filters.hide') : $t('admin.common.filters.show')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('admin.common.filters.clear')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -273,29 +272,29 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Region Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Regione</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.catalog.provinces.table.headers.region') }}</label>
               <PrimeSelect
                 v-model="regionFilter"
                 :options="regionOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona regione"
+                :placeholder="$t('admin.catalog.provinces.filters.selectRegion')"
                 class="w-full"
                 :filter="true"
-                filterPlaceholder="Cerca regione..."
+                :filterPlaceholder="$t('admin.catalog.provinces.filters.searchRegion')"
                 @change="applyFilters"
               />
             </div>
 
             <!-- Status Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Stato</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.catalog.provinces.table.headers.status') }}</label>
               <PrimeSelect
                 v-model="activeFilter"
                 :options="activeOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona stato"
+                :placeholder="$t('admin.common.filters.selectStatus')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -304,7 +303,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('admin.common.filters.apply')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -333,7 +332,7 @@ onUnmounted(() => {
         removableSort
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} province"
+        :currentPageReportTemplate="$t('admin.catalog.provinces.table.paginatorTemplate')"
         @page="onPage"
         @sort="onSort"
       >
@@ -341,7 +340,7 @@ onUnmounted(() => {
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-map-marker text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600">Nessuna provincia trovata</p>
+            <p class="text-neutral-600">{{ $t('admin.catalog.provinces.table.empty') }}</p>
           </div>
         </template>
 
@@ -349,7 +348,7 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento province...</span>
+            <span class="text-neutral-600">{{ $t('admin.catalog.provinces.table.loading') }}</span>
           </div>
         </template>
 
@@ -357,7 +356,7 @@ onUnmounted(() => {
         <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
         <!-- Province Code -->
-        <PrimeColumn field="code" header="Sigla" sortable style="min-width: 80px">
+        <PrimeColumn field="code" :header="$t('admin.catalog.provinces.table.headers.code')" sortable style="min-width: 80px">
           <template #body="{ data }">
             <span class="font-mono font-semibold text-primary-700 bg-primary-50 px-2 py-1 rounded">
               {{ data.code }}
@@ -366,10 +365,10 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Province Name -->
-        <PrimeColumn field="name" header="Nome Provincia" sortable style="min-width: 200px">
+        <PrimeColumn field="name" :header="$t('admin.catalog.provinces.table.headers.name')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
-              <div 
+              <div
                 class="w-8 h-8 rounded-full bg-neutral-100 text-neutral-600 flex items-center justify-center flex-shrink-0"
               >
                 <i class="pi pi-map-marker text-sm"></i>
@@ -380,7 +379,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Region -->
-        <PrimeColumn field="region" header="Regione" sortable style="min-width: 180px">
+        <PrimeColumn field="region" :header="$t('admin.catalog.provinces.table.headers.region')" sortable style="min-width: 180px">
           <template #body="{ data }">
             <span class="text-neutral-700">{{ data.region }}</span>
           </template>
@@ -394,9 +393,9 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Status -->
-        <PrimeColumn field="is_active" header="Stato" sortable style="min-width: 100px">
+        <PrimeColumn field="is_active" :header="$t('admin.catalog.provinces.table.headers.status')" sortable style="min-width: 100px">
           <template #body="{ data }">
-            <PrimeTag 
+            <PrimeTag
               :value="formatActiveStatus(data.is_active)"
               :severity="getActiveStatusSeverity(data.is_active)"
             />
@@ -404,7 +403,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 80px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.common.actions')" style="min-width: 80px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <!-- Toggle Active -->
@@ -414,7 +413,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="data.is_active ? 'Disattiva' : 'Attiva'"
+                v-tooltip.top="data.is_active ? $t('admin.catalog.provinces.actions.deactivate') : $t('admin.catalog.provinces.actions.activate')"
                 @click="handleToggleActive(data)"
               />
             </div>

@@ -92,6 +92,7 @@ export const useAuthStore = defineStore('auth', {
      * Register a new user
      */
     async register(form: RegisterForm): Promise<boolean> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -109,7 +110,7 @@ export const useAuthStore = defineStore('auth', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore durante la registrazione'
+        this.error = e.data?.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false
@@ -120,6 +121,7 @@ export const useAuthStore = defineStore('auth', {
      * Login user
      */
     async login(form: LoginForm): Promise<boolean> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -129,7 +131,7 @@ export const useAuthStore = defineStore('auth', {
 
           // Mock validation
           if (form.email !== 'demo@example.com' && form.email !== 'mario.rossi@example.com') {
-            this.error = 'Credenziali non valide'
+            this.error = t('common.errors.genericError')
             return false
           }
 
@@ -160,7 +162,7 @@ export const useAuthStore = defineStore('auth', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Credenziali non valide'
+        this.error = e.data?.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false
@@ -247,6 +249,7 @@ export const useAuthStore = defineStore('auth', {
      * Request password reset
      */
     async forgotPassword(form: ForgotPasswordForm): Promise<boolean> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -263,7 +266,7 @@ export const useAuthStore = defineStore('auth', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore durante l\'invio dell\'email'
+        this.error = e.data?.message || t('common.errors.sendEmailError')
         return false
       } finally {
         this.loading = false
@@ -274,6 +277,7 @@ export const useAuthStore = defineStore('auth', {
      * Reset password with token
      */
     async resetPassword(form: ResetPasswordForm): Promise<boolean> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -290,7 +294,7 @@ export const useAuthStore = defineStore('auth', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore durante il reset della password'
+        this.error = e.data?.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false
@@ -301,6 +305,7 @@ export const useAuthStore = defineStore('auth', {
      * Verify email with token
      */
     async verifyEmail(token: string): Promise<boolean> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -314,7 +319,7 @@ export const useAuthStore = defineStore('auth', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Token di verifica non valido o scaduto'
+        this.error = e.data?.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false
@@ -325,6 +330,7 @@ export const useAuthStore = defineStore('auth', {
      * Resend verification email
      */
     async resendVerificationEmail(): Promise<boolean> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -343,7 +349,7 @@ export const useAuthStore = defineStore('auth', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore durante l\'invio dell\'email'
+        this.error = e.data?.message || t('common.errors.sendEmailError')
         return false
       } finally {
         this.loading = false

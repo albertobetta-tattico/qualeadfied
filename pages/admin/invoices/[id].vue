@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Route & Store
 const route = useRoute()
 const router = useRouter()
@@ -62,9 +64,9 @@ const handleResendSdi = () => {
   confirmResendSdi(invoice.value, async () => {
     const success = await invoiceStore.resendToSdi(invoiceId.value)
     if (success) {
-      showSuccess(`Fattura reinviata a SDI`)
+      showSuccess(t('admin.invoices.list.toast.resendSdiSuccess', { number: invoice.value!.invoice_number }))
     } else {
-      showError(invoiceStore.error || 'Errore nel reinvio a SDI')
+      showError(invoiceStore.error || t('admin.invoices.list.toast.resendSdiError'))
     }
   })
 }
@@ -75,9 +77,9 @@ const handleSendEmail = () => {
   confirmSendEmail(invoice.value, async () => {
     const success = await invoiceStore.sendByEmail(invoiceId.value)
     if (success) {
-      showSuccess(`Fattura inviata via email`)
+      showSuccess(t('admin.invoices.list.toast.sendEmailSuccess', { number: invoice.value!.invoice_number }))
     } else {
-      showError(invoiceStore.error || 'Errore nell\'invio email')
+      showError(invoiceStore.error || t('admin.invoices.list.toast.sendEmailError'))
     }
   })
 }
@@ -86,9 +88,9 @@ const handleDownloadPdf = async () => {
   const url = await invoiceStore.downloadPdf(invoiceId.value)
   if (url) {
     window.open(url, '_blank')
-    showSuccess('Download PDF avviato')
+    showSuccess(t('admin.invoices.list.toast.downloadSuccess'))
   } else {
-    showError(invoiceStore.error || 'Errore nel download del PDF')
+    showError(invoiceStore.error || t('admin.invoices.list.toast.downloadError'))
   }
 }
 
@@ -106,11 +108,11 @@ const handleCreateCreditNote = async () => {
   )
 
   if (creditNote) {
-    showSuccess(`Nota di credito "${creditNote.invoice_number}" creata con successo`)
+    showSuccess(t('admin.invoices.list.toast.creditNoteSuccess', { number: creditNote.invoice_number }))
     creditNoteDialog.value = false
     router.push(`/admin/invoices/${creditNote.id}`)
   } else {
-    showError(invoiceStore.error || 'Errore nella creazione della nota di credito')
+    showError(invoiceStore.error || t('admin.invoices.list.toast.creditNoteError'))
   }
 }
 
@@ -145,7 +147,7 @@ onMounted(() => {
     <div v-if="initialLoading" class="flex items-center justify-center py-20">
       <div class="text-center">
         <i class="pi pi-spin pi-spinner text-4xl text-primary-500 mb-4"></i>
-        <p class="text-neutral-600">Caricamento fattura...</p>
+        <p class="text-neutral-600">{{ $t('admin.invoices.detail.loading') }}</p>
       </div>
     </div>
 
@@ -154,10 +156,10 @@ onMounted(() => {
       <div class="w-20 h-20 rounded-full bg-danger-light flex items-center justify-center mx-auto mb-4">
         <i class="pi pi-exclamation-triangle text-4xl text-danger"></i>
       </div>
-      <h2 class="text-xl font-semibold text-neutral-900 mb-2">Fattura non trovata</h2>
-      <p class="text-neutral-600 mb-6">La fattura richiesta non esiste o è stata eliminata.</p>
+      <h2 class="text-xl font-semibold text-neutral-900 mb-2">{{ $t('admin.invoices.detail.notFound') }}</h2>
+      <p class="text-neutral-600 mb-6">{{ $t('admin.invoices.detail.notFoundDescription') }}</p>
       <PrimeButton
-        label="Torna all'elenco"
+        :label="$t('admin.invoices.detail.backToList')"
         icon="pi pi-arrow-left"
         severity="primary"
         @click="onBack"
@@ -202,7 +204,7 @@ onMounted(() => {
                     class="text-xs"
                   />
                   <span class="text-sm text-neutral-500">
-                    Emessa il {{ formatDate(invoice.issued_at) }}
+                    {{ $t('admin.invoices.detail.issuedOn') }} {{ formatDate(invoice.issued_at) }}
                   </span>
                 </div>
               </div>
@@ -211,14 +213,14 @@ onMounted(() => {
         </div>
         <div class="page-header-actions">
           <PrimeButton
-            label="Scarica PDF"
+            :label="$t('admin.invoices.detail.downloadPdf')"
             icon="pi pi-download"
             severity="secondary"
             outlined
             @click="handleDownloadPdf"
           />
           <PrimeButton
-            label="Invia Email"
+            :label="$t('admin.invoices.detail.sendEmail')"
             icon="pi pi-envelope"
             severity="secondary"
             outlined
@@ -226,14 +228,14 @@ onMounted(() => {
           />
           <PrimeButton
             v-if="canResendToSdi(invoice)"
-            label="Reinvia SDI"
+            :label="$t('admin.invoices.detail.resendSdi')"
             icon="pi pi-send"
             severity="primary"
             @click="handleResendSdi"
           />
           <PrimeButton
             v-if="canCreateCreditNote(invoice)"
-            label="Nota di Credito"
+            :label="$t('admin.invoices.detail.creditNote')"
             icon="pi pi-file-edit"
             severity="warning"
             @click="openCreditNoteDialog"
@@ -246,7 +248,7 @@ onMounted(() => {
         <!-- Total Amount Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Importo Totale</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.invoices.detail.cards.totalAmount') }}</span>
             <i class="pi pi-euro text-lg text-primary-600"></i>
           </div>
           <div
@@ -256,14 +258,14 @@ onMounted(() => {
             {{ formatCurrency(invoice.total) }}
           </div>
           <div class="text-xs text-neutral-500 mt-1">
-            IVA {{ invoice.vat_rate }}% inclusa
+            {{ $t('admin.invoices.detail.vatIncluded', { rate: invoice.vat_rate }) }}
           </div>
         </div>
 
         <!-- SDI Status Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Stato SDI</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.invoices.detail.cards.sdiStatus') }}</span>
             <i :class="[getSdiStatusIcon(invoice.sdi_status), 'text-lg']"></i>
           </div>
           <div class="flex items-center gap-2">
@@ -280,34 +282,34 @@ onMounted(() => {
         <!-- Fatture Cloud Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Fatture in Cloud</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.invoices.detail.cards.fattureCloud') }}</span>
             <i class="pi pi-cloud text-lg text-info-600"></i>
           </div>
           <div v-if="invoice.fatture_cloud_id" class="font-mono text-sm text-neutral-900">
             {{ invoice.fatture_cloud_id }}
           </div>
           <div v-else class="text-sm text-neutral-500">
-            Non sincronizzato
+            {{ $t('admin.invoices.detail.notSynced') }}
           </div>
         </div>
 
         <!-- Dates Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Date</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.invoices.detail.cards.dates') }}</span>
             <i class="pi pi-calendar text-lg text-neutral-600"></i>
           </div>
           <div class="space-y-1 text-sm">
             <div class="flex justify-between">
-              <span class="text-neutral-500">Emissione:</span>
+              <span class="text-neutral-500">{{ $t('admin.invoices.detail.issueLabel') }}:</span>
               <span class="text-neutral-900">{{ formatDate(invoice.issued_at) }}</span>
             </div>
             <div v-if="invoice.due_at" class="flex justify-between">
-              <span class="text-neutral-500">Scadenza:</span>
+              <span class="text-neutral-500">{{ $t('admin.invoices.detail.dueLabel') }}:</span>
               <span class="text-neutral-900">{{ formatDate(invoice.due_at) }}</span>
             </div>
             <div v-if="invoice.sent_at" class="flex justify-between">
-              <span class="text-neutral-500">Inviata:</span>
+              <span class="text-neutral-500">{{ $t('admin.invoices.detail.sentLabel') }}:</span>
               <span class="text-neutral-900">{{ formatDateTime(invoice.sent_at) }}</span>
             </div>
           </div>
@@ -317,20 +319,20 @@ onMounted(() => {
       <!-- Tabs -->
       <PrimeTabView v-model:activeIndex="activeTab" class="q-card">
         <!-- Tab: Dettagli -->
-        <PrimeTabPanel value="0" header="Dettagli">
+        <PrimeTabPanel value="0" :header="$t('admin.invoices.detail.tabs.details')">
           <div class="pt-4 space-y-6">
             <!-- Invoice Items -->
             <div v-if="invoice.items && invoice.items.length > 0">
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Righe Fattura</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.invoices.detail.invoiceLines') }}</h4>
               <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                   <thead>
                     <tr class="bg-neutral-50">
-                      <th class="px-4 py-3 text-left font-semibold text-neutral-700">Descrizione</th>
-                      <th class="px-4 py-3 text-right font-semibold text-neutral-700">Quantità</th>
-                      <th class="px-4 py-3 text-right font-semibold text-neutral-700">Prezzo Unit.</th>
-                      <th class="px-4 py-3 text-right font-semibold text-neutral-700">IVA</th>
-                      <th class="px-4 py-3 text-right font-semibold text-neutral-700">Totale</th>
+                      <th class="px-4 py-3 text-left font-semibold text-neutral-700">{{ $t('admin.invoices.detail.columns.description') }}</th>
+                      <th class="px-4 py-3 text-right font-semibold text-neutral-700">{{ $t('admin.invoices.detail.columns.quantity') }}</th>
+                      <th class="px-4 py-3 text-right font-semibold text-neutral-700">{{ $t('admin.invoices.detail.columns.unitPrice') }}</th>
+                      <th class="px-4 py-3 text-right font-semibold text-neutral-700">{{ $t('admin.invoices.detail.columns.vat') }}</th>
+                      <th class="px-4 py-3 text-right font-semibold text-neutral-700">{{ $t('admin.invoices.detail.columns.total') }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -344,15 +346,15 @@ onMounted(() => {
                   </tbody>
                   <tfoot>
                     <tr class="bg-neutral-50">
-                      <td colspan="4" class="px-4 py-3 text-right font-medium text-neutral-700">Imponibile:</td>
+                      <td colspan="4" class="px-4 py-3 text-right font-medium text-neutral-700">{{ $t('admin.invoices.detail.taxableAmount') }}:</td>
                       <td class="px-4 py-3 text-right font-medium text-neutral-900">{{ formatCurrency(invoice.subtotal) }}</td>
                     </tr>
                     <tr class="bg-neutral-50">
-                      <td colspan="4" class="px-4 py-3 text-right font-medium text-neutral-700">IVA ({{ invoice.vat_rate }}%):</td>
+                      <td colspan="4" class="px-4 py-3 text-right font-medium text-neutral-700">{{ $t('admin.invoices.detail.vatLabel') }} ({{ invoice.vat_rate }}%):</td>
                       <td class="px-4 py-3 text-right font-medium text-neutral-900">{{ formatCurrency(invoice.vat_amount) }}</td>
                     </tr>
                     <tr class="bg-primary-50">
-                      <td colspan="4" class="px-4 py-3 text-right font-bold text-neutral-900">Totale:</td>
+                      <td colspan="4" class="px-4 py-3 text-right font-bold text-neutral-900">{{ $t('admin.invoices.detail.columns.total') }}:</td>
                       <td class="px-4 py-3 text-right font-bold text-primary-700 text-lg">{{ formatCurrency(invoice.total) }}</td>
                     </tr>
                   </tfoot>
@@ -362,7 +364,7 @@ onMounted(() => {
 
             <!-- Notes -->
             <div v-if="invoice.notes" class="p-4 bg-neutral-50 rounded-lg">
-              <h5 class="font-medium text-neutral-700 mb-2">Note</h5>
+              <h5 class="font-medium text-neutral-700 mb-2">{{ $t('admin.invoices.detail.notes') }}</h5>
               <p class="text-neutral-600">{{ invoice.notes }}</p>
             </div>
 
@@ -372,12 +374,12 @@ onMounted(() => {
                 <div class="flex items-center gap-3">
                   <i class="pi pi-shopping-cart text-2xl text-info-600"></i>
                   <div>
-                    <div class="font-semibold text-neutral-900">Ordine Collegato</div>
+                    <div class="font-semibold text-neutral-900">{{ $t('admin.invoices.detail.linkedOrder') }}</div>
                     <div class="text-sm text-neutral-600">{{ invoice.order.order_number }}</div>
                   </div>
                 </div>
                 <PrimeButton
-                  label="Visualizza Ordine"
+                  :label="$t('admin.invoices.detail.viewOrder')"
                   icon="pi pi-external-link"
                   severity="info"
                   text
@@ -389,32 +391,32 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Dati Fatturazione -->
-        <PrimeTabPanel value="1" header="Dati Fatturazione">
+        <PrimeTabPanel value="1" :header="$t('admin.invoices.detail.tabs.billingData')">
           <div class="pt-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Company Info -->
               <div class="space-y-4">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-4">Dati Intestatario</h4>
+                <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.invoices.detail.holderData') }}</h4>
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="text-sm text-neutral-500">Ragione Sociale</label>
+                    <label class="text-sm text-neutral-500">{{ $t('admin.invoices.detail.companyName') }}</label>
                     <p class="font-medium text-neutral-900">{{ invoice.billing_data?.company_name || '-' }}</p>
                   </div>
                   <div>
-                    <label class="text-sm text-neutral-500">Partita IVA</label>
+                    <label class="text-sm text-neutral-500">{{ $t('admin.invoices.detail.vatNumber') }}</label>
                     <p class="font-medium text-neutral-900">{{ formatVatNumber(invoice.billing_data?.vat_number) }}</p>
                   </div>
                 </div>
 
                 <div>
-                  <label class="text-sm text-neutral-500">Indirizzo</label>
+                  <label class="text-sm text-neutral-500">{{ $t('admin.invoices.detail.address') }}</label>
                   <p class="font-medium text-neutral-900">{{ formatBillingAddress(invoice) }}</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="text-sm text-neutral-500">Codice SDI</label>
+                    <label class="text-sm text-neutral-500">{{ $t('admin.invoices.detail.sdiCode') }}</label>
                     <p class="font-medium text-neutral-900 font-mono">{{ invoice.billing_data?.sdi_code || '-' }}</p>
                   </div>
                   <div>
@@ -426,7 +428,7 @@ onMounted(() => {
 
               <!-- Client Info -->
               <div v-if="invoice.client" class="space-y-4">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-4">Cliente</h4>
+                <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.invoices.detail.tabs.client') }}</h4>
 
                 <div class="p-4 bg-neutral-50 rounded-lg">
                   <div class="flex items-center gap-3 mb-4">
@@ -456,7 +458,7 @@ onMounted(() => {
 
                   <div class="mt-4 pt-4 border-t border-neutral-200">
                     <PrimeButton
-                      label="Vai al Cliente"
+                      :label="$t('admin.invoices.detail.goToClient')"
                       icon="pi pi-external-link"
                       severity="secondary"
                       text
@@ -471,7 +473,7 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: SDI -->
-        <PrimeTabPanel value="2" header="Stato SDI">
+        <PrimeTabPanel value="2" :header="$t('admin.invoices.detail.tabs.sdiStatus')">
           <div class="pt-4">
             <div class="max-w-2xl">
               <!-- Current Status -->
@@ -496,25 +498,25 @@ onMounted(() => {
                     </h4>
                     <p class="text-sm text-neutral-600 mb-3">
                       <template v-if="invoice.sdi_status === 'pending'">
-                        La fattura è in attesa di essere inviata al Sistema di Interscambio.
+                        {{ $t('admin.invoices.detail.sdiDescriptions.pending') }}
                       </template>
                       <template v-else-if="invoice.sdi_status === 'sent'">
-                        La fattura è stata inviata a SDI ed è in attesa di elaborazione.
+                        {{ $t('admin.invoices.detail.sdiDescriptions.sent') }}
                       </template>
                       <template v-else-if="invoice.sdi_status === 'delivered'">
-                        La fattura è stata consegnata correttamente al destinatario.
+                        {{ $t('admin.invoices.detail.sdiDescriptions.delivered') }}
                       </template>
                       <template v-else-if="invoice.sdi_status === 'accepted'">
-                        La fattura è stata accettata dal destinatario.
+                        {{ $t('admin.invoices.detail.sdiDescriptions.accepted') }}
                       </template>
                       <template v-else-if="invoice.sdi_status === 'rejected'">
-                        La fattura è stata rifiutata dal destinatario.
+                        {{ $t('admin.invoices.detail.sdiDescriptions.rejected') }}
                       </template>
                       <template v-else-if="invoice.sdi_status === 'not_delivered'">
-                        La fattura non è stata consegnata. Il destinatario potrebbe non essere raggiungibile.
+                        {{ $t('admin.invoices.detail.sdiDescriptions.notDelivered') }}
                       </template>
                       <template v-else-if="invoice.sdi_status === 'error'">
-                        Si è verificato un errore durante l'invio della fattura.
+                        {{ $t('admin.invoices.detail.sdiDescriptions.error') }}
                       </template>
                     </p>
 
@@ -529,7 +531,7 @@ onMounted(() => {
                     <!-- Resend Button -->
                     <PrimeButton
                       v-if="canResendToSdi(invoice)"
-                      label="Reinvia a SDI"
+                      :label="$t('admin.invoices.detail.resendToSdi')"
                       icon="pi pi-send"
                       severity="primary"
                       size="small"
@@ -541,14 +543,14 @@ onMounted(() => {
 
               <!-- Timeline -->
               <div class="space-y-4">
-                <h5 class="font-semibold text-neutral-900">Cronologia</h5>
+                <h5 class="font-semibold text-neutral-900">{{ $t('admin.invoices.detail.chronology') }}</h5>
 
                 <div class="relative pl-8 border-l-2 border-neutral-200 space-y-6">
                   <!-- Created -->
                   <div class="relative">
                     <div class="absolute -left-10 w-4 h-4 rounded-full bg-success-500"></div>
                     <div class="text-sm">
-                      <div class="font-medium text-neutral-900">Fattura creata</div>
+                      <div class="font-medium text-neutral-900">{{ $t('admin.invoices.detail.timeline.invoiceCreated') }}</div>
                       <div class="text-neutral-500">{{ formatDateTime(invoice.created_at) }}</div>
                     </div>
                   </div>
@@ -557,7 +559,7 @@ onMounted(() => {
                   <div class="relative">
                     <div class="absolute -left-10 w-4 h-4 rounded-full bg-success-500"></div>
                     <div class="text-sm">
-                      <div class="font-medium text-neutral-900">Fattura emessa</div>
+                      <div class="font-medium text-neutral-900">{{ $t('admin.invoices.detail.timeline.invoiceIssued') }}</div>
                       <div class="text-neutral-500">{{ formatDateTime(invoice.issued_at) }}</div>
                     </div>
                   </div>
@@ -566,7 +568,7 @@ onMounted(() => {
                   <div v-if="invoice.sent_at" class="relative">
                     <div class="absolute -left-10 w-4 h-4 rounded-full bg-info-500"></div>
                     <div class="text-sm">
-                      <div class="font-medium text-neutral-900">Inviata a SDI</div>
+                      <div class="font-medium text-neutral-900">{{ $t('admin.invoices.detail.timeline.sentToSdi') }}</div>
                       <div class="text-neutral-500">{{ formatDateTime(invoice.sent_at) }}</div>
                     </div>
                   </div>
@@ -599,7 +601,7 @@ onMounted(() => {
     <PrimeDialog
       v-model:visible="creditNoteDialog"
       modal
-      header="Crea Nota di Credito"
+      :header="$t('admin.invoices.list.creditNote.dialogTitle')"
       :style="{ width: '500px' }"
     >
       <div v-if="invoice" class="space-y-4">
@@ -612,7 +614,7 @@ onMounted(() => {
             </div>
           </div>
           <div class="text-sm text-neutral-600">
-            Importo nota di credito:
+            {{ $t('admin.invoices.list.creditNote.amount') }}
             <span class="font-semibold text-danger-600">
               {{ formatCurrency(-invoice.total) }}
             </span>
@@ -621,12 +623,12 @@ onMounted(() => {
 
         <div class="form-group">
           <label class="block text-sm font-medium text-neutral-700 mb-2">
-            Motivo (opzionale)
+            {{ $t('admin.invoices.list.creditNote.reason') }}
           </label>
           <PrimeTextarea
             v-model="creditNoteReason"
             rows="3"
-            placeholder="Inserisci il motivo della nota di credito..."
+            :placeholder="$t('admin.invoices.list.creditNote.reasonPlaceholder')"
             class="w-full"
           />
         </div>
@@ -634,7 +636,7 @@ onMounted(() => {
         <div class="p-3 bg-warning-50 rounded-lg flex items-start gap-3">
           <i class="pi pi-exclamation-triangle text-warning-600"></i>
           <p class="text-sm text-warning-800">
-            La nota di credito verrà emessa e inviata automaticamente a SDI. Questa operazione non può essere annullata.
+            {{ $t('admin.invoices.list.creditNote.warning') }}
           </p>
         </div>
       </div>
@@ -642,13 +644,13 @@ onMounted(() => {
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.invoices.list.creditNote.cancel')"
             severity="secondary"
             outlined
             @click="creditNoteDialog = false"
           />
           <PrimeButton
-            label="Crea Nota di Credito"
+            :label="$t('admin.invoices.list.creditNote.create')"
             severity="warning"
             icon="pi pi-file-edit"
             :loading="invoiceStore.saving"

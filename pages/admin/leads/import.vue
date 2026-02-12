@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const leadStore = useLeadStore()
 const router = useRouter()
@@ -56,29 +58,29 @@ const sourceOptions = computed(() =>
   }))
 )
 
-const duplicateOptions = [
-  { label: 'Salta duplicati', value: 'skip' },
-  { label: 'Aggiorna esistenti', value: 'update' },
-  { label: 'Crea comunque', value: 'create' }
-]
+const duplicateOptions = computed(() => [
+  { label: t('admin.leads.import.step2.duplicateOptions.skip'), value: 'skip' },
+  { label: t('admin.leads.import.step2.duplicateOptions.update'), value: 'update' },
+  { label: t('admin.leads.import.step2.duplicateOptions.createAnyway'), value: 'create' }
+])
 
 // Field mapping labels
-const mappingFields = [
-  { key: 'first_name', label: 'Nome', required: true },
-  { key: 'last_name', label: 'Cognome', required: true },
-  { key: 'email', label: 'Email', required: true },
-  { key: 'phone', label: 'Telefono', required: true },
-  { key: 'province_code', label: 'Provincia (codice)', required: false },
-  { key: 'request_text', label: 'Testo Richiesta', required: false },
-  { key: 'external_id', label: 'ID Esterno', required: false },
-  { key: 'generated_at', label: 'Data Generazione', required: false }
-]
+const mappingFields = computed(() => [
+  { key: 'first_name', label: t('admin.leads.import.step3.fields.firstName'), required: true },
+  { key: 'last_name', label: t('admin.leads.import.step3.fields.lastName'), required: true },
+  { key: 'email', label: t('admin.leads.import.step3.fields.email'), required: true },
+  { key: 'phone', label: t('admin.leads.import.step3.fields.phone'), required: true },
+  { key: 'province_code', label: t('admin.leads.import.step3.fields.provinceCode'), required: false },
+  { key: 'request_text', label: t('admin.leads.import.step3.fields.requestText'), required: false },
+  { key: 'external_id', label: t('admin.leads.import.step3.fields.externalId'), required: false },
+  { key: 'generated_at', label: t('admin.leads.import.step3.fields.generatedAt'), required: false }
+])
 
 // Computed for column options
 const columnOptions = computed(() => {
   if (fileHeaders.value.length === 0) return []
   return [
-    { label: '-- Non mappare --', value: null },
+    { label: t('admin.leads.import.step3.noMap'), value: null },
     ...fileHeaders.value.map((header, index) => ({
       label: `${index + 1}. ${header}`,
       value: index
@@ -116,14 +118,14 @@ const readFilePreview = async (uploadedFile: File) => {
   if (extension === 'csv') {
     await readCSV(uploadedFile)
   } else if (extension === 'xlsx' || extension === 'xls') {
-    showInfo('Lettura file Excel in corso...')
+    showInfo(t('admin.leads.import.toast.readingExcel'))
     // Per semplicità, in fase di sviluppo gestiamo solo CSV
     // TODO: Implementare lettura XLSX con libreria apposita
-    showWarning('Per ora è supportato solo il formato CSV')
+    showWarning(t('admin.leads.import.toast.onlyCsv'))
     file.value = null
     config.file = null
   } else {
-    showError('Formato file non supportato. Usa CSV o XLSX.')
+    showError(t('admin.leads.import.toast.unsupportedFormat'))
     file.value = null
     config.file = null
   }
@@ -236,15 +238,15 @@ const clearFile = () => {
 // Next step
 const nextStep = () => {
   if (currentStep.value === 1 && !file.value) {
-    showError('Seleziona un file da importare')
+    showError(t('admin.leads.import.toast.selectFile'))
     return
   }
   if (currentStep.value === 2 && !config.category_id) {
-    showError('Seleziona una categoria')
+    showError(t('admin.leads.import.toast.selectCategory'))
     return
   }
   if (currentStep.value === 3 && !isMappingValid.value) {
-    showError('Mappa tutti i campi obbligatori')
+    showError(t('admin.leads.import.toast.mapRequired'))
     return
   }
   currentStep.value++
@@ -260,7 +262,7 @@ const prevStep = () => {
 // Execute import
 const executeImport = async () => {
   if (!config.file || !config.category_id) {
-    showError('Configurazione non valida')
+    showError(t('admin.leads.import.toast.invalidConfig'))
     return
   }
 
@@ -271,13 +273,13 @@ const executeImport = async () => {
     currentStep.value = 5 // Go to results
     
     if (result.imported > 0) {
-      showSuccess(`${result.imported} lead importati con successo`)
+      showSuccess(t('admin.leads.import.step5.successMessage', { count: result.imported }))
     }
     if (result.errors.length > 0) {
-      showWarning(`${result.errors.length} righe con errori`)
+      showWarning(t('admin.leads.import.toast.rowsWithErrors', { count: result.errors.length }))
     }
   } else {
-    showError(leadStore.error || 'Errore durante l\'import')
+    showError(leadStore.error || t('admin.leads.import.toast.importError'))
   }
 }
 
@@ -314,9 +316,9 @@ onMounted(() => {
             rounded
             @click="goToList"
           />
-          <h1 class="page-title mb-0">Import Lead</h1>
+          <h1 class="page-title mb-0">{{ $t('admin.leads.import.importTitle') }}</h1>
         </div>
-        <p class="page-subtitle ml-12">Importa lead da file CSV</p>
+        <p class="page-subtitle ml-12">{{ $t('admin.leads.import.importSubtitle') }}</p>
       </div>
     </div>
 
@@ -344,11 +346,11 @@ onMounted(() => {
         </div>
       </div>
       <div class="flex justify-between px-4 pb-4 text-xs text-neutral-600">
-        <span class="w-10 text-center">File</span>
-        <span class="w-10 text-center">Config</span>
-        <span class="w-10 text-center">Mapping</span>
-        <span class="w-10 text-center">Verifica</span>
-        <span class="w-10 text-center">Risultato</span>
+        <span class="w-10 text-center">{{ $t('admin.leads.import.steps.file') }}</span>
+        <span class="w-10 text-center">{{ $t('admin.leads.import.steps.config') }}</span>
+        <span class="w-10 text-center">{{ $t('admin.leads.import.steps.mapping') }}</span>
+        <span class="w-10 text-center">{{ $t('admin.leads.import.steps.verify') }}</span>
+        <span class="w-10 text-center">{{ $t('admin.leads.import.steps.result') }}</span>
       </div>
     </div>
 
@@ -357,22 +359,22 @@ onMounted(() => {
       <div class="q-card-header">
         <h3 class="card-title">
           <i class="pi pi-upload mr-2 text-primary-500"></i>
-          Carica File
+          {{ $t('admin.leads.import.step1.title') }}
         </h3>
       </div>
       <div class="q-card-body">
         <div v-if="!file" class="border-2 border-dashed border-neutral-300 rounded-lg p-8 text-center">
           <i class="pi pi-cloud-upload text-5xl text-neutral-400 mb-4"></i>
-          <p class="text-neutral-600 mb-4">Trascina qui il file CSV oppure</p>
+          <p class="text-neutral-600 mb-4">{{ $t('admin.leads.import.step1.dropText') }}</p>
           <PrimeFileUpload
             mode="basic"
             accept=".csv,.xlsx,.xls"
             :maxFileSize="10000000"
-            chooseLabel="Seleziona File"
+            :chooseLabel="$t('admin.leads.import.step1.selectFile')"
             class="p-button-primary"
             @select="onFileSelect"
           />
-          <p class="text-xs text-neutral-500 mt-4">Formati supportati: CSV (max 10MB)</p>
+          <p class="text-xs text-neutral-500 mt-4">{{ $t('admin.leads.import.step1.supportedFormats') }}</p>
         </div>
 
         <div v-else class="space-y-6">
@@ -395,7 +397,7 @@ onMounted(() => {
 
           <!-- Preview Table -->
           <div v-if="previewData.length > 0">
-            <h4 class="font-medium text-neutral-700 mb-3">Anteprima dati</h4>
+            <h4 class="font-medium text-neutral-700 mb-3">{{ $t('admin.leads.import.step1.previewTitle') }}</h4>
             <div class="overflow-x-auto">
               <table class="w-full text-sm border border-neutral-200 rounded-lg overflow-hidden">
                 <thead>
@@ -430,7 +432,7 @@ onMounted(() => {
               </table>
             </div>
             <p class="text-xs text-neutral-500 mt-2">
-              Mostrate le prime {{ Math.min(5, previewData.length - 1) }} righe
+              {{ $t('admin.leads.import.step1.previewRows', { count: Math.min(5, previewData.length - 1) }) }}
             </p>
           </div>
 
@@ -442,14 +444,14 @@ onMounted(() => {
               :binary="true"
             />
             <label for="skip_header" class="text-neutral-700 cursor-pointer">
-              La prima riga contiene le intestazioni delle colonne
+              {{ $t('admin.leads.import.step1.headerCheckbox') }}
             </label>
           </div>
         </div>
       </div>
       <div class="q-card-footer flex justify-end">
         <PrimeButton
-          label="Continua"
+          :label="$t('admin.leads.import.step1.continue')"
           icon="pi pi-arrow-right"
           iconPos="right"
           severity="primary"
@@ -464,45 +466,45 @@ onMounted(() => {
       <div class="q-card-header">
         <h3 class="card-title">
           <i class="pi pi-cog mr-2 text-primary-500"></i>
-          Configurazione Import
+          {{ $t('admin.leads.import.step2.title') }}
         </h3>
       </div>
       <div class="q-card-body">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Category -->
           <div class="form-group">
-            <label for="category_id">Categoria *</label>
+            <label for="category_id">{{ $t('admin.leads.import.step2.category') }} *</label>
             <PrimeSelect
               id="category_id"
               v-model="config.category_id"
               :options="categoryOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Seleziona categoria"
+              :placeholder="$t('admin.leads.import.step2.category')"
               class="w-full"
             />
-            <small class="form-hint">Tutti i lead importati saranno assegnati a questa categoria</small>
+            <small class="form-hint">{{ $t('admin.leads.import.step2.categoryHint') }}</small>
           </div>
 
           <!-- Source -->
           <div class="form-group">
-            <label for="source_id">Fonte</label>
+            <label for="source_id">{{ $t('admin.leads.import.step2.source') }}</label>
             <PrimeSelect
               id="source_id"
               v-model="config.source_id"
               :options="sourceOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Seleziona fonte (opzionale)"
+              :placeholder="$t('admin.leads.import.step2.sourcePlaceholder')"
               class="w-full"
               showClear
             />
-            <small class="form-hint">Origine dei lead importati</small>
+            <small class="form-hint">{{ $t('admin.leads.import.step2.sourceHint') }}</small>
           </div>
 
           <!-- Duplicate Strategy -->
           <div class="form-group md:col-span-2">
-            <label>Gestione Duplicati</label>
+            <label>{{ $t('admin.leads.import.step2.duplicateStrategy') }}</label>
             <div class="flex gap-4 mt-2">
               <div 
                 v-for="option in duplicateOptions" 
@@ -517,20 +519,20 @@ onMounted(() => {
                 <label :for="`dup_${option.value}`" class="cursor-pointer">{{ option.label }}</label>
               </div>
             </div>
-            <small class="form-hint">Come gestire lead con email già presenti nel sistema</small>
+            <small class="form-hint">{{ $t('admin.leads.import.step2.duplicateHint') }}</small>
           </div>
         </div>
       </div>
       <div class="q-card-footer flex justify-between">
         <PrimeButton
-          label="Indietro"
+          :label="$t('admin.leads.import.step2.back')"
           icon="pi pi-arrow-left"
           severity="secondary"
           outlined
           @click="prevStep"
         />
         <PrimeButton
-          label="Continua"
+          :label="$t('admin.leads.import.step1.continue')"
           icon="pi pi-arrow-right"
           iconPos="right"
           severity="primary"
@@ -545,12 +547,12 @@ onMounted(() => {
       <div class="q-card-header">
         <h3 class="card-title">
           <i class="pi pi-link mr-2 text-primary-500"></i>
-          Mapping Campi
+          {{ $t('admin.leads.import.step3.title') }}
         </h3>
       </div>
       <div class="q-card-body">
         <p class="text-neutral-600 mb-6">
-          Associa le colonne del file ai campi del lead. I campi con * sono obbligatori.
+          {{ $t('admin.leads.import.step3.description') }}
         </p>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -568,7 +570,7 @@ onMounted(() => {
               :options="columnOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Seleziona colonna"
+              :placeholder="$t('admin.leads.import.step3.selectColumn')"
               class="w-full"
               :class="{ 'p-invalid': field.required && config.mapping[field.key as keyof LeadFieldMapping] === null }"
             />
@@ -577,14 +579,14 @@ onMounted(() => {
       </div>
       <div class="q-card-footer flex justify-between">
         <PrimeButton
-          label="Indietro"
+          :label="$t('admin.leads.import.step2.back')"
           icon="pi pi-arrow-left"
           severity="secondary"
           outlined
           @click="prevStep"
         />
         <PrimeButton
-          label="Continua"
+          :label="$t('admin.leads.import.step1.continue')"
           icon="pi pi-arrow-right"
           iconPos="right"
           severity="primary"
@@ -599,39 +601,39 @@ onMounted(() => {
       <div class="q-card-header">
         <h3 class="card-title">
           <i class="pi pi-check-circle mr-2 text-primary-500"></i>
-          Verifica e Conferma
+          {{ $t('admin.leads.import.step4.title') }}
         </h3>
       </div>
       <div class="q-card-body">
         <div class="space-y-6">
           <!-- Summary -->
           <div class="bg-neutral-50 rounded-lg p-6">
-            <h4 class="font-semibold text-neutral-900 mb-4">Riepilogo Import</h4>
+            <h4 class="font-semibold text-neutral-900 mb-4">{{ $t('admin.leads.import.step4.summary') }}</h4>
             <dl class="grid grid-cols-2 gap-4">
               <div>
-                <dt class="text-sm text-neutral-500">File</dt>
+                <dt class="text-sm text-neutral-500">{{ $t('admin.leads.import.step4.file') }}</dt>
                 <dd class="font-medium text-neutral-900">{{ file?.name }}</dd>
               </div>
               <div>
-                <dt class="text-sm text-neutral-500">Righe da importare</dt>
+                <dt class="text-sm text-neutral-500">{{ $t('admin.leads.import.step4.rowsToImport') }}</dt>
                 <dd class="font-medium text-neutral-900">
-                  {{ previewData.length - (config.skip_header ? 1 : 0) }} (stimate)
+                  {{ previewData.length - (config.skip_header ? 1 : 0) }} ({{ $t('admin.leads.import.step4.estimated') }})
                 </dd>
               </div>
               <div>
-                <dt class="text-sm text-neutral-500">Categoria</dt>
+                <dt class="text-sm text-neutral-500">{{ $t('admin.leads.import.step2.category') }}</dt>
                 <dd class="font-medium text-neutral-900">
                   {{ categoryOptions.find(c => c.value === config.category_id)?.label || '-' }}
                 </dd>
               </div>
               <div>
-                <dt class="text-sm text-neutral-500">Fonte</dt>
+                <dt class="text-sm text-neutral-500">{{ $t('admin.leads.import.step2.source') }}</dt>
                 <dd class="font-medium text-neutral-900">
-                  {{ sourceOptions.find(s => s.value === config.source_id)?.label || 'Non specificata' }}
+                  {{ sourceOptions.find(s => s.value === config.source_id)?.label || $t('admin.leads.import.step4.notSpecified') }}
                 </dd>
               </div>
               <div>
-                <dt class="text-sm text-neutral-500">Gestione duplicati</dt>
+                <dt class="text-sm text-neutral-500">{{ $t('admin.leads.import.step2.duplicateStrategy') }}</dt>
                 <dd class="font-medium text-neutral-900">
                   {{ duplicateOptions.find(d => d.value === config.duplicate_strategy)?.label }}
                 </dd>
@@ -641,7 +643,7 @@ onMounted(() => {
 
           <!-- Mapping Summary -->
           <div>
-            <h4 class="font-semibold text-neutral-900 mb-3">Mapping configurato</h4>
+            <h4 class="font-semibold text-neutral-900 mb-3">{{ $t('admin.leads.import.step4.mappingConfigured') }}</h4>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div 
                 v-for="field in mappingFields" 
@@ -662,20 +664,20 @@ onMounted(() => {
 
           <!-- Warning -->
           <PrimeMessage severity="info" :closable="false">
-            <p>L'import potrebbe richiedere alcuni minuti a seconda del numero di righe.</p>
+            <p>{{ $t('admin.leads.import.step4.importWarning') }}</p>
           </PrimeMessage>
         </div>
       </div>
       <div class="q-card-footer flex justify-between">
         <PrimeButton
-          label="Indietro"
+          :label="$t('admin.leads.import.step2.back')"
           icon="pi pi-arrow-left"
           severity="secondary"
           outlined
           @click="prevStep"
         />
         <PrimeButton
-          label="Avvia Import"
+          :label="$t('admin.leads.import.step4.startImport')"
           icon="pi pi-play"
           severity="primary"
           :loading="leadStore.importing"
@@ -689,7 +691,7 @@ onMounted(() => {
       <div class="q-card-header">
         <h3 class="card-title">
           <i class="pi pi-chart-bar mr-2 text-primary-500"></i>
-          Risultato Import
+          {{ $t('admin.leads.import.step5.title') }}
         </h3>
       </div>
       <div class="q-card-body">
@@ -698,15 +700,15 @@ onMounted(() => {
           <div class="grid grid-cols-3 gap-4">
             <div class="text-center p-6 bg-neutral-50 rounded-lg">
               <div class="text-3xl font-bold text-neutral-900">{{ importResult.total_rows }}</div>
-              <div class="text-sm text-neutral-500 mt-1">Righe totali</div>
+              <div class="text-sm text-neutral-500 mt-1">{{ $t('admin.leads.import.step5.totalRows') }}</div>
             </div>
             <div class="text-center p-6 bg-success-light rounded-lg">
               <div class="text-3xl font-bold text-success-dark">{{ importResult.imported }}</div>
-              <div class="text-sm text-success-dark mt-1">Importati</div>
+              <div class="text-sm text-success-dark mt-1">{{ $t('admin.leads.import.step5.imported') }}</div>
             </div>
             <div class="text-center p-6 bg-warning-light rounded-lg">
               <div class="text-3xl font-bold text-warning-dark">{{ importResult.skipped }}</div>
-              <div class="text-sm text-warning-dark mt-1">Saltati</div>
+              <div class="text-sm text-warning-dark mt-1">{{ $t('admin.leads.import.step5.skipped') }}</div>
             </div>
           </div>
 
@@ -714,14 +716,14 @@ onMounted(() => {
           <div v-if="importResult.errors.length > 0">
             <h4 class="font-semibold text-danger mb-3">
               <i class="pi pi-exclamation-triangle mr-2"></i>
-              Errori riscontrati ({{ importResult.errors.length }})
+              {{ $t('admin.leads.import.step5.errorsTitle', { count: importResult.errors.length }) }}
             </h4>
             <div class="max-h-48 overflow-y-auto border border-neutral-200 rounded-lg">
               <table class="w-full text-sm">
                 <thead class="bg-neutral-100 sticky top-0">
                   <tr>
-                    <th class="px-3 py-2 text-left">Riga</th>
-                    <th class="px-3 py-2 text-left">Errore</th>
+                    <th class="px-3 py-2 text-left">{{ $t('admin.leads.import.step5.errorRow') }}</th>
+                    <th class="px-3 py-2 text-left">{{ $t('admin.leads.import.step5.errorMessage') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -740,20 +742,20 @@ onMounted(() => {
 
           <!-- Success message -->
           <PrimeMessage v-if="importResult.imported > 0" severity="success" :closable="false">
-            <p>Import completato! {{ importResult.imported }} lead sono stati aggiunti al sistema.</p>
+            <p>{{ $t('admin.leads.import.step5.successMessage', { count: importResult.imported }) }}</p>
           </PrimeMessage>
         </div>
       </div>
       <div class="q-card-footer flex justify-between">
         <PrimeButton
-          label="Nuovo Import"
+          :label="$t('admin.leads.import.step5.newImport')"
           icon="pi pi-refresh"
           severity="secondary"
           outlined
           @click="startNewImport"
         />
         <PrimeButton
-          label="Vai all'elenco lead"
+          :label="$t('admin.leads.import.step5.goToList')"
           icon="pi pi-list"
           iconPos="right"
           severity="primary"

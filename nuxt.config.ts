@@ -77,8 +77,7 @@ export default defineNuxtConfig({
         file: 'en/index.ts'
       }
     ],
-    lazy: true,
-    langDir: 'locales',
+    langDir: '../locales',
     defaultLocale: 'it',
     strategy: 'no_prefix',
     detectBrowserLanguage: {

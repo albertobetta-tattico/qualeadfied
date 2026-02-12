@@ -305,9 +305,10 @@ export const useClientStore = defineStore('client', {
      * Carica lista clienti con filtri e paginazione
      */
     async fetchClients() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           // Simula delay di rete
@@ -403,7 +404,7 @@ export const useClientStore = defineStore('client', {
         this.clients = response.data
         this.pagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento clienti'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchClients error:', error)
       } finally {
         this.loading = false
@@ -414,25 +415,26 @@ export const useClientStore = defineStore('client', {
      * Carica singolo cliente
      */
     async fetchClient(id: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           await new Promise(resolve => setTimeout(resolve, 300))
           const client = mockClients.find(c => c.id === id)
           this.currentClient = client || null
           if (!client) {
-            this.error = 'Cliente non trovato'
+            this.error = t('common.errors.notFound')
           }
           return
         }
-        
+
         const { api } = useApi()
         const response = await api<{ data: Client }>(`/admin/users/${id}`)
         this.currentClient = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento cliente'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchClient error:', error)
       } finally {
         this.loading = false
@@ -443,9 +445,10 @@ export const useClientStore = defineStore('client', {
      * Crea nuovo cliente
      */
     async createClient(data: ClientCreateForm): Promise<Client | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           await new Promise(resolve => setTimeout(resolve, 500))
@@ -489,7 +492,7 @@ export const useClientStore = defineStore('client', {
         
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nella creazione cliente'
+        this.error = error.message || t('common.errors.createError')
         console.error('createClient error:', error)
         return null
       } finally {
@@ -501,9 +504,10 @@ export const useClientStore = defineStore('client', {
      * Aggiorna cliente
      */
     async updateClient(id: number, data: ClientUpdateForm): Promise<Client | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           await new Promise(resolve => setTimeout(resolve, 500))
@@ -527,28 +531,28 @@ export const useClientStore = defineStore('client', {
             
             return updated
           }
-          this.error = 'Cliente non trovato'
+          this.error = t('common.errors.notFound')
           return null
         }
-        
+
         const { api } = useApi()
         const response = await api<{ data: Client }>(`/admin/users/${id}`, {
           method: 'PUT',
           body: data
         })
-        
+
         const index = this.clients.findIndex(c => c.id === id)
         if (index !== -1) {
           this.clients[index] = response.data
         }
-        
+
         if (this.currentClient?.id === id) {
           this.currentClient = response.data
         }
-        
+
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'aggiornamento cliente'
+        this.error = error.message || t('common.errors.updateError')
         console.error('updateClient error:', error)
         return null
       } finally {
@@ -560,9 +564,10 @@ export const useClientStore = defineStore('client', {
      * Elimina cliente
      */
     async deleteClient(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           await new Promise(resolve => setTimeout(resolve, 500))
@@ -573,19 +578,19 @@ export const useClientStore = defineStore('client', {
             this.pagination.total--
             return true
           }
-          this.error = 'Cliente non trovato'
+          this.error = t('common.errors.notFound')
           return false
         }
-        
+
         const { api } = useApi()
         await api(`/admin/users/${id}`, { method: 'DELETE' })
-        
+
         this.clients = this.clients.filter(c => c.id !== id)
         this.pagination.total--
-        
+
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'eliminazione cliente'
+        this.error = error.message || t('common.errors.deleteError')
         console.error('deleteClient error:', error)
         return false
       } finally {
@@ -597,9 +602,10 @@ export const useClientStore = defineStore('client', {
      * Sospendi cliente
      */
     async suspendClient(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           await new Promise(resolve => setTimeout(resolve, 300))
@@ -638,7 +644,7 @@ export const useClientStore = defineStore('client', {
         
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nella sospensione cliente'
+        this.error = error.message || t('common.errors.updateError')
         console.error('suspendClient error:', error)
         return false
       } finally {
@@ -650,6 +656,7 @@ export const useClientStore = defineStore('client', {
      * Riattiva cliente
      */
     async activateClient(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
       
@@ -691,7 +698,7 @@ export const useClientStore = defineStore('client', {
         
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'attivazione cliente'
+        this.error = error.message || t('common.errors.updateError')
         console.error('activateClient error:', error)
         return false
       } finally {
@@ -703,6 +710,7 @@ export const useClientStore = defineStore('client', {
      * Reset password cliente
      */
     async resetPassword(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
       
@@ -716,7 +724,7 @@ export const useClientStore = defineStore('client', {
         await api(`/admin/users/${id}/reset-password`, { method: 'POST' })
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nel reset password'
+        this.error = error.message || t('common.errors.genericError')
         console.error('resetPassword error:', error)
         return false
       } finally {
@@ -728,6 +736,7 @@ export const useClientStore = defineStore('client', {
      * Aggiorna configurazione prova gratuita
      */
     async updateFreeTrial(id: number, config: FreeTrialConfig): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
       
@@ -774,7 +783,7 @@ export const useClientStore = defineStore('client', {
         
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'aggiornamento prova gratuita'
+        this.error = error.message || t('common.errors.updateError')
         console.error('updateFreeTrial error:', error)
         return false
       } finally {

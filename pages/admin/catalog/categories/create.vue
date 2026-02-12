@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const catalogStore = useCatalogStore()
 const router = useRouter()
@@ -50,19 +52,19 @@ const onSlugFocus = () => {
 // Submit form
 const onSubmit = async () => {
   clearErrors()
-  
+
   if (!validateForm(form)) {
-    showError('Correggi gli errori nel form prima di procedere')
+    showError(t('admin.catalog.categories.toast.formError'))
     return
   }
 
   const category = await catalogStore.createCategory(form)
-  
+
   if (category) {
-    showSuccess(`Categoria "${category.name}" creata con successo`)
+    showSuccess(t('admin.catalog.categories.toast.createSuccess', { name: category.name }))
     router.push('/admin/catalog/categories')
   } else {
-    showError(catalogStore.error || 'Errore nella creazione della categoria')
+    showError(catalogStore.error || t('admin.catalog.categories.toast.createError'))
   }
 }
 
@@ -92,9 +94,9 @@ onMounted(async () => {
             rounded
             @click="onCancel"
           />
-          <h1 class="page-title mb-0">Nuova Categoria</h1>
+          <h1 class="page-title mb-0">{{ $t('admin.catalog.categories.createTitle') }}</h1>
         </div>
-        <p class="page-subtitle ml-12">Crea una nuova categoria merceologica per i lead</p>
+        <p class="page-subtitle ml-12">{{ $t('admin.catalog.categories.createSubtitle') }}</p>
       </div>
     </div>
 
@@ -105,19 +107,19 @@ onMounted(async () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-tag mr-2 text-primary-500"></i>
-            Informazioni Base
+            {{ $t('admin.catalog.categories.form.basicInfo') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Name -->
             <div class="form-group">
-              <label for="name">Nome Categoria *</label>
+              <label for="name">{{ $t('admin.catalog.categories.form.name') }} *</label>
               <PrimeInputText
                 id="name"
                 v-model="form.name"
                 :class="{ 'p-invalid': errors.name }"
-                placeholder="Es. Fotovoltaico"
+                :placeholder="$t('admin.catalog.categories.form.namePlaceholder')"
                 class="w-full"
                 @blur="onBlur('name', form.name)"
               />
@@ -126,13 +128,13 @@ onMounted(async () => {
 
             <!-- Slug -->
             <div class="form-group">
-              <label for="slug">Slug (URL) *</label>
+              <label for="slug">{{ $t('admin.catalog.categories.form.slug') }} *</label>
               <div class="p-inputgroup">
                 <PrimeInputText
                   id="slug"
                   v-model="form.slug"
                   :class="{ 'p-invalid': errors.slug }"
-                  placeholder="es-fotovoltaico"
+                  :placeholder="$t('admin.catalog.categories.form.slugPlaceholder')"
                   class="w-full"
                   @blur="onBlur('slug', form.slug)"
                   @focus="onSlugFocus"
@@ -141,26 +143,26 @@ onMounted(async () => {
                   icon="pi pi-sync"
                   severity="secondary"
                   outlined
-                  v-tooltip.top="'Rigenera da nome'"
+                  v-tooltip.top="$t('admin.catalog.categories.form.regenerateSlug')"
                   @click="form.slug = generateSlug(form.name); autoGenerateSlug = true"
                 />
               </div>
               <small v-if="errors.slug" class="p-error">{{ errors.slug }}</small>
-              <small v-else class="form-hint">Identificativo URL-friendly (solo lettere minuscole, numeri e trattini)</small>
+              <small v-else class="form-hint">{{ $t('admin.catalog.categories.form.slugHint') }}</small>
             </div>
 
             <!-- Description -->
             <div class="form-group md:col-span-2">
-              <label for="description">Descrizione</label>
+              <label for="description">{{ $t('admin.catalog.categories.form.description') }}</label>
               <PrimeTextarea
                 id="description"
                 v-model="form.description"
                 rows="3"
-                placeholder="Descrizione della categoria e tipologia di lead..."
+                :placeholder="$t('admin.catalog.categories.form.descriptionPlaceholder')"
                 class="w-full"
                 autoResize
               />
-              <small class="form-hint">Descrizione opzionale per identificare la tipologia di lead</small>
+              <small class="form-hint">{{ $t('admin.catalog.categories.form.descriptionHint') }}</small>
             </div>
           </div>
         </div>
@@ -171,14 +173,14 @@ onMounted(async () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-cog mr-2 text-primary-500"></i>
-            Regole di Business
+            {{ $t('admin.catalog.categories.form.businessRules') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Max Shares -->
             <div class="form-group">
-              <label for="max_shares">Numero Massimo Condivisioni *</label>
+              <label for="max_shares">{{ $t('admin.catalog.categories.form.maxShares') }} *</label>
               <PrimeInputNumber
                 id="max_shares"
                 v-model="form.max_shares"
@@ -191,13 +193,13 @@ onMounted(async () => {
               />
               <small v-if="errors.max_shares" class="p-error">{{ errors.max_shares }}</small>
               <small v-else class="form-hint">
-                Numero massimo di volte che un lead può essere venduto in modalità condivisa (default: 3)
+                {{ $t('admin.catalog.categories.form.maxSharesHint') }}
               </small>
             </div>
 
             <!-- Sort Order -->
             <div class="form-group">
-              <label for="sort_order">Ordine di Visualizzazione</label>
+              <label for="sort_order">{{ $t('admin.catalog.categories.form.sortOrder') }}</label>
               <PrimeInputNumber
                 id="sort_order"
                 v-model="form.sort_order"
@@ -208,7 +210,7 @@ onMounted(async () => {
                 @blur="onBlur('sort_order', form.sort_order)"
               />
               <small v-if="errors.sort_order" class="p-error">{{ errors.sort_order }}</small>
-              <small v-else class="form-hint">Ordine di visualizzazione nelle liste (numeri più bassi vengono prima)</small>
+              <small v-else class="form-hint">{{ $t('admin.catalog.categories.form.sortOrderHint') }}</small>
             </div>
 
             <!-- Is Active Toggle -->
@@ -220,10 +222,10 @@ onMounted(async () => {
                 />
                 <div>
                   <label for="is_active" class="cursor-pointer font-medium text-neutral-800 mb-0">
-                    Categoria Attiva
+                    {{ $t('admin.catalog.categories.form.isActive') }}
                   </label>
                   <p class="text-sm text-neutral-600 mt-1">
-                    Se attiva, i lead di questa categoria saranno visibili e acquistabili dai clienti
+                    {{ $t('admin.catalog.categories.form.isActiveHint') }}
                   </p>
                 </div>
               </div>
@@ -237,11 +239,9 @@ onMounted(async () => {
         <div class="flex items-start gap-3">
           <i class="pi pi-info-circle text-info text-xl mt-0.5"></i>
           <div>
-            <h4 class="font-medium text-info-dark mb-1">Informazioni sulla Categoria</h4>
+            <h4 class="font-medium text-info-dark mb-1">{{ $t('admin.catalog.categories.info.title') }}</h4>
             <p class="text-sm text-info-dark/80">
-              Le categorie merceologiche definiscono il settore di appartenenza dei lead. 
-              Il parametro "Max Condivisioni" stabilisce quante volte un lead può essere venduto 
-              in modalità condivisa prima di diventare non disponibile.
+              {{ $t('admin.catalog.categories.info.description') }}
             </p>
           </div>
         </div>
@@ -251,14 +251,14 @@ onMounted(async () => {
       <div class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
         <PrimeButton
           type="button"
-          label="Annulla"
+          :label="$t('admin.common.cancel')"
           severity="secondary"
           outlined
           @click="onCancel"
         />
         <PrimeButton
           type="submit"
-          label="Crea Categoria"
+          :label="$t('admin.catalog.categories.form.createButton')"
           icon="pi pi-check"
           severity="primary"
           :loading="catalogStore.saving"

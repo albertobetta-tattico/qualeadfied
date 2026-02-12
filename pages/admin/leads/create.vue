@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const leadStore = useLeadStore()
 const router = useRouter()
@@ -98,17 +100,17 @@ const onSubmit = async () => {
   }
   
   if (!validateForm(formData)) {
-    showError('Correggi gli errori nel form prima di procedere')
+    showError(t('admin.leads.create.toast.formErrors'))
     return
   }
 
   const lead = await leadStore.createLead(formData)
-  
+
   if (lead) {
-    showSuccess(`Lead di "${lead.first_name} ${lead.last_name}" creato con successo`)
+    showSuccess(t('admin.leads.create.toast.createSuccess', { name: `${lead.first_name} ${lead.last_name}` }))
     router.push('/admin/leads')
   } else {
-    showError(leadStore.error || 'Errore nella creazione del lead')
+    showError(leadStore.error || t('admin.leads.create.toast.createError'))
   }
 }
 
@@ -127,14 +129,14 @@ const onCreateAnother = async () => {
   }
   
   if (!validateForm(formData)) {
-    showError('Correggi gli errori nel form prima di procedere')
+    showError(t('admin.leads.create.toast.formErrors'))
     return
   }
 
   const lead = await leadStore.createLead(formData)
-  
+
   if (lead) {
-    showSuccess(`Lead di "${lead.first_name} ${lead.last_name}" creato con successo`)
+    showSuccess(t('admin.leads.create.toast.createSuccess', { name: `${lead.first_name} ${lead.last_name}` }))
     // Reset form but keep category and source
     const savedCategoryId = form.category_id
     const savedSourceId = form.source_id
@@ -153,7 +155,7 @@ const onCreateAnother = async () => {
     form.source_id = savedSourceId
     form.province_id = savedProvinceId
   } else {
-    showError(leadStore.error || 'Errore nella creazione del lead')
+    showError(leadStore.error || t('admin.leads.create.toast.createError'))
   }
 }
 
@@ -176,9 +178,9 @@ onMounted(() => {
             rounded
             @click="onCancel"
           />
-          <h1 class="page-title mb-0">Nuovo Lead</h1>
+          <h1 class="page-title mb-0">{{ $t('admin.leads.create.createTitle') }}</h1>
         </div>
-        <p class="page-subtitle ml-12">Inserisci i dati per creare un nuovo lead</p>
+        <p class="page-subtitle ml-12">{{ $t('admin.leads.create.createSubtitle') }}</p>
       </div>
     </div>
 
@@ -189,21 +191,21 @@ onMounted(() => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-tag mr-2 text-primary-500"></i>
-            Classificazione
+            {{ $t('admin.leads.create.sections.classification') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Category -->
             <div class="form-group">
-              <label for="category_id">Categoria Merceologica *</label>
+              <label for="category_id">{{ $t('admin.leads.create.form.category') }} *</label>
               <PrimeSelect
                 id="category_id"
                 v-model="form.category_id"
                 :options="categoryOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona categoria"
+                :placeholder="$t('admin.leads.create.form.categoryPlaceholder')"
                 :class="{ 'p-invalid': errors.category_id }"
                 class="w-full"
                 @blur="onBlur('category_id', form.category_id)"
@@ -222,18 +224,18 @@ onMounted(() => {
 
             <!-- Province -->
             <div class="form-group">
-              <label for="province_id">Provincia *</label>
+              <label for="province_id">{{ $t('admin.leads.create.form.province') }} *</label>
               <PrimeSelect
                 id="province_id"
                 v-model="form.province_id"
                 :options="provinceOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona provincia"
+                :placeholder="$t('admin.leads.create.form.provincePlaceholder')"
                 :class="{ 'p-invalid': errors.province_id }"
                 class="w-full"
                 :filter="true"
-                filterPlaceholder="Cerca provincia..."
+                :filterPlaceholder="$t('admin.leads.create.form.provinceFilter')"
                 @blur="onBlur('province_id', form.province_id)"
               >
                 <template #option="slotProps">
@@ -248,14 +250,14 @@ onMounted(() => {
 
             <!-- Source -->
             <div class="form-group">
-              <label for="source_id">Fonte Lead *</label>
+              <label for="source_id">{{ $t('admin.leads.create.form.source') }} *</label>
               <PrimeSelect
                 id="source_id"
                 v-model="form.source_id"
                 :options="sourceOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona fonte"
+                :placeholder="$t('admin.leads.create.form.sourcePlaceholder')"
                 :class="{ 'p-invalid': errors.source_id }"
                 class="w-full"
                 @blur="onBlur('source_id', form.source_id)"
@@ -271,14 +273,14 @@ onMounted(() => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-user mr-2 text-primary-500"></i>
-            Dati Contatto
+            {{ $t('admin.leads.create.sections.contactData') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- First Name -->
             <div class="form-group">
-              <label for="first_name">Nome *</label>
+              <label for="first_name">{{ $t('admin.leads.create.form.firstName') }} *</label>
               <PrimeInputText
                 id="first_name"
                 v-model="form.first_name"
@@ -292,7 +294,7 @@ onMounted(() => {
 
             <!-- Last Name -->
             <div class="form-group">
-              <label for="last_name">Cognome *</label>
+              <label for="last_name">{{ $t('admin.leads.create.form.lastName') }} *</label>
               <PrimeInputText
                 id="last_name"
                 v-model="form.last_name"
@@ -306,7 +308,7 @@ onMounted(() => {
 
             <!-- Email -->
             <div class="form-group">
-              <label for="email">Email *</label>
+              <label for="email">{{ $t('admin.leads.create.form.email') }} *</label>
               <PrimeInputText
                 id="email"
                 v-model="form.email"
@@ -321,7 +323,7 @@ onMounted(() => {
 
             <!-- Phone -->
             <div class="form-group">
-              <label for="phone">Telefono *</label>
+              <label for="phone">{{ $t('admin.leads.create.form.phone') }} *</label>
               <PrimeInputText
                 id="phone"
                 v-model="form.phone"
@@ -341,29 +343,29 @@ onMounted(() => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-file-edit mr-2 text-primary-500"></i>
-            Dettagli Richiesta
+            {{ $t('admin.leads.create.sections.requestDetails') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 gap-6">
             <!-- Request Text -->
             <div class="form-group">
-              <label for="request_text">Testo Richiesta</label>
+              <label for="request_text">{{ $t('admin.leads.create.form.requestText') }}</label>
               <PrimeTextarea
                 id="request_text"
                 v-model="form.request_text"
                 rows="4"
-                placeholder="Descrivi la richiesta del contatto..."
+                :placeholder="$t('admin.leads.create.form.requestTextPlaceholder')"
                 class="w-full"
                 autoResize
               />
-              <small class="form-hint">Il testo della richiesta aiuta a qualificare il lead</small>
+              <small class="form-hint">{{ $t('admin.leads.create.form.requestTextHint') }}</small>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Generated At -->
               <div class="form-group">
-                <label for="generated_at">Data Generazione *</label>
+                <label for="generated_at">{{ $t('admin.leads.create.form.generatedAt') }} *</label>
                 <PrimeDatePicker
                   id="generated_at"
                   v-model="formGeneratedAt"
@@ -375,19 +377,19 @@ onMounted(() => {
                   @blur="onBlurGeneratedAt"
                 />
                 <small v-if="errors.generated_at" class="p-error">{{ errors.generated_at }}</small>
-                <small v-else class="form-hint">Data in cui il lead è stato generato</small>
+                <small v-else class="form-hint">{{ $t('admin.leads.create.form.generatedAtHint') }}</small>
               </div>
 
               <!-- External ID -->
               <div class="form-group">
-                <label for="external_id">ID Esterno</label>
+                <label for="external_id">{{ $t('admin.leads.create.form.externalId') }}</label>
                 <PrimeInputText
                   id="external_id"
                   v-model="form.external_id"
-                  placeholder="Riferimento dal sistema esterno"
+                  :placeholder="$t('admin.leads.create.form.externalIdPlaceholder')"
                   class="w-full"
                 />
-                <small class="form-hint">Identificativo nel sistema di origine (opzionale)</small>
+                <small class="form-hint">{{ $t('admin.leads.create.form.externalIdHint') }}</small>
               </div>
             </div>
           </div>
@@ -398,7 +400,7 @@ onMounted(() => {
       <div class="flex justify-between pt-4 border-t border-neutral-200">
         <PrimeButton
           type="button"
-          label="Annulla"
+          :label="$t('admin.leads.create.buttons.cancel')"
           severity="secondary"
           outlined
           @click="onCancel"
@@ -406,7 +408,7 @@ onMounted(() => {
         <div class="flex gap-3">
           <PrimeButton
             type="button"
-            label="Salva e Crea Altro"
+            :label="$t('admin.leads.create.buttons.saveAndCreateAnother')"
             icon="pi pi-plus"
             severity="secondary"
             :loading="leadStore.saving"
@@ -415,7 +417,7 @@ onMounted(() => {
           />
           <PrimeButton
             type="submit"
-            label="Crea Lead"
+            :label="$t('admin.leads.create.buttons.create')"
             icon="pi pi-check"
             severity="primary"
             :loading="leadStore.saving"

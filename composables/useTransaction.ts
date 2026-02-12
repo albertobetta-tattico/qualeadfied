@@ -3,10 +3,10 @@
  * Qualeadfied B2B Lead Platform
  */
 
-import type { 
-  Transaction, 
+import type {
+  Transaction,
   TransactionWithDetails,
-  TransactionStatus, 
+  TransactionStatus,
   TransactionPaymentType
 } from '~/types/transaction'
 
@@ -14,17 +14,19 @@ import type {
  * Formattatori per visualizzazione transazioni
  */
 export function useTransactionFormatters() {
+  const { t } = useI18n()
+
   /**
-   * Formatta lo stato transazione in italiano
+   * Formatta lo stato transazione
    */
   const formatStatus = (status: TransactionStatus): string => {
     const labels: Record<TransactionStatus, string> = {
-      pending: 'In Attesa',
-      requires_action: 'Azione Richiesta',
-      processing: 'In Elaborazione',
-      succeeded: 'Completata',
-      failed: 'Fallita',
-      canceled: 'Annullata'
+      pending: t('orders.transactions.status.pending'),
+      requires_action: t('orders.transactions.status.requiresAction'),
+      processing: t('orders.transactions.status.processing'),
+      succeeded: t('orders.transactions.status.succeeded'),
+      failed: t('orders.transactions.status.failed'),
+      canceled: t('orders.transactions.status.canceled')
     }
     return labels[status] || status
   }
@@ -60,12 +62,12 @@ export function useTransactionFormatters() {
   }
 
   /**
-   * Formatta il tipo di pagamento in italiano
+   * Formatta il tipo di pagamento
    */
   const formatPaymentType = (type: TransactionPaymentType): string => {
     const labels: Record<TransactionPaymentType, string> = {
-      card: 'Carta di Credito',
-      sepa_debit: 'Addebito SEPA'
+      card: t('orders.transactions.paymentType.card'),
+      sepa_debit: t('orders.transactions.paymentType.sepaDebit')
     }
     return labels[type] || type
   }
@@ -192,15 +194,15 @@ export function useTransactionFormatters() {
   const formatFailureCode = (code: string | null): string => {
     if (!code) return '-'
     const codes: Record<string, string> = {
-      'card_declined': 'Carta Rifiutata',
-      'insufficient_funds': 'Fondi Insufficienti',
-      'expired_card': 'Carta Scaduta',
-      'incorrect_cvc': 'CVC Non Valido',
-      'processing_error': 'Errore di Elaborazione',
-      'incorrect_number': 'Numero Carta Non Valido',
-      'authentication_required': 'Autenticazione Richiesta',
-      'bank_account_declined': 'Conto Rifiutato',
-      'debit_not_authorized': 'Addebito Non Autorizzato'
+      'card_declined': t('orders.transactions.failureCodes.cardDeclined'),
+      'insufficient_funds': t('orders.transactions.failureCodes.insufficientFunds'),
+      'expired_card': t('orders.transactions.failureCodes.expiredCard'),
+      'incorrect_cvc': t('orders.transactions.failureCodes.incorrectCvc'),
+      'processing_error': t('orders.transactions.failureCodes.processingError'),
+      'incorrect_number': t('orders.transactions.failureCodes.incorrectNumber'),
+      'authentication_required': t('orders.transactions.failureCodes.authenticationRequired'),
+      'bank_account_declined': t('orders.transactions.failureCodes.bankAccountDeclined'),
+      'debit_not_authorized': t('orders.transactions.failureCodes.debitNotAuthorized')
     }
     return codes[code] || code
   }
@@ -244,12 +246,13 @@ export function useTransactionFormatters() {
  * Azioni e conferme per transazioni
  */
 export function useTransactionActions() {
+  const { t } = useI18n()
   const toast = useToast()
 
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Operazione completata',
+      summary: t('orders.toast.success'),
       detail: message,
       life: 3000
     })
@@ -258,7 +261,7 @@ export function useTransactionActions() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('orders.toast.error'),
       detail: message,
       life: 5000
     })
@@ -267,7 +270,7 @@ export function useTransactionActions() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Informazione',
+      summary: t('orders.toast.info'),
       detail: message,
       life: 3000
     })
@@ -276,7 +279,7 @@ export function useTransactionActions() {
   const showWarning = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('orders.toast.warning'),
       detail: message,
       life: 4000
     })
@@ -288,9 +291,9 @@ export function useTransactionActions() {
   const copyPaymentIntentId = async (id: string) => {
     try {
       await navigator.clipboard.writeText(id)
-      showSuccess(`Payment Intent ID copiato negli appunti`)
+      showSuccess(t('orders.transactions.toast.paymentIntentCopied'))
     } catch {
-      showError('Impossibile copiare negli appunti')
+      showError(t('orders.transactions.toast.cannotCopy'))
     }
   }
 
@@ -300,9 +303,9 @@ export function useTransactionActions() {
   const copyChargeId = async (id: string) => {
     try {
       await navigator.clipboard.writeText(id)
-      showSuccess(`Charge ID copiato negli appunti`)
+      showSuccess(t('orders.transactions.toast.chargeIdCopied'))
     } catch {
-      showError('Impossibile copiare negli appunti')
+      showError(t('orders.transactions.toast.cannotCopy'))
     }
   }
 
@@ -341,9 +344,9 @@ export function useTransactionActions() {
     try {
       const formatted = formatJsonForDisplay(json)
       await navigator.clipboard.writeText(formatted)
-      showSuccess('Risposta Stripe copiata negli appunti')
+      showSuccess(t('orders.transactions.toast.stripeResponseCopied'))
     } catch {
-      showError('Impossibile copiare negli appunti')
+      showError(t('orders.transactions.toast.cannotCopy'))
     }
   }
 
@@ -365,21 +368,23 @@ export function useTransactionActions() {
  * Opzioni per dropdown e filtri
  */
 export function useTransactionOptions() {
-  const statusOptions = [
-    { label: 'Tutti gli stati', value: '' },
-    { label: 'In Attesa', value: 'pending' },
-    { label: 'Azione Richiesta', value: 'requires_action' },
-    { label: 'In Elaborazione', value: 'processing' },
-    { label: 'Completata', value: 'succeeded' },
-    { label: 'Fallita', value: 'failed' },
-    { label: 'Annullata', value: 'canceled' }
-  ]
+  const { t } = useI18n()
 
-  const paymentTypeOptions = [
-    { label: 'Tutti i tipi', value: '' },
-    { label: 'Carta di Credito', value: 'card' },
-    { label: 'Addebito SEPA', value: 'sepa_debit' }
-  ]
+  const statusOptions = computed(() => [
+    { label: t('orders.transactions.status.all'), value: '' },
+    { label: t('orders.transactions.status.pending'), value: 'pending' },
+    { label: t('orders.transactions.status.requiresAction'), value: 'requires_action' },
+    { label: t('orders.transactions.status.processing'), value: 'processing' },
+    { label: t('orders.transactions.status.succeeded'), value: 'succeeded' },
+    { label: t('orders.transactions.status.failed'), value: 'failed' },
+    { label: t('orders.transactions.status.canceled'), value: 'canceled' }
+  ])
+
+  const paymentTypeOptions = computed(() => [
+    { label: t('orders.transactions.paymentType.all'), value: '' },
+    { label: t('orders.transactions.paymentType.card'), value: 'card' },
+    { label: t('orders.transactions.paymentType.sepaDebit'), value: 'sepa_debit' }
+  ])
 
   return {
     statusOptions,

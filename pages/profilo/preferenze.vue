@@ -7,6 +7,7 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
 const profileStore = useClientProfileStore()
 const { showSuccess, showError } = useClientToast()
 
@@ -30,10 +31,10 @@ const updateEmailNotifications = async (value: boolean) => {
   })
 
   if (success) {
-    showSuccess(value ? 'Notifiche email attivate' : 'Notifiche email disattivate')
+    showSuccess(value ? t('profile.preferences.toast.emailEnabled') : t('profile.preferences.toast.emailDisabled'))
   } else {
     emailNotifications.value = !value
-    showError(profileStore.error || 'Errore nell\'aggiornamento')
+    showError(profileStore.error || t('profile.toast.errorUpdating'))
   }
 }
 
@@ -44,10 +45,10 @@ const updateMarketingConsent = async (value: boolean) => {
   })
 
   if (success) {
-    showSuccess(value ? 'Consenso marketing attivato' : 'Consenso marketing disattivato')
+    showSuccess(value ? t('profile.preferences.toast.marketingEnabled') : t('profile.preferences.toast.marketingDisabled'))
   } else {
     marketingConsent.value = !value
-    showError(profileStore.error || 'Errore nell\'aggiornamento')
+    showError(profileStore.error || t('profile.toast.errorUpdating'))
   }
 }
 
@@ -71,11 +72,11 @@ watch(marketingConsent, (newValue, oldValue) => {
     <div class="mb-6">
       <NuxtLink to="/profilo" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
         <i class="pi pi-arrow-left"></i>
-        Torna al profilo
+        {{ $t('profile.preferences.backToProfile') }}
       </NuxtLink>
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">Preferenze</h1>
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('profile.preferences.title') }}</h1>
       <p class="text-surface-600 dark:text-surface-400">
-        Gestisci le notifiche e le comunicazioni
+        {{ $t('profile.preferences.subtitle') }}
       </p>
     </div>
 
@@ -92,7 +93,7 @@ watch(marketingConsent, (newValue, oldValue) => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-bell text-primary"></i>
-              Notifiche Email
+              {{ $t('profile.preferences.emailNotifications.title') }}
             </div>
           </template>
           <template #content>
@@ -100,34 +101,34 @@ watch(marketingConsent, (newValue, oldValue) => {
               <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
                 <div>
                   <h4 class="font-medium text-surface-900 dark:text-surface-0">
-                    Notifiche sui nuovi lead
+                    {{ $t('profile.preferences.emailNotifications.toggle') }}
                   </h4>
                   <p class="text-sm text-surface-600 dark:text-surface-400">
-                    Ricevi email quando ci sono nuovi lead nelle tue categorie di interesse
+                    {{ $t('profile.preferences.emailNotifications.description') }}
                   </p>
                 </div>
                 <ToggleSwitch v-model="emailNotifications" />
               </div>
 
               <p class="text-sm text-surface-500">
-                Le notifiche includono:
+                {{ $t('profile.preferences.emailNotifications.includes') }}
               </p>
               <ul class="text-sm text-surface-600 dark:text-surface-400 space-y-2 ml-4">
                 <li class="flex items-center gap-2">
                   <i class="pi pi-check text-green-500"></i>
-                  Nuovi lead disponibili nelle tue categorie
+                  {{ $t('profile.preferences.emailNotifications.newLeads') }}
                 </li>
                 <li class="flex items-center gap-2">
                   <i class="pi pi-check text-green-500"></i>
-                  Conferme d'ordine e fatture
+                  {{ $t('profile.preferences.emailNotifications.orderConfirmations') }}
                 </li>
                 <li class="flex items-center gap-2">
                   <i class="pi pi-check text-green-500"></i>
-                  Scadenza pacchetti attivi
+                  {{ $t('profile.preferences.emailNotifications.packageExpiry') }}
                 </li>
                 <li class="flex items-center gap-2">
                   <i class="pi pi-check text-green-500"></i>
-                  Aggiornamenti importanti sull'account
+                  {{ $t('profile.preferences.emailNotifications.accountUpdates') }}
                 </li>
               </ul>
             </div>
@@ -139,7 +140,7 @@ watch(marketingConsent, (newValue, oldValue) => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-megaphone text-primary"></i>
-              Comunicazioni Marketing
+              {{ $t('profile.preferences.marketing.title') }}
             </div>
           </template>
           <template #content>
@@ -147,35 +148,35 @@ watch(marketingConsent, (newValue, oldValue) => {
               <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
                 <div>
                   <h4 class="font-medium text-surface-900 dark:text-surface-0">
-                    Newsletter e promozioni
+                    {{ $t('profile.preferences.marketing.toggle') }}
                   </h4>
                   <p class="text-sm text-surface-600 dark:text-surface-400">
-                    Ricevi aggiornamenti su offerte speciali, promozioni e novità
+                    {{ $t('profile.preferences.marketing.description') }}
                   </p>
                 </div>
                 <ToggleSwitch v-model="marketingConsent" />
               </div>
 
               <p class="text-sm text-surface-500">
-                Le comunicazioni marketing includono:
+                {{ $t('profile.preferences.marketing.includes') }}
               </p>
               <ul class="text-sm text-surface-600 dark:text-surface-400 space-y-2 ml-4">
                 <li class="flex items-center gap-2">
                   <i class="pi pi-tag text-surface-400"></i>
-                  Offerte e sconti esclusivi
+                  {{ $t('profile.preferences.marketing.offers') }}
                 </li>
                 <li class="flex items-center gap-2">
                   <i class="pi pi-tag text-surface-400"></i>
-                  Nuovi pacchetti e funzionalità
+                  {{ $t('profile.preferences.marketing.newPackages') }}
                 </li>
                 <li class="flex items-center gap-2">
                   <i class="pi pi-tag text-surface-400"></i>
-                  Consigli per migliorare le conversioni
+                  {{ $t('profile.preferences.marketing.conversionTips') }}
                 </li>
               </ul>
 
               <p class="text-xs text-surface-400 mt-4">
-                Puoi annullare l'iscrizione in qualsiasi momento cliccando sul link presente in ogni email.
+                {{ $t('profile.preferences.marketing.unsubscribeNote') }}
               </p>
             </div>
           </template>
@@ -186,21 +187,21 @@ watch(marketingConsent, (newValue, oldValue) => {
       <div class="space-y-4">
         <!-- Current Status -->
         <PrimeCard>
-          <template #title>Stato Attuale</template>
+          <template #title>{{ $t('profile.preferences.currentStatus.title') }}</template>
           <template #content>
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Notifiche email</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('profile.accountStatus.notificationsEmail') }}</span>
                 <PrimeTag
-                  :value="emailNotifications ? 'Attive' : 'Disattive'"
+                  :value="emailNotifications ? $t('profile.accountStatus.notificationsActive') : $t('profile.accountStatus.notificationsInactive')"
                   :severity="emailNotifications ? 'success' : 'secondary'"
                   size="small"
                 />
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Marketing</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('profile.accountStatus.marketing') }}</span>
                 <PrimeTag
-                  :value="marketingConsent ? 'Attivo' : 'Disattivo'"
+                  :value="marketingConsent ? $t('profile.accountStatus.marketingActive') : $t('profile.accountStatus.marketingInactive')"
                   :severity="marketingConsent ? 'success' : 'secondary'"
                   size="small"
                 />
@@ -216,13 +217,13 @@ watch(marketingConsent, (newValue, oldValue) => {
               <i class="pi pi-shield text-surface-400 mt-1"></i>
               <div>
                 <h4 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">
-                  La tua privacy
+                  {{ $t('profile.preferences.privacy.title') }}
                 </h4>
                 <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">
-                  I tuoi dati sono protetti e non vengono mai condivisi con terze parti per scopi di marketing.
+                  {{ $t('profile.preferences.privacy.description') }}
                 </p>
                 <NuxtLink to="/privacy" class="text-sm text-primary hover:underline">
-                  Leggi la Privacy Policy
+                  {{ $t('profile.preferences.privacy.readPolicy') }}
                 </NuxtLink>
               </div>
             </div>

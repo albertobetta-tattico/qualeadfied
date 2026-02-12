@@ -14,6 +14,7 @@ const packageId = computed(() => {
   return Number(Array.isArray(id) ? id[0] : id)
 })
 
+const { t } = useI18n()
 const packagesStore = usePackagesStore()
 const profileStore = useClientProfileStore()
 const { formatCurrency } = useClientFormatters()
@@ -92,7 +93,7 @@ const processPayment = async () => {
 
   // Validate billing form
   if (!validateForm(billingForm.value)) {
-    showError('Correggi gli errori nel form')
+    showError(t('packages.purchase.toast.errorFormValidation'))
     return
   }
 
@@ -103,7 +104,7 @@ const processPayment = async () => {
     if (!profileStore.hasBillingData) {
       const billingSuccess = await profileStore.updateBilling(billingForm.value)
       if (!billingSuccess) {
-        showError(profileStore.error || 'Errore nell\'aggiornamento dati fatturazione')
+        showError(profileStore.error || t('packages.purchase.toast.errorBilling'))
         return
       }
     }
@@ -112,11 +113,11 @@ const processPayment = async () => {
     const result = await packagesStore.purchasePackage(packageId.value, paymentMethod.value)
 
     if (result) {
-      showSuccess('Pacchetto acquistato con successo!')
+      showSuccess(t('packages.purchase.toast.success'))
       // Redirect to active packages
       router.push('/pacchetti/attivi')
     } else {
-      showError(packagesStore.error || 'Errore nell\'acquisto')
+      showError(packagesStore.error || t('packages.purchase.toast.errorPurchase'))
     }
   } finally {
     processing.value = false
@@ -130,13 +131,13 @@ const processPayment = async () => {
     <div class="mb-6">
       <NuxtLink to="/pacchetti" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
         <i class="pi pi-arrow-left"></i>
-        Torna ai pacchetti
+        {{ $t('packages.purchase.backToPackages') }}
       </NuxtLink>
       <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-        Acquista Pacchetto
+        {{ $t('packages.purchase.title') }}
       </h1>
       <p class="text-surface-600 dark:text-surface-400">
-        Completa l'acquisto del pacchetto
+        {{ $t('packages.purchase.subtitle') }}
       </p>
     </div>
 
@@ -158,7 +159,7 @@ const processPayment = async () => {
               </div>
               <div class="flex-grow">
                 <PrimeTag v-if="currentPackage.category" :value="currentPackage.category.name" severity="info" class="mb-2" />
-                <PrimeTag v-else value="Tutte le categorie" severity="secondary" class="mb-2" />
+                <PrimeTag v-else :value="$t('packages.card.allCategories')" severity="secondary" class="mb-2" />
                 <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0">
                   {{ currentPackage.name }}
                 </h3>
@@ -170,7 +171,7 @@ const processPayment = async () => {
                 <p class="text-3xl font-bold text-primary">
                   {{ currentPackage.total_leads }}
                 </p>
-                <p class="text-sm text-surface-500">lead</p>
+                <p class="text-sm text-surface-500">{{ $t('packages.card.leads') }}</p>
               </div>
             </div>
           </template>
@@ -181,7 +182,7 @@ const processPayment = async () => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
-              Dati di Fatturazione
+              {{ $t('packages.purchase.billing.title') }}
             </div>
           </template>
           <template #content>
@@ -190,13 +191,13 @@ const processPayment = async () => {
               <div class="md:col-span-2 p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <p class="text-sm text-surface-500 mb-1">Ragione Sociale</p>
+                    <p class="text-sm text-surface-500 mb-1">{{ $t('packages.purchase.billing.companyName') }}</p>
                     <p class="font-medium text-surface-900 dark:text-surface-0">
                       {{ profileStore.profile?.company_name }}
                     </p>
                   </div>
                   <div>
-                    <p class="text-sm text-surface-500 mb-1">Partita IVA</p>
+                    <p class="text-sm text-surface-500 mb-1">{{ $t('packages.purchase.billing.vatNumber') }}</p>
                     <p class="font-medium text-surface-900 dark:text-surface-0">
                       {{ profileStore.profile?.vat_number }}
                     </p>
@@ -207,11 +208,11 @@ const processPayment = async () => {
               <!-- Billing Address -->
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Indirizzo *
+                  {{ $t('packages.purchase.billing.address') }} *
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_address"
-                  placeholder="Via, numero civico"
+                  :placeholder="$t('packages.purchase.billing.addressPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.billing_address"
                 />
@@ -223,11 +224,11 @@ const processPayment = async () => {
               <!-- City -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Città *
+                  {{ $t('packages.purchase.billing.city') }} *
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_city"
-                  placeholder="Città"
+                  :placeholder="$t('packages.purchase.billing.cityPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.billing_city"
                 />
@@ -239,11 +240,11 @@ const processPayment = async () => {
               <!-- Province -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Provincia *
+                  {{ $t('packages.purchase.billing.province') }} *
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_province"
-                  placeholder="MI"
+                  :placeholder="$t('packages.purchase.billing.provincePlaceholder')"
                   maxlength="2"
                   class="w-full"
                   :invalid="!!errors.billing_province"
@@ -256,11 +257,11 @@ const processPayment = async () => {
               <!-- ZIP -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  CAP *
+                  {{ $t('packages.purchase.billing.zip') }} *
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_zip"
-                  placeholder="20100"
+                  :placeholder="$t('packages.purchase.billing.zipPlaceholder')"
                   maxlength="5"
                   class="w-full"
                   :invalid="!!errors.billing_zip"
@@ -273,7 +274,7 @@ const processPayment = async () => {
               <!-- Country -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Paese
+                  {{ $t('packages.purchase.billing.country') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.billing_country"
@@ -287,11 +288,11 @@ const processPayment = async () => {
               <!-- SDI Code -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Codice SDI
+                  {{ $t('packages.purchase.billing.sdiCode') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.sdi_code"
-                  placeholder="ABC1234"
+                  :placeholder="$t('packages.purchase.billing.sdiCodePlaceholder')"
                   maxlength="7"
                   class="w-full uppercase"
                   :invalid="!!errors.sdi_code"
@@ -304,11 +305,11 @@ const processPayment = async () => {
               <!-- PEC Email -->
               <div>
                 <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                  Email PEC
+                  {{ $t('packages.purchase.billing.pecEmail') }}
                 </label>
                 <PrimeInputText
                   v-model="billingForm.pec_email"
-                  placeholder="azienda@pec.it"
+                  :placeholder="$t('packages.purchase.billing.pecEmailPlaceholder')"
                   class="w-full"
                   :invalid="!!errors.pec_email"
                 />
@@ -325,7 +326,7 @@ const processPayment = async () => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-credit-card text-primary"></i>
-              Metodo di Pagamento
+              {{ $t('packages.purchase.payment.title') }}
             </div>
           </template>
           <template #content>
@@ -349,10 +350,10 @@ const processPayment = async () => {
                   </div>
                   <div class="flex-grow">
                     <p class="font-medium text-surface-900 dark:text-surface-0">
-                      Carta di Credito/Debito
+                      {{ $t('packages.purchase.payment.cardOption') }}
                     </p>
                     <p class="text-sm text-surface-500">
-                      Visa, Mastercard, American Express
+                      {{ $t('packages.purchase.payment.cardDescription') }}
                     </p>
                   </div>
                 </div>
@@ -377,10 +378,10 @@ const processPayment = async () => {
                   </div>
                   <div class="flex-grow">
                     <p class="font-medium text-surface-900 dark:text-surface-0">
-                      Addebito SEPA
+                      {{ $t('packages.purchase.payment.sepaOption') }}
                     </p>
                     <p class="text-sm text-surface-500">
-                      Bonifico bancario diretto
+                      {{ $t('packages.purchase.payment.sepaDescription') }}
                     </p>
                   </div>
                 </div>
@@ -393,26 +394,26 @@ const processPayment = async () => {
       <!-- Order Summary Sidebar -->
       <div>
         <PrimeCard class="sticky top-4">
-          <template #title>Riepilogo Ordine</template>
+          <template #title>{{ $t('packages.purchase.summary.title') }}</template>
           <template #content>
             <div class="space-y-4">
               <!-- Package Details -->
               <div class="space-y-2">
                 <div class="flex justify-between">
                   <span class="text-surface-600 dark:text-surface-400">
-                    {{ currentPackage.total_leads }} lead
+                    {{ $t('packages.purchase.summary.leads', { count: currentPackage.total_leads }) }}
                   </span>
                   <span class="text-surface-900 dark:text-surface-0">
                     {{ formatCurrency(currentPackage.price) }}
                   </span>
                 </div>
                 <div class="flex justify-between text-sm text-green-600">
-                  <span>Risparmi</span>
+                  <span>{{ $t('packages.purchase.summary.savings') }}</span>
                   <span>-{{ formatCurrency(calculateSavings) }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
                   <span class="text-surface-600 dark:text-surface-400">
-                    IVA ({{ vatRate }}%)
+                    {{ $t('packages.purchase.summary.vat', { rate: vatRate }) }}
                   </span>
                   <span class="text-surface-900 dark:text-surface-0">
                     {{ formatCurrency(vatAmount) }}
@@ -425,7 +426,7 @@ const processPayment = async () => {
               <!-- Total -->
               <div class="flex justify-between items-center">
                 <span class="text-lg font-semibold text-surface-900 dark:text-surface-0">
-                  Totale
+                  {{ $t('packages.purchase.summary.total') }}
                 </span>
                 <span class="text-2xl font-bold text-primary">
                   {{ formatCurrency(totalWithVat) }}
@@ -437,26 +438,26 @@ const processPayment = async () => {
                 <div class="flex items-center gap-2 text-sm">
                   <i class="pi pi-check-circle text-green-500"></i>
                   <span class="text-surface-600 dark:text-surface-400">
-                    Validità {{ currentPackage.valid_days }} giorni
+                    {{ $t('packages.purchase.summary.validity', { days: currentPackage.valid_days }) }}
                   </span>
                 </div>
                 <div class="flex items-center gap-2 text-sm">
                   <i class="pi pi-check-circle text-green-500"></i>
                   <span class="text-surface-600 dark:text-surface-400">
-                    {{ currentPackage.exclusive_leads }} lead esclusivi + {{ currentPackage.shared_leads }} condivisi
+                    {{ $t('packages.purchase.summary.exclusiveAndShared', { exclusive: currentPackage.exclusive_leads, shared: currentPackage.shared_leads }) }}
                   </span>
                 </div>
                 <div class="flex items-center gap-2 text-sm">
                   <i class="pi pi-check-circle text-green-500"></i>
                   <span class="text-surface-600 dark:text-surface-400">
-                    Selezione libera dal catalogo
+                    {{ $t('packages.purchase.summary.freeSelection') }}
                   </span>
                 </div>
               </div>
 
               <!-- Pay Button -->
               <PrimeButton
-                :label="processing ? 'Elaborazione...' : `Paga ${formatCurrency(totalWithVat)}`"
+                :label="processing ? $t('packages.purchase.summary.processing') : $t('packages.purchase.summary.payButton', { amount: formatCurrency(totalWithVat) })"
                 icon="pi pi-lock"
                 class="w-full"
                 size="large"
@@ -469,7 +470,7 @@ const processPayment = async () => {
               <div class="text-center">
                 <p class="text-xs text-surface-400">
                   <i class="pi pi-lock mr-1"></i>
-                  Pagamento sicuro con Stripe
+                  {{ $t('packages.purchase.summary.securePayment') }}
                 </p>
               </div>
             </div>

@@ -19,15 +19,16 @@ import type {
 // ============================================
 
 export function useCategoryValidation() {
+  const { t } = useI18n()
   const errors = reactive<Record<string, string>>({})
 
   const validateName = (value: string): boolean => {
     if (!value || value.trim().length < 2) {
-      errors.name = 'Il nome deve avere almeno 2 caratteri'
+      errors.name = t('admin.catalog.validation.nameMinLength')
       return false
     }
     if (value.length > 100) {
-      errors.name = 'Il nome non può superare 100 caratteri'
+      errors.name = t('admin.catalog.validation.nameMaxLength')
       return false
     }
     delete errors.name
@@ -36,16 +37,16 @@ export function useCategoryValidation() {
 
   const validateSlug = (value: string): boolean => {
     if (!value || value.trim() === '') {
-      errors.slug = 'Lo slug è obbligatorio'
+      errors.slug = t('admin.catalog.validation.slugRequired')
       return false
     }
     const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
     if (!slugRegex.test(value)) {
-      errors.slug = 'Lo slug può contenere solo lettere minuscole, numeri e trattini'
+      errors.slug = t('leads.validation.slugFormat')
       return false
     }
     if (value.length > 100) {
-      errors.slug = 'Lo slug non può superare 100 caratteri'
+      errors.slug = t('admin.catalog.validation.slugMaxLength')
       return false
     }
     delete errors.slug
@@ -54,11 +55,11 @@ export function useCategoryValidation() {
 
   const validateMaxShares = (value: number): boolean => {
     if (value < 1) {
-      errors.max_shares = 'Il numero minimo di condivisioni è 1'
+      errors.max_shares = t('admin.catalog.validation.maxSharesMin')
       return false
     }
     if (value > 10) {
-      errors.max_shares = 'Il numero massimo di condivisioni è 10'
+      errors.max_shares = t('admin.catalog.validation.maxSharesMax')
       return false
     }
     delete errors.max_shares
@@ -67,7 +68,7 @@ export function useCategoryValidation() {
 
   const validateSortOrder = (value: number): boolean => {
     if (value < 0) {
-      errors.sort_order = 'L\'ordine deve essere un numero positivo'
+      errors.sort_order = t('admin.catalog.validation.sortOrderPositive')
       return false
     }
     delete errors.sort_order
@@ -118,15 +119,16 @@ export function useCategoryValidation() {
 // ============================================
 
 export function usePackageValidation() {
+  const { t } = useI18n()
   const errors = reactive<Record<string, string>>({})
 
   const validateName = (value: string): boolean => {
     if (!value || value.trim().length < 2) {
-      errors.name = 'Il nome deve avere almeno 2 caratteri'
+      errors.name = t('admin.catalog.validation.nameMinLength')
       return false
     }
     if (value.length > 100) {
-      errors.name = 'Il nome non può superare 100 caratteri'
+      errors.name = t('admin.catalog.validation.nameMaxLength')
       return false
     }
     delete errors.name
@@ -135,11 +137,11 @@ export function usePackageValidation() {
 
   const validateLeadQuantity = (field: string, value: number): boolean => {
     if (value < 0) {
-      errors[field] = 'La quantità minima è 0'
+      errors[field] = t('admin.catalog.validation.quantityMin')
       return false
     }
     if (value > 1000) {
-      errors[field] = 'La quantità massima è 1000'
+      errors[field] = t('admin.catalog.validation.quantityMax')
       return false
     }
     delete errors[field]
@@ -148,11 +150,11 @@ export function usePackageValidation() {
 
   const validatePrice = (field: string, value: number): boolean => {
     if (value < 0) {
-      errors[field] = 'Il prezzo deve essere positivo'
+      errors[field] = t('admin.catalog.validation.pricePositive')
       return false
     }
     if (value > 100000) {
-      errors[field] = 'Il prezzo massimo è 100.000€'
+      errors[field] = t('admin.catalog.validation.priceMax')
       return false
     }
     delete errors[field]
@@ -161,7 +163,7 @@ export function usePackageValidation() {
 
   const validateTotalLeads = (exclusiveQty: number, sharedQty: number): boolean => {
     if (exclusiveQty + sharedQty < 1) {
-      errors.total_leads = 'Il pacchetto deve contenere almeno 1 lead'
+      errors.total_leads = t('admin.catalog.validation.packageMinLead')
       return false
     }
     delete errors.total_leads
@@ -214,15 +216,16 @@ export function usePackageValidation() {
 // ============================================
 
 export function usePricingValidation() {
+  const { t } = useI18n()
   const errors = reactive<Record<string, string>>({})
 
   const validateExclusivePrice = (value: number): boolean => {
     if (value < 0) {
-      errors.exclusive_price = 'Il prezzo deve essere un valore positivo'
+      errors.exclusive_price = t('admin.catalog.validation.pricePositive')
       return false
     }
     if (value > 10000) {
-      errors.exclusive_price = 'Il prezzo massimo è 10.000€'
+      errors.exclusive_price = t('admin.catalog.validation.pricingMax')
       return false
     }
     delete errors.exclusive_price
@@ -231,11 +234,11 @@ export function usePricingValidation() {
 
   const validateSharedPrice = (slotKey: string, value: number): boolean => {
     if (value < 0) {
-      errors[slotKey] = 'Il prezzo deve essere positivo'
+      errors[slotKey] = t('admin.catalog.validation.pricePositive')
       return false
     }
     if (value > 10000) {
-      errors[slotKey] = 'Il prezzo massimo è 10.000€'
+      errors[slotKey] = t('admin.catalog.validation.pricingMax')
       return false
     }
     delete errors[slotKey]
@@ -281,30 +284,31 @@ export function usePricingValidation() {
 // ============================================
 
 export function useCatalogActions() {
+  const { t } = useI18n()
   const toast = useToast()
   const confirm = useConfirm()
 
   // Category actions
   const confirmDeleteCategory = (category: Category, onConfirm: () => void) => {
     confirm.require({
-      message: `Sei sicuro di voler eliminare la categoria "${category.name}"? ${category.leads_count ? `Questa categoria contiene ${category.leads_count} lead.` : ''}`,
-      header: 'Conferma Eliminazione',
+      message: t('admin.catalog.confirm.deleteCategoryMessage', { name: category.name, count: category.leads_count || 0 }),
+      header: t('admin.common.confirmDelete'),
       icon: 'pi pi-exclamation-triangle',
       acceptClass: 'p-button-danger',
-      acceptLabel: 'Elimina',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('common.actions.delete'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
 
   const confirmToggleCategory = (category: Category, onConfirm: () => void) => {
-    const action = category.is_active ? 'disattivare' : 'attivare'
+    const action = category.is_active ? t('admin.catalog.confirm.deactivate') : t('admin.catalog.confirm.activate')
     confirm.require({
-      message: `Sei sicuro di voler ${action} la categoria "${category.name}"?`,
-      header: `Conferma ${category.is_active ? 'Disattivazione' : 'Attivazione'}`,
+      message: t('admin.catalog.confirm.toggleCategoryMessage', { action, name: category.name }),
+      header: t('admin.catalog.confirm.toggleHeader', { action: category.is_active ? t('admin.catalog.confirm.deactivation') : t('admin.catalog.confirm.activation') }),
       icon: 'pi pi-info-circle',
-      acceptLabel: category.is_active ? 'Disattiva' : 'Attiva',
-      rejectLabel: 'Annulla',
+      acceptLabel: category.is_active ? t('admin.catalog.confirm.deactivateBtn') : t('admin.catalog.confirm.activateBtn'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
@@ -312,24 +316,24 @@ export function useCatalogActions() {
   // Package actions
   const confirmDeletePackage = (pkg: Package, onConfirm: () => void) => {
     confirm.require({
-      message: `Sei sicuro di voler eliminare il pacchetto "${pkg.name}"? ${pkg.sales_count ? `Questo pacchetto è stato venduto ${pkg.sales_count} volte.` : ''}`,
-      header: 'Conferma Eliminazione',
+      message: t('admin.catalog.confirm.deletePackageMessage', { name: pkg.name, count: pkg.sales_count || 0 }),
+      header: t('admin.common.confirmDelete'),
       icon: 'pi pi-exclamation-triangle',
       acceptClass: 'p-button-danger',
-      acceptLabel: 'Elimina',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('common.actions.delete'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
 
   const confirmTogglePackage = (pkg: Package, onConfirm: () => void) => {
-    const action = pkg.is_active ? 'disattivare' : 'attivare'
+    const action = pkg.is_active ? t('admin.catalog.confirm.deactivate') : t('admin.catalog.confirm.activate')
     confirm.require({
-      message: `Sei sicuro di voler ${action} il pacchetto "${pkg.name}"?`,
-      header: `Conferma ${pkg.is_active ? 'Disattivazione' : 'Attivazione'}`,
+      message: t('admin.catalog.confirm.togglePackageMessage', { action, name: pkg.name }),
+      header: t('admin.catalog.confirm.toggleHeader', { action: pkg.is_active ? t('admin.catalog.confirm.deactivation') : t('admin.catalog.confirm.activation') }),
       icon: 'pi pi-info-circle',
-      acceptLabel: pkg.is_active ? 'Disattiva' : 'Attiva',
-      rejectLabel: 'Annulla',
+      acceptLabel: pkg.is_active ? t('admin.catalog.confirm.deactivateBtn') : t('admin.catalog.confirm.activateBtn'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
@@ -338,7 +342,7 @@ export function useCatalogActions() {
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Operazione completata',
+      summary: t('notifications.toast.summaries.success'),
       detail: message,
       life: 3000
     })
@@ -347,7 +351,7 @@ export function useCatalogActions() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('notifications.toast.summaries.error'),
       detail: message,
       life: 5000
     })
@@ -356,7 +360,7 @@ export function useCatalogActions() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Informazione',
+      summary: t('notifications.toast.summaries.info'),
       detail: message,
       life: 3000
     })
@@ -365,7 +369,7 @@ export function useCatalogActions() {
   const showWarning = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('notifications.toast.summaries.warning'),
       detail: message,
       life: 4000
     })
@@ -388,6 +392,8 @@ export function useCatalogActions() {
 // ============================================
 
 export function useCatalogFormatters() {
+  const { t } = useI18n()
+
   const formatCurrency = (value: number): string => {
     return new Intl.NumberFormat('it-IT', {
       style: 'currency',
@@ -420,7 +426,7 @@ export function useCatalogFormatters() {
   }
 
   const formatActiveStatus = (isActive: boolean): string => {
-    return isActive ? 'Attivo' : 'Non attivo'
+    return isActive ? t('admin.catalog.statuses.active') : t('admin.catalog.statuses.inactive')
   }
 
   const getActiveStatusSeverity = (isActive: boolean): 'success' | 'danger' => {
@@ -440,13 +446,13 @@ export function useCatalogFormatters() {
   }
 
   const formatPackageType = (categoryId: number | null): string => {
-    return categoryId ? 'Categoria Specifica' : 'Tutte le Categorie'
+    return categoryId ? t('admin.catalog.packageTypes.specificCategory') : t('admin.catalog.packageTypes.allCategories')
   }
 
   const formatAcquisitionModes = (allowsExclusive: boolean, allowsShared: boolean): string => {
-    if (allowsExclusive && allowsShared) return 'Esclusivo + Condiviso'
-    if (allowsExclusive) return 'Solo Esclusivo'
-    if (allowsShared) return 'Solo Condiviso'
+    if (allowsExclusive && allowsShared) return t('admin.catalog.acquisitionModes.both')
+    if (allowsExclusive) return t('admin.catalog.acquisitionModes.exclusiveOnly')
+    if (allowsShared) return t('admin.catalog.acquisitionModes.sharedOnly')
     return '-'
   }
 

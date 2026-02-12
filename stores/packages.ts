@@ -146,6 +146,7 @@ export const usePackagesStore = defineStore('packages', {
      * Fetch available packages
      */
     async fetchPackages(): Promise<void> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -159,7 +160,7 @@ export const usePackagesStore = defineStore('packages', {
         const response = await $fetch<{ data: LeadPackage[] }>('/api/packages')
         this.availablePackages = response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento pacchetti'
+        this.error = e.data?.message || t('common.errors.loadError')
       } finally {
         this.loading = false
       }
@@ -169,6 +170,7 @@ export const usePackagesStore = defineStore('packages', {
      * Fetch active packages for current user
      */
     async fetchActivePackages(): Promise<void> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -186,7 +188,7 @@ export const usePackagesStore = defineStore('packages', {
         })
         this.activePackages = response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento pacchetti attivi'
+        this.error = e.data?.message || t('common.errors.loadError')
       } finally {
         this.loading = false
       }
@@ -196,6 +198,7 @@ export const usePackagesStore = defineStore('packages', {
      * Fetch package details
      */
     async fetchPackageDetails(packageId: number): Promise<ActivePackage | null> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -212,7 +215,7 @@ export const usePackagesStore = defineStore('packages', {
         })
         return response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento dettagli'
+        this.error = e.data?.message || t('common.errors.loadError')
         return null
       } finally {
         this.loading = false
@@ -223,6 +226,7 @@ export const usePackagesStore = defineStore('packages', {
      * Purchase a package
      */
     async purchasePackage(packageId: number, paymentMethod: 'card' | 'sepa'): Promise<{ orderId: number } | null> {
+      const { t } = useI18n()
       this.purchasing = true
       this.error = null
 
@@ -233,7 +237,7 @@ export const usePackagesStore = defineStore('packages', {
           // Find the package
           const pkg = this.availablePackages.find(p => p.id === packageId)
           if (!pkg) {
-            this.error = 'Pacchetto non trovato'
+            this.error = t('common.errors.notFound')
             return null
           }
 
@@ -270,7 +274,7 @@ export const usePackagesStore = defineStore('packages', {
         this.activePackages.push(response.data.active_package)
         return { orderId: response.data.order_id }
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nell\'acquisto del pacchetto'
+        this.error = e.data?.message || t('common.errors.paymentError')
         return null
       } finally {
         this.purchasing = false
@@ -284,6 +288,7 @@ export const usePackagesStore = defineStore('packages', {
       packageId: number,
       request: PackageSelectRequest
     ): Promise<boolean> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -326,7 +331,7 @@ export const usePackagesStore = defineStore('packages', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nella selezione lead'
+        this.error = e.data?.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false

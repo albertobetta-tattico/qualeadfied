@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Route params
 const route = useRoute()
 const categoryId = computed(() => {
@@ -61,26 +63,26 @@ const onBlur = (field: string, value: any) => {
 const regenerateSlug = () => {
   if (form.name) {
     form.slug = generateSlug(form.name)
-    showWarning('Slug rigenerato. Ricorda che cambiare lo slug potrebbe influenzare i link esistenti.')
+    showWarning(t('admin.catalog.categories.toast.slugRegenerated'))
   }
 }
 
 // Submit form
 const onSubmit = async () => {
   clearErrors()
-  
+
   if (!validateForm(form)) {
-    showError('Correggi gli errori nel form prima di procedere')
+    showError(t('admin.catalog.categories.toast.formError'))
     return
   }
 
   const updatedCategory = await catalogStore.updateCategory(categoryId.value, form)
-  
+
   if (updatedCategory) {
-    showSuccess(`Categoria "${updatedCategory.name}" aggiornata con successo`)
+    showSuccess(t('admin.catalog.categories.toast.updateSuccess', { name: updatedCategory.name }))
     router.push('/admin/catalog/categories')
   } else {
-    showError(catalogStore.error || 'Errore nell\'aggiornamento della categoria')
+    showError(catalogStore.error || t('admin.catalog.categories.toast.updateError'))
   }
 }
 
@@ -93,9 +95,9 @@ const onCancel = () => {
 onMounted(async () => {
   await catalogStore.fetchCategory(categoryId.value)
   initialLoading.value = false
-  
+
   if (!category.value) {
-    showError('Categoria non trovata')
+    showError(t('admin.catalog.categories.toast.notFound'))
     router.push('/admin/catalog/categories')
   }
 })
@@ -120,13 +122,13 @@ onMounted(async () => {
               rounded
               @click="onCancel"
             />
-            <h1 class="page-title mb-0">Modifica Categoria</h1>
+            <h1 class="page-title mb-0">{{ $t('admin.catalog.categories.editTitle') }}</h1>
           </div>
           <p class="page-subtitle ml-12">{{ category.name }}</p>
         </div>
         <div class="page-header-actions">
-          <PrimeTag 
-            :value="category.is_active ? 'Attiva' : 'Non attiva'"
+          <PrimeTag
+            :value="category.is_active ? $t('admin.catalog.categories.filters.active') : $t('admin.catalog.categories.filters.inactive')"
             :severity="category.is_active ? 'success' : 'danger'"
             class="text-sm"
           />
@@ -136,19 +138,19 @@ onMounted(async () => {
       <!-- Category Stats -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-neutral-50 rounded-lg p-4">
-          <div class="text-sm text-neutral-600">ID Categoria</div>
+          <div class="text-sm text-neutral-600">{{ $t('admin.catalog.categories.stats.categoryId') }}</div>
           <div class="text-lg font-semibold text-neutral-900">#{{ category.id }}</div>
         </div>
         <div class="bg-neutral-50 rounded-lg p-4">
-          <div class="text-sm text-neutral-600">Lead Totali</div>
+          <div class="text-sm text-neutral-600">{{ $t('admin.catalog.categories.stats.totalLeads') }}</div>
           <div class="text-lg font-semibold text-neutral-900">{{ formatNumber(category.leads_count || 0) }}</div>
         </div>
         <div class="bg-neutral-50 rounded-lg p-4">
-          <div class="text-sm text-neutral-600">Lead Disponibili</div>
+          <div class="text-sm text-neutral-600">{{ $t('admin.catalog.categories.stats.availableLeads') }}</div>
           <div class="text-lg font-semibold text-success">{{ formatNumber(category.available_leads_count || 0) }}</div>
         </div>
         <div class="bg-neutral-50 rounded-lg p-4">
-          <div class="text-sm text-neutral-600">Creata il</div>
+          <div class="text-sm text-neutral-600">{{ $t('admin.catalog.categories.stats.createdAt') }}</div>
           <div class="text-lg font-semibold text-neutral-900">{{ formatDate(category.created_at) }}</div>
         </div>
       </div>
@@ -160,19 +162,19 @@ onMounted(async () => {
           <div class="q-card-header">
             <h3 class="card-title">
               <i class="pi pi-tag mr-2 text-primary-500"></i>
-              Informazioni Base
+              {{ $t('admin.catalog.categories.form.basicInfo') }}
             </h3>
           </div>
           <div class="q-card-body">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Name -->
               <div class="form-group">
-                <label for="name">Nome Categoria *</label>
+                <label for="name">{{ $t('admin.catalog.categories.form.name') }} *</label>
                 <PrimeInputText
                   id="name"
                   v-model="form.name"
                   :class="{ 'p-invalid': errors.name }"
-                  placeholder="Es. Fotovoltaico"
+                  :placeholder="$t('admin.catalog.categories.form.namePlaceholder')"
                   class="w-full"
                   @blur="onBlur('name', form.name)"
                 />
@@ -181,13 +183,13 @@ onMounted(async () => {
 
               <!-- Slug -->
               <div class="form-group">
-                <label for="slug">Slug (URL) *</label>
+                <label for="slug">{{ $t('admin.catalog.categories.form.slug') }} *</label>
                 <div class="p-inputgroup">
                   <PrimeInputText
                     id="slug"
                     v-model="form.slug"
                     :class="{ 'p-invalid': errors.slug }"
-                    placeholder="es-fotovoltaico"
+                    :placeholder="$t('admin.catalog.categories.form.slugPlaceholder')"
                     class="w-full"
                     @blur="onBlur('slug', form.slug)"
                   />
@@ -195,26 +197,26 @@ onMounted(async () => {
                     icon="pi pi-sync"
                     severity="secondary"
                     outlined
-                    v-tooltip.top="'Rigenera da nome'"
+                    v-tooltip.top="$t('admin.catalog.categories.form.regenerateSlug')"
                     @click="regenerateSlug"
                   />
                 </div>
                 <small v-if="errors.slug" class="p-error">{{ errors.slug }}</small>
-                <small v-else class="form-hint">Attenzione: modificare lo slug potrebbe invalidare eventuali link esistenti</small>
+                <small v-else class="form-hint">{{ $t('admin.catalog.categories.form.slugEditHint') }}</small>
               </div>
 
               <!-- Description -->
               <div class="form-group md:col-span-2">
-                <label for="description">Descrizione</label>
+                <label for="description">{{ $t('admin.catalog.categories.form.description') }}</label>
                 <PrimeTextarea
                   id="description"
                   v-model="form.description"
                   rows="3"
-                  placeholder="Descrizione della categoria e tipologia di lead..."
+                  :placeholder="$t('admin.catalog.categories.form.descriptionPlaceholder')"
                   class="w-full"
                   autoResize
                 />
-                <small class="form-hint">Descrizione opzionale per identificare la tipologia di lead</small>
+                <small class="form-hint">{{ $t('admin.catalog.categories.form.descriptionHint') }}</small>
               </div>
             </div>
           </div>
@@ -225,14 +227,14 @@ onMounted(async () => {
           <div class="q-card-header">
             <h3 class="card-title">
               <i class="pi pi-cog mr-2 text-primary-500"></i>
-              Regole di Business
+              {{ $t('admin.catalog.categories.form.businessRules') }}
             </h3>
           </div>
           <div class="q-card-body">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Max Shares -->
               <div class="form-group">
-                <label for="max_shares">Numero Massimo Condivisioni *</label>
+                <label for="max_shares">{{ $t('admin.catalog.categories.form.maxShares') }} *</label>
                 <PrimeInputNumber
                   id="max_shares"
                   v-model="form.max_shares"
@@ -245,13 +247,13 @@ onMounted(async () => {
                 />
                 <small v-if="errors.max_shares" class="p-error">{{ errors.max_shares }}</small>
                 <small v-else class="form-hint">
-                  Numero massimo di volte che un lead può essere venduto in modalità condivisa
+                  {{ $t('admin.catalog.categories.form.maxSharesHintEdit') }}
                 </small>
               </div>
 
               <!-- Sort Order -->
               <div class="form-group">
-                <label for="sort_order">Ordine di Visualizzazione</label>
+                <label for="sort_order">{{ $t('admin.catalog.categories.form.sortOrder') }}</label>
                 <PrimeInputNumber
                   id="sort_order"
                   v-model="form.sort_order"
@@ -262,7 +264,7 @@ onMounted(async () => {
                   @blur="onBlur('sort_order', form.sort_order)"
                 />
                 <small v-if="errors.sort_order" class="p-error">{{ errors.sort_order }}</small>
-                <small v-else class="form-hint">Ordine di visualizzazione nelle liste</small>
+                <small v-else class="form-hint">{{ $t('admin.catalog.categories.form.sortOrderHintEdit') }}</small>
               </div>
 
               <!-- Is Active Toggle -->
@@ -274,10 +276,10 @@ onMounted(async () => {
                   />
                   <div>
                     <label for="is_active" class="cursor-pointer font-medium text-neutral-800 mb-0">
-                      Categoria Attiva
+                      {{ $t('admin.catalog.categories.form.isActive') }}
                     </label>
                     <p class="text-sm text-neutral-600 mt-1">
-                      Se attiva, i lead di questa categoria saranno visibili e acquistabili dai clienti
+                      {{ $t('admin.catalog.categories.form.isActiveHint') }}
                     </p>
                   </div>
                 </div>
@@ -287,17 +289,16 @@ onMounted(async () => {
         </div>
 
         <!-- Warning if has leads and deactivating -->
-        <div 
+        <div
           v-if="category.leads_count && category.leads_count > 0 && !form.is_active && category.is_active"
           class="bg-warning-light border border-warning/20 rounded-lg p-4"
         >
           <div class="flex items-start gap-3">
             <i class="pi pi-exclamation-triangle text-warning-dark text-xl mt-0.5"></i>
             <div>
-              <h4 class="font-medium text-warning-dark mb-1">Attenzione</h4>
+              <h4 class="font-medium text-warning-dark mb-1">{{ $t('admin.catalog.categories.warning.title') }}</h4>
               <p class="text-sm text-warning-dark/80">
-                Questa categoria contiene {{ category.leads_count }} lead. 
-                Disattivandola, questi lead non saranno più visibili né acquistabili dai clienti.
+                {{ $t('admin.catalog.categories.warning.deactivateWithLeads', { count: category.leads_count }) }}
               </p>
             </div>
           </div>
@@ -307,14 +308,14 @@ onMounted(async () => {
         <div class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
           <PrimeButton
             type="button"
-            label="Annulla"
+            :label="$t('admin.common.cancel')"
             severity="secondary"
             outlined
             @click="onCancel"
           />
           <PrimeButton
             type="submit"
-            label="Salva Modifiche"
+            :label="$t('admin.common.save')"
             icon="pi pi-check"
             severity="primary"
             :loading="catalogStore.saving"

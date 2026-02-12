@@ -592,6 +592,7 @@ export const useCatalogStore = defineStore('catalog', {
     // ============================================
 
     async fetchCategories() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -660,7 +661,7 @@ export const useCatalogStore = defineStore('catalog', {
         this.categories = response.data
         this.categoryPagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento categorie'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchCategories error:', error)
       } finally {
         this.loading = false
@@ -668,6 +669,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchAllCategories() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -682,7 +684,7 @@ export const useCatalogStore = defineStore('catalog', {
         const response = await api<{ data: Category[] }>('/admin/categories?per_page=999')
         this.categories = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento categorie'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchAllCategories error:', error)
       } finally {
         this.loading = false
@@ -690,6 +692,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchCategory(id: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -699,7 +702,7 @@ export const useCatalogStore = defineStore('catalog', {
           const category = mockCategories.find(c => c.id === id)
           this.currentCategory = category || null
           if (!category) {
-            this.error = 'Categoria non trovata'
+            this.error = t('common.errors.notFound')
           }
           return
         }
@@ -708,7 +711,7 @@ export const useCatalogStore = defineStore('catalog', {
         const response = await api<{ data: Category }>(`/admin/categories/${id}`)
         this.currentCategory = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento categoria'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchCategory error:', error)
       } finally {
         this.loading = false
@@ -716,6 +719,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async createCategory(data: CategoryCreateForm): Promise<Category | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -751,7 +755,7 @@ export const useCatalogStore = defineStore('catalog', {
         this.categoryPagination.total++
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nella creazione categoria'
+        this.error = error.message || t('common.errors.createError')
         console.error('createCategory error:', error)
         return null
       } finally {
@@ -760,6 +764,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async updateCategory(id: number, data: CategoryUpdateForm): Promise<Category | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -786,7 +791,7 @@ export const useCatalogStore = defineStore('catalog', {
 
             return updated
           }
-          this.error = 'Categoria non trovata'
+          this.error = t('common.errors.notFound')
           return null
         }
 
@@ -807,7 +812,7 @@ export const useCatalogStore = defineStore('catalog', {
 
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'aggiornamento categoria'
+        this.error = error.message || t('common.errors.updateError')
         console.error('updateCategory error:', error)
         return null
       } finally {
@@ -816,6 +821,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async deleteCategory(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -829,7 +835,7 @@ export const useCatalogStore = defineStore('catalog', {
             this.categoryPagination.total--
             return true
           }
-          this.error = 'Categoria non trovata'
+          this.error = t('common.errors.notFound')
           return false
         }
 
@@ -839,7 +845,7 @@ export const useCatalogStore = defineStore('catalog', {
         this.categoryPagination.total--
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'eliminazione categoria'
+        this.error = error.message || t('common.errors.deleteError')
         console.error('deleteCategory error:', error)
         return false
       } finally {
@@ -848,6 +854,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async toggleCategoryActive(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -889,7 +896,7 @@ export const useCatalogStore = defineStore('catalog', {
 
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nel cambio stato categoria'
+        this.error = error.message || t('common.errors.toggleStatusError')
         console.error('toggleCategoryActive error:', error)
         return false
       } finally {
@@ -939,6 +946,7 @@ export const useCatalogStore = defineStore('catalog', {
     // ============================================
 
     async fetchProvinces() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -1011,7 +1019,7 @@ export const useCatalogStore = defineStore('catalog', {
         this.provinces = response.data
         this.provincePagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento province'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchProvinces error:', error)
       } finally {
         this.loading = false
@@ -1019,6 +1027,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchAllProvinces() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -1033,7 +1042,7 @@ export const useCatalogStore = defineStore('catalog', {
         const response = await api<{ data: Province[] }>('/admin/provinces?per_page=999')
         this.provinces = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento province'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchAllProvinces error:', error)
       } finally {
         this.loading = false
@@ -1041,6 +1050,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async toggleProvinceActive(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -1070,7 +1080,7 @@ export const useCatalogStore = defineStore('catalog', {
 
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nel cambio stato provincia'
+        this.error = error.message || t('common.errors.toggleStatusError')
         console.error('toggleProvinceActive error:', error)
         return false
       } finally {
@@ -1124,6 +1134,7 @@ export const useCatalogStore = defineStore('catalog', {
     // ============================================
 
     async fetchPackages() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -1202,7 +1213,7 @@ export const useCatalogStore = defineStore('catalog', {
         this.packages = response.data
         this.packagePagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento pacchetti'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchPackages error:', error)
       } finally {
         this.loading = false
@@ -1210,6 +1221,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchPackage(id: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -1226,7 +1238,7 @@ export const useCatalogStore = defineStore('catalog', {
             }
           } else {
             this.currentPackage = null
-            this.error = 'Pacchetto non trovato'
+            this.error = t('common.errors.notFound')
           }
           return
         }
@@ -1235,7 +1247,7 @@ export const useCatalogStore = defineStore('catalog', {
         const response = await api<{ data: Package }>(`/admin/packages/${id}`)
         this.currentPackage = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento pacchetto'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchPackage error:', error)
       } finally {
         this.loading = false
@@ -1243,6 +1255,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async createPackage(data: PackageCreateForm): Promise<Package | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -1282,7 +1295,7 @@ export const useCatalogStore = defineStore('catalog', {
         this.packagePagination.total++
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nella creazione pacchetto'
+        this.error = error.message || t('common.errors.createError')
         console.error('createPackage error:', error)
         return null
       } finally {
@@ -1291,6 +1304,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async updatePackage(id: number, data: PackageUpdateForm): Promise<Package | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -1321,7 +1335,7 @@ export const useCatalogStore = defineStore('catalog', {
 
             return updated
           }
-          this.error = 'Pacchetto non trovato'
+          this.error = t('common.errors.notFound')
           return null
         }
 
@@ -1342,7 +1356,7 @@ export const useCatalogStore = defineStore('catalog', {
 
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'aggiornamento pacchetto'
+        this.error = error.message || t('common.errors.updateError')
         console.error('updatePackage error:', error)
         return null
       } finally {
@@ -1351,6 +1365,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async deletePackage(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -1364,7 +1379,7 @@ export const useCatalogStore = defineStore('catalog', {
             this.packagePagination.total--
             return true
           }
-          this.error = 'Pacchetto non trovato'
+          this.error = t('common.errors.notFound')
           return false
         }
 
@@ -1374,7 +1389,7 @@ export const useCatalogStore = defineStore('catalog', {
         this.packagePagination.total--
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'eliminazione pacchetto'
+        this.error = error.message || t('common.errors.deleteError')
         console.error('deletePackage error:', error)
         return false
       } finally {
@@ -1383,6 +1398,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async togglePackageActive(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -1424,7 +1440,7 @@ export const useCatalogStore = defineStore('catalog', {
 
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nel cambio stato pacchetto'
+        this.error = error.message || t('common.errors.toggleStatusError')
         console.error('togglePackageActive error:', error)
         return false
       } finally {
@@ -1475,6 +1491,7 @@ export const useCatalogStore = defineStore('catalog', {
     // ============================================
 
     async fetchCategoryPrices() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -1538,7 +1555,7 @@ export const useCatalogStore = defineStore('catalog', {
         this.categoryPricesWithCategory = response.data
         this.pricingPagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento prezzi'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchCategoryPrices error:', error)
       } finally {
         this.loading = false
@@ -1546,6 +1563,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchPriceForCategory(categoryId: number): Promise<CategoryPrice | null> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -1560,7 +1578,7 @@ export const useCatalogStore = defineStore('catalog', {
         const response = await api<{ data: CategoryPrice }>(`/admin/pricing/${categoryId}`)
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento prezzo'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchPriceForCategory error:', error)
         return null
       } finally {
@@ -1569,6 +1587,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async updateCategoryPrice(categoryId: number, data: CategoryPriceForm): Promise<CategoryPrice | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -1642,7 +1661,7 @@ export const useCatalogStore = defineStore('catalog', {
 
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'aggiornamento prezzo'
+        this.error = error.message || t('common.errors.updateError')
         console.error('updateCategoryPrice error:', error)
         return null
       } finally {
@@ -1651,6 +1670,7 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchPriceHistory(categoryId?: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -1677,7 +1697,7 @@ export const useCatalogStore = defineStore('catalog', {
         const response = await api<{ data: PriceHistoryEntry[] }>(`/admin/pricing/history${params}`)
         this.priceHistory = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento storico prezzi'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchPriceHistory error:', error)
       } finally {
         this.loading = false

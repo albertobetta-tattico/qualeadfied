@@ -171,6 +171,7 @@ export const useCartStore = defineStore('cart', {
      * Fetch cart from server
      */
     async fetchCart(): Promise<void> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -188,7 +189,7 @@ export const useCartStore = defineStore('cart', {
         })
         this.items = response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento del carrello'
+        this.error = e.data?.message || t('common.errors.loadError')
       } finally {
         this.loading = false
       }
@@ -198,6 +199,7 @@ export const useCartStore = defineStore('cart', {
      * Add lead to cart
      */
     async addToCart(request: AddToCartRequest): Promise<boolean> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -207,7 +209,7 @@ export const useCartStore = defineStore('cart', {
 
           // Check if already in cart
           if (this.isLeadInCart(request.lead_id)) {
-            this.error = 'Lead già presente nel carrello'
+            this.error = t('common.errors.genericError')
             return false
           }
 
@@ -244,7 +246,7 @@ export const useCartStore = defineStore('cart', {
         this.items.push(response.data)
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nell\'aggiunta al carrello'
+        this.error = e.data?.message || t('common.errors.createError')
         return false
       } finally {
         this.loading = false
@@ -255,6 +257,7 @@ export const useCartStore = defineStore('cart', {
      * Update cart item (change purchase mode)
      */
     async updateItem(itemId: number, purchaseMode: PurchaseMode): Promise<boolean> {
+      const { t } = useI18n()
       this.error = null
 
       try {
@@ -284,7 +287,7 @@ export const useCartStore = defineStore('cart', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nell\'aggiornamento'
+        this.error = e.data?.message || t('common.errors.updateError')
         return false
       }
     },
@@ -293,6 +296,7 @@ export const useCartStore = defineStore('cart', {
      * Remove item from cart
      */
     async removeItem(itemId: number): Promise<boolean> {
+      const { t } = useI18n()
       this.error = null
 
       try {
@@ -312,7 +316,7 @@ export const useCartStore = defineStore('cart', {
         this.items = this.items.filter(i => i.id !== itemId)
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nella rimozione'
+        this.error = e.data?.message || t('common.errors.deleteError')
         return false
       }
     },
@@ -321,6 +325,7 @@ export const useCartStore = defineStore('cart', {
      * Remove entire group from cart
      */
     async removeGroup(groupKey: string): Promise<boolean> {
+      const { t } = useI18n()
       this.error = null
 
       // Find all items in this group
@@ -356,7 +361,7 @@ export const useCartStore = defineStore('cart', {
         this.items = this.items.filter(i => !itemIdsSet.has(i.id))
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nella rimozione del gruppo'
+        this.error = e.data?.message || t('common.errors.deleteError')
         return false
       }
     },
@@ -365,6 +370,7 @@ export const useCartStore = defineStore('cart', {
      * Clear entire cart
      */
     async clearCart(): Promise<boolean> {
+      const { t } = useI18n()
       this.error = null
 
       try {
@@ -384,7 +390,7 @@ export const useCartStore = defineStore('cart', {
         this.items = []
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nello svuotamento'
+        this.error = e.data?.message || t('common.errors.deleteError')
         return false
       }
     },
@@ -393,6 +399,7 @@ export const useCartStore = defineStore('cart', {
      * Create checkout / payment intent
      */
     async createCheckout(data: CheckoutData): Promise<PaymentIntent | null> {
+      const { t } = useI18n()
       this.checkoutLoading = true
       this.error = null
 
@@ -417,7 +424,7 @@ export const useCartStore = defineStore('cart', {
 
         return response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nella creazione del pagamento'
+        this.error = e.data?.message || t('common.errors.paymentError')
         return null
       } finally {
         this.checkoutLoading = false
@@ -428,6 +435,7 @@ export const useCartStore = defineStore('cart', {
      * Confirm payment (after Stripe)
      */
     async confirmPayment(paymentIntentId: string): Promise<{ orderId: number } | null> {
+      const { t } = useI18n()
       this.checkoutLoading = true
       this.error = null
 
@@ -452,7 +460,7 @@ export const useCartStore = defineStore('cart', {
         this.items = []
         return { orderId: response.data.order_id }
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nella conferma del pagamento'
+        this.error = e.data?.message || t('common.errors.paymentError')
         return null
       } finally {
         this.checkoutLoading = false

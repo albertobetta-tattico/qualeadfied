@@ -14,7 +14,7 @@ const otherLocale = computed(() => {
 
 const switchLanguage = () => {
   if (otherLocale.value) {
-    setLocale(otherLocale.value.code)
+    setLocale(otherLocale.value.code as 'it' | 'en')
   }
 }
 </script>

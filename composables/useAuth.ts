@@ -10,6 +10,8 @@ import type { RegisterForm, LoginForm, ForgotPasswordForm, ResetPasswordForm } f
  * Registration form validation
  */
 export function useRegisterValidation() {
+  const { t } = useI18n()
+
   const errors = reactive<Record<string, string>>({
     company_name: '',
     vat_number: '',
@@ -76,86 +78,86 @@ export function useRegisterValidation() {
     switch (field) {
       case 'company_name':
         if (!value || value.length < 2) {
-          errors.company_name = 'Inserisci la ragione sociale (min. 2 caratteri)'
+          errors.company_name = t('validation.required.companyName')
           return false
         }
         break
 
       case 'vat_number':
         if (!value) {
-          errors.vat_number = 'Inserisci la partita IVA'
+          errors.vat_number = t('validation.required.vatNumber')
           return false
         }
         if (!isValidVatNumber(value)) {
-          errors.vat_number = 'Partita IVA non valida'
+          errors.vat_number = t('validation.invalid.vatNumber')
           return false
         }
         break
 
       case 'email':
         if (!value) {
-          errors.email = 'Inserisci l\'email'
+          errors.email = t('validation.required.email')
           return false
         }
         if (!isValidEmail(value)) {
-          errors.email = 'Email non valida'
+          errors.email = t('validation.invalid.email')
           return false
         }
         break
 
       case 'phone':
         if (!value) {
-          errors.phone = 'Inserisci il telefono'
+          errors.phone = t('validation.required.phone')
           return false
         }
         if (!isValidPhone(value)) {
-          errors.phone = 'Numero di telefono non valido'
+          errors.phone = t('validation.invalid.phone')
           return false
         }
         break
 
       case 'first_name':
         if (!value || value.trim().length < 2) {
-          errors.first_name = 'Inserisci il nome'
+          errors.first_name = t('validation.required.firstName')
           return false
         }
         break
 
       case 'last_name':
         if (!value || value.trim().length < 2) {
-          errors.last_name = 'Inserisci il cognome'
+          errors.last_name = t('validation.required.lastName')
           return false
         }
         break
 
       case 'password':
         if (!value) {
-          errors.password = 'Inserisci la password'
+          errors.password = t('validation.required.password')
           return false
         }
         if (!isStrongPassword(value)) {
-          errors.password = 'La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola e un numero'
+          errors.password = t('validation.password.tooWeak')
           return false
         }
         break
 
       case 'password_confirmation':
         if (!value) {
-          errors.password_confirmation = 'Conferma la password'
+          errors.password_confirmation = t('validation.required.passwordConfirmation')
           return false
         }
         break
 
       case 'terms_accepted':
         if (!value) {
-          errors.terms_accepted = 'Devi accettare i termini e condizioni'
+          errors.terms_accepted = t('validation.required.termsAccepted')
           return false
         }
         break
 
       case 'privacy_accepted':
         if (!value) {
-          errors.privacy_accepted = 'Devi accettare la privacy policy'
+          errors.privacy_accepted = t('validation.required.privacyAccepted')
           return false
         }
         break
@@ -180,7 +182,7 @@ export function useRegisterValidation() {
 
     // Check password match
     if (form.password !== form.password_confirmation) {
-      errors.password_confirmation = 'Le password non coincidono'
+      errors.password_confirmation = t('validation.password.mismatch')
       isValid = false
     }
 
@@ -210,6 +212,8 @@ export function useRegisterValidation() {
  * Login form validation
  */
 export function useLoginValidation() {
+  const { t } = useI18n()
+
   const errors = reactive<Record<string, string>>({
     email: '',
     password: ''
@@ -225,12 +229,12 @@ export function useLoginValidation() {
     errors.password = ''
 
     if (!form.email) {
-      errors.email = 'Inserisci l\'email'
+      errors.email = t('validation.required.email')
       isValid = false
     }
 
     if (!form.password) {
-      errors.password = 'Inserisci la password'
+      errors.password = t('validation.required.password')
       isValid = false
     }
 
@@ -254,6 +258,8 @@ export function useLoginValidation() {
  * Password reset validation
  */
 export function usePasswordResetValidation() {
+  const { t } = useI18n()
+
   const errors = reactive<Record<string, string>>({
     email: '',
     password: '',
@@ -275,13 +281,13 @@ export function usePasswordResetValidation() {
     errors.email = ''
 
     if (!form.email) {
-      errors.email = 'Inserisci l\'email'
+      errors.email = t('validation.required.email')
       return false
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(form.email)) {
-      errors.email = 'Email non valida'
+      errors.email = t('validation.invalid.email')
       return false
     }
 
@@ -294,18 +300,18 @@ export function usePasswordResetValidation() {
     errors.password_confirmation = ''
 
     if (!form.password) {
-      errors.password = 'Inserisci la nuova password'
+      errors.password = t('validation.required.newPassword')
       isValid = false
     } else if (!isStrongPassword(form.password)) {
-      errors.password = 'La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola e un numero'
+      errors.password = t('validation.password.tooWeak')
       isValid = false
     }
 
     if (!form.password_confirmation) {
-      errors.password_confirmation = 'Conferma la password'
+      errors.password_confirmation = t('validation.required.passwordConfirmation')
       isValid = false
     } else if (form.password !== form.password_confirmation) {
-      errors.password_confirmation = 'Le password non coincidono'
+      errors.password_confirmation = t('validation.password.mismatch')
       isValid = false
     }
 
@@ -331,12 +337,13 @@ export function usePasswordResetValidation() {
  * Auth toast notifications
  */
 export function useAuthToast() {
+  const { t } = useI18n()
   const toast = useToast()
 
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Successo',
+      summary: t('notifications.toast.summaries.success'),
       detail: message,
       life: 3000
     })
@@ -345,7 +352,7 @@ export function useAuthToast() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('notifications.toast.summaries.error'),
       detail: message,
       life: 5000
     })
@@ -354,7 +361,7 @@ export function useAuthToast() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Info',
+      summary: t('notifications.toast.summaries.info'),
       detail: message,
       life: 3000
     })
@@ -363,7 +370,7 @@ export function useAuthToast() {
   const showWarn = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('notifications.toast.summaries.warning'),
       detail: message,
       life: 4000
     })
@@ -381,15 +388,16 @@ export function useAuthToast() {
  * Auth confirm dialogs
  */
 export function useAuthConfirm() {
+  const { t } = useI18n()
   const confirm = useConfirm()
 
   const confirmLogout = (onConfirm: () => void) => {
     confirm.require({
-      message: 'Sei sicuro di voler uscire?',
-      header: 'Conferma Logout',
+      message: t('notifications.confirm.logout.message'),
+      header: t('notifications.confirm.logout.header'),
       icon: 'pi pi-sign-out',
-      acceptLabel: 'Esci',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('notifications.confirm.logout.acceptLabel'),
+      rejectLabel: t('notifications.confirm.logout.rejectLabel'),
       acceptClass: 'p-button-danger',
       accept: onConfirm
     })
@@ -404,6 +412,8 @@ export function useAuthConfirm() {
  * Password strength indicator
  */
 export function usePasswordStrength() {
+  const { t } = useI18n()
+
   const getStrength = (password: string): { score: number; label: string; color: string } => {
     if (!password) {
       return { score: 0, label: '', color: 'neutral' }
@@ -423,11 +433,11 @@ export function usePasswordStrength() {
 
     // Map score to strength
     if (score <= 2) {
-      return { score, label: 'Debole', color: 'danger' }
+      return { score, label: t('auth.passwordStrength.weak'), color: 'danger' }
     } else if (score <= 4) {
-      return { score, label: 'Media', color: 'warning' }
+      return { score, label: t('auth.passwordStrength.medium'), color: 'warning' }
     } else {
-      return { score, label: 'Forte', color: 'success' }
+      return { score, label: t('auth.passwordStrength.strong'), color: 'success' }
     }
   }
 

@@ -540,9 +540,10 @@ export const useOrderStore = defineStore('order', {
      * Carica lista ordini con filtri e paginazione
      */
     async fetchOrders() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           // Simula delay di rete
@@ -643,7 +644,7 @@ export const useOrderStore = defineStore('order', {
         this.orders = response.data
         this.pagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento ordini'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchOrders error:', error)
       } finally {
         this.loading = false
@@ -654,9 +655,10 @@ export const useOrderStore = defineStore('order', {
      * Carica singolo ordine con dettagli completi
      */
     async fetchOrder(id: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           await new Promise(resolve => setTimeout(resolve, 300))
@@ -687,7 +689,7 @@ export const useOrderStore = defineStore('order', {
             } as OrderWithDetails
           } else {
             this.currentOrder = null
-            this.error = 'Ordine non trovato'
+            this.error = t('common.errors.notFound')
           }
           return
         }
@@ -696,7 +698,7 @@ export const useOrderStore = defineStore('order', {
         const response = await api<{ data: OrderWithDetails }>(`/admin/orders/${id}`)
         this.currentOrder = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento ordine'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchOrder error:', error)
       } finally {
         this.loading = false

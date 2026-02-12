@@ -22,7 +22,9 @@ export default {
     removeGroup: 'Remove group',
     seeAllProvinces: 'See all {count} provinces',
     removalNote: 'Removing will delete all {count} leads in this group. Individual leads cannot be modified.',
-    andOthers: 'and {count} others',
+    andOthers: '{list} and {count} others',
+    purchaseSummary: 'Purchase of <strong>{count}</strong> <strong>{category}</strong> leads in <strong>{mode}</strong> mode',
+    groupSummary: '{count} {mode} leads - Provinces: {provinces}',
   },
 
   // Order summary

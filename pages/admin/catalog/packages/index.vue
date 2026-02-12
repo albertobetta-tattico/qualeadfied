@@ -10,13 +10,15 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const catalogStore = useCatalogStore()
-const { 
-  formatNumber, 
+const {
+  formatNumber,
   formatCurrency,
-  formatDate, 
-  formatActiveStatus, 
+  formatDate,
+  formatActiveStatus,
   getActiveStatusSeverity,
   formatPackageType,
   formatAcquisitionModes
@@ -36,11 +38,11 @@ const categoryFilter = ref<number | ''>('')
 const activeFilter = ref<boolean | ''>('')
 
 // Filter options
-const activeOptions = [
-  { label: 'Tutti', value: '' },
-  { label: 'Attivi', value: true },
-  { label: 'Non attivi', value: false }
-]
+const activeOptions = computed(() => [
+  { label: t('admin.catalog.packages.filters.all'), value: '' },
+  { label: t('admin.catalog.packages.filters.active'), value: true },
+  { label: t('admin.catalog.packages.filters.inactive'), value: false }
+])
 
 // Computed
 const packages = computed(() => catalogStore.packages)
@@ -49,9 +51,9 @@ const pagination = computed(() => catalogStore.packagePagination)
 const hasActiveFilters = computed(() => catalogStore.hasPackageActiveFilters)
 const stats = computed(() => catalogStore.packageStats)
 const categoryOptions = computed(() => [
-  { label: 'Tutte le categorie', value: '' },
-  { label: '--- Multi-Categoria ---', value: null, disabled: true },
-  { label: 'Tutte le categorie', value: -1 }, // Special value for null category_id
+  { label: t('admin.catalog.packages.filters.allCategories'), value: '' },
+  { label: t('admin.catalog.packages.filters.multiCategorySeparator'), value: null, disabled: true },
+  { label: t('admin.catalog.packages.filters.allCategories'), value: -1 },
   ...catalogStore.categoriesForSelect
 ])
 
@@ -110,10 +112,10 @@ const handleToggleActive = (pkg: Package) => {
   confirmTogglePackage(pkg, async () => {
     const success = await catalogStore.togglePackageActive(pkg.id)
     if (success) {
-      const action = pkg.is_active ? 'disattivato' : 'attivato'
-      showSuccess(`Pacchetto "${pkg.name}" ${action} con successo`)
+      const action = pkg.is_active ? t('admin.catalog.packages.toast.deactivated') : t('admin.catalog.packages.toast.activated')
+      showSuccess(t('admin.catalog.packages.toast.toggleSuccess', { name: pkg.name, action }))
     } else {
-      showError(catalogStore.error || 'Errore nel cambio stato')
+      showError(catalogStore.error || t('admin.catalog.packages.toast.toggleError'))
     }
   })
 }
@@ -125,20 +127,20 @@ const openDeleteDialog = (pkg: Package) => {
 
 const handleDelete = async () => {
   if (!packageToDelete.value) return
-  
+
   const success = await catalogStore.deletePackage(packageToDelete.value.id)
   if (success) {
-    showSuccess(`Pacchetto "${packageToDelete.value.name}" eliminato con successo`)
+    showSuccess(t('admin.catalog.packages.toast.deleteSuccess', { name: packageToDelete.value.name }))
     deleteDialog.value = false
     packageToDelete.value = null
   } else {
-    showError(catalogStore.error || 'Errore nell\'eliminazione del pacchetto')
+    showError(catalogStore.error || t('admin.catalog.packages.toast.deleteError'))
   }
 }
 
 const exportPackages = () => {
   // TODO: Implementare export Excel
-  showSuccess('Export in corso...')
+  showSuccess(t('admin.catalog.packages.toast.exportInProgress'))
 }
 
 // Debounced search
@@ -186,20 +188,20 @@ onUnmounted(() => {
             rounded
             @click="router.push('/admin/catalog')"
           />
-          <h1 class="page-title mb-0">Pacchetti Lead</h1>
+          <h1 class="page-title mb-0">{{ $t('admin.catalog.packages.title') }}</h1>
         </div>
-        <p class="page-subtitle ml-12">Configura bundle di lead acquistabili dai clienti</p>
+        <p class="page-subtitle ml-12">{{ $t('admin.catalog.packages.description') }}</p>
       </div>
       <div class="page-header-actions">
-        <PrimeButton 
-          label="Nuovo Pacchetto" 
-          icon="pi pi-plus" 
+        <PrimeButton
+          :label="$t('admin.catalog.quickActions.newPackage')"
+          icon="pi pi-plus"
           severity="primary"
           @click="navigateToCreate"
         />
-        <PrimeButton 
-          label="Export" 
-          icon="pi pi-download" 
+        <PrimeButton
+          :label="$t('admin.common.export')"
+          icon="pi pi-download"
           severity="secondary"
           outlined
           @click="exportPackages"
@@ -214,31 +216,31 @@ onUnmounted(() => {
           <i class="pi pi-box"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.total || 0) }}</div>
-        <div class="kpi-card-label">Pacchetti Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.packages.stats.totalPackages') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon success">
           <i class="pi pi-check-circle"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.active || 0) }}</div>
-        <div class="kpi-card-label">Pacchetti Attivi</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.packages.stats.activePackages') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon warning">
           <i class="pi pi-shopping-cart"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.total_sales || 0) }}</div>
-        <div class="kpi-card-label">Vendite Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.packages.stats.totalSales') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon info">
           <i class="pi pi-euro"></i>
         </div>
         <div class="kpi-card-value">{{ formatCurrency(stats?.total_revenue || 0) }}</div>
-        <div class="kpi-card-label">Ricavi Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.packages.stats.totalRevenue') }}</div>
       </div>
     </div>
 
@@ -251,7 +253,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per nome, descrizione..."
+              :placeholder="$t('admin.catalog.packages.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -261,16 +263,16 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('admin.common.filters.hide') : $t('admin.common.filters.show')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('admin.common.filters.clear')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -286,14 +288,14 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Category Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Categoria</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.catalog.packages.table.headers.categories') }}</label>
               <PrimeSelect
                 v-model="categoryFilter"
                 :options="categoryOptions"
                 optionLabel="label"
                 optionValue="value"
                 optionDisabled="disabled"
-                placeholder="Seleziona categoria"
+                :placeholder="$t('admin.catalog.packages.filters.selectCategory')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -301,13 +303,13 @@ onUnmounted(() => {
 
             <!-- Status Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Stato</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.catalog.packages.table.headers.status') }}</label>
               <PrimeSelect
                 v-model="activeFilter"
                 :options="activeOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona stato"
+                :placeholder="$t('admin.common.filters.selectStatus')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -316,7 +318,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('admin.common.filters.apply')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -345,7 +347,7 @@ onUnmounted(() => {
         removableSort
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} pacchetti"
+        :currentPageReportTemplate="$t('admin.catalog.packages.table.paginatorTemplate')"
         @page="onPage"
         @sort="onSort"
       >
@@ -353,9 +355,9 @@ onUnmounted(() => {
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-box text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600 mb-4">Nessun pacchetto trovato</p>
+            <p class="text-neutral-600 mb-4">{{ $t('admin.catalog.packages.table.empty') }}</p>
             <PrimeButton
-              label="Crea il primo pacchetto"
+              :label="$t('admin.catalog.packages.table.createFirst')"
               icon="pi pi-plus"
               severity="primary"
               @click="navigateToCreate"
@@ -367,7 +369,7 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento pacchetti...</span>
+            <span class="text-neutral-600">{{ $t('admin.catalog.packages.table.loading') }}</span>
           </div>
         </template>
 
@@ -382,10 +384,10 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Name -->
-        <PrimeColumn field="name" header="Nome Pacchetto" sortable style="min-width: 200px">
+        <PrimeColumn field="name" :header="$t('admin.catalog.packages.table.headers.name')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
-              <div 
+              <div
                 class="w-10 h-10 rounded-lg bg-warning-light text-warning-dark flex items-center justify-center flex-shrink-0"
               >
                 <i class="pi pi-box"></i>
@@ -399,14 +401,14 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Categories -->
-        <PrimeColumn header="Categorie" style="min-width: 200px">
+        <PrimeColumn :header="$t('admin.catalog.packages.table.headers.categories')" style="min-width: 200px">
           <template #body="{ data }">
             <div v-if="data.category_ids.length === 0" class="flex flex-wrap gap-1">
               <span
                 class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700"
               >
                 <i class="pi pi-globe mr-1"></i>
-                Tutte le categorie
+                {{ $t('admin.catalog.packages.allCategories') }}
               </span>
             </div>
             <div v-else class="flex flex-wrap gap-1">
@@ -422,7 +424,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Lead Esclusivi -->
-        <PrimeColumn header="Lead Esclusivi" sortable style="min-width: 130px">
+        <PrimeColumn :header="$t('admin.catalog.packages.table.headers.exclusiveLeads')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <div class="text-center">
               <div class="font-semibold text-blue-600">{{ formatNumber(data.exclusive_lead_quantity) }}</div>
@@ -432,7 +434,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Lead Condivisi -->
-        <PrimeColumn header="Lead Condivisi" sortable style="min-width: 130px">
+        <PrimeColumn :header="$t('admin.catalog.packages.table.headers.sharedLeads')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <div class="text-center">
               <div class="font-semibold text-orange-600">{{ formatNumber(data.shared_lead_quantity) }}</div>
@@ -442,7 +444,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Totale -->
-        <PrimeColumn header="Totale" style="min-width: 120px">
+        <PrimeColumn :header="$t('admin.catalog.packages.table.headers.total')" style="min-width: 120px">
           <template #body="{ data }">
             <div class="text-center">
               <div class="font-semibold text-neutral-900">{{ formatNumber(data.exclusive_lead_quantity + data.shared_lead_quantity) }} lead</div>
@@ -452,16 +454,16 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Sales Count -->
-        <PrimeColumn field="sales_count" header="Vendite" sortable style="min-width: 90px">
+        <PrimeColumn field="sales_count" :header="$t('admin.catalog.packages.table.headers.salesCount')" sortable style="min-width: 90px">
           <template #body="{ data }">
             <span class="text-neutral-600">{{ formatNumber(data.sales_count || 0) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Status -->
-        <PrimeColumn field="is_active" header="Stato" sortable style="min-width: 100px">
+        <PrimeColumn field="is_active" :header="$t('admin.catalog.packages.table.headers.status')" sortable style="min-width: 100px">
           <template #body="{ data }">
-            <PrimeTag 
+            <PrimeTag
               :value="formatActiveStatus(data.is_active)"
               :severity="getActiveStatusSeverity(data.is_active)"
             />
@@ -469,7 +471,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 120px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.common.actions')" style="min-width: 120px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <!-- Edit -->
@@ -479,7 +481,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Modifica'"
+                v-tooltip.top="$t('admin.common.edit')"
                 @click="navigateToEdit(data)"
               />
 
@@ -490,7 +492,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="data.is_active ? 'Disattiva' : 'Attiva'"
+                v-tooltip.top="data.is_active ? $t('admin.catalog.packages.actions.deactivate') : $t('admin.catalog.packages.actions.activate')"
                 @click="handleToggleActive(data)"
               />
 
@@ -501,7 +503,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Elimina'"
+                v-tooltip.top="$t('admin.common.delete')"
                 @click="openDeleteDialog(data)"
               />
             </div>
@@ -514,7 +516,7 @@ onUnmounted(() => {
     <PrimeDialog
       v-model:visible="deleteDialog"
       modal
-      header="Conferma Eliminazione"
+      :header="$t('admin.common.confirmDelete')"
       :style="{ width: '450px' }"
     >
       <div class="flex items-start gap-4">
@@ -523,28 +525,28 @@ onUnmounted(() => {
         </div>
         <div>
           <p class="text-neutral-800 mb-2">
-            Sei sicuro di voler eliminare il pacchetto <strong>{{ packageToDelete?.name }}</strong>?
+            {{ $t('admin.catalog.packages.dialog.deleteMessage', { name: packageToDelete?.name }) }}
           </p>
           <p v-if="packageToDelete?.sales_count" class="text-sm text-warning-dark bg-warning-light px-3 py-2 rounded">
             <i class="pi pi-exclamation-circle mr-1"></i>
-            Questo pacchetto è stato venduto {{ packageToDelete.sales_count }} volte.
+            {{ $t('admin.catalog.packages.dialog.hasSalesWarning', { count: packageToDelete.sales_count }) }}
           </p>
           <p class="text-sm text-neutral-600 mt-2">
-            Questa azione non può essere annullata.
+            {{ $t('admin.catalog.packages.dialog.irreversible') }}
           </p>
         </div>
       </div>
-      
+
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.common.cancel')"
             severity="secondary"
             outlined
             @click="deleteDialog = false"
           />
           <PrimeButton
-            label="Elimina"
+            :label="$t('admin.common.delete')"
             severity="danger"
             icon="pi pi-trash"
             :loading="catalogStore.saving"

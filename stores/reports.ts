@@ -204,6 +204,7 @@ export const useReportStore = defineStore('report', {
      * Carica dati dashboard completi
      */
     async fetchDashboard() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -218,7 +219,7 @@ export const useReportStore = defineStore('report', {
         const response = await api<{ data: DashboardData }>('/admin/dashboard')
         this.dashboardData = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento dashboard'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchDashboard error:', error)
       } finally {
         this.loading = false
@@ -229,6 +230,7 @@ export const useReportStore = defineStore('report', {
      * Carica statistiche vendite
      */
     async fetchSalesStats() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -258,7 +260,7 @@ export const useReportStore = defineStore('report', {
         this.salesStats = response.data.stats
         this.salesChart = response.data.chart
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento statistiche vendite'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchSalesStats error:', error)
       } finally {
         this.loading = false
@@ -269,6 +271,7 @@ export const useReportStore = defineStore('report', {
      * Carica performance categorie
      */
     async fetchCategoryPerformance() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -286,7 +289,7 @@ export const useReportStore = defineStore('report', {
         )
         this.categoryPerformance = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento performance categorie'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchCategoryPerformance error:', error)
       } finally {
         this.loading = false
@@ -297,6 +300,7 @@ export const useReportStore = defineStore('report', {
      * Carica statistiche geografiche
      */
     async fetchGeographicStats() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -316,7 +320,7 @@ export const useReportStore = defineStore('report', {
         this.provinceStats = response.data.provinces
         this.regionStats = response.data.regions
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento statistiche geografiche'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchGeographicStats error:', error)
       } finally {
         this.loading = false
@@ -327,6 +331,7 @@ export const useReportStore = defineStore('report', {
      * Avvia export dati
      */
     async startExport(request: ExportRequest): Promise<ExportStatus | null> {
+      const { t } = useI18n()
       this.exporting = true
       this.error = null
 
@@ -359,7 +364,7 @@ export const useReportStore = defineStore('report', {
         this.currentExport = response.data
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'avvio dell\'export'
+        this.error = error.message || t('common.errors.exportError')
         console.error('startExport error:', error)
         return null
       } finally {

@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const pricingStore = usePricingStore()
 const { formatCurrency, formatDate, formatDateTime } = useCatalogFormatters()
@@ -35,9 +37,9 @@ const loading = computed(() => pricingStore.loading)
 const pagination = computed(() => pricingStore.historyPagination)
 
 const hasActiveFilters = computed(() => {
-  return !!searchQuery.value || 
-         !!categoryFilter.value || 
-         dateFromFilter.value !== null || 
+  return !!searchQuery.value ||
+         !!categoryFilter.value ||
+         dateFromFilter.value !== null ||
          dateToFilter.value !== null
 })
 
@@ -45,19 +47,19 @@ const hasActiveFilters = computed(() => {
 const historyStats = computed(() => {
   const history = priceHistory.value
   const stats = pricingStore.pricingStats
-  
+
   if (!stats) return null
-  
+
   const uniqueCategories = new Set(history.map(h => h.category_id)).size
   const lastChange = history[0]?.changed_at || stats.last_price_change
-  
+
   // Count changes this month
   const thisMonth = history.filter(h => {
     const date = new Date(h.changed_at)
     const now = new Date()
     return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
   }).length
-  
+
   return {
     total_changes: stats.total_price_changes || history.length,
     unique_categories: uniqueCategories,
@@ -130,12 +132,12 @@ const navigateBack = () => {
 const formatSharedPriceSummary = (sharedPrices: Record<string, number>): string => {
   const prices = Object.values(sharedPrices)
   if (prices.length === 0) return '-'
-  
+
   const allSame = prices.every(p => p === prices[0])
   if (allSame) {
     return formatCurrency(prices[0])
   }
-  
+
   const min = Math.min(...prices)
   const max = Math.max(...prices)
   return `${formatCurrency(min)} - ${formatCurrency(max)}`
@@ -157,7 +159,7 @@ const getSlotNumber = (key: string): number => {
 
 // Export to Excel (placeholder)
 const exportHistory = () => {
-  showError('Funzionalità export in sviluppo')
+  showError(t('admin.pricing.history.exportInDevelopment'))
 }
 
 // Lifecycle
@@ -182,17 +184,17 @@ onUnmounted(() => {
             text
             rounded
             @click="navigateBack"
-            v-tooltip.right="'Torna ai listini'"
+            v-tooltip.right="$t('admin.pricing.history.backToPricing')"
           />
           <div>
-            <h1 class="page-title">Storico Prezzi</h1>
-            <p class="page-subtitle">Cronologia delle variazioni ai listini</p>
+            <h1 class="page-title">{{ $t('admin.pricing.list.actions.priceHistory') }}</h1>
+            <p class="page-subtitle">{{ $t('admin.pricing.history.subtitle') }}</p>
           </div>
         </div>
       </div>
       <div class="page-header-actions">
         <PrimeButton
-          label="Esporta Excel"
+          :label="$t('admin.pricing.history.exportExcel')"
           icon="pi pi-file-excel"
           severity="success"
           outlined
@@ -208,25 +210,25 @@ onUnmounted(() => {
           <i class="pi pi-history"></i>
         </div>
         <div class="kpi-card-value">{{ historyStats?.total_changes || 0 }}</div>
-        <div class="kpi-card-label">Variazioni Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.pricing.history.stats.totalChanges') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon info">
           <i class="pi pi-tag"></i>
         </div>
         <div class="kpi-card-value">{{ historyStats?.unique_categories || 0 }}</div>
-        <div class="kpi-card-label">Categorie Modificate</div>
+        <div class="kpi-card-label">{{ $t('admin.pricing.history.stats.categoriesModified') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon success">
           <i class="pi pi-calendar"></i>
         </div>
         <div class="kpi-card-value">{{ historyStats?.changes_this_month || 0 }}</div>
-        <div class="kpi-card-label">Modifiche Questo Mese</div>
+        <div class="kpi-card-label">{{ $t('admin.pricing.history.stats.changesThisMonth') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon warning">
           <i class="pi pi-clock"></i>
@@ -234,7 +236,7 @@ onUnmounted(() => {
         <div class="kpi-card-value text-base">
           {{ historyStats?.last_change ? formatDateTime(historyStats.last_change) : '-' }}
         </div>
-        <div class="kpi-card-label">Ultima Modifica</div>
+        <div class="kpi-card-label">{{ $t('admin.pricing.history.stats.lastChange') }}</div>
       </div>
     </div>
 
@@ -247,7 +249,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per nome categoria..."
+              :placeholder="$t('admin.pricing.history.searchPlaceholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -257,16 +259,16 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('admin.common.filters.hide') : $t('admin.common.filters.show')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('admin.common.filters.clear')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -282,13 +284,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Category Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Categoria</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.pricing.history.filters.category') }}</label>
               <PrimeSelect
                 v-model="categoryFilter"
-                :options="[{ label: 'Tutte le categorie', value: '' }, ...categoriesForSelect]"
+                :options="[{ label: $t('admin.pricing.history.filters.allCategories'), value: '' }, ...categoriesForSelect]"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona categoria"
+                :placeholder="$t('admin.pricing.history.filters.selectCategory')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -296,11 +298,11 @@ onUnmounted(() => {
 
             <!-- Date From -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data Da</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.pricing.history.filters.dateFrom') }}</label>
               <PrimeDatePicker
                 v-model="dateFromFilter"
                 dateFormat="dd/mm/yy"
-                placeholder="Seleziona data"
+                :placeholder="$t('admin.common.filters.selectDate')"
                 showIcon
                 class="w-full"
                 @date-select="applyFilters"
@@ -309,11 +311,11 @@ onUnmounted(() => {
 
             <!-- Date To -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data A</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.pricing.history.filters.dateTo') }}</label>
               <PrimeDatePicker
                 v-model="dateToFilter"
                 dateFormat="dd/mm/yy"
-                placeholder="Seleziona data"
+                :placeholder="$t('admin.common.filters.selectDate')"
                 showIcon
                 class="w-full"
                 @date-select="applyFilters"
@@ -323,7 +325,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('admin.common.filters.apply')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -350,16 +352,16 @@ onUnmounted(() => {
         showGridlines
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} variazioni"
+        :currentPageReportTemplate="$t('admin.pricing.history.paginatorTemplate')"
         @page="onPage"
       >
         <!-- Empty State -->
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-history text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600 mb-4">Nessuna variazione prezzi trovata</p>
+            <p class="text-neutral-600 mb-4">{{ $t('admin.pricing.history.empty') }}</p>
             <p class="text-sm text-neutral-500">
-              Lo storico si popola automaticamente quando vengono modificati i listini.
+              {{ $t('admin.pricing.history.emptySubtext') }}
             </p>
           </div>
         </template>
@@ -368,12 +370,12 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento storico...</span>
+            <span class="text-neutral-600">{{ $t('admin.pricing.history.loading') }}</span>
           </div>
         </template>
 
         <!-- Date/Time -->
-        <PrimeColumn field="changed_at" header="Data Modifica" sortable style="min-width: 180px">
+        <PrimeColumn field="changed_at" :header="$t('admin.pricing.history.columns.changeDate')" sortable style="min-width: 180px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-lg bg-neutral-100 text-neutral-600 flex items-center justify-center flex-shrink-0">
@@ -390,7 +392,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Category -->
-        <PrimeColumn field="category_name" header="Categoria" sortable style="min-width: 200px">
+        <PrimeColumn field="category_name" :header="$t('admin.pricing.history.columns.category')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center flex-shrink-0">
@@ -402,7 +404,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Exclusive Price -->
-        <PrimeColumn field="exclusive_price" header="Prezzo Esclusivo" sortable style="min-width: 150px">
+        <PrimeColumn field="exclusive_price" :header="$t('admin.pricing.history.columns.exclusivePrice')" sortable style="min-width: 150px">
           <template #body="{ data }">
             <span class="font-semibold text-primary-700 text-lg">
               {{ formatCurrency(data.exclusive_price) }}
@@ -411,7 +413,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Shared Prices -->
-        <PrimeColumn header="Prezzi Condivisi" style="min-width: 180px">
+        <PrimeColumn :header="$t('admin.pricing.history.columns.sharedPrices')" style="min-width: 180px">
           <template #body="{ data }">
             <div class="flex flex-col gap-1">
               <span class="font-medium text-neutral-700">
@@ -425,17 +427,17 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Valid Period -->
-        <PrimeColumn header="Periodo Validità" style="min-width: 200px">
+        <PrimeColumn :header="$t('admin.pricing.history.columns.validityPeriod')" style="min-width: 200px">
           <template #body="{ data }">
             <div class="text-sm">
               <div class="flex items-center gap-2">
-                <span class="text-neutral-500">Da:</span>
+                <span class="text-neutral-500">{{ $t('admin.pricing.history.from') }}:</span>
                 <span class="font-medium">{{ formatDate(data.valid_from) }}</span>
               </div>
               <div class="flex items-center gap-2">
-                <span class="text-neutral-500">A:</span>
+                <span class="text-neutral-500">{{ $t('admin.pricing.history.to') }}:</span>
                 <span class="font-medium">
-                  <PrimeTag v-if="!data.valid_to" value="In vigore" severity="success" />
+                  <PrimeTag v-if="!data.valid_to" :value="$t('admin.pricing.history.inEffect')" severity="success" />
                   <template v-else>{{ formatDate(data.valid_to) }}</template>
                 </span>
               </div>
@@ -444,19 +446,19 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Changed By -->
-        <PrimeColumn field="changed_by" header="Operatore" style="min-width: 130px">
+        <PrimeColumn field="changed_by" :header="$t('admin.pricing.history.columns.operator')" style="min-width: 130px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-full bg-neutral-200 flex items-center justify-center">
                 <i class="pi pi-user text-sm text-neutral-500"></i>
               </div>
-              <span class="text-neutral-600">{{ data.changed_by || 'Sistema' }}</span>
+              <span class="text-neutral-600">{{ data.changed_by || $t('admin.pricing.history.system') }}</span>
             </div>
           </template>
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 80px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.common.actions')" style="min-width: 80px" frozen alignFrozen="right">
           <template #body="{ data }">
             <PrimeButton
               icon="pi pi-eye"
@@ -464,7 +466,7 @@ onUnmounted(() => {
               text
               rounded
               size="small"
-              v-tooltip.top="'Visualizza dettagli'"
+              v-tooltip.top="$t('admin.common.viewDetails')"
               @click="openDetailDialog(data)"
             />
           </template>
@@ -476,7 +478,7 @@ onUnmounted(() => {
     <PrimeDialog
       v-model:visible="detailDialog"
       modal
-      header="Dettaglio Variazione Prezzo"
+      :header="$t('admin.pricing.history.dialog.title')"
       :style="{ width: '600px' }"
     >
       <div v-if="selectedEntry">
@@ -489,20 +491,20 @@ onUnmounted(() => {
             <div>
               <div class="font-semibold text-neutral-900 text-lg">{{ selectedEntry.category_name }}</div>
               <div class="text-sm text-neutral-500">
-                Modificato il {{ formatDateTime(selectedEntry.changed_at) }}
+                {{ $t('admin.pricing.history.dialog.modifiedOn') }} {{ formatDateTime(selectedEntry.changed_at) }}
               </div>
             </div>
           </div>
-          
+
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span class="text-neutral-500">Operatore:</span>
-              <span class="ml-2 font-medium">{{ selectedEntry.changed_by || 'Sistema' }}</span>
+              <span class="text-neutral-500">{{ $t('admin.pricing.history.columns.operator') }}:</span>
+              <span class="ml-2 font-medium">{{ selectedEntry.changed_by || $t('admin.pricing.history.system') }}</span>
             </div>
             <div>
-              <span class="text-neutral-500">Stato:</span>
-              <PrimeTag 
-                :value="selectedEntry.valid_to ? 'Sostituito' : 'Attivo'"
+              <span class="text-neutral-500">{{ $t('admin.pricing.history.dialog.status') }}:</span>
+              <PrimeTag
+                :value="selectedEntry.valid_to ? $t('admin.pricing.history.dialog.replaced') : $t('admin.pricing.history.dialog.active')"
                 :severity="selectedEntry.valid_to ? 'secondary' : 'success'"
                 class="ml-2"
               />
@@ -516,7 +518,7 @@ onUnmounted(() => {
           <div>
             <h4 class="font-medium text-neutral-700 mb-3 flex items-center gap-2">
               <i class="pi pi-star-fill text-warning"></i>
-              Prezzo Esclusivo
+              {{ $t('admin.pricing.history.dialog.exclusivePrice') }}
             </h4>
             <div class="bg-primary-50 rounded-lg p-4 text-center">
               <span class="text-2xl font-bold text-primary-700">
@@ -529,11 +531,11 @@ onUnmounted(() => {
           <div>
             <h4 class="font-medium text-neutral-700 mb-3 flex items-center gap-2">
               <i class="pi pi-users text-info"></i>
-              Prezzi Condivisi
+              {{ $t('admin.pricing.history.dialog.sharedPrices') }}
             </h4>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <div 
-                v-for="slotKey in getSortedSlotKeys(selectedEntry.shared_prices)" 
+              <div
+                v-for="slotKey in getSortedSlotKeys(selectedEntry.shared_prices)"
                 :key="slotKey"
                 class="bg-info-50 rounded-lg p-3 text-center"
               >
@@ -549,17 +551,17 @@ onUnmounted(() => {
           <div>
             <h4 class="font-medium text-neutral-700 mb-3 flex items-center gap-2">
               <i class="pi pi-calendar text-success"></i>
-              Periodo di Validità
+              {{ $t('admin.pricing.history.dialog.validityPeriod') }}
             </h4>
             <div class="flex gap-4">
               <div class="flex-1 bg-neutral-50 rounded-lg p-3">
-                <div class="text-xs text-neutral-500 mb-1">Valido da</div>
+                <div class="text-xs text-neutral-500 mb-1">{{ $t('admin.pricing.history.dialog.validFrom') }}</div>
                 <div class="font-medium">{{ formatDate(selectedEntry.valid_from) }}</div>
               </div>
               <div class="flex-1 bg-neutral-50 rounded-lg p-3">
-                <div class="text-xs text-neutral-500 mb-1">Valido fino a</div>
+                <div class="text-xs text-neutral-500 mb-1">{{ $t('admin.pricing.history.dialog.validUntil') }}</div>
                 <div class="font-medium">
-                  {{ selectedEntry.valid_to ? formatDate(selectedEntry.valid_to) : 'Attualmente in vigore' }}
+                  {{ selectedEntry.valid_to ? formatDate(selectedEntry.valid_to) : $t('admin.pricing.history.dialog.currentlyInEffect') }}
                 </div>
               </div>
             </div>
@@ -569,7 +571,7 @@ onUnmounted(() => {
 
       <template #footer>
         <PrimeButton
-          label="Chiudi"
+          :label="$t('admin.pricing.history.dialog.close')"
           severity="secondary"
           @click="detailDialog = false"
         />

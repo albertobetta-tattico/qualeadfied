@@ -382,6 +382,7 @@ export const useInvoiceStore = defineStore('invoice', {
      * Carica lista fatture con filtri e paginazione
      */
     async fetchInvoices() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -497,7 +498,7 @@ export const useInvoiceStore = defineStore('invoice', {
         this.invoices = response.data
         this.pagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento fatture'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchInvoices error:', error)
       } finally {
         this.loading = false
@@ -508,6 +509,7 @@ export const useInvoiceStore = defineStore('invoice', {
      * Carica singola fattura con dettagli
      */
     async fetchInvoice(id: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -524,7 +526,7 @@ export const useInvoiceStore = defineStore('invoice', {
             } as InvoiceWithDetails
           } else {
             this.currentInvoice = null
-            this.error = 'Fattura non trovata'
+            this.error = t('common.errors.notFound')
           }
           return
         }
@@ -533,7 +535,7 @@ export const useInvoiceStore = defineStore('invoice', {
         const response = await api<{ data: InvoiceWithDetails }>(`/admin/invoices/${id}`)
         this.currentInvoice = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento fattura'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchInvoice error:', error)
       } finally {
         this.loading = false
@@ -544,6 +546,7 @@ export const useInvoiceStore = defineStore('invoice', {
      * Reinvia fattura a SDI
      */
     async resendToSdi(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -594,7 +597,7 @@ export const useInvoiceStore = defineStore('invoice', {
 
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nel reinvio a SDI'
+        this.error = error.message || t('common.errors.sendEmailError')
         console.error('resendToSdi error:', error)
         return false
       } finally {
@@ -606,6 +609,7 @@ export const useInvoiceStore = defineStore('invoice', {
      * Scarica PDF fattura
      */
     async downloadPdf(id: number): Promise<string | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -620,7 +624,7 @@ export const useInvoiceStore = defineStore('invoice', {
         const response = await api<{ data: { url: string } }>(`/admin/invoices/${id}/pdf`)
         return response.data.url
       } catch (error: any) {
-        this.error = error.message || 'Errore nel download PDF'
+        this.error = error.message || t('common.errors.downloadError')
         console.error('downloadPdf error:', error)
         return null
       } finally {
@@ -632,6 +636,7 @@ export const useInvoiceStore = defineStore('invoice', {
      * Invia fattura via email al cliente
      */
     async sendByEmail(id: number, email?: string): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -648,7 +653,7 @@ export const useInvoiceStore = defineStore('invoice', {
         })
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'invio email'
+        this.error = error.message || t('common.errors.sendEmailError')
         console.error('sendByEmail error:', error)
         return false
       } finally {
@@ -660,6 +665,7 @@ export const useInvoiceStore = defineStore('invoice', {
      * Crea nota di credito
      */
     async createCreditNote(invoiceId: number, reason?: string): Promise<Invoice | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -668,7 +674,7 @@ export const useInvoiceStore = defineStore('invoice', {
           await new Promise(resolve => setTimeout(resolve, 500))
           const originalInvoice = mockInvoices.find(inv => inv.id === invoiceId)
           if (!originalInvoice || originalInvoice.type === 'credit_note') {
-            this.error = 'Impossibile creare nota di credito'
+            this.error = t('common.errors.genericError')
             return null
           }
 
@@ -706,7 +712,7 @@ export const useInvoiceStore = defineStore('invoice', {
 
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nella creazione nota di credito'
+        this.error = error.message || t('common.errors.createError')
         console.error('createCreditNote error:', error)
         return null
       } finally {

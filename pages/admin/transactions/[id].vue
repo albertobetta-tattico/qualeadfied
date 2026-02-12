@@ -9,17 +9,19 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Route & Store
 const route = useRoute()
 const router = useRouter()
 const transactionStore = useTransactionStore()
-const { 
-  formatStatus, 
+const {
+  formatStatus,
   getStatusSeverity,
   getStatusIcon,
   formatPaymentType,
   getPaymentTypeIcon,
-  formatDate, 
+  formatDate,
   formatDateTime,
   formatCurrency,
   formatCardBrand,
@@ -28,12 +30,12 @@ const {
   isFinalStatus,
   isRefundable
 } = useTransactionFormatters()
-const { 
-  showSuccess, 
-  showError, 
-  copyPaymentIntentId, 
+const {
+  showSuccess,
+  showError,
+  copyPaymentIntentId,
   copyChargeId,
-  openStripePayment, 
+  openStripePayment,
   openStripeCustomer,
   formatJsonForDisplay,
   copyJsonToClipboard
@@ -113,7 +115,7 @@ const goBack = () => {
 }
 
 // Computed helpers
-const hasRefunds = computed(() => 
+const hasRefunds = computed(() =>
   transaction.value?.refunds && transaction.value.refunds.length > 0
 )
 
@@ -134,7 +136,7 @@ onMounted(() => {
     <div v-if="initialLoading" class="flex items-center justify-center py-20">
       <div class="text-center">
         <i class="pi pi-spin pi-spinner text-4xl text-primary-500 mb-4"></i>
-        <p class="text-neutral-600">Caricamento transazione...</p>
+        <p class="text-neutral-600">{{ $t('admin.transactions.detail.loading') }}</p>
       </div>
     </div>
 
@@ -143,10 +145,10 @@ onMounted(() => {
       <div class="w-20 h-20 rounded-full bg-danger-light flex items-center justify-center mx-auto mb-4">
         <i class="pi pi-exclamation-triangle text-4xl text-danger"></i>
       </div>
-      <h2 class="text-xl font-semibold text-neutral-900 mb-2">Transazione non trovata</h2>
-      <p class="text-neutral-600 mb-6">La transazione richiesta non esiste o è stata eliminata.</p>
+      <h2 class="text-xl font-semibold text-neutral-900 mb-2">{{ $t('admin.transactions.detail.notFound') }}</h2>
+      <p class="text-neutral-600 mb-6">{{ $t('admin.transactions.detail.notFoundDescription') }}</p>
       <PrimeButton
-        label="Torna all'elenco"
+        :label="$t('admin.transactions.detail.backToList')"
         icon="pi pi-arrow-left"
         severity="primary"
         @click="goBack"
@@ -177,12 +179,12 @@ onMounted(() => {
                   text
                   rounded
                   size="small"
-                  v-tooltip.top="'Copia Payment Intent ID'"
+                  v-tooltip.top="$t('admin.transactions.detail.copyPaymentIntentId')"
                   @click="handleCopyPaymentIntent"
                 />
               </div>
               <div class="flex items-center gap-3 mt-2">
-                <PrimeTag 
+                <PrimeTag
                   :severity="getStatusSeverity(transaction.status)"
                 >
                   <i :class="`pi ${getStatusIcon(transaction.status)} mr-1`"></i>
@@ -201,7 +203,7 @@ onMounted(() => {
         </div>
         <div class="page-header-actions">
           <PrimeButton
-            label="Apri su Stripe"
+            :label="$t('admin.transactions.detail.openOnStripe')"
             icon="pi pi-external-link"
             severity="secondary"
             outlined
@@ -209,7 +211,7 @@ onMounted(() => {
           />
           <PrimeButton
             v-if="transaction.order"
-            label="Vai all'Ordine"
+            :label="$t('admin.transactions.detail.goToOrder')"
             icon="pi pi-shopping-cart"
             severity="primary"
             outlined
@@ -223,7 +225,7 @@ onMounted(() => {
         <!-- Amount Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Importo</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.transactions.detail.cards.amount') }}</span>
             <i class="pi pi-euro text-lg text-primary"></i>
           </div>
           <div class="text-2xl font-bold text-neutral-900">
@@ -237,11 +239,11 @@ onMounted(() => {
         <!-- Order Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Ordine</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.transactions.detail.cards.order') }}</span>
             <i class="pi pi-shopping-cart text-lg text-info"></i>
           </div>
-          <div 
-            v-if="transaction.order" 
+          <div
+            v-if="transaction.order"
             class="font-mono font-medium text-primary-700 cursor-pointer hover:text-primary-900"
             @click="navigateToOrder"
           >
@@ -256,7 +258,7 @@ onMounted(() => {
         <!-- Payment Method Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Metodo</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.transactions.detail.cards.method') }}</span>
             <i :class="`pi ${getPaymentTypeIcon(transaction.payment_type)} text-lg text-purple-600`"></i>
           </div>
           <div class="font-medium text-neutral-900">
@@ -273,8 +275,8 @@ onMounted(() => {
         <!-- Processed Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Elaborazione</span>
-            <i 
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.transactions.detail.cards.processing') }}</span>
+            <i
               class="pi text-lg"
               :class="{
                 'pi-check-circle text-success': transaction.status === 'succeeded',
@@ -287,7 +289,7 @@ onMounted(() => {
           <div v-if="transaction.processed_at" class="text-neutral-900">
             {{ formatDate(transaction.processed_at) }}
           </div>
-          <div v-else class="text-neutral-500">In attesa</div>
+          <div v-else class="text-neutral-500">{{ $t('admin.transactions.detail.awaiting') }}</div>
           <div v-if="transaction.processed_at" class="text-xs text-neutral-500 mt-1">
             {{ formatDateTime(transaction.processed_at).split(' ')[1] }}
           </div>
@@ -297,11 +299,11 @@ onMounted(() => {
       <!-- Tabs -->
       <PrimeTabView v-model:activeIndex="activeTab" class="q-card">
         <!-- Tab: Dettagli Transazione -->
-        <PrimeTabPanel value="0" header="Dettagli">
+        <PrimeTabPanel value="0" :header="$t('admin.transactions.detail.tabs.details')">
           <div class="pt-4 space-y-6">
             <!-- IDs Section -->
             <div>
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Identificativi Stripe</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.transactions.detail.stripeIds') }}</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-neutral-50 rounded-lg p-4">
                   <label class="text-xs font-medium text-neutral-500 uppercase block mb-1">Payment Intent ID</label>
@@ -319,7 +321,7 @@ onMounted(() => {
                     />
                   </div>
                 </div>
-                
+
                 <div class="bg-neutral-50 rounded-lg p-4">
                   <label class="text-xs font-medium text-neutral-500 uppercase block mb-1">Charge ID</label>
                   <div v-if="transaction.stripe_charge_id" class="flex items-center gap-2">
@@ -337,7 +339,7 @@ onMounted(() => {
                   </div>
                   <span v-else class="text-neutral-500">-</span>
                 </div>
-                
+
                 <div class="bg-neutral-50 rounded-lg p-4">
                   <label class="text-xs font-medium text-neutral-500 uppercase block mb-1">Customer ID</label>
                   <div v-if="transaction.stripe_customer_id" class="flex items-center gap-2">
@@ -350,13 +352,13 @@ onMounted(() => {
                       text
                       rounded
                       size="small"
-                      v-tooltip.top="'Apri su Stripe'"
+                      v-tooltip.top="$t('admin.transactions.detail.openOnStripe')"
                       @click="handleOpenStripeCustomer"
                     />
                   </div>
                   <span v-else class="text-neutral-500">-</span>
                 </div>
-                
+
                 <div class="bg-neutral-50 rounded-lg p-4">
                   <label class="text-xs font-medium text-neutral-500 uppercase block mb-1">Payment Method ID</label>
                   <code v-if="transaction.stripe_payment_method_id" class="text-sm text-neutral-900 font-mono">
@@ -369,29 +371,29 @@ onMounted(() => {
 
             <!-- Payment Details Section -->
             <div>
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Dettagli Pagamento</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.transactions.detail.paymentDetails') }}</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label class="text-xs font-medium text-neutral-500 uppercase">Tipo</label>
+                  <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.transactions.list.table.headers.type') }}</label>
                   <p class="text-neutral-900 flex items-center gap-2 mt-1">
                     <i :class="`pi ${getPaymentTypeIcon(transaction.payment_type)}`"></i>
                     {{ formatPaymentType(transaction.payment_type) }}
                   </p>
                 </div>
                 <div>
-                  <label class="text-xs font-medium text-neutral-500 uppercase">Importo</label>
+                  <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.transactions.detail.cards.amount') }}</label>
                   <p class="text-neutral-900 font-semibold mt-1">
                     {{ formatCurrency(transaction.amount, transaction.currency) }}
                   </p>
                 </div>
                 <div>
-                  <label class="text-xs font-medium text-neutral-500 uppercase">Valuta</label>
+                  <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.transactions.detail.currency') }}</label>
                   <p class="text-neutral-900 uppercase mt-1">{{ transaction.currency }}</p>
                 </div>
                 <div>
-                  <label class="text-xs font-medium text-neutral-500 uppercase">Stato</label>
+                  <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.transactions.list.table.headers.status') }}</label>
                   <div class="mt-1">
-                    <PrimeTag 
+                    <PrimeTag
                       :value="formatStatus(transaction.status)"
                       :severity="getStatusSeverity(transaction.status)"
                     />
@@ -403,9 +405,9 @@ onMounted(() => {
             <!-- Card/SEPA Details -->
             <div v-if="transaction.card_details || transaction.sepa_details">
               <h4 class="text-lg font-semibold text-neutral-900 mb-4">
-                {{ transaction.payment_type === 'card' ? 'Dettagli Carta' : 'Dettagli SEPA' }}
+                {{ transaction.payment_type === 'card' ? $t('admin.transactions.detail.cardDetails') : $t('admin.transactions.detail.sepaDetails') }}
               </h4>
-              
+
               <!-- Card Details -->
               <div v-if="transaction.card_details" class="bg-gradient-to-r from-neutral-800 to-neutral-900 rounded-xl p-6 text-white max-w-md">
                 <div class="flex justify-between items-start mb-8">
@@ -417,11 +419,11 @@ onMounted(() => {
                 </div>
                 <div class="flex justify-between items-end">
                   <div>
-                    <span class="text-xs opacity-70 block">Scadenza</span>
+                    <span class="text-xs opacity-70 block">{{ $t('admin.transactions.detail.expiry') }}</span>
                     <span class="font-mono">{{ formatCardExpiry(transaction.card_details.exp_month, transaction.card_details.exp_year) }}</span>
                   </div>
                   <div v-if="transaction.card_details.country">
-                    <span class="text-xs opacity-70 block">Paese</span>
+                    <span class="text-xs opacity-70 block">{{ $t('admin.transactions.detail.country') }}</span>
                     <span>{{ transaction.card_details.country }}</span>
                   </div>
                 </div>
@@ -431,7 +433,7 @@ onMounted(() => {
               <div v-else-if="transaction.sepa_details" class="bg-purple-50 border border-purple-200 rounded-lg p-4 max-w-md">
                 <div class="flex items-center gap-3 mb-3">
                   <i class="pi pi-building text-purple-600 text-xl"></i>
-                  <span class="font-medium text-purple-900">Addebito SEPA</span>
+                  <span class="font-medium text-purple-900">{{ $t('admin.transactions.detail.sepaDebit') }}</span>
                 </div>
                 <div class="space-y-2">
                   <div>
@@ -440,11 +442,11 @@ onMounted(() => {
                   </div>
                   <div v-if="transaction.sepa_details.bank_code" class="grid grid-cols-2 gap-4">
                     <div>
-                      <span class="text-xs text-purple-600 uppercase">Banca</span>
+                      <span class="text-xs text-purple-600 uppercase">{{ $t('admin.transactions.detail.bank') }}</span>
                       <p class="text-neutral-900">{{ transaction.sepa_details.bank_code }}</p>
                     </div>
                     <div v-if="transaction.sepa_details.country">
-                      <span class="text-xs text-purple-600 uppercase">Paese</span>
+                      <span class="text-xs text-purple-600 uppercase">{{ $t('admin.transactions.detail.country') }}</span>
                       <p class="text-neutral-900">{{ transaction.sepa_details.country }}</p>
                     </div>
                   </div>
@@ -456,15 +458,15 @@ onMounted(() => {
             <div v-if="transaction.failure_code" class="bg-danger-light border border-danger-200 rounded-lg p-4">
               <div class="flex items-center gap-2 mb-2">
                 <i class="pi pi-exclamation-triangle text-danger"></i>
-                <h4 class="font-semibold text-danger">Errore Transazione</h4>
+                <h4 class="font-semibold text-danger">{{ $t('admin.transactions.detail.transactionError') }}</h4>
               </div>
               <div class="space-y-2">
                 <div>
-                  <span class="text-xs text-danger-dark uppercase">Codice Errore</span>
+                  <span class="text-xs text-danger-dark uppercase">{{ $t('admin.transactions.detail.errorCode') }}</span>
                   <p class="font-mono text-neutral-900">{{ transaction.failure_code }}</p>
                 </div>
                 <div v-if="transaction.failure_message">
-                  <span class="text-xs text-danger-dark uppercase">Messaggio</span>
+                  <span class="text-xs text-danger-dark uppercase">{{ $t('admin.transactions.detail.errorMessage') }}</span>
                   <p class="text-neutral-900">{{ transaction.failure_message }}</p>
                 </div>
               </div>
@@ -486,15 +488,15 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Cliente -->
-        <PrimeTabPanel value="1" header="Cliente">
+        <PrimeTabPanel value="1" :header="$t('admin.transactions.detail.tabs.client')">
           <div class="pt-4">
             <div v-if="transaction.client" class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Client Info -->
               <div class="space-y-4">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-4">Dati Cliente</h4>
-                
+                <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.transactions.detail.clientData') }}</h4>
+
                 <div class="flex items-center gap-4 p-4 bg-neutral-50 rounded-lg">
-                  <div 
+                  <div
                     class="w-14 h-14 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-lg flex-shrink-0"
                   >
                     {{ transaction.client.company_name.substring(0, 2).toUpperCase() }}
@@ -507,7 +509,7 @@ onMounted(() => {
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="text-xs font-medium text-neutral-500 uppercase">Referente</label>
+                    <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.transactions.detail.contactPerson') }}</label>
                     <p class="text-neutral-900">
                       {{ transaction.client.contact_first_name }} {{ transaction.client.contact_last_name }}
                     </p>
@@ -523,7 +525,7 @@ onMounted(() => {
                 </div>
 
                 <PrimeButton
-                  label="Vai alla scheda cliente"
+                  :label="$t('admin.transactions.detail.goToClientProfile')"
                   icon="pi pi-external-link"
                   severity="primary"
                   outlined
@@ -534,12 +536,12 @@ onMounted(() => {
 
               <!-- Order Info -->
               <div v-if="transaction.order" class="space-y-4">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-4">Ordine Associato</h4>
-                
+                <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.transactions.detail.associatedOrder') }}</h4>
+
                 <div class="p-4 bg-info-light rounded-lg">
                   <div class="flex items-center gap-3 mb-3">
                     <i class="pi pi-shopping-cart text-info text-xl"></i>
-                    <span 
+                    <span
                       class="font-mono font-semibold text-info cursor-pointer hover:underline"
                       @click="navigateToOrder"
                     >
@@ -548,26 +550,26 @@ onMounted(() => {
                   </div>
                   <div class="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span class="text-neutral-600">Tipo:</span>
+                      <span class="text-neutral-600">{{ $t('admin.transactions.detail.orderType') }}:</span>
                       <span class="ml-1 text-neutral-900 capitalize">{{ transaction.order.type.replace('_', ' ') }}</span>
                     </div>
                     <div>
-                      <span class="text-neutral-600">Totale:</span>
+                      <span class="text-neutral-600">{{ $t('admin.transactions.detail.orderTotal') }}:</span>
                       <span class="ml-1 text-neutral-900 font-semibold">{{ formatCurrency(transaction.order.total) }}</span>
                     </div>
                     <div>
-                      <span class="text-neutral-600">Stato:</span>
+                      <span class="text-neutral-600">{{ $t('admin.transactions.list.table.headers.status') }}:</span>
                       <span class="ml-1 text-neutral-900 capitalize">{{ transaction.order.status }}</span>
                     </div>
                     <div>
-                      <span class="text-neutral-600">Data:</span>
+                      <span class="text-neutral-600">{{ $t('admin.transactions.list.table.headers.date') }}:</span>
                       <span class="ml-1 text-neutral-900">{{ formatDate(transaction.order.created_at) }}</span>
                     </div>
                   </div>
                 </div>
 
                 <PrimeButton
-                  label="Vai all'ordine"
+                  :label="$t('admin.transactions.detail.goToOrderLink')"
                   icon="pi pi-external-link"
                   severity="primary"
                   outlined
@@ -577,24 +579,24 @@ onMounted(() => {
               </div>
             </div>
             <div v-else class="text-center py-12 text-neutral-500">
-              Dati cliente non disponibili
+              {{ $t('admin.transactions.detail.clientDataNotAvailable') }}
             </div>
           </div>
         </PrimeTabPanel>
 
         <!-- Tab: Timeline -->
-        <PrimeTabPanel value="2" header="Timeline">
+        <PrimeTabPanel value="2" :header="$t('admin.transactions.detail.tabs.timeline')">
           <div class="pt-4">
             <div class="max-w-2xl">
               <!-- Events Timeline -->
               <div v-if="transaction.events && transaction.events.length > 0">
-                <div 
-                  v-for="(event, index) in transaction.events" 
+                <div
+                  v-for="(event, index) in transaction.events"
                   :key="event.id"
                   class="flex gap-4 pb-6"
                 >
                   <div class="flex flex-col items-center">
-                    <div 
+                    <div
                       class="w-10 h-10 rounded-full flex items-center justify-center"
                       :class="{
                         'bg-primary-100': event.status === 'created',
@@ -604,7 +606,7 @@ onMounted(() => {
                         'bg-neutral-200': event.status === 'canceled'
                       }"
                     >
-                      <i 
+                      <i
                         class="pi"
                         :class="{
                           'pi-plus text-primary-600': event.status === 'created',
@@ -615,7 +617,7 @@ onMounted(() => {
                         }"
                       ></i>
                     </div>
-                    <div 
+                    <div
                       v-if="index < transaction.events.length - 1"
                       class="w-0.5 flex-1 bg-neutral-200 mt-2"
                     ></div>
@@ -628,54 +630,54 @@ onMounted(() => {
                 </div>
               </div>
               <div v-else class="text-center py-8 text-neutral-500">
-                Nessun evento disponibile
+                {{ $t('admin.transactions.detail.noEvents') }}
               </div>
             </div>
           </div>
         </PrimeTabPanel>
 
         <!-- Tab: Rimborsi -->
-        <PrimeTabPanel value="3" header="Rimborsi">
+        <PrimeTabPanel value="3" :header="$t('admin.transactions.detail.tabs.refunds')">
           <div class="pt-4">
             <div v-if="hasRefunds">
               <div class="mb-4 p-4 bg-warning-light rounded-lg">
                 <div class="flex items-center gap-2">
                   <i class="pi pi-info-circle text-warning"></i>
                   <span class="font-medium text-warning-dark">
-                    Totale rimborsato: {{ formatCurrency(totalRefunded, transaction.currency) }}
+                    {{ $t('admin.transactions.detail.totalRefunded') }}: {{ formatCurrency(totalRefunded, transaction.currency) }}
                   </span>
                 </div>
               </div>
-              
+
               <PrimeDataTable
                 :value="transaction.refunds"
                 class="text-sm"
                 stripedRows
               >
-                <PrimeColumn field="id" header="ID Rimborso" style="min-width: 200px">
+                <PrimeColumn field="id" :header="$t('admin.transactions.detail.refundColumns.refundId')" style="min-width: 200px">
                   <template #body="{ data }">
                     <code class="font-mono text-xs">{{ data.id }}</code>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="amount" header="Importo" style="min-width: 120px">
+                <PrimeColumn field="amount" :header="$t('admin.transactions.detail.cards.amount')" style="min-width: 120px">
                   <template #body="{ data }">
                     <span class="font-semibold">{{ formatCurrency(data.amount, transaction.currency) }}</span>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="status" header="Stato" style="min-width: 100px">
+                <PrimeColumn field="status" :header="$t('admin.transactions.list.table.headers.status')" style="min-width: 100px">
                   <template #body="{ data }">
-                    <PrimeTag 
+                    <PrimeTag
                       :value="data.status"
                       :severity="data.status === 'succeeded' ? 'success' : 'warn'"
                     />
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="reason" header="Motivo" style="min-width: 150px">
+                <PrimeColumn field="reason" :header="$t('admin.transactions.detail.refundColumns.reason')" style="min-width: 150px">
                   <template #body="{ data }">
                     <span>{{ data.reason || '-' }}</span>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="created_at" header="Data" style="min-width: 150px">
+                <PrimeColumn field="created_at" :header="$t('admin.transactions.list.table.headers.date')" style="min-width: 150px">
                   <template #body="{ data }">
                     {{ formatDateTime(data.created_at) }}
                   </template>
@@ -684,22 +686,22 @@ onMounted(() => {
             </div>
             <div v-else class="text-center py-12">
               <i class="pi pi-replay text-4xl text-neutral-400 mb-4 block"></i>
-              <p class="text-neutral-600">Nessun rimborso per questa transazione</p>
+              <p class="text-neutral-600">{{ $t('admin.transactions.detail.noRefunds') }}</p>
               <p class="text-sm text-neutral-500 mt-2">
-                I rimborsi vengono gestiti esternamente sulla dashboard Stripe
+                {{ $t('admin.transactions.detail.refundsManagedOnStripe') }}
               </p>
             </div>
           </div>
         </PrimeTabPanel>
 
         <!-- Tab: Risposta Stripe (JSON) -->
-        <PrimeTabPanel value="4" header="Risposta Stripe">
+        <PrimeTabPanel value="4" :header="$t('admin.transactions.detail.tabs.stripeResponse')">
           <div class="pt-4">
             <div class="flex justify-between items-center mb-4">
-              <h4 class="text-lg font-semibold text-neutral-900">Risposta API Completa</h4>
+              <h4 class="text-lg font-semibold text-neutral-900">{{ $t('admin.transactions.detail.fullApiResponse') }}</h4>
               <div class="flex gap-2">
                 <PrimeButton
-                  :label="jsonExpanded ? 'Comprimi' : 'Espandi'"
+                  :label="jsonExpanded ? $t('admin.transactions.detail.collapse') : $t('admin.transactions.detail.expand')"
                   :icon="jsonExpanded ? 'pi pi-minus' : 'pi pi-plus'"
                   severity="secondary"
                   text
@@ -707,7 +709,7 @@ onMounted(() => {
                   @click="jsonExpanded = !jsonExpanded"
                 />
                 <PrimeButton
-                  label="Copia JSON"
+                  :label="$t('admin.transactions.detail.copyJson')"
                   icon="pi pi-copy"
                   severity="secondary"
                   outlined
@@ -716,17 +718,17 @@ onMounted(() => {
                 />
               </div>
             </div>
-            
-            <div 
+
+            <div
               class="bg-neutral-900 rounded-lg p-4 overflow-auto"
               :class="jsonExpanded ? 'max-h-none' : 'max-h-96'"
             >
               <pre class="text-sm text-green-400 font-mono whitespace-pre-wrap">{{ formatJsonForDisplay(transaction.stripe_response) }}</pre>
             </div>
-            
+
             <p class="text-xs text-neutral-500 mt-2">
               <i class="pi pi-info-circle mr-1"></i>
-              Questa risposta viene archiviata integralmente per la gestione delle contestazioni
+              {{ $t('admin.transactions.detail.responseArchiveNote') }}
             </p>
           </div>
         </PrimeTabPanel>

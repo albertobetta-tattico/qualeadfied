@@ -10,12 +10,14 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Route & Store
 const route = useRoute()
 const router = useRouter()
 const orderStore = useOrderStore()
-const { 
-  formatStatus, 
+const {
+  formatStatus,
   getStatusSeverity,
   formatType,
   getTypeSeverity,
@@ -23,7 +25,7 @@ const {
   getPaymentMethodIcon,
   formatAcquisitionMode,
   getAcquisitionModeSeverity,
-  formatDate, 
+  formatDate,
   formatDateTime,
   formatCurrency,
   formatVatNumber,
@@ -104,7 +106,7 @@ onMounted(() => {
     <div v-if="initialLoading" class="flex items-center justify-center py-20">
       <div class="text-center">
         <i class="pi pi-spin pi-spinner text-4xl text-primary-500 mb-4"></i>
-        <p class="text-neutral-600">Caricamento ordine...</p>
+        <p class="text-neutral-600">{{ $t('admin.orders.detail.loading') }}</p>
       </div>
     </div>
 
@@ -113,10 +115,10 @@ onMounted(() => {
       <div class="w-20 h-20 rounded-full bg-danger-light flex items-center justify-center mx-auto mb-4">
         <i class="pi pi-exclamation-triangle text-4xl text-danger"></i>
       </div>
-      <h2 class="text-xl font-semibold text-neutral-900 mb-2">Ordine non trovato</h2>
-      <p class="text-neutral-600 mb-6">L'ordine richiesto non esiste o è stato eliminato.</p>
+      <h2 class="text-xl font-semibold text-neutral-900 mb-2">{{ $t('admin.orders.detail.notFound') }}</h2>
+      <p class="text-neutral-600 mb-6">{{ $t('admin.orders.detail.notFoundDescription') }}</p>
       <PrimeButton
-        label="Torna all'elenco"
+        :label="$t('admin.orders.detail.backToList')"
         icon="pi pi-arrow-left"
         severity="primary"
         @click="goBack"
@@ -145,16 +147,16 @@ onMounted(() => {
                   text
                   rounded
                   size="small"
-                  v-tooltip.top="'Copia numero ordine'"
+                  v-tooltip.top="$t('admin.orders.detail.copyOrderNumber')"
                   @click="handleCopyOrderNumber"
                 />
               </div>
               <div class="flex items-center gap-3 mt-2">
-                <PrimeTag 
+                <PrimeTag
                   :value="formatStatus(order.status)"
                   :severity="getStatusSeverity(order.status)"
                 />
-                <PrimeTag 
+                <PrimeTag
                   :value="formatType(order.type)"
                   :severity="getTypeSeverity(order.type)"
                 />
@@ -168,7 +170,7 @@ onMounted(() => {
         <div class="page-header-actions">
           <PrimeButton
             v-if="hasTransaction"
-            label="Vedi su Stripe"
+            :label="$t('admin.orders.detail.viewOnStripe')"
             icon="pi pi-external-link"
             severity="secondary"
             outlined
@@ -176,7 +178,7 @@ onMounted(() => {
           />
           <PrimeButton
             v-if="order.client"
-            label="Vai al Cliente"
+            :label="$t('admin.orders.detail.goToClient')"
             icon="pi pi-user"
             severity="primary"
             outlined
@@ -190,36 +192,36 @@ onMounted(() => {
         <!-- Total Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Totale Ordine</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.orders.detail.cards.orderTotal') }}</span>
             <i class="pi pi-euro text-lg text-success"></i>
           </div>
           <div class="text-2xl font-bold text-neutral-900">
             {{ formatCurrency(order.total) }}
           </div>
           <div class="text-xs text-neutral-500 mt-1">
-            {{ formatCurrency(order.subtotal) }} + IVA {{ order.vat_rate }}%
+            {{ formatCurrency(order.subtotal) }} + {{ $t('admin.orders.detail.vat') }} {{ order.vat_rate }}%
           </div>
         </div>
 
         <!-- Leads Count Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Lead Inclusi</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.orders.detail.cards.includedLeads') }}</span>
             <i class="pi pi-list text-lg text-info"></i>
           </div>
           <div class="text-2xl font-bold text-neutral-900">
             {{ totalLeads }}
           </div>
           <div class="text-xs text-neutral-500 mt-1">
-            {{ order.items?.length || 0 }} righe ordine
+            {{ order.items?.length || 0 }} {{ $t('admin.orders.detail.orderLines') }}
           </div>
         </div>
 
         <!-- Payment Status Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Pagamento</span>
-            <i 
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.orders.detail.cards.payment') }}</span>
+            <i
               class="pi text-lg"
               :class="{
                 'pi-check-circle text-success': order.status === 'paid',
@@ -237,15 +239,15 @@ onMounted(() => {
             </span>
           </div>
           <div v-if="order.paid_at" class="text-xs text-success-dark mt-1">
-            Pagato il {{ formatDateTime(order.paid_at) }}
+            {{ $t('admin.orders.detail.paidOn') }} {{ formatDateTime(order.paid_at) }}
           </div>
         </div>
 
         <!-- Invoice Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Fattura</span>
-            <i 
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.orders.detail.cards.invoice') }}</span>
+            <i
               class="pi text-lg"
               :class="hasInvoice ? 'pi-file-check text-success' : 'pi-file text-neutral-400'"
             ></i>
@@ -254,7 +256,7 @@ onMounted(() => {
             {{ order.invoice!.invoice_number }}
           </div>
           <div v-else class="text-neutral-500">
-            Non emessa
+            {{ $t('admin.orders.detail.invoiceNotIssued') }}
           </div>
           <div v-if="order.invoice?.sdi_status" class="text-xs text-neutral-500 mt-1">
             SDI: {{ order.invoice.sdi_status }}
@@ -265,11 +267,11 @@ onMounted(() => {
       <!-- Tabs -->
       <PrimeTabView v-model:activeIndex="activeTab" class="q-card">
         <!-- Tab: Dettagli Ordine -->
-        <PrimeTabPanel value="0" header="Dettagli Ordine">
+        <PrimeTabPanel value="0" :header="$t('admin.orders.detail.tabs.orderDetails')">
           <div class="pt-4 space-y-6">
             <!-- Order Items -->
             <div>
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Righe Ordine</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.orders.detail.orderLines') }}</h4>
               <PrimeDataTable
                 :value="order.items || []"
                 class="text-sm"
@@ -278,12 +280,12 @@ onMounted(() => {
               >
                 <template #empty>
                   <div class="text-center py-8 text-neutral-500">
-                    Nessuna riga ordine
+                    {{ $t('admin.orders.detail.noOrderLines') }}
                   </div>
                 </template>
 
                 <!-- Item Type -->
-                <PrimeColumn header="Tipo" style="width: 100px">
+                <PrimeColumn :header="$t('admin.orders.detail.columns.type')" style="width: 100px">
                   <template #body="{ data }">
                     <span v-if="isLeadItem(data)" class="flex items-center gap-1">
                       <i class="pi pi-user text-info"></i>
@@ -291,13 +293,13 @@ onMounted(() => {
                     </span>
                     <span v-else-if="isPackageItem(data)" class="flex items-center gap-1">
                       <i class="pi pi-box text-success"></i>
-                      Pacchetto
+                      {{ $t('admin.orders.detail.columns.package') }}
                     </span>
                   </template>
                 </PrimeColumn>
 
                 <!-- Description -->
-                <PrimeColumn header="Descrizione" style="min-width: 250px">
+                <PrimeColumn :header="$t('admin.orders.detail.columns.description')" style="min-width: 250px">
                   <template #body="{ data }">
                     <div v-if="data.lead">
                       <div class="font-medium text-neutral-900">
@@ -315,7 +317,7 @@ onMounted(() => {
                         {{ data.package.name }}
                       </div>
                       <div class="text-xs text-neutral-500">
-                        {{ data.package.lead_quantity }} lead inclusi
+                        {{ data.package.lead_quantity }} {{ $t('admin.orders.detail.leadsIncluded') }}
                         <span v-if="data.package.category_name"> • {{ data.package.category_name }}</span>
                       </div>
                     </div>
@@ -324,9 +326,9 @@ onMounted(() => {
                 </PrimeColumn>
 
                 <!-- Acquisition Mode -->
-                <PrimeColumn header="Modalità" style="width: 120px">
+                <PrimeColumn :header="$t('admin.orders.detail.columns.mode')" style="width: 120px">
                   <template #body="{ data }">
-                    <PrimeTag 
+                    <PrimeTag
                       :value="formatAcquisitionMode(data.acquisition_mode)"
                       :severity="getAcquisitionModeSeverity(data.acquisition_mode)"
                       class="text-xs"
@@ -335,21 +337,21 @@ onMounted(() => {
                 </PrimeColumn>
 
                 <!-- Quantity -->
-                <PrimeColumn field="quantity" header="Qtà" style="width: 80px">
+                <PrimeColumn field="quantity" :header="$t('admin.orders.detail.columns.qty')" style="width: 80px">
                   <template #body="{ data }">
                     <span class="text-neutral-700">{{ data.quantity }}</span>
                   </template>
                 </PrimeColumn>
 
                 <!-- Unit Price -->
-                <PrimeColumn field="unit_price" header="Prezzo Unit." style="width: 120px">
+                <PrimeColumn field="unit_price" :header="$t('admin.orders.detail.columns.unitPrice')" style="width: 120px">
                   <template #body="{ data }">
                     <span class="text-neutral-700">{{ formatCurrency(data.unit_price) }}</span>
                   </template>
                 </PrimeColumn>
 
                 <!-- Line Total -->
-                <PrimeColumn field="line_total" header="Totale" style="width: 120px">
+                <PrimeColumn field="line_total" :header="$t('admin.orders.detail.columns.total')" style="width: 120px">
                   <template #body="{ data }">
                     <span class="font-semibold text-neutral-900">{{ formatCurrency(data.line_total) }}</span>
                   </template>
@@ -361,15 +363,15 @@ onMounted(() => {
             <div class="flex justify-end">
               <div class="w-full max-w-xs bg-neutral-50 rounded-lg p-4">
                 <div class="flex justify-between py-2 border-b border-neutral-200">
-                  <span class="text-neutral-600">Subtotale</span>
+                  <span class="text-neutral-600">{{ $t('admin.orders.detail.subtotal') }}</span>
                   <span class="font-medium">{{ formatCurrency(order.subtotal) }}</span>
                 </div>
                 <div class="flex justify-between py-2 border-b border-neutral-200">
-                  <span class="text-neutral-600">IVA ({{ order.vat_rate }}%)</span>
+                  <span class="text-neutral-600">{{ $t('admin.orders.detail.vat') }} ({{ order.vat_rate }}%)</span>
                   <span class="font-medium">{{ formatCurrency(order.vat_amount) }}</span>
                 </div>
                 <div class="flex justify-between py-2 text-lg">
-                  <span class="font-semibold text-neutral-900">Totale</span>
+                  <span class="font-semibold text-neutral-900">{{ $t('admin.orders.detail.columns.total') }}</span>
                   <span class="font-bold text-primary-700">{{ formatCurrency(order.total) }}</span>
                 </div>
               </div>
@@ -378,15 +380,15 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Cliente -->
-        <PrimeTabPanel value="1" header="Cliente">
+        <PrimeTabPanel value="1" :header="$t('admin.orders.detail.tabs.client')">
           <div class="pt-4">
             <div v-if="order.client" class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Client Info -->
               <div class="space-y-4">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-4">Dati Cliente</h4>
-                
+                <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.orders.detail.clientData') }}</h4>
+
                 <div class="flex items-center gap-4 p-4 bg-neutral-50 rounded-lg">
-                  <div 
+                  <div
                     class="w-14 h-14 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-lg flex-shrink-0"
                   >
                     {{ order.client.company_name.substring(0, 2).toUpperCase() }}
@@ -399,7 +401,7 @@ onMounted(() => {
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="text-xs font-medium text-neutral-500 uppercase">Referente</label>
+                    <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.contactPerson') }}</label>
                     <p class="text-neutral-900">{{ getClientFullName(order) }}</p>
                   </div>
                   <div>
@@ -413,7 +415,7 @@ onMounted(() => {
                 </div>
 
                 <PrimeButton
-                  label="Vai alla scheda cliente"
+                  :label="$t('admin.orders.detail.goToClientProfile')"
                   icon="pi pi-external-link"
                   severity="primary"
                   outlined
@@ -424,24 +426,24 @@ onMounted(() => {
 
               <!-- Billing Info -->
               <div class="space-y-4">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-4">Dati Fatturazione</h4>
-                
+                <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.orders.detail.billingData') }}</h4>
+
                 <div v-if="order.billing_snapshot" class="space-y-3">
                   <div>
-                    <label class="text-xs font-medium text-neutral-500 uppercase">Ragione Sociale</label>
+                    <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.companyName') }}</label>
                     <p class="text-neutral-900">{{ order.billing_snapshot.company_name }}</p>
                   </div>
                   <div>
-                    <label class="text-xs font-medium text-neutral-500 uppercase">Partita IVA</label>
+                    <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.vatNumber') }}</label>
                     <p class="text-neutral-900">{{ formatVatNumber(order.billing_snapshot.vat_number) }}</p>
                   </div>
                   <div>
-                    <label class="text-xs font-medium text-neutral-500 uppercase">Indirizzo</label>
+                    <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.address') }}</label>
                     <p class="text-neutral-900">{{ formatBillingAddress(order) }}</p>
                   </div>
                   <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <label class="text-xs font-medium text-neutral-500 uppercase">Codice SDI</label>
+                      <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.sdiCode') }}</label>
                       <p class="text-neutral-900">{{ order.billing_snapshot.sdi_code || '-' }}</p>
                     </div>
                     <div>
@@ -451,24 +453,24 @@ onMounted(() => {
                   </div>
                 </div>
                 <div v-else class="text-neutral-500 italic">
-                  Dati di fatturazione non disponibili
+                  {{ $t('admin.orders.detail.billingDataNotAvailable') }}
                 </div>
               </div>
             </div>
             <div v-else class="text-center py-12 text-neutral-500">
-              Dati cliente non disponibili
+              {{ $t('admin.orders.detail.clientDataNotAvailable') }}
             </div>
           </div>
         </PrimeTabPanel>
 
         <!-- Tab: Pagamento -->
-        <PrimeTabPanel value="2" header="Pagamento">
+        <PrimeTabPanel value="2" :header="$t('admin.orders.detail.tabs.payment')">
           <div class="pt-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Transaction Info -->
               <div class="space-y-4">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-4">Transazione</h4>
-                
+                <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.orders.detail.transaction') }}</h4>
+
                 <div v-if="order.transaction" class="space-y-3">
                   <div>
                     <label class="text-xs font-medium text-neutral-500 uppercase">Payment Intent ID</label>
@@ -482,44 +484,44 @@ onMounted(() => {
                         text
                         rounded
                         size="small"
-                        v-tooltip.top="'Apri su Stripe'"
+                        v-tooltip.top="$t('admin.orders.detail.openOnStripe')"
                         @click="handleOpenStripe"
                       />
                     </div>
                   </div>
-                  
+
                   <div v-if="order.transaction.stripe_charge_id">
                     <label class="text-xs font-medium text-neutral-500 uppercase">Charge ID</label>
                     <code class="text-sm text-neutral-900 bg-neutral-100 px-2 py-1 rounded block">
                       {{ order.transaction.stripe_charge_id }}
                     </code>
                   </div>
-                  
+
                   <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <label class="text-xs font-medium text-neutral-500 uppercase">Tipo</label>
+                      <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.columns.type') }}</label>
                       <p class="text-neutral-900">
-                        {{ order.transaction.payment_type === 'card' ? 'Carta di Credito' : 'SEPA Direct Debit' }}
+                        {{ order.transaction.payment_type === 'card' ? $t('admin.orders.detail.creditCard') : 'SEPA Direct Debit' }}
                       </p>
                     </div>
                     <div>
-                      <label class="text-xs font-medium text-neutral-500 uppercase">Stato</label>
-                      <PrimeTag 
+                      <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.list.table.headers.status') }}</label>
+                      <PrimeTag
                         :value="order.transaction.status"
                         :severity="order.transaction.status === 'succeeded' ? 'success' : 'secondary'"
                       />
                     </div>
                   </div>
-                  
+
                   <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <label class="text-xs font-medium text-neutral-500 uppercase">Importo</label>
+                      <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.amount') }}</label>
                       <p class="text-neutral-900 font-semibold">
                         {{ formatCurrency(order.transaction.amount) }}
                       </p>
                     </div>
                     <div>
-                      <label class="text-xs font-medium text-neutral-500 uppercase">Data Elaborazione</label>
+                      <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.processingDate') }}</label>
                       <p class="text-neutral-900">
                         {{ order.transaction.processed_at ? formatDateTime(order.transaction.processed_at) : '-' }}
                       </p>
@@ -528,42 +530,42 @@ onMounted(() => {
                 </div>
                 <div v-else class="text-center py-8 bg-neutral-50 rounded-lg">
                   <i class="pi pi-info-circle text-3xl text-neutral-400 mb-2"></i>
-                  <p class="text-neutral-600">Nessuna transazione associata</p>
+                  <p class="text-neutral-600">{{ $t('admin.orders.detail.noTransaction') }}</p>
                   <p class="text-sm text-neutral-500">
-                    {{ order.type === 'free_trial' ? 'Ordine gratuito (prova gratuita)' : 'Pagamento non ancora elaborato' }}
+                    {{ order.type === 'free_trial' ? $t('admin.orders.detail.freeTrialOrder') : $t('admin.orders.detail.paymentNotProcessed') }}
                   </p>
                 </div>
               </div>
 
               <!-- Invoice Info -->
               <div class="space-y-4">
-                <h4 class="text-lg font-semibold text-neutral-900 mb-4">Fattura</h4>
-                
+                <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.orders.detail.cards.invoice') }}</h4>
+
                 <div v-if="order.invoice" class="space-y-3">
                   <div class="p-4 bg-success-light rounded-lg flex items-center gap-3">
                     <i class="pi pi-file-check text-2xl text-success"></i>
                     <div>
-                      <div class="font-semibold text-success-dark">Fattura Emessa</div>
+                      <div class="font-semibold text-success-dark">{{ $t('admin.orders.detail.invoiceIssued') }}</div>
                       <div class="text-sm text-neutral-700">{{ order.invoice.invoice_number }}</div>
                     </div>
                   </div>
-                  
+
                   <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <label class="text-xs font-medium text-neutral-500 uppercase">Data Emissione</label>
+                      <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.issueDate') }}</label>
                       <p class="text-neutral-900">{{ formatDateTime(order.invoice.issued_at) }}</p>
                     </div>
                     <div>
-                      <label class="text-xs font-medium text-neutral-500 uppercase">Stato SDI</label>
-                      <PrimeTag 
+                      <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.sdiStatus') }}</label>
+                      <PrimeTag
                         :value="order.invoice.sdi_status || 'N/A'"
                         :severity="order.invoice.sdi_status === 'delivered' ? 'success' : 'info'"
                       />
                     </div>
                   </div>
-                  
+
                   <div v-if="order.invoice.fatture_cloud_id">
-                    <label class="text-xs font-medium text-neutral-500 uppercase">ID Fatture in Cloud</label>
+                    <label class="text-xs font-medium text-neutral-500 uppercase">{{ $t('admin.orders.detail.fattureCloudId') }}</label>
                     <code class="text-sm text-neutral-900 bg-neutral-100 px-2 py-1 rounded block">
                       {{ order.invoice.fatture_cloud_id }}
                     </code>
@@ -571,7 +573,7 @@ onMounted(() => {
 
                   <div class="pt-2">
                     <PrimeButton
-                      label="Scarica PDF"
+                      :label="$t('admin.orders.detail.downloadPdf')"
                       icon="pi pi-download"
                       severity="primary"
                       outlined
@@ -582,9 +584,9 @@ onMounted(() => {
                 </div>
                 <div v-else class="text-center py-8 bg-neutral-50 rounded-lg">
                   <i class="pi pi-file text-3xl text-neutral-400 mb-2"></i>
-                  <p class="text-neutral-600">Fattura non ancora emessa</p>
+                  <p class="text-neutral-600">{{ $t('admin.orders.detail.invoiceNotYetIssued') }}</p>
                   <p class="text-sm text-neutral-500">
-                    La fattura verrà emessa al completamento del pagamento
+                    {{ $t('admin.orders.detail.invoiceWillBeIssued') }}
                   </p>
                 </div>
               </div>
@@ -593,7 +595,7 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Timeline -->
-        <PrimeTabPanel value="3" header="Timeline">
+        <PrimeTabPanel value="3" :header="$t('admin.orders.detail.tabs.timeline')">
           <div class="pt-4">
             <div class="max-w-2xl">
               <!-- Order Created -->
@@ -605,10 +607,10 @@ onMounted(() => {
                   <div class="w-0.5 flex-1 bg-neutral-200 mt-2"></div>
                 </div>
                 <div class="pb-2">
-                  <p class="font-medium text-neutral-900">Ordine creato</p>
+                  <p class="font-medium text-neutral-900">{{ $t('admin.orders.detail.timeline.orderCreated') }}</p>
                   <p class="text-sm text-neutral-600">{{ formatDateTime(order.created_at) }}</p>
                   <p class="text-sm text-neutral-500 mt-1">
-                    Ordine {{ order.order_number }} - {{ formatType(order.type) }}
+                    {{ $t('admin.orders.detail.timeline.orderLabel') }} {{ order.order_number }} - {{ formatType(order.type) }}
                   </p>
                 </div>
               </div>
@@ -622,7 +624,7 @@ onMounted(() => {
                   <div class="w-0.5 flex-1 bg-neutral-200 mt-2"></div>
                 </div>
                 <div class="pb-2">
-                  <p class="font-medium text-neutral-900">Pagamento completato</p>
+                  <p class="font-medium text-neutral-900">{{ $t('admin.orders.detail.timeline.paymentCompleted') }}</p>
                   <p class="text-sm text-neutral-600">{{ formatDateTime(order.paid_at) }}</p>
                   <p class="text-sm text-neutral-500 mt-1">
                     {{ formatPaymentMethod(order.payment_method) }} - {{ formatCurrency(order.total) }}
@@ -639,7 +641,7 @@ onMounted(() => {
                   <div class="w-0.5 flex-1 bg-neutral-200 mt-2"></div>
                 </div>
                 <div class="pb-2">
-                  <p class="font-medium text-neutral-900">Fattura emessa</p>
+                  <p class="font-medium text-neutral-900">{{ $t('admin.orders.detail.timeline.invoiceIssued') }}</p>
                   <p class="text-sm text-neutral-600">{{ formatDateTime(order.invoice.issued_at) }}</p>
                   <p class="text-sm text-neutral-500 mt-1">
                     {{ order.invoice.invoice_number }}
@@ -655,10 +657,10 @@ onMounted(() => {
                   </div>
                 </div>
                 <div>
-                  <p class="font-medium text-neutral-900">Lead sbloccati</p>
+                  <p class="font-medium text-neutral-900">{{ $t('admin.orders.detail.timeline.leadsUnlocked') }}</p>
                   <p class="text-sm text-neutral-600">{{ formatDateTime(order.paid_at) }}</p>
                   <p class="text-sm text-neutral-500 mt-1">
-                    {{ totalLeads }} lead disponibili nel portafoglio cliente
+                    {{ totalLeads }} {{ $t('admin.orders.detail.timeline.leadsAvailableInPortfolio') }}
                   </p>
                 </div>
               </div>
@@ -672,7 +674,7 @@ onMounted(() => {
                 </div>
                 <div>
                   <p class="font-medium text-neutral-900">
-                    {{ order.status === 'failed' ? 'Pagamento fallito' : 'Ordine annullato' }}
+                    {{ order.status === 'failed' ? $t('admin.orders.detail.timeline.paymentFailed') : $t('admin.orders.detail.timeline.orderCancelled') }}
                   </p>
                   <p class="text-sm text-neutral-600">{{ formatDateTime(order.updated_at) }}</p>
                 </div>
@@ -686,9 +688,9 @@ onMounted(() => {
                   </div>
                 </div>
                 <div>
-                  <p class="font-medium text-neutral-900">In attesa di pagamento</p>
+                  <p class="font-medium text-neutral-900">{{ $t('admin.orders.detail.timeline.awaitingPayment') }}</p>
                   <p class="text-sm text-neutral-500 mt-1">
-                    L'ordine è in attesa del completamento del pagamento
+                    {{ $t('admin.orders.detail.timeline.awaitingPaymentDescription') }}
                   </p>
                 </div>
               </div>

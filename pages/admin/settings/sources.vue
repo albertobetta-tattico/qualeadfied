@@ -10,18 +10,18 @@
           rounded
           class="back-button"
           @click="navigateBack"
-          v-tooltip.top="'Torna a Impostazioni'"
+          v-tooltip.top="$t('admin.settings.sources.backToSettings')"
         />
         <div>
-          <h1 class="page-title">API & Sorgenti Lead</h1>
+          <h1 class="page-title">{{ $t('admin.settings.sources.title') }}</h1>
           <p class="page-subtitle">
-            Gestisci le fonti di acquisizione lead e le relative API key
+            {{ $t('admin.settings.sources.subtitle') }}
           </p>
         </div>
       </div>
       <div class="page-header-actions">
         <PrimeButton
-          label="Nuova Sorgente"
+          :label="$t('admin.settings.sources.newSource')"
           icon="pi pi-plus"
           @click="openCreateDialog"
         />
@@ -36,7 +36,7 @@
         </div>
         <div class="stat-content">
           <span class="stat-value">{{ sources.length }}</span>
-          <span class="stat-label">Sorgenti Totali</span>
+          <span class="stat-label">{{ $t('admin.settings.sources.stats.totalSources') }}</span>
         </div>
       </div>
 
@@ -46,7 +46,7 @@
         </div>
         <div class="stat-content">
           <span class="stat-value">{{ activeSources.length }}</span>
-          <span class="stat-label">Attive</span>
+          <span class="stat-label">{{ $t('admin.settings.sources.stats.active') }}</span>
         </div>
       </div>
 
@@ -56,7 +56,7 @@
         </div>
         <div class="stat-content">
           <span class="stat-value">{{ inactiveSources.length }}</span>
-          <span class="stat-label">Inattive</span>
+          <span class="stat-label">{{ $t('admin.settings.sources.stats.inactive') }}</span>
         </div>
       </div>
 
@@ -66,7 +66,7 @@
         </div>
         <div class="stat-content">
           <span class="stat-value">{{ sourcesWithApiKey.length }}</span>
-          <span class="stat-label">Con API Key</span>
+          <span class="stat-label">{{ $t('admin.settings.sources.stats.withApiKey') }}</span>
         </div>
       </div>
     </div>
@@ -76,8 +76,7 @@
       <div class="flex items-center gap-2">
         <i class="pi pi-info-circle"></i>
         <span>
-          Le API key permettono l'inserimento automatico di lead da sistemi esterni (Meta Ads, Google Ads, Zapier, ecc.).
-          Ogni sorgente può avere una propria API key univoca.
+          {{ $t('admin.settings.sources.infoBanner') }}
         </span>
       </div>
     </PrimeMessage>
@@ -99,10 +98,10 @@
               <div class="empty-icon">
                 <i class="pi pi-database"></i>
               </div>
-              <h3>Nessuna sorgente configurata</h3>
-              <p>Crea la prima sorgente per iniziare a ricevere lead via API</p>
+              <h3>{{ $t('admin.settings.sources.emptyState.title') }}</h3>
+              <p>{{ $t('admin.settings.sources.emptyState.description') }}</p>
               <PrimeButton
-                label="Crea Sorgente"
+                :label="$t('admin.settings.sources.emptyState.createButton')"
                 icon="pi pi-plus"
                 @click="openCreateDialog"
               />
@@ -110,7 +109,7 @@
           </template>
 
           <!-- Nome -->
-          <PrimeColumn field="name" header="Nome" :sortable="true" style="min-width: 200px">
+          <PrimeColumn field="name" :header="$t('admin.settings.sources.headers.name')" :sortable="true" style="min-width: 200px">
             <template #body="{ data }">
               <div class="source-name">
                 <div class="source-icon" :class="data.is_active ? 'active' : 'inactive'">
@@ -125,14 +124,14 @@
           </PrimeColumn>
 
           <!-- Descrizione -->
-          <PrimeColumn field="description" header="Descrizione" style="min-width: 250px">
+          <PrimeColumn field="description" :header="$t('admin.settings.sources.headers.description')" style="min-width: 250px">
             <template #body="{ data }">
               <span class="text-gray-600">{{ data.description || '-' }}</span>
             </template>
           </PrimeColumn>
 
           <!-- API Key -->
-          <PrimeColumn header="API Key" style="min-width: 300px">
+          <PrimeColumn :header="$t('admin.settings.sources.headers.apiKey')" style="min-width: 300px">
             <template #body="{ data }">
               <div v-if="data.api_key" class="api-key-field">
                 <code class="api-key-code">
@@ -145,7 +144,7 @@
                     rounded
                     size="small"
                     @click="toggleApiKeyVisibility(data.id)"
-                    v-tooltip.top="showApiKey[data.id] ? 'Nascondi' : 'Mostra'"
+                    v-tooltip.top="showApiKey[data.id] ? $t('admin.settings.sources.tooltip.hide') : $t('admin.settings.sources.tooltip.show')"
                   />
                   <PrimeButton
                     icon="pi pi-copy"
@@ -153,7 +152,7 @@
                     rounded
                     size="small"
                     @click="copyApiKey(data.api_key)"
-                    v-tooltip.top="'Copia'"
+                    v-tooltip.top="$t('admin.settings.sources.tooltip.copy')"
                   />
                   <PrimeButton
                     icon="pi pi-refresh"
@@ -162,26 +161,26 @@
                     size="small"
                     severity="warning"
                     @click="confirmRegenerateKey(data)"
-                    v-tooltip.top="'Rigenera'"
+                    v-tooltip.top="$t('admin.settings.sources.tooltip.regenerate')"
                   />
                 </div>
               </div>
-              <span v-else class="text-gray-400 italic">Non configurata</span>
+              <span v-else class="text-gray-400 italic">{{ $t('admin.settings.sources.apiKeyNotConfigured') }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Lead Count -->
-          <PrimeColumn header="Lead" style="width: 100px">
+          <PrimeColumn :header="$t('admin.settings.sources.headers.leads')" style="width: 100px">
             <template #body="{ data }">
               <PrimeTag :value="getLeadCountBySource(data.id)" rounded />
             </template>
           </PrimeColumn>
 
           <!-- Stato -->
-          <PrimeColumn field="is_active" header="Stato" style="width: 120px">
+          <PrimeColumn field="is_active" :header="$t('admin.settings.sources.headers.status')" style="width: 120px">
             <template #body="{ data }">
               <PrimeTag
-                :value="data.is_active ? 'Attiva' : 'Inattiva'"
+                :value="data.is_active ? $t('admin.settings.sources.statusActive') : $t('admin.settings.sources.statusInactive')"
                 :severity="data.is_active ? 'success' : 'secondary'"
                 :icon="data.is_active ? 'pi pi-check' : 'pi pi-times'"
               />
@@ -189,14 +188,14 @@
           </PrimeColumn>
 
           <!-- Data Creazione -->
-          <PrimeColumn field="created_at" header="Creata" :sortable="true" style="width: 130px">
+          <PrimeColumn field="created_at" :header="$t('admin.settings.sources.headers.created')" :sortable="true" style="width: 130px">
             <template #body="{ data }">
               <span class="text-gray-600">{{ formatDate(data.created_at) }}</span>
             </template>
           </PrimeColumn>
 
           <!-- Azioni -->
-          <PrimeColumn header="Azioni" style="width: 120px" frozen alignFrozen="right">
+          <PrimeColumn :header="$t('admin.settings.sources.headers.actions')" style="width: 120px" frozen alignFrozen="right">
             <template #body="{ data }">
               <div class="actions-cell">
                 <PrimeButton
@@ -205,7 +204,7 @@
                   rounded
                   severity="secondary"
                   @click="openEditDialog(data)"
-                  v-tooltip.top="'Modifica'"
+                  v-tooltip.top="$t('admin.settings.sources.tooltip.edit')"
                 />
                 <PrimeButton
                   icon="pi pi-trash"
@@ -214,7 +213,7 @@
                   severity="danger"
                   :disabled="!canDeleteSource(data)"
                   @click="confirmDeleteSource(data)"
-                  v-tooltip.top="canDeleteSource(data) ? 'Elimina' : 'Ha lead associati'"
+                  v-tooltip.top="canDeleteSource(data) ? $t('admin.settings.sources.tooltip.delete') : $t('admin.settings.sources.tooltip.hasLeads')"
                 />
               </div>
             </template>
@@ -228,24 +227,24 @@
       <template #title>
         <div class="flex items-center gap-2">
           <i class="pi pi-book"></i>
-          <span>Documentazione API</span>
+          <span>{{ $t('admin.settings.sources.apiDocs.title') }}</span>
         </div>
       </template>
       <template #content>
         <div class="api-docs">
-          <h4 class="text-lg font-semibold mb-3">Endpoint per inserimento lead</h4>
+          <h4 class="text-lg font-semibold mb-3">{{ $t('admin.settings.sources.apiDocs.endpoint') }}</h4>
 
           <div class="code-block">
             <code>POST /api/external/leads</code>
           </div>
 
-          <h4 class="text-lg font-semibold mt-6 mb-3">Headers richiesti</h4>
+          <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.requiredHeaders') }}</h4>
           <div class="code-block">
             <pre>Content-Type: application/json
 X-API-Key: {api_key}</pre>
           </div>
 
-          <h4 class="text-lg font-semibold mt-6 mb-3">Payload esempio</h4>
+          <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.examplePayload') }}</h4>
           <div class="code-block">
             <pre>{
   "first_name": "Mario",
@@ -259,7 +258,7 @@ X-API-Key: {api_key}</pre>
 }</pre>
           </div>
 
-          <h4 class="text-lg font-semibold mt-6 mb-3">Risposta successo</h4>
+          <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.successResponse') }}</h4>
           <div class="code-block">
             <pre>{
   "success": true,
@@ -276,7 +275,7 @@ X-API-Key: {api_key}</pre>
     <!-- Create/Edit Dialog -->
     <PrimeDialog
       v-model:visible="dialogVisible"
-      :header="isEditing ? 'Modifica Sorgente' : 'Nuova Sorgente'"
+      :header="isEditing ? $t('admin.settings.sources.dialog.editTitle') : $t('admin.settings.sources.dialog.createTitle')"
       :modal="true"
       :closable="!saving"
       :closeOnEscape="!saving"
@@ -287,12 +286,12 @@ X-API-Key: {api_key}</pre>
         <!-- Nome -->
         <div class="form-group">
           <label for="source-name" class="form-label required">
-            Nome Sorgente
+            {{ $t('admin.settings.sources.dialog.sourceName') }}
           </label>
           <PrimeInputText
             id="source-name"
             v-model="form.name"
-            placeholder="Es. Meta Ads, Google Ads, Sito Web"
+            :placeholder="$t('admin.settings.sources.dialog.sourceNamePlaceholder')"
             class="w-full"
             :class="{ 'p-invalid': errors.name }"
             @blur="validateField('name', form.name)"
@@ -304,12 +303,12 @@ X-API-Key: {api_key}</pre>
         <!-- Slug -->
         <div class="form-group">
           <label for="source-slug" class="form-label required">
-            Slug (identificativo tecnico)
+            {{ $t('admin.settings.sources.dialog.slug') }}
           </label>
           <PrimeInputText
             id="source-slug"
             v-model="form.slug"
-            placeholder="es. meta-ads, google-ads"
+            :placeholder="$t('admin.settings.sources.dialog.slugPlaceholder')"
             class="w-full"
             :class="{ 'p-invalid': errors.slug }"
             :disabled="isEditing"
@@ -317,19 +316,19 @@ X-API-Key: {api_key}</pre>
           />
           <small v-if="errors.slug" class="p-error">{{ errors.slug }}</small>
           <small v-else class="text-gray-500">
-            Lo slug viene usato come identificativo univoco e non può essere modificato dopo la creazione
+            {{ $t('admin.settings.sources.dialog.slugHint') }}
           </small>
         </div>
 
         <!-- Descrizione -->
         <div class="form-group">
           <label for="source-description" class="form-label">
-            Descrizione
+            {{ $t('admin.settings.sources.dialog.description') }}
           </label>
           <PrimeTextarea
             id="source-description"
             v-model="form.description"
-            placeholder="Descrizione opzionale della sorgente"
+            :placeholder="$t('admin.settings.sources.dialog.descriptionPlaceholder')"
             class="w-full"
             rows="3"
             autoResize
@@ -341,11 +340,11 @@ X-API-Key: {api_key}</pre>
           <div class="flex items-center gap-3">
             <PrimeToggleSwitch v-model="form.is_active" inputId="source-active" />
             <label for="source-active" class="form-label mb-0 cursor-pointer">
-              Sorgente attiva
+              {{ $t('admin.settings.sources.dialog.activeSource') }}
             </label>
           </div>
           <small class="text-gray-500 block mt-1">
-            Le sorgenti inattive non possono ricevere nuovi lead via API
+            {{ $t('admin.settings.sources.dialog.activeSourceHint') }}
           </small>
         </div>
 
@@ -354,11 +353,11 @@ X-API-Key: {api_key}</pre>
           <div class="flex items-center gap-3">
             <PrimeCheckbox v-model="generateApiKey" inputId="generate-api-key" :binary="true" />
             <label for="generate-api-key" class="form-label mb-0 cursor-pointer">
-              Genera API Key
+              {{ $t('admin.settings.sources.dialog.generateApiKey') }}
             </label>
           </div>
           <small class="text-gray-500 block mt-1">
-            L'API key sarà mostrata una sola volta dopo la creazione
+            {{ $t('admin.settings.sources.dialog.generateApiKeyHint') }}
           </small>
         </div>
       </div>
@@ -366,14 +365,14 @@ X-API-Key: {api_key}</pre>
       <template #footer>
         <div class="flex justify-end gap-2">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.settings.sources.dialog.cancel')"
             severity="secondary"
             text
             @click="closeDialog"
             :disabled="saving"
           />
           <PrimeButton
-            :label="isEditing ? 'Salva Modifiche' : 'Crea Sorgente'"
+            :label="isEditing ? $t('admin.settings.sources.dialog.saveChanges') : $t('admin.settings.sources.dialog.createSource')"
             :icon="saving ? 'pi pi-spinner pi-spin' : 'pi pi-check'"
             :loading="saving"
             @click="saveSource"
@@ -385,7 +384,7 @@ X-API-Key: {api_key}</pre>
     <!-- API Key Display Dialog -->
     <PrimeDialog
       v-model:visible="apiKeyDialogVisible"
-      header="API Key Generata"
+      :header="$t('admin.settings.sources.apiKeyDialog.title')"
       :modal="true"
       :closable="true"
       :style="{ width: '550px' }"
@@ -393,14 +392,14 @@ X-API-Key: {api_key}</pre>
       <div class="api-key-display">
         <PrimeMessage severity="warn" :closable="false" class="mb-4">
           <i class="pi pi-exclamation-triangle mr-2"></i>
-          Copia questa API key ora! Non sarà più visualizzabile per intero.
+          {{ $t('admin.settings.sources.apiKeyDialog.warning') }}
         </PrimeMessage>
 
         <div class="api-key-box">
           <code class="api-key-full">{{ newApiKey }}</code>
           <PrimeButton
             icon="pi pi-copy"
-            label="Copia"
+            :label="$t('admin.settings.sources.tooltip.copy')"
             severity="secondary"
             @click="copyApiKey(newApiKey)"
           />
@@ -409,7 +408,7 @@ X-API-Key: {api_key}</pre>
 
       <template #footer>
         <PrimeButton
-          label="Ho copiato la chiave"
+          :label="$t('admin.settings.sources.apiKeyDialog.copied')"
           icon="pi pi-check"
           @click="apiKeyDialogVisible = false"
         />
@@ -433,6 +432,9 @@ definePageMeta({
   layout: 'admin',
   middleware: ['auth']
 })
+
+// i18n
+const { t } = useI18n()
 
 // Store
 const leadStore = useLeadStore()
@@ -512,9 +514,9 @@ const toggleApiKeyVisibility = (id: number) => {
 const copyApiKey = async (key: string) => {
   try {
     await navigator.clipboard.writeText(key)
-    showSuccess('API key copiata negli appunti')
+    showSuccess(t('admin.settings.sources.toast.apiKeyCopied'))
   } catch {
-    showError('Impossibile copiare l\'API key')
+    showError(t('admin.settings.sources.toast.apiKeyCopyError'))
   }
 }
 
@@ -576,7 +578,7 @@ const saveSource = async () => {
   }
 
   if (!isValid) {
-    showError('Correggi gli errori nel form')
+    showError(t('admin.settings.toast.formError'))
     return
   }
 
@@ -592,10 +594,10 @@ const saveSource = async () => {
       })
 
       if (result) {
-        showSuccess('Sorgente aggiornata con successo')
+        showSuccess(t('admin.settings.sources.toast.sourceUpdated'))
         closeDialog()
       } else {
-        showError(leadStore.error || 'Errore durante l\'aggiornamento')
+        showError(leadStore.error || t('admin.settings.sources.toast.updateError'))
       }
     } else {
       // Create
@@ -607,7 +609,7 @@ const saveSource = async () => {
       })
 
       if (result) {
-        showSuccess('Sorgente creata con successo')
+        showSuccess(t('admin.settings.sources.toast.sourceCreated'))
         closeDialog()
 
         // Se è stata generata una API key, mostrala
@@ -616,7 +618,7 @@ const saveSource = async () => {
           apiKeyDialogVisible.value = true
         }
       } else {
-        showError(leadStore.error || 'Errore durante la creazione')
+        showError(leadStore.error || t('admin.settings.sources.toast.createError'))
       }
     }
   } finally {
@@ -626,12 +628,12 @@ const saveSource = async () => {
 
 const confirmRegenerateKey = (source: LeadSource) => {
   confirm.require({
-    message: `Sei sicuro di voler rigenerare l'API key per "${source.name}"? La chiave attuale non sarà più valida.`,
-    header: 'Conferma Rigenerazione',
+    message: t('admin.settings.sources.confirmRegenerate.message', { name: source.name }),
+    header: t('admin.settings.sources.confirmRegenerate.header'),
     icon: 'pi pi-exclamation-triangle',
     acceptClass: 'p-button-warning',
-    acceptLabel: 'Rigenera',
-    rejectLabel: 'Annulla',
+    acceptLabel: t('admin.settings.sources.confirmRegenerate.accept'),
+    rejectLabel: t('admin.settings.sources.confirmRegenerate.reject'),
     accept: async () => {
       saving.value = true
       try {
@@ -639,9 +641,9 @@ const confirmRegenerateKey = (source: LeadSource) => {
         if (newKey) {
           newApiKey.value = newKey
           apiKeyDialogVisible.value = true
-          showSuccess('API key rigenerata con successo')
+          showSuccess(t('admin.settings.sources.toast.apiKeyRegenerated'))
         } else {
-          showError(leadStore.error || 'Errore durante la rigenerazione')
+          showError(leadStore.error || t('admin.settings.sources.toast.regenerateError'))
         }
       } finally {
         saving.value = false
@@ -652,20 +654,20 @@ const confirmRegenerateKey = (source: LeadSource) => {
 
 const confirmDeleteSource = (source: LeadSource) => {
   confirm.require({
-    message: `Sei sicuro di voler eliminare la sorgente "${source.name}"? Questa azione non può essere annullata.`,
-    header: 'Conferma Eliminazione',
+    message: t('admin.settings.sources.confirmDelete.message', { name: source.name }),
+    header: t('admin.settings.sources.confirmDelete.header'),
     icon: 'pi pi-exclamation-triangle',
     acceptClass: 'p-button-danger',
-    acceptLabel: 'Elimina',
-    rejectLabel: 'Annulla',
+    acceptLabel: t('admin.settings.sources.confirmDelete.accept'),
+    rejectLabel: t('admin.settings.sources.confirmDelete.reject'),
     accept: async () => {
       saving.value = true
       try {
         const success = await leadStore.deleteSource(source.id)
         if (success) {
-          showSuccess('Sorgente eliminata con successo')
+          showSuccess(t('admin.settings.sources.toast.sourceDeleted'))
         } else {
-          showError(leadStore.error || 'Errore durante l\'eliminazione')
+          showError(leadStore.error || t('admin.settings.sources.toast.deleteError'))
         }
       } finally {
         saving.value = false

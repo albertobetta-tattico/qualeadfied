@@ -196,6 +196,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
      * Fetch user's leads
      */
     async fetchLeads(): Promise<void> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -272,7 +273,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
         this.leads = response.data
         this.pagination = response.meta
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento lead'
+        this.error = e.data?.message || t('common.errors.loadError')
       } finally {
         this.loading = false
       }
@@ -282,6 +283,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
      * Fetch single lead details
      */
     async fetchLead(id: number): Promise<MyLead | null> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -293,7 +295,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
             this.currentLead = lead
             return lead
           }
-          this.error = 'Lead non trovato'
+          this.error = t('common.errors.notFound')
           return null
         }
 
@@ -306,7 +308,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
         this.currentLead = response.data
         return response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento lead'
+        this.error = e.data?.message || t('common.errors.loadError')
         return null
       } finally {
         this.loading = false
@@ -317,6 +319,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
      * Update lead status/notes
      */
     async updateLead(id: number, data: MyLeadUpdateRequest): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -364,7 +367,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nell\'aggiornamento'
+        this.error = e.data?.message || t('common.errors.updateError')
         return false
       } finally {
         this.saving = false
@@ -375,6 +378,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
      * Export leads to CSV/Excel
      */
     async exportLeads(format: 'csv' | 'excel'): Promise<string | null> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -397,7 +401,7 @@ export const useMyLeadsStore = defineStore('myLeads', {
 
         return response.data.url
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nell\'export'
+        this.error = e.data?.message || t('common.errors.exportError')
         return null
       } finally {
         this.loading = false

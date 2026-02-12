@@ -237,6 +237,7 @@ export const useClientOrdersStore = defineStore('clientOrders', {
      * Fetch orders
      */
     async fetchOrders(): Promise<void> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -297,7 +298,7 @@ export const useClientOrdersStore = defineStore('clientOrders', {
         this.orders = response.data
         this.pagination = response.meta
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento ordini'
+        this.error = e.data?.message || t('common.errors.loadError')
       } finally {
         this.loading = false
       }
@@ -307,6 +308,7 @@ export const useClientOrdersStore = defineStore('clientOrders', {
      * Fetch order details
      */
     async fetchOrder(id: number): Promise<OrderDetail | null> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -316,7 +318,7 @@ export const useClientOrdersStore = defineStore('clientOrders', {
 
           const order = mockOrders.find(o => o.id === id)
           if (!order) {
-            this.error = 'Ordine non trovato'
+            this.error = t('common.errors.notFound')
             return null
           }
 
@@ -339,7 +341,7 @@ export const useClientOrdersStore = defineStore('clientOrders', {
         this.currentOrder = response.data
         return response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento ordine'
+        this.error = e.data?.message || t('common.errors.loadError')
         return null
       } finally {
         this.loading = false
@@ -350,6 +352,7 @@ export const useClientOrdersStore = defineStore('clientOrders', {
      * Download invoice
      */
     async downloadInvoice(orderId: number): Promise<string | null> {
+      const { t } = useI18n()
       this.error = null
 
       try {
@@ -367,7 +370,7 @@ export const useClientOrdersStore = defineStore('clientOrders', {
 
         return response.data.url
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel download fattura'
+        this.error = e.data?.message || t('common.errors.downloadError')
         return null
       }
     },

@@ -10,11 +10,12 @@ import type { Lead, LeadCreateForm, LeadUpdateForm, LeadStatus, Category } from 
  * Validazione campi lead
  */
 export function useLeadValidation() {
+  const { t } = useI18n()
   const errors = reactive<Record<string, string>>({})
 
   const validateRequired = (field: string, value: any, label: string): boolean => {
     if (!value || (typeof value === 'string' && value.trim() === '')) {
-      errors[field] = `${label} è obbligatorio`
+      errors[field] = t('leads.validation.required', { field: label })
       return false
     }
     delete errors[field]
@@ -23,12 +24,12 @@ export function useLeadValidation() {
 
   const validateEmail = (value: string): boolean => {
     if (!value) {
-      errors.email = 'L\'email è obbligatoria'
+      errors.email = t('leads.validation.emailRequired')
       return false
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(value)) {
-      errors.email = 'Formato email non valido'
+      errors.email = t('leads.validation.emailInvalid')
       return false
     }
     delete errors.email
@@ -37,13 +38,13 @@ export function useLeadValidation() {
 
   const validatePhone = (value: string): boolean => {
     if (!value) {
-      errors.phone = 'Il telefono è obbligatorio'
+      errors.phone = t('leads.validation.phoneRequired')
       return false
     }
     // Formato telefono italiano (più permissivo)
     const phoneRegex = /^(\+39)?[\s]?[0-9\s\-\.]{6,15}$/
     if (!phoneRegex.test(value.replace(/[\s\-\.]/g, ''))) {
-      errors.phone = 'Formato telefono non valido'
+      errors.phone = t('leads.validation.phoneInvalid')
       return false
     }
     delete errors.phone
@@ -52,7 +53,7 @@ export function useLeadValidation() {
 
   const validateCategoryId = (value: number | null): boolean => {
     if (!value) {
-      errors.category_id = 'Seleziona una categoria'
+      errors.category_id = t('leads.validation.selectCategory')
       return false
     }
     delete errors.category_id
@@ -61,7 +62,7 @@ export function useLeadValidation() {
 
   const validateProvinceId = (value: number | null): boolean => {
     if (!value) {
-      errors.province_id = 'Seleziona una provincia'
+      errors.province_id = t('leads.validation.selectProvince')
       return false
     }
     delete errors.province_id
@@ -70,7 +71,7 @@ export function useLeadValidation() {
 
   const validateSourceId = (value: number | null): boolean => {
     if (!value) {
-      errors.source_id = 'Seleziona una fonte'
+      errors.source_id = t('leads.validation.selectSource')
       return false
     }
     delete errors.source_id
@@ -79,18 +80,18 @@ export function useLeadValidation() {
 
   const validateGeneratedAt = (value: string): boolean => {
     if (!value) {
-      errors.generated_at = 'La data di generazione è obbligatoria'
+      errors.generated_at = t('leads.validation.dateRequired')
       return false
     }
     // Verifica che sia una data valida
     const date = new Date(value)
     if (isNaN(date.getTime())) {
-      errors.generated_at = 'Data non valida'
+      errors.generated_at = t('leads.validation.dateInvalid')
       return false
     }
     // Verifica che non sia nel futuro
     if (date > new Date()) {
-      errors.generated_at = 'La data non può essere nel futuro'
+      errors.generated_at = t('leads.validation.dateFuture')
       return false
     }
     delete errors.generated_at
@@ -100,9 +101,9 @@ export function useLeadValidation() {
   const validateField = (field: string, value: any): boolean => {
     switch (field) {
       case 'first_name':
-        return validateRequired(field, value, 'Il nome')
+        return validateRequired(field, value, t('common.labels.name'))
       case 'last_name':
-        return validateRequired(field, value, 'Il cognome')
+        return validateRequired(field, value, t('common.labels.lastName'))
       case 'email':
         return validateEmail(value)
       case 'phone':
@@ -123,8 +124,8 @@ export function useLeadValidation() {
   const validateForm = (form: LeadCreateForm | LeadUpdateForm): boolean => {
     let isValid = true
 
-    isValid = validateRequired('first_name', form.first_name, 'Il nome') && isValid
-    isValid = validateRequired('last_name', form.last_name, 'Il cognome') && isValid
+    isValid = validateRequired('first_name', form.first_name, t('common.labels.name')) && isValid
+    isValid = validateRequired('last_name', form.last_name, t('common.labels.lastName')) && isValid
     isValid = validateEmail(form.email) && isValid
     isValid = validatePhone(form.phone) && isValid
     isValid = validateCategoryId(form.category_id) && isValid
@@ -154,6 +155,7 @@ export function useLeadValidation() {
  * Azioni conferma per lead
  */
 export function useLeadActions() {
+  const { t } = useI18n()
   const toast = useToast()
   const confirm = useConfirm()
 
@@ -161,32 +163,32 @@ export function useLeadActions() {
     if (lead.status !== 'free') {
       toast.add({
         severity: 'error',
-        summary: 'Operazione non consentita',
-        detail: 'Non è possibile eliminare un lead già venduto',
+        summary: t('leads.confirm.cannotDelete.summary'),
+        detail: t('leads.confirm.cannotDelete.detail'),
         life: 5000
       })
       return
     }
 
     confirm.require({
-      message: `Sei sicuro di voler eliminare il lead di "${lead.first_name} ${lead.last_name}"? Questa azione non può essere annullata.`,
-      header: 'Conferma Eliminazione',
+      message: t('leads.confirm.delete.message', { name: `${lead.first_name} ${lead.last_name}` }),
+      header: t('leads.confirm.delete.header'),
       icon: 'pi pi-exclamation-triangle',
       acceptClass: 'p-button-danger',
-      acceptLabel: 'Elimina',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('leads.confirm.delete.accept'),
+      rejectLabel: t('leads.confirm.delete.reject'),
       accept: onConfirm
     })
   }
 
   const confirmBulkDelete = (count: number, onConfirm: () => void) => {
     confirm.require({
-      message: `Sei sicuro di voler eliminare ${count} lead selezionati? I lead già venduti verranno ignorati.`,
-      header: 'Conferma Eliminazione Multipla',
+      message: t('leads.confirm.bulkDelete.message', { count }),
+      header: t('leads.confirm.bulkDelete.header'),
       icon: 'pi pi-exclamation-triangle',
       acceptClass: 'p-button-danger',
-      acceptLabel: 'Elimina',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('leads.confirm.bulkDelete.accept'),
+      rejectLabel: t('leads.confirm.bulkDelete.reject'),
       accept: onConfirm
     })
   }
@@ -194,7 +196,7 @@ export function useLeadActions() {
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Operazione completata',
+      summary: t('leads.toast.success'),
       detail: message,
       life: 3000
     })
@@ -203,7 +205,7 @@ export function useLeadActions() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('leads.toast.error'),
       detail: message,
       life: 5000
     })
@@ -212,7 +214,7 @@ export function useLeadActions() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Informazione',
+      summary: t('leads.toast.info'),
       detail: message,
       life: 3000
     })
@@ -221,7 +223,7 @@ export function useLeadActions() {
   const showWarning = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('leads.toast.warning'),
       detail: message,
       life: 4000
     })
@@ -241,12 +243,14 @@ export function useLeadActions() {
  * Formattatori per visualizzazione lead
  */
 export function useLeadFormatters() {
+  const { t } = useI18n()
+
   const formatStatus = (status: LeadStatus): string => {
     const labels: Record<LeadStatus, string> = {
-      free: 'Disponibile',
-      sold_exclusive: 'Venduto Esclusivo',
-      sold_shared: 'Condiviso',
-      exhausted: 'Esaurito'
+      free: t('leads.leadStatus.free'),
+      sold_exclusive: t('leads.leadStatus.soldExclusive'),
+      sold_shared: t('leads.leadStatus.soldShared'),
+      exhausted: t('leads.leadStatus.exhausted')
     }
     return labels[status] || status
   }
@@ -272,9 +276,9 @@ export function useLeadFormatters() {
   }
 
   const formatSharesDisplay = (lead: Lead, category?: Category): string => {
-    if (lead.status === 'free') return 'Disponibile'
-    if (lead.status === 'sold_exclusive') return 'Esclusivo'
-    
+    if (lead.status === 'free') return t('leads.leadStatus.free')
+    if (lead.status === 'sold_exclusive') return t('leads.acquisitionType.exclusive')
+
     const maxShares = category?.max_shares || 3
     return `${lead.current_shares}/${maxShares}`
   }
@@ -402,11 +406,12 @@ export function useLeadForm(initialData?: Lead) {
  * Validazione sorgenti lead
  */
 export function useLeadSourceValidation() {
+  const { t } = useI18n()
   const errors = reactive<Record<string, string>>({})
 
   const validateName = (value: string): boolean => {
     if (!value || value.trim().length < 2) {
-      errors.name = 'Il nome deve avere almeno 2 caratteri'
+      errors.name = t('leads.validation.nameMinLength')
       return false
     }
     delete errors.name
@@ -415,13 +420,13 @@ export function useLeadSourceValidation() {
 
   const validateSlug = (value: string): boolean => {
     if (!value || value.trim().length < 2) {
-      errors.slug = 'Lo slug deve avere almeno 2 caratteri'
+      errors.slug = t('leads.validation.slugMinLength')
       return false
     }
     // Slug deve contenere solo lettere minuscole, numeri e trattini
     const slugRegex = /^[a-z0-9-]+$/
     if (!slugRegex.test(value)) {
-      errors.slug = 'Lo slug può contenere solo lettere minuscole, numeri e trattini'
+      errors.slug = t('leads.validation.slugFormat')
       return false
     }
     delete errors.slug

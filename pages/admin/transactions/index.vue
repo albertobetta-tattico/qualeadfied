@@ -10,16 +10,18 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const transactionStore = useTransactionStore()
-const { 
-  formatStatus, 
+const {
+  formatStatus,
   getStatusSeverity,
   getStatusIcon,
   formatPaymentType,
   getPaymentTypeIcon,
   getPaymentTypeColor,
-  formatDate, 
+  formatDate,
   formatDateTime,
   formatCurrency,
   formatPaymentIntentShort,
@@ -172,13 +174,13 @@ onUnmounted(() => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Transazioni</h1>
-        <p class="page-subtitle">Log completo delle transazioni Stripe</p>
+        <h1 class="page-title">{{ $t('admin.transactions.list.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.transactions.list.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
-        <PrimeButton 
-          label="Export" 
-          icon="pi pi-download" 
+        <PrimeButton
+          :label="$t('admin.transactions.list.actions.export')"
+          icon="pi pi-download"
           severity="secondary"
           outlined
           @click="exportTransactions"
@@ -193,31 +195,31 @@ onUnmounted(() => {
           <i class="pi pi-credit-card"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.total_transactions || 0 }}</div>
-        <div class="kpi-card-label">Transazioni Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.transactions.list.kpis.totalTransactions') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon success">
           <i class="pi pi-euro"></i>
         </div>
         <div class="kpi-card-value">{{ formatCurrency(stats?.successful_volume || 0) }}</div>
-        <div class="kpi-card-label">Volume Completato</div>
+        <div class="kpi-card-label">{{ $t('admin.transactions.list.kpis.completedVolume') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon info">
           <i class="pi pi-check-circle"></i>
         </div>
         <div class="kpi-card-value">{{ successRateFormatted }}</div>
-        <div class="kpi-card-label">Tasso di Successo</div>
+        <div class="kpi-card-label">{{ $t('admin.transactions.list.kpis.successRate') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon warning">
           <i class="pi pi-clock"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.pending_count || 0 }}</div>
-        <div class="kpi-card-label">In Attesa/Elaborazione</div>
+        <div class="kpi-card-label">{{ $t('admin.transactions.list.kpis.pendingProcessing') }}</div>
       </div>
     </div>
 
@@ -230,7 +232,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per Payment Intent, ordine, cliente..."
+              :placeholder="$t('admin.transactions.list.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -240,16 +242,16 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('admin.transactions.list.filters.hideFilters') : $t('admin.transactions.list.filters.showFilters')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('admin.transactions.list.filters.clearFilters')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -265,13 +267,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Status Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Stato</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.transactions.list.filters.status') }}</label>
               <PrimeSelect
                 v-model="statusFilter"
                 :options="statusOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona stato"
+                :placeholder="$t('admin.transactions.list.filters.selectStatus')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -279,13 +281,13 @@ onUnmounted(() => {
 
             <!-- Payment Type Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Tipo Pagamento</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.transactions.list.filters.paymentType') }}</label>
               <PrimeSelect
                 v-model="paymentTypeFilter"
                 :options="paymentTypeOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona tipo"
+                :placeholder="$t('admin.transactions.list.filters.selectType')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -293,11 +295,11 @@ onUnmounted(() => {
 
             <!-- Date From -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data Da</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.transactions.list.filters.dateFrom') }}</label>
               <PrimeDatePicker
                 v-model="dateFromFilter"
                 dateFormat="dd/mm/yy"
-                placeholder="Seleziona data"
+                :placeholder="$t('admin.transactions.list.filters.selectDate')"
                 class="w-full"
                 showIcon
                 @date-select="applyFilters"
@@ -306,11 +308,11 @@ onUnmounted(() => {
 
             <!-- Date To -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data A</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.transactions.list.filters.dateTo') }}</label>
               <PrimeDatePicker
                 v-model="dateToFilter"
                 dateFormat="dd/mm/yy"
-                placeholder="Seleziona data"
+                :placeholder="$t('admin.transactions.list.filters.selectDate')"
                 class="w-full"
                 showIcon
                 @date-select="applyFilters"
@@ -319,7 +321,7 @@ onUnmounted(() => {
 
             <!-- Amount Min -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Importo Min (€)</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.transactions.list.filters.amountMin') }}</label>
               <PrimeInputNumber
                 v-model="amountMinFilter"
                 mode="currency"
@@ -333,7 +335,7 @@ onUnmounted(() => {
 
             <!-- Amount Max -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Importo Max (€)</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.transactions.list.filters.amountMax') }}</label>
               <PrimeInputNumber
                 v-model="amountMaxFilter"
                 mode="currency"
@@ -348,7 +350,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end md:col-span-2">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('admin.transactions.list.filters.applyFilters')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -377,7 +379,7 @@ onUnmounted(() => {
         removableSort
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} transazioni"
+        :currentPageReportTemplate="$t('admin.transactions.list.table.paginatorTemplate')"
         @page="onPage"
         @sort="onSort"
       >
@@ -385,9 +387,9 @@ onUnmounted(() => {
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-credit-card text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600 mb-4">Nessuna transazione trovata</p>
+            <p class="text-neutral-600 mb-4">{{ $t('admin.transactions.list.table.empty') }}</p>
             <p class="text-sm text-neutral-500">
-              Le transazioni verranno visualizzate qui quando i clienti effettueranno pagamenti
+              {{ $t('admin.transactions.list.table.emptySubtext') }}
             </p>
           </div>
         </template>
@@ -396,7 +398,7 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento transazioni...</span>
+            <span class="text-neutral-600">{{ $t('admin.transactions.list.table.loading') }}</span>
           </div>
         </template>
 
@@ -404,10 +406,10 @@ onUnmounted(() => {
         <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
         <!-- Payment Intent ID -->
-        <PrimeColumn field="stripe_payment_intent_id" header="Payment Intent" sortable style="min-width: 180px">
+        <PrimeColumn field="stripe_payment_intent_id" :header="$t('admin.transactions.list.table.headers.paymentIntent')" sortable style="min-width: 180px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
-              <code 
+              <code
                 class="font-mono text-xs text-primary-700 bg-primary-50 px-2 py-1 rounded cursor-pointer hover:bg-primary-100"
                 @click="navigateToDetail(data)"
                 v-tooltip.top="data.stripe_payment_intent_id"
@@ -421,7 +423,7 @@ onUnmounted(() => {
                 rounded
                 size="small"
                 class="p-0 w-6 h-6"
-                v-tooltip.top="'Copia ID'"
+                v-tooltip.top="$t('admin.transactions.list.tooltip.copyId')"
                 @click.stop="handleCopyPaymentIntent(data)"
               />
             </div>
@@ -429,9 +431,9 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Order -->
-        <PrimeColumn field="order.order_number" header="Ordine" style="min-width: 140px">
+        <PrimeColumn field="order.order_number" :header="$t('admin.transactions.list.table.headers.order')" style="min-width: 140px">
           <template #body="{ data }">
-            <span 
+            <span
               v-if="data.order"
               class="font-mono text-sm text-primary-600 cursor-pointer hover:underline"
               @click="navigateToOrder(data)"
@@ -443,7 +445,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Client -->
-        <PrimeColumn field="client.company_name" header="Cliente" sortable style="min-width: 200px">
+        <PrimeColumn field="client.company_name" :header="$t('admin.transactions.list.table.headers.client')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div v-if="data.client" class="cursor-pointer" @click="navigateToClient(data)">
               <div class="font-medium text-neutral-900 hover:text-primary-600">{{ data.client.company_name }}</div>
@@ -454,11 +456,11 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Payment Type -->
-        <PrimeColumn field="payment_type" header="Tipo" style="min-width: 140px">
+        <PrimeColumn field="payment_type" :header="$t('admin.transactions.list.table.headers.type')" style="min-width: 140px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
-              <i 
-                class="pi" 
+              <i
+                class="pi"
                 :class="[getPaymentTypeIcon(data.payment_type), getPaymentTypeColor(data.payment_type)]"
               ></i>
               <span class="text-neutral-700">{{ formatPaymentType(data.payment_type) }}</span>
@@ -467,16 +469,16 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Amount -->
-        <PrimeColumn field="amount" header="Importo" sortable style="min-width: 120px">
+        <PrimeColumn field="amount" :header="$t('admin.transactions.list.table.headers.amount')" sortable style="min-width: 120px">
           <template #body="{ data }">
             <span class="font-semibold text-neutral-900">{{ formatCurrency(data.amount, data.currency) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Status -->
-        <PrimeColumn field="status" header="Stato" sortable style="min-width: 150px">
+        <PrimeColumn field="status" :header="$t('admin.transactions.list.table.headers.status')" sortable style="min-width: 150px">
           <template #body="{ data }">
-            <PrimeTag 
+            <PrimeTag
               :value="formatStatus(data.status)"
               :severity="getStatusSeverity(data.status)"
             >
@@ -489,10 +491,10 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Failure -->
-        <PrimeColumn field="failure_code" header="Errore" style="min-width: 150px">
+        <PrimeColumn field="failure_code" :header="$t('admin.transactions.list.table.headers.error')" style="min-width: 150px">
           <template #body="{ data }">
-            <span 
-              v-if="data.failure_code" 
+            <span
+              v-if="data.failure_code"
               class="text-danger text-sm"
               v-tooltip.top="data.failure_message"
             >
@@ -503,7 +505,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Date -->
-        <PrimeColumn field="created_at" header="Data" sortable style="min-width: 150px">
+        <PrimeColumn field="created_at" :header="$t('admin.transactions.list.table.headers.date')" sortable style="min-width: 150px">
           <template #body="{ data }">
             <div>
               <div class="text-neutral-700">{{ formatDate(data.created_at) }}</div>
@@ -513,7 +515,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Processed At -->
-        <PrimeColumn field="processed_at" header="Elaborato il" sortable style="min-width: 130px">
+        <PrimeColumn field="processed_at" :header="$t('admin.transactions.list.table.headers.processedAt')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <span v-if="data.processed_at" class="text-success-dark">
               {{ formatDate(data.processed_at) }}
@@ -523,7 +525,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 100px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.transactions.list.table.headers.actions')" style="min-width: 100px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <!-- View Details -->
@@ -533,7 +535,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Visualizza dettagli'"
+                v-tooltip.top="$t('admin.transactions.list.tooltip.viewDetails')"
                 @click="navigateToDetail(data)"
               />
 
@@ -544,7 +546,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Apri su Stripe'"
+                v-tooltip.top="$t('admin.transactions.list.tooltip.openStripe')"
                 @click="handleOpenStripe(data)"
               />
 
@@ -555,37 +557,37 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Altre azioni'"
+                v-tooltip.top="$t('admin.transactions.list.tooltip.moreActions')"
                 @click="(event: Event) => ($refs[`menu-${data.id}`] as any)?.toggle(event)"
               />
-              
+
               <PrimeMenu
                 :ref="`menu-${data.id}`"
                 :model="[
                   {
-                    label: 'Visualizza dettagli',
+                    label: $t('admin.transactions.list.contextMenu.viewDetails'),
                     icon: 'pi pi-eye',
                     command: () => navigateToDetail(data)
                   },
                   {
-                    label: 'Apri su Stripe',
+                    label: $t('admin.transactions.list.contextMenu.openStripe'),
                     icon: 'pi pi-external-link',
                     command: () => handleOpenStripe(data)
                   },
                   {
-                    label: 'Copia Payment Intent ID',
+                    label: $t('admin.transactions.list.contextMenu.copyPaymentIntentId'),
                     icon: 'pi pi-copy',
                     command: () => handleCopyPaymentIntent(data)
                   },
                   { separator: true },
                   {
-                    label: 'Vai all\'ordine',
+                    label: $t('admin.transactions.list.contextMenu.goToOrder'),
                     icon: 'pi pi-shopping-cart',
                     command: () => navigateToOrder(data),
                     visible: !!data.order
                   },
                   {
-                    label: 'Vai al cliente',
+                    label: $t('admin.transactions.list.contextMenu.goToClient'),
                     icon: 'pi pi-user',
                     command: () => navigateToClient(data),
                     visible: !!data.client

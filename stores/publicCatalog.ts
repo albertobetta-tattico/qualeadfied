@@ -373,6 +373,7 @@ export const usePublicCatalogStore = defineStore('publicCatalog', {
      * Fetch public leads catalog
      */
     async fetchLeads(): Promise<void> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -447,7 +448,7 @@ export const usePublicCatalogStore = defineStore('publicCatalog', {
         this.leads = response.data
         this.pagination = response.meta
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento del catalogo'
+        this.error = e.data?.message || t('common.errors.loadError')
       } finally {
         this.loading = false
       }

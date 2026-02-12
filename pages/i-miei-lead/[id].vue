@@ -9,6 +9,7 @@ definePageMeta({
   layout: 'client'
 })
 
+const { t } = useI18n()
 const route = useRoute('i-miei-lead-id')
 const router = useRouter()
 const leadId = computed(() => {
@@ -62,9 +63,9 @@ const updateStatus = async () => {
   })
 
   if (success) {
-    showSuccess('Stato aggiornato')
+    showSuccess(t('leads.detail.toast.statusUpdated'))
   } else {
-    showError(myLeadsStore.error || 'Errore nell\'aggiornamento')
+    showError(myLeadsStore.error || t('leads.detail.toast.errorUpdating'))
   }
 }
 
@@ -84,10 +85,10 @@ const saveNotes = async () => {
   })
 
   if (success) {
-    showSuccess('Note salvate')
+    showSuccess(t('leads.detail.toast.notesSaved'))
     isEditingNotes.value = false
   } else {
-    showError(myLeadsStore.error || 'Errore nel salvataggio')
+    showError(myLeadsStore.error || t('leads.detail.toast.errorSavingNotes'))
   }
 }
 
@@ -100,7 +101,7 @@ const cancelNotesEdit = () => {
 // Copy to clipboard
 const copyToClipboard = (text: string, label: string) => {
   navigator.clipboard.writeText(text)
-  showSuccess(`${label} copiato negli appunti`)
+  showSuccess(t('leads.detail.toast.copiedToClipboard', { label }))
 }
 </script>
 
@@ -110,7 +111,7 @@ const copyToClipboard = (text: string, label: string) => {
     <div class="mb-6">
       <NuxtLink to="/i-miei-lead" class="inline-flex items-center gap-2 text-primary hover:underline mb-4">
         <i class="pi pi-arrow-left"></i>
-        Torna ai miei lead
+        {{ $t('leads.detail.backToLeads') }}
       </NuxtLink>
 
       <div v-if="lead" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -127,14 +128,14 @@ const copyToClipboard = (text: string, label: string) => {
             {{ lead.lead.first_name }} {{ lead.lead.last_name }}
           </h1>
           <p class="text-surface-600 dark:text-surface-400">
-            Acquistato il {{ formatDate(lead.purchased_at) }}
+            {{ $t('leads.detail.purchasedOn', { date: formatDate(lead.purchased_at) }) }}
           </p>
         </div>
 
         <!-- Status Selector -->
         <div class="flex items-center gap-3">
           <label class="text-sm font-medium text-surface-700 dark:text-surface-300">
-            Stato:
+            {{ $t('leads.detail.status') }}
           </label>
           <PrimeSelect
             v-model="selectedStatus"
@@ -161,7 +162,7 @@ const copyToClipboard = (text: string, label: string) => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-user text-primary"></i>
-              Informazioni di Contatto
+              {{ $t('leads.detail.contactInfo.title') }}
             </div>
           </template>
           <template #content>
@@ -172,7 +173,7 @@ const copyToClipboard = (text: string, label: string) => {
                   <i class="pi pi-envelope text-blue-500 text-xl"></i>
                 </div>
                 <div class="flex-grow">
-                  <p class="text-sm text-surface-500 mb-1">Email</p>
+                  <p class="text-sm text-surface-500 mb-1">{{ $t('leads.detail.contactInfo.email') }}</p>
                   <a
                     :href="formatEmailLink(lead.lead.email)"
                     class="font-medium text-surface-900 dark:text-surface-0 hover:text-primary"
@@ -184,7 +185,7 @@ const copyToClipboard = (text: string, label: string) => {
                   icon="pi pi-copy"
                   text
                   rounded
-                  @click="copyToClipboard(lead.lead.email, 'Email')"
+                  @click="copyToClipboard(lead.lead.email, $t('leads.detail.contactInfo.email'))"
                 />
               </div>
 
@@ -194,7 +195,7 @@ const copyToClipboard = (text: string, label: string) => {
                   <i class="pi pi-phone text-green-500 text-xl"></i>
                 </div>
                 <div class="flex-grow">
-                  <p class="text-sm text-surface-500 mb-1">Telefono</p>
+                  <p class="text-sm text-surface-500 mb-1">{{ $t('leads.detail.contactInfo.phone') }}</p>
                   <a
                     :href="formatPhoneLink(lead.lead.phone)"
                     class="font-medium text-surface-900 dark:text-surface-0 hover:text-primary"
@@ -206,7 +207,7 @@ const copyToClipboard = (text: string, label: string) => {
                   icon="pi pi-copy"
                   text
                   rounded
-                  @click="copyToClipboard(lead.lead.phone, 'Telefono')"
+                  @click="copyToClipboard(lead.lead.phone, $t('leads.detail.contactInfo.phone'))"
                 />
               </div>
             </div>
@@ -214,10 +215,10 @@ const copyToClipboard = (text: string, label: string) => {
             <!-- Quick Actions -->
             <div class="flex gap-2 mt-4">
               <a :href="formatEmailLink(lead.lead.email)">
-                <PrimeButton label="Invia Email" icon="pi pi-envelope" severity="secondary" />
+                <PrimeButton :label="$t('leads.detail.contactInfo.sendEmail')" icon="pi pi-envelope" severity="secondary" />
               </a>
               <a :href="formatPhoneLink(lead.lead.phone)">
-                <PrimeButton label="Chiama" icon="pi pi-phone" severity="secondary" />
+                <PrimeButton :label="$t('leads.detail.contactInfo.call')" icon="pi pi-phone" severity="secondary" />
               </a>
             </div>
           </template>
@@ -228,7 +229,7 @@ const copyToClipboard = (text: string, label: string) => {
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
-              Dettagli Richiesta
+              {{ $t('leads.detail.requestDetails.title') }}
             </div>
           </template>
           <template #content>
@@ -240,8 +241,7 @@ const copyToClipboard = (text: string, label: string) => {
             <div class="mt-4 pt-4 border-t border-surface-100 dark:border-surface-800">
               <p class="text-sm text-surface-500">
                 <i class="pi pi-clock mr-1"></i>
-                Richiesta generata {{ formatRelativeTime(lead.lead.generated_at) }}
-                ({{ formatDateTime(lead.lead.generated_at) }})
+                {{ $t('leads.detail.requestDetails.generatedAt', { time: formatRelativeTime(lead.lead.generated_at), date: formatDateTime(lead.lead.generated_at) }) }}
               </p>
             </div>
           </template>
@@ -253,7 +253,7 @@ const copyToClipboard = (text: string, label: string) => {
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <i class="pi pi-comment text-primary"></i>
-                Note
+                {{ $t('leads.detail.notes.title') }}
               </div>
               <PrimeButton
                 v-if="!isEditingNotes"
@@ -270,17 +270,17 @@ const copyToClipboard = (text: string, label: string) => {
                 v-model="editedNotes"
                 rows="5"
                 class="w-full"
-                placeholder="Aggiungi note sul lead..."
+                :placeholder="$t('leads.detail.notes.placeholder')"
                 autoResize
               />
               <div class="flex justify-end gap-2 mt-3">
                 <PrimeButton
-                  label="Annulla"
+                  :label="$t('leads.detail.notes.cancel')"
                   severity="secondary"
                   @click="cancelNotesEdit"
                 />
                 <PrimeButton
-                  label="Salva"
+                  :label="$t('leads.detail.notes.save')"
                   icon="pi pi-check"
                   :loading="myLeadsStore.saving"
                   @click="saveNotes"
@@ -301,7 +301,7 @@ const copyToClipboard = (text: string, label: string) => {
               >
                 <i class="pi pi-plus-circle text-2xl text-surface-300 dark:text-surface-600 mb-2"></i>
                 <p class="text-surface-500">
-                  Clicca per aggiungere note
+                  {{ $t('leads.detail.notes.clickToAdd') }}
                 </p>
               </div>
             </div>
@@ -313,7 +313,7 @@ const copyToClipboard = (text: string, label: string) => {
       <div class="space-y-4">
         <!-- Status Card -->
         <PrimeCard>
-          <template #title>Stato Lead</template>
+          <template #title>{{ $t('leads.detail.statusCard.title') }}</template>
           <template #content>
             <div class="text-center py-4">
               <PrimeTag
@@ -331,7 +331,7 @@ const copyToClipboard = (text: string, label: string) => {
               >
                 <i class="pi pi-phone text-surface-400"></i>
                 <div>
-                  <p class="text-surface-600 dark:text-surface-400">Ultimo contatto</p>
+                  <p class="text-surface-600 dark:text-surface-400">{{ $t('leads.detail.statusCard.lastContact') }}</p>
                   <p class="text-surface-900 dark:text-surface-0">
                     {{ formatDateTime(lead.last_contacted_at) }}
                   </p>
@@ -340,7 +340,7 @@ const copyToClipboard = (text: string, label: string) => {
               <div class="flex items-center gap-3 text-sm">
                 <i class="pi pi-shopping-cart text-surface-400"></i>
                 <div>
-                  <p class="text-surface-600 dark:text-surface-400">Acquistato</p>
+                  <p class="text-surface-600 dark:text-surface-400">{{ $t('leads.detail.statusCard.purchased') }}</p>
                   <p class="text-surface-900 dark:text-surface-0">
                     {{ formatDateTime(lead.purchased_at) }}
                   </p>
@@ -352,17 +352,17 @@ const copyToClipboard = (text: string, label: string) => {
 
         <!-- Purchase Info -->
         <PrimeCard>
-          <template #title>Dettagli Acquisto</template>
+          <template #title>{{ $t('leads.detail.purchaseInfo.title') }}</template>
           <template #content>
             <div class="space-y-3">
               <div class="flex justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Prezzo</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('leads.detail.purchaseInfo.price') }}</span>
                 <span class="font-semibold text-surface-900 dark:text-surface-0">
                   {{ formatCurrency(lead.purchase_price) }}
                 </span>
               </div>
               <div class="flex justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Modalità</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('leads.detail.purchaseInfo.mode') }}</span>
                 <PrimeTag
                   :value="formatAcquisitionType(lead.acquisition_type)"
                   :severity="getAcquisitionTypeSeverity(lead.acquisition_type)"
@@ -370,7 +370,7 @@ const copyToClipboard = (text: string, label: string) => {
                 />
               </div>
               <div v-if="lead.order_id" class="flex justify-between">
-                <span class="text-surface-600 dark:text-surface-400">Ordine</span>
+                <span class="text-surface-600 dark:text-surface-400">{{ $t('leads.detail.purchaseInfo.order') }}</span>
                 <NuxtLink
                   :to="`/ordini/${lead.order_id}`"
                   class="text-primary hover:underline"
@@ -384,12 +384,12 @@ const copyToClipboard = (text: string, label: string) => {
 
         <!-- Actions -->
         <PrimeCard>
-          <template #title>Azioni Rapide</template>
+          <template #title>{{ $t('leads.detail.quickActions.title') }}</template>
           <template #content>
             <div class="space-y-2">
               <PrimeButton
                 v-if="lead.contact_status === 'new'"
-                label="Segna come contattato"
+                :label="$t('leads.detail.quickActions.markContacted')"
                 icon="pi pi-phone"
                 class="w-full"
                 severity="info"
@@ -397,7 +397,7 @@ const copyToClipboard = (text: string, label: string) => {
               />
               <PrimeButton
                 v-if="lead.contact_status !== 'in_progress' && lead.contact_status !== 'converted' && lead.contact_status !== 'not_interested'"
-                label="In lavorazione"
+                :label="$t('leads.detail.quickActions.inProgress')"
                 icon="pi pi-clock"
                 class="w-full"
                 severity="warning"
@@ -405,7 +405,7 @@ const copyToClipboard = (text: string, label: string) => {
               />
               <PrimeButton
                 v-if="lead.contact_status !== 'not_interested' && lead.contact_status !== 'converted'"
-                label="Non interessato"
+                :label="$t('leads.detail.quickActions.notInterested')"
                 icon="pi pi-times-circle"
                 class="w-full"
                 severity="danger"

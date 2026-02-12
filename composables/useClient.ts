@@ -10,11 +10,12 @@ import type { Client, ClientCreateForm, ClientUpdateForm, BillingData, BankData 
  * Validazione campi cliente
  */
 export function useClientValidation() {
+  const { t } = useI18n()
   const errors = reactive<Record<string, string>>({})
 
   const validateCompanyName = (value: string): boolean => {
     if (!value || value.trim().length < 2) {
-      errors.company_name = 'La ragione sociale deve avere almeno 2 caratteri'
+      errors.company_name = t('validation.required.companyName')
       return false
     }
     delete errors.company_name
@@ -23,13 +24,13 @@ export function useClientValidation() {
 
   const validateVatNumber = (value: string): boolean => {
     if (!value) {
-      errors.vat_number = 'La Partita IVA è obbligatoria'
+      errors.vat_number = t('validation.required.vatNumber')
       return false
     }
     // Formato P.IVA italiana: 11 cifre
     const vatRegex = /^(IT)?[0-9]{11}$/i
     if (!vatRegex.test(value.replace(/\s/g, ''))) {
-      errors.vat_number = 'Formato Partita IVA non valido (11 cifre)'
+      errors.vat_number = t('admin.clients.validation.vatNumberFormat')
       return false
     }
     delete errors.vat_number
@@ -38,12 +39,12 @@ export function useClientValidation() {
 
   const validateEmail = (value: string): boolean => {
     if (!value) {
-      errors.email = 'L\'email è obbligatoria'
+      errors.email = t('validation.required.email')
       return false
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(value)) {
-      errors.email = 'Formato email non valido'
+      errors.email = t('validation.invalid.email')
       return false
     }
     delete errors.email
@@ -52,13 +53,13 @@ export function useClientValidation() {
 
   const validatePhone = (value: string): boolean => {
     if (!value) {
-      errors.phone = 'Il telefono è obbligatorio'
+      errors.phone = t('validation.required.phone')
       return false
     }
     // Formato telefono italiano
     const phoneRegex = /^(\+39)?[\s]?[0-9]{6,12}$/
     if (!phoneRegex.test(value.replace(/[\s\-\.]/g, ''))) {
-      errors.phone = 'Formato telefono non valido'
+      errors.phone = t('validation.invalid.phone')
       return false
     }
     delete errors.phone
@@ -67,23 +68,23 @@ export function useClientValidation() {
 
   const validatePassword = (value: string, isCreate: boolean = true): boolean => {
     if (isCreate && !value) {
-      errors.password = 'La password è obbligatoria'
+      errors.password = t('validation.required.password')
       return false
     }
     if (value && value.length < 8) {
-      errors.password = 'La password deve avere almeno 8 caratteri'
+      errors.password = t('admin.clients.validation.passwordMinLength')
       return false
     }
     if (value && !/[A-Z]/.test(value)) {
-      errors.password = 'La password deve contenere almeno una maiuscola'
+      errors.password = t('admin.clients.validation.passwordUppercase')
       return false
     }
     if (value && !/[a-z]/.test(value)) {
-      errors.password = 'La password deve contenere almeno una minuscola'
+      errors.password = t('admin.clients.validation.passwordLowercase')
       return false
     }
     if (value && !/[0-9]/.test(value)) {
-      errors.password = 'La password deve contenere almeno un numero'
+      errors.password = t('admin.clients.validation.passwordNumber')
       return false
     }
     delete errors.password
@@ -92,7 +93,7 @@ export function useClientValidation() {
 
   const validatePasswordConfirmation = (password: string, confirmation: string): boolean => {
     if (password && password !== confirmation) {
-      errors.password_confirmation = 'Le password non coincidono'
+      errors.password_confirmation = t('validation.password.mismatch')
       return false
     }
     delete errors.password_confirmation
@@ -101,7 +102,7 @@ export function useClientValidation() {
 
   const validateRequired = (field: string, value: string, label: string): boolean => {
     if (!value || value.trim() === '') {
-      errors[field] = `${label} è obbligatorio`
+      errors[field] = t('admin.clients.validation.fieldRequired', { field: label })
       return false
     }
     delete errors[field]
@@ -110,7 +111,7 @@ export function useClientValidation() {
 
   const validatePostalCode = (value: string): boolean => {
     if (value && !/^[0-9]{5}$/.test(value)) {
-      errors.postal_code = 'Il CAP deve essere di 5 cifre'
+      errors.postal_code = t('validation.invalid.billingZip')
       return false
     }
     delete errors.postal_code
@@ -119,7 +120,7 @@ export function useClientValidation() {
 
   const validateSdiCode = (value: string): boolean => {
     if (value && !/^[A-Z0-9]{7}$/i.test(value)) {
-      errors.sdi_code = 'Il codice SDI deve essere di 7 caratteri alfanumerici'
+      errors.sdi_code = t('validation.invalid.sdiCode')
       return false
     }
     delete errors.sdi_code
@@ -130,7 +131,7 @@ export function useClientValidation() {
     if (value) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(value)) {
-        errors.pec = 'Formato PEC non valido'
+        errors.pec = t('validation.invalid.pecEmail')
         return false
       }
     }
@@ -153,9 +154,9 @@ export function useClientValidation() {
       case 'password_confirmation':
         return validatePasswordConfirmation(extra, value)
       case 'contact_first_name':
-        return validateRequired(field, value, 'Il nome')
+        return validateRequired(field, value, t('common.labels.name'))
       case 'contact_last_name':
-        return validateRequired(field, value, 'Il cognome')
+        return validateRequired(field, value, t('common.labels.lastName'))
       case 'postal_code':
         return validatePostalCode(value)
       case 'sdi_code':
@@ -174,8 +175,8 @@ export function useClientValidation() {
     isValid = validateVatNumber(form.vat_number) && isValid
     isValid = validateEmail(form.email) && isValid
     isValid = validatePhone(form.phone) && isValid
-    isValid = validateRequired('contact_first_name', form.contact_first_name, 'Il nome') && isValid
-    isValid = validateRequired('contact_last_name', form.contact_last_name, 'Il cognome') && isValid
+    isValid = validateRequired('contact_first_name', form.contact_first_name, t('common.labels.name')) && isValid
+    isValid = validateRequired('contact_last_name', form.contact_last_name, t('common.labels.lastName')) && isValid
 
     if (isCreate && 'password' in form) {
       isValid = validatePassword(form.password, true) && isValid
@@ -216,40 +217,41 @@ export function useClientValidation() {
  * Azioni conferma per clienti
  */
 export function useClientActions() {
+  const { t } = useI18n()
   const toast = useToast()
   const confirm = useConfirm()
 
   const confirmDelete = (client: Client, onConfirm: () => void) => {
     confirm.require({
-      message: `Sei sicuro di voler eliminare il cliente "${client.company_name}"? Questa azione non può essere annullata.`,
-      header: 'Conferma Eliminazione',
+      message: t('admin.clients.list.dialog.deleteMessage', { name: client.company_name }),
+      header: t('admin.clients.list.dialog.deleteTitle'),
       icon: 'pi pi-exclamation-triangle',
       acceptClass: 'p-button-danger',
-      acceptLabel: 'Elimina',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('admin.clients.list.dialog.deleteConfirm'),
+      rejectLabel: t('admin.clients.list.dialog.deleteCancel'),
       accept: onConfirm
     })
   }
 
   const confirmSuspend = (client: Client, onConfirm: () => void) => {
     confirm.require({
-      message: `Sei sicuro di voler sospendere il cliente "${client.company_name}"? Il cliente non potrà più accedere alla piattaforma.`,
-      header: 'Conferma Sospensione',
+      message: t('admin.clients.confirm.suspendMessage', { name: client.company_name }),
+      header: t('admin.clients.confirm.suspendHeader'),
       icon: 'pi pi-exclamation-triangle',
       acceptClass: 'p-button-warning',
-      acceptLabel: 'Sospendi',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('admin.clients.confirm.suspendAccept'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
 
   const confirmResetPassword = (client: Client, onConfirm: () => void) => {
     confirm.require({
-      message: `Inviare un'email di reset password a "${client.email}"?`,
-      header: 'Reset Password',
+      message: t('admin.clients.confirm.resetPasswordMessage', { email: client.email }),
+      header: t('admin.clients.confirm.resetPasswordHeader'),
       icon: 'pi pi-envelope',
-      acceptLabel: 'Invia',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('common.actions.send'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
@@ -257,7 +259,7 @@ export function useClientActions() {
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Operazione completata',
+      summary: t('notifications.toast.summaries.success'),
       detail: message,
       life: 3000
     })
@@ -266,7 +268,7 @@ export function useClientActions() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('notifications.toast.summaries.error'),
       detail: message,
       life: 5000
     })
@@ -275,7 +277,7 @@ export function useClientActions() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Informazione',
+      summary: t('notifications.toast.summaries.info'),
       detail: message,
       life: 3000
     })
@@ -284,7 +286,7 @@ export function useClientActions() {
   const showWarning = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('notifications.toast.summaries.warning'),
       detail: message,
       life: 4000
     })
@@ -371,11 +373,13 @@ export function useClientForm(initialData?: Client) {
  * Formattatori per visualizzazione
  */
 export function useClientFormatters() {
+  const { t } = useI18n()
+
   const formatStatus = (status: string): string => {
     const labels: Record<string, string> = {
-      pending: 'In Attesa',
-      active: 'Attivo',
-      suspended: 'Sospeso'
+      pending: t('admin.clients.list.filters.statusOptions.pending'),
+      active: t('admin.clients.list.filters.statusOptions.active'),
+      suspended: t('admin.clients.list.filters.statusOptions.suspended')
     }
     return labels[status] || status
   }

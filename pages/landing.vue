@@ -67,22 +67,22 @@ const formatNumber = (num: number): string => {
             <div class="hero-card hero-card-1">
               <i class="pi pi-user text-2xl text-primary-500"></i>
               <div>
-                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.newLead') }}</div>
-                <div class="text-xs text-neutral-500">{{ $t('landing.hero.sampleCategory') }}</div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.cards.newLead') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.cards.newLeadDetail') }}</div>
               </div>
             </div>
             <div class="hero-card hero-card-2">
               <i class="pi pi-check-circle text-2xl text-green-500"></i>
               <div>
-                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.verified') }}</div>
-                <div class="text-xs text-neutral-500">{{ $t('landing.hero.contactConfirmed') }}</div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.cards.verified') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.cards.verifiedDetail') }}</div>
               </div>
             </div>
             <div class="hero-card hero-card-3">
               <i class="pi pi-euro text-2xl text-amber-500"></i>
               <div>
-                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.exclusive') }}</div>
-                <div class="text-xs text-neutral-500">{{ $t('landing.hero.onlyForYou') }}</div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.cards.exclusive') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.cards.exclusiveDetail') }}</div>
               </div>
             </div>
           </div>
@@ -205,7 +205,7 @@ const formatNumber = (num: number): string => {
           <div class="cta-buttons">
             <NuxtLink to="/registrati">
               <PrimeButton
-                :label="$t('landing.cta.register')"
+                :label="$t('landing.cta.registerFree')"
                 icon="pi pi-user-plus"
                 size="large"
                 class="cta-btn"

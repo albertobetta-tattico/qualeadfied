@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const pricingStore = usePricingStore()
 const { formatCurrency, formatDate, formatDateTime, formatActiveStatus, getActiveStatusSeverity } = useCatalogFormatters()
@@ -157,17 +159,17 @@ const getSlotNumber = (key: string): number => {
 // Validate form
 const validateForm = (): boolean => {
   if (priceForm.exclusive_price < 0) {
-    showError('Il prezzo esclusivo deve essere un valore positivo')
+    showError(t('admin.pricing.list.toast.exclusivePositive'))
     return false
   }
-  
+
   for (const [key, value] of Object.entries(priceForm.shared_prices)) {
     if (value < 0) {
-      showError(`Il prezzo per lo slot ${getSlotNumber(key)} deve essere positivo`)
+      showError(t('admin.pricing.list.toast.slotPositive', { number: getSlotNumber(key) }))
       return false
     }
   }
-  
+
   return true
 }
 
@@ -182,11 +184,11 @@ const savePrice = async () => {
   )
   
   if (result) {
-    showSuccess(`Prezzi per "${selectedCategory.value.category.name}" salvati con successo`)
+    showSuccess(t('admin.pricing.list.toast.saveSuccess', { name: selectedCategory.value.category.name }))
     editDialog.value = false
     await loadData()
   } else {
-    showError(pricingStore.error || 'Errore nel salvataggio dei prezzi')
+    showError(pricingStore.error || t('admin.pricing.list.toast.saveError'))
   }
 }
 
@@ -203,7 +205,7 @@ const copyToAllSlots = () => {
     priceForm.shared_prices[key] = firstSlotPrice
   })
   
-  showSuccess('Prezzo copiato su tutti gli slot')
+  showSuccess(t('admin.pricing.list.toast.priceCopied'))
 }
 
 // Format shared price summary
@@ -241,12 +243,12 @@ onUnmounted(() => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Listini Prezzi</h1>
-        <p class="page-subtitle">Gestione prezzi per categoria merceologica</p>
+        <h1 class="page-title">{{ $t('admin.pricing.list.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.pricing.list.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
         <PrimeButton
-          label="Storico Prezzi"
+          :label="$t('admin.pricing.list.actions.priceHistory')"
           icon="pi pi-history"
           severity="secondary"
           outlined
@@ -262,7 +264,7 @@ onUnmounted(() => {
           <i class="pi pi-tag"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.total_categories || 0 }}</div>
-        <div class="kpi-card-label">Categorie Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.pricing.list.kpis.totalCategories') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -270,7 +272,7 @@ onUnmounted(() => {
           <i class="pi pi-euro"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.categories_with_prices || 0 }}</div>
-        <div class="kpi-card-label">Con Prezzi Configurati</div>
+        <div class="kpi-card-label">{{ $t('admin.pricing.list.kpis.withPrices') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -278,7 +280,7 @@ onUnmounted(() => {
           <i class="pi pi-exclamation-triangle"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.categories_without_prices || 0 }}</div>
-        <div class="kpi-card-label">Senza Prezzi</div>
+        <div class="kpi-card-label">{{ $t('admin.pricing.list.kpis.withoutPrices') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -286,7 +288,7 @@ onUnmounted(() => {
           <i class="pi pi-calculator"></i>
         </div>
         <div class="kpi-card-value">{{ formatCurrency(stats?.avg_exclusive_price || 0) }}</div>
-        <div class="kpi-card-label">Prezzo Medio Esclusivo</div>
+        <div class="kpi-card-label">{{ $t('admin.pricing.list.kpis.avgExclusivePrice') }}</div>
       </div>
     </div>
 
@@ -301,9 +303,7 @@ onUnmounted(() => {
         <i class="pi pi-exclamation-triangle"></i>
       </template>
       <div class="flex items-center gap-4">
-        <span>
-          <strong>{{ categoriesWithoutPrices.length }} categorie</strong> non hanno ancora prezzi configurati.
-        </span>
+        <span v-html="$t('admin.pricing.list.alert.noPrices', { count: categoriesWithoutPrices.length })"></span>
         <div class="flex gap-2 flex-wrap">
           <PrimeButton
             v-for="cat in categoriesWithoutPrices.slice(0, 3)"
@@ -316,7 +316,7 @@ onUnmounted(() => {
             @click="openCreateDialog(cat)"
           />
           <span v-if="categoriesWithoutPrices.length > 3" class="text-sm text-warning-dark">
-            e altre {{ categoriesWithoutPrices.length - 3 }}...
+            {{ $t('admin.pricing.list.alert.andMore', { count: categoriesWithoutPrices.length - 3 }) }}
           </span>
         </div>
       </div>
@@ -331,7 +331,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per nome categoria..."
+              :placeholder="$t('admin.pricing.list.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -341,16 +341,16 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('common.hideFilters') : $t('common.showFilters')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('common.clearFilters')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -366,13 +366,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Category Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Categoria</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.pricing.list.filters.category') }}</label>
               <PrimeSelect
                 v-model="categoryFilter"
-                :options="[{ label: 'Tutte le categorie', value: '' }, ...categoriesForSelect]"
+                :options="[{ label: $t('admin.pricing.list.filters.allCategories'), value: '' }, ...categoriesForSelect]"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona categoria"
+                :placeholder="$t('common.selectCategory')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -381,7 +381,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('common.applyFilters')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -408,16 +408,16 @@ onUnmounted(() => {
         showGridlines
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} listini"
+        :currentPageReportTemplate="$t('admin.pricing.list.table.paginatorTemplate')"
         @page="onPage"
       >
         <!-- Empty State -->
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-euro text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600 mb-4">Nessun listino prezzi trovato</p>
+            <p class="text-neutral-600 mb-4">{{ $t('admin.pricing.list.table.empty') }}</p>
             <p class="text-sm text-neutral-500">
-              I listini vengono creati automaticamente quando configuri i prezzi per una categoria.
+              {{ $t('admin.pricing.list.table.emptySubtext') }}
             </p>
           </div>
         </template>
@@ -426,12 +426,12 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento listini...</span>
+            <span class="text-neutral-600">{{ $t('admin.pricing.list.table.loading') }}</span>
           </div>
         </template>
 
         <!-- Category Name -->
-        <PrimeColumn field="category.name" header="Categoria" sortable style="min-width: 200px">
+        <PrimeColumn field="category.name" :header="$t('admin.pricing.list.table.headers.category')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
               <div 
@@ -441,14 +441,14 @@ onUnmounted(() => {
               </div>
               <div>
                 <div class="font-medium text-neutral-900">{{ data.category.name }}</div>
-                <div class="text-xs text-neutral-500">Max {{ data.category.max_shares }} condivisioni</div>
+                <div class="text-xs text-neutral-500">{{ $t('admin.pricing.list.table.maxShares', { count: data.category.max_shares }) }}</div>
               </div>
             </div>
           </template>
         </PrimeColumn>
 
         <!-- Category Status -->
-        <PrimeColumn field="category.is_active" header="Stato Cat." style="min-width: 100px">
+        <PrimeColumn field="category.is_active" :header="$t('admin.pricing.list.table.headers.categoryStatus')" style="min-width: 100px">
           <template #body="{ data }">
             <PrimeTag 
               :value="formatActiveStatus(data.category.is_active)"
@@ -458,7 +458,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Exclusive Price -->
-        <PrimeColumn field="exclusive_price" header="Prezzo Esclusivo" sortable style="min-width: 150px">
+        <PrimeColumn field="exclusive_price" :header="$t('admin.pricing.list.table.headers.exclusivePrice')" sortable style="min-width: 150px">
           <template #body="{ data }">
             <span class="font-semibold text-primary-700 text-lg">
               {{ formatCurrency(data.exclusive_price) }}
@@ -467,35 +467,35 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Shared Prices -->
-        <PrimeColumn header="Prezzi Condivisi" style="min-width: 180px">
+        <PrimeColumn :header="$t('admin.pricing.list.table.headers.sharedPrices')" style="min-width: 180px">
           <template #body="{ data }">
             <div class="flex flex-col gap-1">
               <span class="font-medium text-neutral-700">
                 {{ formatSharedPriceSummary(data.shared_prices) }}
               </span>
               <span class="text-xs text-neutral-500">
-                {{ Object.keys(data.shared_prices).length }} slot
+                {{ $t('admin.pricing.list.table.slots', { count: Object.keys(data.shared_prices).length }) }}
               </span>
             </div>
           </template>
         </PrimeColumn>
 
         <!-- Valid From -->
-        <PrimeColumn field="valid_from" header="Valido Da" sortable style="min-width: 130px">
+        <PrimeColumn field="valid_from" :header="$t('admin.pricing.list.table.headers.validFrom')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <span class="text-neutral-600">{{ formatDate(data.valid_from) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Last Update -->
-        <PrimeColumn field="updated_at" header="Ultimo Agg." sortable style="min-width: 130px">
+        <PrimeColumn field="updated_at" :header="$t('admin.pricing.list.table.headers.lastUpdate')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <span class="text-neutral-600">{{ formatDateTime(data.updated_at) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 100px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.pricing.list.table.headers.actions')" style="min-width: 100px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <PrimeButton
@@ -504,7 +504,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Modifica prezzi'"
+                v-tooltip.top="$t('admin.pricing.list.tooltip.editPrices')"
                 @click="openEditDialog(data)"
               />
             </div>
@@ -517,7 +517,7 @@ onUnmounted(() => {
     <PrimeDialog
       v-model:visible="editDialog"
       modal
-      :header="isCreatingNew ? 'Configura Prezzi' : 'Modifica Prezzi'"
+      :header="isCreatingNew ? $t('admin.pricing.list.dialog.createTitle') : $t('admin.pricing.list.dialog.editTitle')"
       :style="{ width: '600px' }"
       class="pricing-dialog"
     >
@@ -531,7 +531,7 @@ onUnmounted(() => {
             <div>
               <div class="font-semibold text-neutral-900">{{ selectedCategory.category.name }}</div>
               <div class="text-sm text-neutral-500">
-                Massimo {{ selectedCategory.category.max_shares }} condivisioni per lead
+                {{ $t('admin.pricing.list.table.maxShares', { count: selectedCategory.category.max_shares }) }}
               </div>
             </div>
           </div>
@@ -541,10 +541,10 @@ onUnmounted(() => {
         <div class="form-group">
           <label class="font-medium">
             <i class="pi pi-star-fill text-warning mr-2"></i>
-            Prezzo Esclusivo
+            {{ $t('admin.pricing.list.dialog.exclusivePrice') }}
           </label>
           <p class="text-sm text-neutral-500 mb-3">
-            Prezzo per acquisto in modalità esclusiva (lead venduto una sola volta)
+            {{ $t('admin.pricing.list.dialog.exclusivePriceDesc') }}
           </p>
           <PrimeInputNumber
             v-model="priceForm.exclusive_price"
@@ -565,20 +565,20 @@ onUnmounted(() => {
             <div>
               <label class="font-medium block">
                 <i class="pi pi-users text-info mr-2"></i>
-                Prezzi Condivisi
+                {{ $t('admin.pricing.list.dialog.sharedPrices') }}
               </label>
               <p class="text-sm text-neutral-500">
-                Prezzo per ogni slot di condivisione
+                {{ $t('admin.pricing.list.dialog.sharedPricesDesc') }}
               </p>
             </div>
             <PrimeButton
-              label="Copia su tutti"
+              :label="$t('admin.pricing.list.dialog.copyToAll')"
               icon="pi pi-copy"
               severity="secondary"
               text
               size="small"
               @click="copyToAllSlots"
-              v-tooltip.left="'Copia il prezzo del primo slot su tutti gli altri'"
+              v-tooltip.left="$t('admin.pricing.list.dialog.copyToAllTooltip')"
             />
           </div>
 
@@ -589,9 +589,9 @@ onUnmounted(() => {
               class="flex flex-col"
             >
               <label class="text-sm text-neutral-600 mb-1">
-                Slot {{ getSlotNumber(slotKey) }}
+                {{ $t('admin.pricing.list.dialog.slot', { number: getSlotNumber(slotKey) }) }}
                 <span class="text-xs text-neutral-400">
-                  ({{ getSlotNumber(slotKey) }}° acquirente)
+                  ({{ $t('admin.pricing.list.dialog.slotBuyer', { number: getSlotNumber(slotKey) }) }})
                 </span>
               </label>
               <PrimeInputNumber
@@ -609,10 +609,7 @@ onUnmounted(() => {
           </div>
 
           <PrimeMessage severity="info" :closable="false" class="mt-4">
-            <span class="text-sm">
-              In base alle specifiche, il prezzo condiviso è <strong>fisso</strong> indipendentemente 
-              dallo slot già occupato. Puoi comunque differenziare i prezzi se necessario.
-            </span>
+            <span class="text-sm" v-html="$t('admin.pricing.list.dialog.sharedPriceInfo')"></span>
           </PrimeMessage>
         </div>
       </div>
@@ -620,13 +617,13 @@ onUnmounted(() => {
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.pricing.list.dialog.cancel')"
             severity="secondary"
             outlined
             @click="editDialog = false"
           />
           <PrimeButton
-            label="Salva Prezzi"
+            :label="$t('admin.pricing.list.dialog.save')"
             severity="primary"
             icon="pi pi-check"
             :loading="saving"

@@ -11,6 +11,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const clientStore = useClientStore()
 const catalogStore = useCatalogStore()
@@ -60,11 +62,11 @@ const form = reactive<ClientCreateForm>({
 })
 
 // Status options
-const statusOptions = [
-  { label: 'Attivo', value: 'active' },
-  { label: 'In Attesa', value: 'pending' },
-  { label: 'Sospeso', value: 'suspended' }
-]
+const statusOptions = computed(() => [
+  { label: t('admin.clients.list.filters.statusOptions.active'), value: 'active' },
+  { label: t('admin.clients.list.filters.statusOptions.pending'), value: 'pending' },
+  { label: t('admin.clients.list.filters.statusOptions.suspended'), value: 'suspended' }
+])
 
 // Province options (Italian provinces)
 const provinceOptions = [
@@ -87,17 +89,17 @@ const onSubmit = async () => {
   clearErrors()
   
   if (!validateForm(form, true)) {
-    showError('Correggi gli errori nel form prima di procedere')
+    showError(t('admin.clients.create.toast.validationError'))
     return
   }
 
   const client = await clientStore.createClient(form)
   
   if (client) {
-    showSuccess(`Cliente "${client.company_name}" creato con successo`)
+    showSuccess(t('admin.clients.create.toast.createSuccess', { name: client.company_name }))
     router.push('/admin/clients')
   } else {
-    showError(clientStore.error || 'Errore nella creazione del cliente')
+    showError(clientStore.error || t('admin.clients.create.toast.createError'))
   }
 }
 
@@ -120,9 +122,9 @@ const onCancel = () => {
             rounded
             @click="onCancel"
           />
-          <h1 class="page-title mb-0">Nuovo Cliente</h1>
+          <h1 class="page-title mb-0">{{ $t('admin.clients.create.createTitle') }}</h1>
         </div>
-        <p class="page-subtitle ml-12">Inserisci i dati per creare un nuovo cliente B2B</p>
+        <p class="page-subtitle ml-12">{{ $t('admin.clients.create.createSubtitle') }}</p>
       </div>
     </div>
 
@@ -133,19 +135,19 @@ const onCancel = () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-building mr-2 text-primary-500"></i>
-            Dati Aziendali
+            {{ $t('admin.clients.create.sections.companyData') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Company Name -->
             <div class="form-group">
-              <label for="company_name">Ragione Sociale *</label>
+              <label for="company_name">{{ $t('admin.clients.create.form.companyName') }} *</label>
               <PrimeInputText
                 id="company_name"
                 v-model="form.company_name"
                 :class="{ 'p-invalid': errors.company_name }"
-                placeholder="Es. Azienda Srl"
+                :placeholder="$t('admin.clients.create.form.companyNamePlaceholder')"
                 class="w-full"
                 @blur="onBlur('company_name', form.company_name)"
               />
@@ -154,28 +156,28 @@ const onCancel = () => {
 
             <!-- VAT Number -->
             <div class="form-group">
-              <label for="vat_number">Partita IVA *</label>
+              <label for="vat_number">{{ $t('admin.clients.create.form.vatNumber') }} *</label>
               <PrimeInputText
                 id="vat_number"
                 v-model="form.vat_number"
                 :class="{ 'p-invalid': errors.vat_number }"
-                placeholder="Es. 12345678901"
+                :placeholder="$t('admin.clients.create.form.vatNumberPlaceholder')"
                 class="w-full"
                 @blur="onBlur('vat_number', form.vat_number)"
               />
               <small v-if="errors.vat_number" class="p-error">{{ errors.vat_number }}</small>
-              <small v-else class="form-hint">11 cifre, senza prefisso IT</small>
+              <small v-else class="form-hint">{{ $t('admin.clients.create.form.vatNumberHint') }}</small>
             </div>
 
             <!-- Email -->
             <div class="form-group">
-              <label for="email">Email *</label>
+              <label for="email">{{ $t('admin.clients.create.form.email') }} *</label>
               <PrimeInputText
                 id="email"
                 v-model="form.email"
                 type="email"
                 :class="{ 'p-invalid': errors.email }"
-                placeholder="email@azienda.it"
+                :placeholder="$t('admin.clients.create.form.emailPlaceholder')"
                 class="w-full"
                 @blur="onBlur('email', form.email)"
               />
@@ -184,12 +186,12 @@ const onCancel = () => {
 
             <!-- Phone -->
             <div class="form-group">
-              <label for="phone">Telefono *</label>
+              <label for="phone">{{ $t('admin.clients.create.form.phone') }} *</label>
               <PrimeInputText
                 id="phone"
                 v-model="form.phone"
                 :class="{ 'p-invalid': errors.phone }"
-                placeholder="Es. 02 1234567"
+                :placeholder="$t('admin.clients.create.form.phonePlaceholder')"
                 class="w-full"
                 @blur="onBlur('phone', form.phone)"
               />
@@ -204,19 +206,19 @@ const onCancel = () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-user mr-2 text-primary-500"></i>
-            Persona di Riferimento
+            {{ $t('admin.clients.create.sections.contactPerson') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- First Name -->
             <div class="form-group">
-              <label for="contact_first_name">Nome *</label>
+              <label for="contact_first_name">{{ $t('admin.clients.create.form.firstName') }} *</label>
               <PrimeInputText
                 id="contact_first_name"
                 v-model="form.contact_first_name"
                 :class="{ 'p-invalid': errors.contact_first_name }"
-                placeholder="Mario"
+                :placeholder="$t('admin.clients.create.form.firstNamePlaceholder')"
                 class="w-full"
                 @blur="onBlur('contact_first_name', form.contact_first_name)"
               />
@@ -225,12 +227,12 @@ const onCancel = () => {
 
             <!-- Last Name -->
             <div class="form-group">
-              <label for="contact_last_name">Cognome *</label>
+              <label for="contact_last_name">{{ $t('admin.clients.create.form.lastName') }} *</label>
               <PrimeInputText
                 id="contact_last_name"
                 v-model="form.contact_last_name"
                 :class="{ 'p-invalid': errors.contact_last_name }"
-                placeholder="Rossi"
+                :placeholder="$t('admin.clients.create.form.lastNamePlaceholder')"
                 class="w-full"
                 @blur="onBlur('contact_last_name', form.contact_last_name)"
               />
@@ -245,14 +247,14 @@ const onCancel = () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-lock mr-2 text-primary-500"></i>
-            Credenziali di Accesso
+            {{ $t('admin.clients.create.sections.credentials') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Password -->
             <div class="form-group">
-              <label for="password">Password *</label>
+              <label for="password">{{ $t('admin.clients.create.form.password') }} *</label>
               <PrimePassword
                 id="password"
                 v-model="form.password"
@@ -264,12 +266,12 @@ const onCancel = () => {
                 @blur="onBlur('password', form.password, true)"
               />
               <small v-if="errors.password" class="p-error">{{ errors.password }}</small>
-              <small v-else class="form-hint">Minimo 8 caratteri, una maiuscola, una minuscola e un numero</small>
+              <small v-else class="form-hint">{{ $t('admin.clients.create.form.passwordHint') }}</small>
             </div>
 
             <!-- Password Confirmation -->
             <div class="form-group">
-              <label for="password_confirmation">Conferma Password *</label>
+              <label for="password_confirmation">{{ $t('admin.clients.create.form.confirmPassword') }} *</label>
               <PrimePassword
                 id="password_confirmation"
                 v-model="form.password_confirmation"
@@ -291,52 +293,52 @@ const onCancel = () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-file mr-2 text-primary-500"></i>
-            Dati di Fatturazione
+            {{ $t('admin.clients.create.sections.billingData') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Address -->
             <div class="form-group md:col-span-2">
-              <label for="address">Indirizzo</label>
+              <label for="address">{{ $t('admin.clients.create.form.address') }}</label>
               <PrimeInputText
                 id="address"
                 v-model="form.billing_data.address"
-                placeholder="Via Roma, 1"
+                :placeholder="$t('admin.clients.create.form.addressPlaceholder')"
                 class="w-full"
               />
             </div>
 
             <!-- City -->
             <div class="form-group">
-              <label for="city">Città</label>
+              <label for="city">{{ $t('admin.clients.create.form.city') }}</label>
               <PrimeInputText
                 id="city"
                 v-model="form.billing_data.city"
-                placeholder="Milano"
+                :placeholder="$t('admin.clients.create.form.cityPlaceholder')"
                 class="w-full"
               />
             </div>
 
             <!-- Province -->
             <div class="form-group">
-              <label for="province">Provincia</label>
+              <label for="province">{{ $t('admin.clients.create.form.province') }}</label>
               <PrimeSelect
                 id="province"
                 v-model="form.billing_data.province"
                 :options="provinceOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona..."
+                :placeholder="$t('admin.clients.list.filters.selectOption')"
                 class="w-full"
                 :filter="true"
-                filterPlaceholder="Cerca provincia..."
+                :filterPlaceholder="$t('admin.clients.create.form.provincePlaceholder')"
               />
             </div>
 
             <!-- Postal Code -->
             <div class="form-group">
-              <label for="postal_code">CAP</label>
+              <label for="postal_code">{{ $t('admin.clients.create.form.zip') }}</label>
               <PrimeInputText
                 id="postal_code"
                 v-model="form.billing_data.postal_code"
@@ -351,7 +353,7 @@ const onCancel = () => {
 
             <!-- Country -->
             <div class="form-group">
-              <label for="country">Paese</label>
+              <label for="country">{{ $t('admin.clients.create.form.country') }}</label>
               <PrimeInputText
                 id="country"
                 v-model="form.billing_data.country"
@@ -363,7 +365,7 @@ const onCancel = () => {
 
             <!-- SDI Code -->
             <div class="form-group">
-              <label for="sdi_code">Codice SDI</label>
+              <label for="sdi_code">{{ $t('admin.clients.create.form.sdiCode') }}</label>
               <PrimeInputText
                 id="sdi_code"
                 v-model="form.billing_data.sdi_code"
@@ -374,17 +376,17 @@ const onCancel = () => {
                 @blur="onBlur('sdi_code', form.billing_data.sdi_code)"
               />
               <small v-if="errors.sdi_code" class="p-error">{{ errors.sdi_code }}</small>
-              <small v-else class="form-hint">7 caratteri alfanumerici</small>
+              <small v-else class="form-hint">{{ $t('admin.clients.create.form.sdiCodeHint') }}</small>
             </div>
 
             <!-- PEC -->
             <div class="form-group">
-              <label for="pec">PEC</label>
+              <label for="pec">{{ $t('admin.clients.create.form.pec') }}</label>
               <PrimeInputText
                 id="pec"
                 v-model="form.billing_data.pec"
                 :class="{ 'p-invalid': errors.pec }"
-                placeholder="azienda@pec.it"
+                :placeholder="$t('admin.clients.create.form.pecPlaceholder')"
                 class="w-full"
                 @blur="onBlur('pec', form.billing_data.pec)"
               />
@@ -399,55 +401,55 @@ const onCancel = () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-wallet mr-2 text-primary-500"></i>
-            Dati Bancari (Pagamenti Diretti)
+            {{ $t('admin.clients.create.sections.bankData') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- IBAN -->
             <div class="form-group md:col-span-2">
-              <label for="iban">IBAN</label>
+              <label for="iban">{{ $t('admin.clients.create.form.iban') }}</label>
               <PrimeInputText
                 id="iban"
                 v-model="form.bank_data.iban"
                 class="w-full"
                 placeholder="IT60X0542811101000000123456"
               />
-              <small class="form-hint">Inserisci l'IBAN per i pagamenti diretti</small>
+              <small class="form-hint">{{ $t('admin.clients.create.form.ibanHint') }}</small>
             </div>
 
             <!-- Bank Account Holder -->
             <div class="form-group">
-              <label for="bank_account_holder">Intestatario Conto</label>
+              <label for="bank_account_holder">{{ $t('admin.clients.create.form.bankAccountHolder') }}</label>
               <PrimeInputText
                 id="bank_account_holder"
                 v-model="form.bank_data.bank_account_holder"
                 class="w-full"
-                placeholder="Nome e cognome o ragione sociale"
+                :placeholder="$t('admin.clients.create.form.bankAccountHolderPlaceholder')"
               />
             </div>
 
             <!-- Bank Name -->
             <div class="form-group">
-              <label for="bank_name">Nome Banca</label>
+              <label for="bank_name">{{ $t('admin.clients.create.form.bankName') }}</label>
               <PrimeInputText
                 id="bank_name"
                 v-model="form.bank_data.bank_name"
                 class="w-full"
-                placeholder="es. Intesa Sanpaolo"
+                :placeholder="$t('admin.clients.create.form.bankNamePlaceholder')"
               />
             </div>
 
             <!-- BIC/SWIFT -->
             <div class="form-group">
-              <label for="bic_swift">BIC/SWIFT</label>
+              <label for="bic_swift">{{ $t('admin.clients.create.form.bicSwift') }}</label>
               <PrimeInputText
                 id="bic_swift"
                 v-model="form.bank_data.bic_swift"
                 class="w-full"
-                placeholder="es. BCITITMM"
+                :placeholder="$t('admin.clients.create.form.bicSwiftPlaceholder')"
               />
-              <small class="form-hint">Opzionale - per pagamenti internazionali</small>
+              <small class="form-hint">{{ $t('admin.clients.create.form.bicSwiftHint') }}</small>
             </div>
           </div>
         </div>
@@ -458,30 +460,30 @@ const onCancel = () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-tags mr-2 text-primary-500"></i>
-            Categorie di Interesse
+            {{ $t('admin.clients.create.sections.categoriesOfInterest') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="form-group">
-            <label for="category_ids">Seleziona le categorie lead di interesse del cliente</label>
+            <label for="category_ids">{{ $t('admin.clients.create.form.categoriesLabel') }}</label>
             <PrimeMultiSelect
               id="category_ids"
               v-model="form.category_ids"
               :options="categories"
               optionLabel="name"
               optionValue="id"
-              placeholder="Seleziona una o più categorie..."
+              :placeholder="$t('admin.clients.create.form.categoriesPlaceholder')"
               class="w-full"
               display="chip"
               :filter="true"
-              filterPlaceholder="Cerca categoria..."
+              :filterPlaceholder="$t('admin.clients.create.form.categoriesFilterPlaceholder')"
             >
               <template #option="slotProps">
                 <div class="flex items-center gap-2">
                   <span>{{ slotProps.option.name }}</span>
                   <PrimeTag
                     v-if="!slotProps.option.is_active"
-                    value="Inattiva"
+                    :value="$t('admin.clients.create.form.categoryInactive')"
                     severity="danger"
                     class="text-xs"
                   />
@@ -489,7 +491,7 @@ const onCancel = () => {
               </template>
             </PrimeMultiSelect>
             <small class="form-hint">
-              Il cliente riceverà notifiche solo per i lead delle categorie selezionate
+              {{ $t('admin.clients.create.form.categoriesHint') }}
             </small>
           </div>
         </div>
@@ -500,14 +502,14 @@ const onCancel = () => {
         <div class="q-card-header">
           <h3 class="card-title">
             <i class="pi pi-cog mr-2 text-primary-500"></i>
-            Impostazioni Account
+            {{ $t('admin.clients.create.sections.accountSettings') }}
           </h3>
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Status -->
             <div class="form-group">
-              <label for="status">Stato Account</label>
+              <label for="status">{{ $t('admin.clients.create.form.status') }}</label>
               <PrimeSelect
                 id="status"
                 v-model="form.status"
@@ -520,7 +522,7 @@ const onCancel = () => {
 
             <!-- Free Trial Leads -->
             <div class="form-group">
-              <label for="free_trial_leads">Lead Prova Gratuita</label>
+              <label for="free_trial_leads">{{ $t('admin.clients.create.form.freeLeads') }}</label>
               <PrimeInputNumber
                 id="free_trial_leads"
                 v-model="form.free_trial_leads_total"
@@ -538,7 +540,7 @@ const onCancel = () => {
                 v-model="form.free_trial_enabled"
               />
               <label for="free_trial_enabled" class="cursor-pointer mb-0">
-                Abilita prova gratuita
+                {{ $t('admin.clients.create.form.freeTrial') }}
               </label>
             </div>
 
@@ -549,7 +551,7 @@ const onCancel = () => {
                 v-model="form.notify_new_leads"
               />
               <label for="notify_new_leads" class="cursor-pointer mb-0">
-                Notifiche nuovi lead
+                {{ $t('admin.clients.create.form.leadNotifications') }}
               </label>
             </div>
           </div>
@@ -560,14 +562,14 @@ const onCancel = () => {
       <div class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
         <PrimeButton
           type="button"
-          label="Annulla"
+          :label="$t('admin.clients.create.buttons.cancel')"
           severity="secondary"
           outlined
           @click="onCancel"
         />
         <PrimeButton
           type="submit"
-          label="Crea Cliente"
+          :label="$t('admin.clients.create.buttons.create')"
           icon="pi pi-check"
           severity="primary"
           :loading="clientStore.saving"

@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const orderStore = useOrderStore()
 const { 
@@ -116,7 +118,7 @@ const handleCopyOrderNumber = (order: Order) => {
 
 const exportOrders = () => {
   // TODO: Implementare export Excel
-  showSuccess('Export in corso...')
+  showSuccess(t('admin.orders.list.actions.exportInProgress'))
 }
 
 // Debounced search
@@ -145,13 +147,13 @@ onUnmounted(() => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Ordini</h1>
-        <p class="page-subtitle">Gestione e monitoraggio degli ordini clienti</p>
+        <h1 class="page-title">{{ $t('admin.orders.list.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.orders.list.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
-        <PrimeButton 
-          label="Export" 
-          icon="pi pi-download" 
+        <PrimeButton
+          :label="$t('admin.orders.list.actions.export')"
+          icon="pi pi-download"
           severity="secondary"
           outlined
           @click="exportOrders"
@@ -166,7 +168,7 @@ onUnmounted(() => {
           <i class="pi pi-shopping-cart"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.total_orders || 0 }}</div>
-        <div class="kpi-card-label">Ordini Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.orders.list.kpis.totalOrders') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -174,7 +176,7 @@ onUnmounted(() => {
           <i class="pi pi-euro"></i>
         </div>
         <div class="kpi-card-value">{{ formatCurrency(stats?.total_revenue || 0) }}</div>
-        <div class="kpi-card-label">Fatturato Totale</div>
+        <div class="kpi-card-label">{{ $t('admin.orders.list.kpis.totalRevenue') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -182,7 +184,7 @@ onUnmounted(() => {
           <i class="pi pi-calendar"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.orders_this_month || 0 }}</div>
-        <div class="kpi-card-label">Ordini Questo Mese</div>
+        <div class="kpi-card-label">{{ $t('admin.orders.list.kpis.ordersThisMonth') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -190,7 +192,7 @@ onUnmounted(() => {
           <i class="pi pi-clock"></i>
         </div>
         <div class="kpi-card-value">{{ (stats?.orders_by_status?.pending || 0) + (stats?.orders_by_status?.processing || 0) }}</div>
-        <div class="kpi-card-label">In Attesa/Elaborazione</div>
+        <div class="kpi-card-label">{{ $t('admin.orders.list.kpis.pendingProcessing') }}</div>
       </div>
     </div>
 
@@ -203,7 +205,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per numero ordine, cliente..."
+              :placeholder="$t('admin.orders.list.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -213,16 +215,16 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('common.hideFilters') : $t('common.showFilters')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('common.clearFilters')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -238,13 +240,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Status Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Stato</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.orders.list.filters.status') }}</label>
               <PrimeSelect
                 v-model="statusFilter"
                 :options="statusOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona stato"
+                :placeholder="$t('common.selectStatus')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -252,13 +254,13 @@ onUnmounted(() => {
 
             <!-- Type Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Tipo Ordine</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.orders.list.filters.orderType') }}</label>
               <PrimeSelect
                 v-model="typeFilter"
                 :options="typeOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona tipo"
+                :placeholder="$t('common.selectType')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -266,13 +268,13 @@ onUnmounted(() => {
 
             <!-- Payment Method Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Metodo Pagamento</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.orders.list.filters.paymentMethod') }}</label>
               <PrimeSelect
                 v-model="paymentMethodFilter"
                 :options="paymentMethodOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona metodo"
+                :placeholder="$t('common.selectMethod')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -280,11 +282,11 @@ onUnmounted(() => {
 
             <!-- Date From -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data Da</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.orders.list.filters.dateFrom') }}</label>
               <PrimeDatePicker
                 v-model="dateFromFilter"
                 dateFormat="dd/mm/yy"
-                placeholder="Seleziona data"
+                :placeholder="$t('common.selectDate')"
                 class="w-full"
                 showIcon
                 @date-select="applyFilters"
@@ -293,11 +295,11 @@ onUnmounted(() => {
 
             <!-- Date To -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data A</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.orders.list.filters.dateTo') }}</label>
               <PrimeDatePicker
                 v-model="dateToFilter"
                 dateFormat="dd/mm/yy"
-                placeholder="Seleziona data"
+                :placeholder="$t('common.selectDate')"
                 class="w-full"
                 showIcon
                 @date-select="applyFilters"
@@ -307,7 +309,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end md:col-span-2 lg:col-span-3">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('common.applyFilters')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -336,7 +338,7 @@ onUnmounted(() => {
         removableSort
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} ordini"
+        :currentPageReportTemplate="$t('admin.orders.list.table.paginatorTemplate')"
         @page="onPage"
         @sort="onSort"
       >
@@ -344,9 +346,9 @@ onUnmounted(() => {
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-shopping-cart text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600 mb-4">Nessun ordine trovato</p>
+            <p class="text-neutral-600 mb-4">{{ $t('admin.orders.list.table.empty') }}</p>
             <p class="text-sm text-neutral-500">
-              Gli ordini verranno visualizzati qui quando i clienti effettueranno acquisti
+              {{ $t('admin.orders.list.table.emptySubtext') }}
             </p>
           </div>
         </template>
@@ -355,7 +357,7 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento ordini...</span>
+            <span class="text-neutral-600">{{ $t('admin.orders.list.table.loading') }}</span>
           </div>
         </template>
 
@@ -363,7 +365,7 @@ onUnmounted(() => {
         <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
         <!-- Order Number -->
-        <PrimeColumn field="order_number" header="N° Ordine" sortable style="min-width: 150px">
+        <PrimeColumn field="order_number" :header="$t('admin.orders.list.table.headers.orderNumber')" sortable style="min-width: 150px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <span 
@@ -379,7 +381,7 @@ onUnmounted(() => {
                 rounded
                 size="small"
                 class="p-0 w-6 h-6"
-                v-tooltip.top="'Copia numero'"
+                v-tooltip.top="$t('admin.orders.list.tooltip.copyNumber')"
                 @click.stop="handleCopyOrderNumber(data)"
               />
             </div>
@@ -387,7 +389,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Client -->
-        <PrimeColumn field="client.company_name" header="Cliente" sortable style="min-width: 200px">
+        <PrimeColumn field="client.company_name" :header="$t('admin.orders.list.table.headers.client')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div v-if="data.client">
               <div class="font-medium text-neutral-900">{{ data.client.company_name }}</div>
@@ -398,7 +400,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Type -->
-        <PrimeColumn field="type" header="Tipo" sortable style="min-width: 120px">
+        <PrimeColumn field="type" :header="$t('admin.orders.list.table.headers.type')" sortable style="min-width: 120px">
           <template #body="{ data }">
             <PrimeTag 
               :value="formatType(data.type)"
@@ -408,7 +410,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Payment Method -->
-        <PrimeColumn field="payment_method" header="Pagamento" style="min-width: 140px">
+        <PrimeColumn field="payment_method" :header="$t('admin.orders.list.table.headers.payment')" style="min-width: 140px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <i 
@@ -421,14 +423,14 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Total -->
-        <PrimeColumn field="total" header="Totale" sortable style="min-width: 120px">
+        <PrimeColumn field="total" :header="$t('admin.orders.list.table.headers.total')" sortable style="min-width: 120px">
           <template #body="{ data }">
             <span class="font-semibold text-neutral-900">{{ formatCurrency(data.total) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Status -->
-        <PrimeColumn field="status" header="Stato" sortable style="min-width: 130px">
+        <PrimeColumn field="status" :header="$t('admin.orders.list.table.headers.status')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <PrimeTag 
               :value="formatStatus(data.status)"
@@ -438,7 +440,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Date -->
-        <PrimeColumn field="created_at" header="Data" sortable style="min-width: 150px">
+        <PrimeColumn field="created_at" :header="$t('admin.orders.list.table.headers.date')" sortable style="min-width: 150px">
           <template #body="{ data }">
             <div>
               <div class="text-neutral-700">{{ formatDate(data.created_at) }}</div>
@@ -448,7 +450,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Paid At -->
-        <PrimeColumn field="paid_at" header="Pagato il" sortable style="min-width: 130px">
+        <PrimeColumn field="paid_at" :header="$t('admin.orders.list.table.headers.paidAt')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <span v-if="data.paid_at" class="text-success-dark">
               {{ formatDate(data.paid_at) }}
@@ -458,7 +460,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 100px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.orders.list.table.headers.actions')" style="min-width: 100px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <!-- View Details -->
@@ -468,7 +470,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Visualizza dettagli'"
+                v-tooltip.top="$t('admin.orders.list.tooltip.viewDetails')"
                 @click="navigateToDetail(data)"
               />
 
@@ -479,25 +481,25 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Altre azioni'"
+                v-tooltip.top="$t('admin.orders.list.tooltip.moreActions')"
                 @click="(event: Event) => ($refs[`menu-${data.id}`] as any)?.toggle(event)"
               />
-              
+
               <PrimeMenu
                 :ref="`menu-${data.id}`"
                 :model="[
                   {
-                    label: 'Visualizza dettagli',
+                    label: $t('admin.orders.list.contextMenu.viewDetails'),
                     icon: 'pi pi-eye',
                     command: () => navigateToDetail(data)
                   },
                   {
-                    label: 'Copia numero ordine',
+                    label: $t('admin.orders.list.contextMenu.copyOrderNumber'),
                     icon: 'pi pi-copy',
                     command: () => handleCopyOrderNumber(data)
                   },
                   {
-                    label: 'Vai al cliente',
+                    label: $t('admin.orders.list.contextMenu.goToClient'),
                     icon: 'pi pi-user',
                     command: () => router.push(`/admin/clients/${data.user_id}`),
                     visible: !!data.client

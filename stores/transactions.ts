@@ -522,9 +522,10 @@ export const useTransactionStore = defineStore('transaction', {
      * Carica lista transazioni con filtri e paginazione
      */
     async fetchTransactions() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           // Simula delay di rete
@@ -637,7 +638,7 @@ export const useTransactionStore = defineStore('transaction', {
         this.transactions = response.data
         this.pagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento transazioni'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchTransactions error:', error)
       } finally {
         this.loading = false
@@ -648,9 +649,10 @@ export const useTransactionStore = defineStore('transaction', {
      * Carica singola transazione con dettagli completi
      */
     async fetchTransaction(id: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
-      
+
       try {
         if (USE_MOCK_DATA) {
           await new Promise(resolve => setTimeout(resolve, 300))
@@ -736,7 +738,7 @@ export const useTransactionStore = defineStore('transaction', {
             } as TransactionWithDetails
           } else {
             this.currentTransaction = null
-            this.error = 'Transazione non trovata'
+            this.error = t('common.errors.notFound')
           }
           return
         }
@@ -745,7 +747,7 @@ export const useTransactionStore = defineStore('transaction', {
         const response = await api<{ data: TransactionWithDetails }>(`/admin/transactions/${id}`)
         this.currentTransaction = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento transazione'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchTransaction error:', error)
       } finally {
         this.loading = false

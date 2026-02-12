@@ -9,39 +9,40 @@ import type { Invoice, InvoiceWithDetails, SdiStatus, InvoiceType } from '~/type
  * Azioni conferma per fatture
  */
 export function useInvoiceActions() {
+  const { t } = useI18n()
   const toast = useToast()
   const confirm = useConfirm()
 
   const confirmResendSdi = (invoice: Invoice, onConfirm: () => void) => {
     confirm.require({
-      message: `Reinviare la fattura "${invoice.invoice_number}" a SDI?`,
-      header: 'Reinvio a SDI',
+      message: t('orders.invoices.confirm.resendSdi.message', { number: invoice.invoice_number }),
+      header: t('orders.invoices.confirm.resendSdi.header'),
       icon: 'pi pi-send',
-      acceptLabel: 'Reinvia',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('orders.invoices.confirm.resendSdi.accept'),
+      rejectLabel: t('orders.invoices.confirm.resendSdi.reject'),
       accept: onConfirm
     })
   }
 
   const confirmSendEmail = (invoice: Invoice, onConfirm: () => void) => {
     confirm.require({
-      message: `Inviare la fattura "${invoice.invoice_number}" via email al cliente?`,
-      header: 'Invio Email',
+      message: t('orders.invoices.confirm.sendEmail.message', { number: invoice.invoice_number }),
+      header: t('orders.invoices.confirm.sendEmail.header'),
       icon: 'pi pi-envelope',
-      acceptLabel: 'Invia',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('orders.invoices.confirm.sendEmail.accept'),
+      rejectLabel: t('orders.invoices.confirm.sendEmail.reject'),
       accept: onConfirm
     })
   }
 
   const confirmCreateCreditNote = (invoice: Invoice, onConfirm: () => void) => {
     confirm.require({
-      message: `Creare una nota di credito per la fattura "${invoice.invoice_number}"? L'importo sarà di ${formatCurrency(invoice.total)}.`,
-      header: 'Crea Nota di Credito',
+      message: t('orders.invoices.confirm.createCreditNote.message', { number: invoice.invoice_number, amount: formatCurrency(invoice.total) }),
+      header: t('orders.invoices.confirm.createCreditNote.header'),
       icon: 'pi pi-file-edit',
       acceptClass: 'p-button-warning',
-      acceptLabel: 'Crea',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('orders.invoices.confirm.createCreditNote.accept'),
+      rejectLabel: t('orders.invoices.confirm.createCreditNote.reject'),
       accept: onConfirm
     })
   }
@@ -49,7 +50,7 @@ export function useInvoiceActions() {
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Operazione completata',
+      summary: t('notifications.toast.summaries.success'),
       detail: message,
       life: 3000
     })
@@ -58,7 +59,7 @@ export function useInvoiceActions() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('notifications.toast.summaries.error'),
       detail: message,
       life: 5000
     })
@@ -67,7 +68,7 @@ export function useInvoiceActions() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Informazione',
+      summary: t('notifications.toast.summaries.info'),
       detail: message,
       life: 3000
     })
@@ -76,7 +77,7 @@ export function useInvoiceActions() {
   const showWarning = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('notifications.toast.summaries.warning'),
       detail: message,
       life: 4000
     })
@@ -97,10 +98,12 @@ export function useInvoiceActions() {
  * Formattatori per visualizzazione fatture
  */
 export function useInvoiceFormatters() {
+  const { t } = useI18n()
+
   const formatInvoiceType = (type: InvoiceType): string => {
     const labels: Record<InvoiceType, string> = {
-      invoice: 'Fattura',
-      credit_note: 'Nota di Credito'
+      invoice: t('orders.invoices.type.invoice'),
+      credit_note: t('orders.invoices.type.creditNote')
     }
     return labels[type] || type
   }
@@ -115,13 +118,13 @@ export function useInvoiceFormatters() {
 
   const formatSdiStatus = (status: SdiStatus): string => {
     const labels: Record<SdiStatus, string> = {
-      pending: 'In Attesa',
-      sent: 'Inviata',
-      delivered: 'Consegnata',
-      accepted: 'Accettata',
-      rejected: 'Rifiutata',
-      not_delivered: 'Non Consegnata',
-      error: 'Errore'
+      pending: t('orders.invoices.sdiStatus.pending'),
+      sent: t('orders.invoices.sdiStatus.sent'),
+      delivered: t('orders.invoices.sdiStatus.delivered'),
+      accepted: t('orders.invoices.sdiStatus.accepted'),
+      rejected: t('orders.invoices.sdiStatus.rejected'),
+      not_delivered: t('orders.invoices.sdiStatus.notDelivered'),
+      error: t('orders.invoices.sdiStatus.error')
     }
     return labels[status] || status
   }
@@ -238,22 +241,24 @@ export function formatCurrency(value: number): string {
  * Opzioni per filtri fatture
  */
 export function useInvoiceFilterOptions() {
-  const typeOptions = [
-    { label: 'Tutti i tipi', value: '' },
-    { label: 'Fatture', value: 'invoice' },
-    { label: 'Note di Credito', value: 'credit_note' }
-  ]
+  const { t } = useI18n()
 
-  const sdiStatusOptions = [
-    { label: 'Tutti gli stati', value: '' },
-    { label: 'In Attesa', value: 'pending' },
-    { label: 'Inviata', value: 'sent' },
-    { label: 'Consegnata', value: 'delivered' },
-    { label: 'Accettata', value: 'accepted' },
-    { label: 'Rifiutata', value: 'rejected' },
-    { label: 'Non Consegnata', value: 'not_delivered' },
-    { label: 'Errore', value: 'error' }
-  ]
+  const typeOptions = computed(() => [
+    { label: t('orders.invoices.type.all'), value: '' },
+    { label: t('orders.invoices.type.invoicePlural'), value: 'invoice' },
+    { label: t('orders.invoices.type.creditNotePlural'), value: 'credit_note' }
+  ])
+
+  const sdiStatusOptions = computed(() => [
+    { label: t('orders.invoices.sdiStatus.all'), value: '' },
+    { label: t('orders.invoices.sdiStatus.pending'), value: 'pending' },
+    { label: t('orders.invoices.sdiStatus.sent'), value: 'sent' },
+    { label: t('orders.invoices.sdiStatus.delivered'), value: 'delivered' },
+    { label: t('orders.invoices.sdiStatus.accepted'), value: 'accepted' },
+    { label: t('orders.invoices.sdiStatus.rejected'), value: 'rejected' },
+    { label: t('orders.invoices.sdiStatus.notDelivered'), value: 'not_delivered' },
+    { label: t('orders.invoices.sdiStatus.error'), value: 'error' }
+  ])
 
   return {
     typeOptions,

@@ -105,14 +105,14 @@ const addToCart = async (leadId: number, mode: 'exclusive' | 'shared') => {
   if (success) {
     showAddedToCart()
   } else {
-    showError(cartStore.error || t('cart.toast.addError'))
+    showError(cartStore.error || t('cart.toast.errorAddingToCart'))
   }
 }
 
 // Add multiple leads to cart
 const addSelectedToCart = async () => {
   if (selectedLeads.value.length === 0) {
-    showError(t('leads.catalog.selectAtLeastOne'))
+    showError(t('leads.catalog.toast.selectAtLeast'))
     return
   }
 
@@ -138,10 +138,10 @@ const addSelectedToCart = async () => {
   }
 
   if (addedCount > 0) {
-    showSuccess(t('cart.toast.bulkAddSuccess', { count: addedCount }))
+    showSuccess(t('leads.catalog.toast.addedMultiple', { count: addedCount }))
   }
   if (errorCount > 0) {
-    showError(t('cart.toast.bulkAddError', { count: errorCount }))
+    showError(t('leads.catalog.toast.notAdded', { count: errorCount }))
   }
 
   selectedLeads.value = []
@@ -183,7 +183,7 @@ const bulkTotalPrice = computed(() => {
       <div>
         <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ $t('catalog.page.title') }}</h1>
         <p class="text-surface-600 dark:text-surface-400">
-          {{ $t('leads.catalog.leadsAvailable', { count: catalogStore.pagination.total }) }}
+          {{ $t('leads.catalog.available', { count: catalogStore.pagination.total }) }}
         </p>
       </div>
       <div class="flex items-center gap-2">
@@ -278,15 +278,15 @@ const bulkTotalPrice = computed(() => {
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div class="flex items-center gap-4">
             <span class="text-primary-700 dark:text-primary-300 font-medium">
-              {{ $t('leads.catalog.leadsSelected', { count: selectedLeads.length }) }}
+              {{ $t('leads.catalog.bulk.selected', { count: selectedLeads.length }) }}
               <span v-if="selectableCount < selectedLeads.length" class="text-sm text-primary-500">
-                {{ $t('leads.catalog.purchasable', { count: selectableCount }) }}
+                {{ $t('leads.catalog.bulk.purchasable', { count: selectableCount }) }}
               </span>
             </span>
           </div>
           <div class="flex items-center gap-3">
             <div class="flex items-center gap-2">
-              <label class="text-sm text-primary-700 dark:text-primary-300">{{ $t('catalog.filters.mode') }}:</label>
+              <label class="text-sm text-primary-700 dark:text-primary-300">{{ $t('leads.catalog.bulk.mode') }}</label>
               <PrimeSelect
                 v-model="bulkPurchaseMode"
                 :options="bulkModeOptions"
@@ -302,7 +302,7 @@ const bulkTotalPrice = computed(() => {
               </span>
             </div>
             <PrimeButton
-              :label="$t('leads.catalog.addToCart', { count: selectableCount })"
+              :label="$t('leads.catalog.bulk.addToCart', { count: selectableCount })"
               icon="pi pi-shopping-cart"
               @click="addSelectedToCart"
               :disabled="selectableCount === 0"

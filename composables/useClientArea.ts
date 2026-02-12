@@ -16,6 +16,8 @@ import type {
  * Formatters for client area
  */
 export function useClientFormatters() {
+  const { t } = useI18n()
+
   // Format currency
   const formatCurrency = (amount: number): string => {
     return amount.toLocaleString('it-IT', {
@@ -57,22 +59,22 @@ export function useClientFormatters() {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
     const diffDays = Math.floor(diffHours / 24)
 
-    if (diffMins < 1) return 'Adesso'
-    if (diffMins < 60) return `${diffMins} min fa`
-    if (diffHours < 24) return `${diffHours} ore fa`
-    if (diffDays === 1) return 'Ieri'
-    if (diffDays < 7) return `${diffDays} giorni fa`
+    if (diffMins < 1) return t('common.time.now')
+    if (diffMins < 60) return t('common.time.minutesAgo', { count: diffMins })
+    if (diffHours < 24) return t('common.time.hoursAgo', { count: diffHours })
+    if (diffDays === 1) return t('common.time.yesterday')
+    if (diffDays < 7) return t('common.time.daysAgo', { count: diffDays })
     return formatDate(date)
   }
 
   // Format contact status
   const formatContactStatus = (status: ContactStatus): string => {
     const labels: Record<ContactStatus, string> = {
-      new: 'Nuovo',
-      contacted: 'Contattato',
-      in_progress: 'In lavorazione',
-      not_interested: 'Non interessato',
-      converted: 'Convertito'
+      new: t('leads.status.new'),
+      contacted: t('leads.status.contacted'),
+      in_progress: t('leads.status.inProgress'),
+      not_interested: t('leads.status.notInterested'),
+      converted: t('leads.status.converted')
     }
     return labels[status] || status
   }
@@ -92,9 +94,9 @@ export function useClientFormatters() {
   // Format acquisition type
   const formatAcquisitionType = (type: AcquisitionType): string => {
     const labels: Record<AcquisitionType, string> = {
-      exclusive: 'Esclusivo',
-      shared: 'Condiviso',
-      free_trial: 'Prova Gratuita'
+      exclusive: t('leads.acquisitionType.exclusive'),
+      shared: t('leads.acquisitionType.shared'),
+      free_trial: t('leads.acquisitionType.freeTrial')
     }
     return labels[type] || type
   }
@@ -111,18 +113,18 @@ export function useClientFormatters() {
 
   // Format purchase mode
   const formatPurchaseMode = (mode: PurchaseMode): string => {
-    return mode === 'exclusive' ? 'Esclusivo' : 'Condiviso'
+    return mode === 'exclusive' ? t('common.purchaseMode.exclusive') : t('common.purchaseMode.shared')
   }
 
   // Format order status
   const formatOrderStatus = (status: OrderStatus): string => {
     const labels: Record<OrderStatus, string> = {
-      pending: 'In attesa',
-      paid: 'Pagato',
-      processing: 'In elaborazione',
-      completed: 'Completato',
-      failed: 'Fallito',
-      refunded: 'Rimborsato'
+      pending: t('orders.status.pending'),
+      paid: t('orders.status.paid'),
+      processing: t('orders.status.processing'),
+      completed: t('orders.status.completed'),
+      failed: t('orders.status.failed'),
+      refunded: t('orders.status.refunded')
     }
     return labels[status] || status
   }
@@ -143,9 +145,9 @@ export function useClientFormatters() {
   // Format order type
   const formatOrderType = (type: OrderType): string => {
     const labels: Record<OrderType, string> = {
-      single: 'Singolo',
-      package: 'Pacchetto',
-      free_trial: 'Prova Gratuita'
+      single: t('common.orderType.single'),
+      package: t('common.orderType.package'),
+      free_trial: t('common.orderType.freeTrial')
     }
     return labels[type] || type
   }
@@ -182,12 +184,13 @@ export function useClientFormatters() {
  * Toast notifications for client area
  */
 export function useClientToast() {
+  const { t } = useI18n()
   const toast = useToast()
 
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Successo',
+      summary: t('notifications.toast.summaries.success'),
       detail: message,
       life: 3000
     })
@@ -196,7 +199,7 @@ export function useClientToast() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('notifications.toast.summaries.error'),
       detail: message,
       life: 5000
     })
@@ -205,7 +208,7 @@ export function useClientToast() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Info',
+      summary: t('notifications.toast.summaries.info'),
       detail: message,
       life: 3000
     })
@@ -214,7 +217,7 @@ export function useClientToast() {
   const showWarn = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('notifications.toast.summaries.warning'),
       detail: message,
       life: 4000
     })
@@ -223,8 +226,8 @@ export function useClientToast() {
   const showAddedToCart = () => {
     toast.add({
       severity: 'success',
-      summary: 'Aggiunto al carrello',
-      detail: 'Il lead è stato aggiunto al carrello',
+      summary: t('notifications.toast.cart.addedToCart'),
+      detail: t('notifications.toast.cart.addedToCartDetail'),
       life: 3000
     })
   }
@@ -242,15 +245,16 @@ export function useClientToast() {
  * Confirm dialogs for client area
  */
 export function useClientConfirm() {
+  const { t } = useI18n()
   const confirm = useConfirm()
 
   const confirmRemoveFromCart = (onConfirm: () => void) => {
     confirm.require({
-      message: 'Sei sicuro di voler rimuovere questo lead dal carrello?',
-      header: 'Rimuovi dal carrello',
+      message: t('notifications.confirm.removeFromCart.message'),
+      header: t('notifications.confirm.removeFromCart.header'),
       icon: 'pi pi-trash',
-      acceptLabel: 'Rimuovi',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('notifications.confirm.removeFromCart.acceptLabel'),
+      rejectLabel: t('notifications.confirm.removeFromCart.rejectLabel'),
       acceptClass: 'p-button-danger',
       accept: onConfirm
     })
@@ -258,11 +262,11 @@ export function useClientConfirm() {
 
   const confirmClearCart = (onConfirm: () => void) => {
     confirm.require({
-      message: 'Sei sicuro di voler svuotare il carrello?',
-      header: 'Svuota carrello',
+      message: t('notifications.confirm.clearCart.message'),
+      header: t('notifications.confirm.clearCart.header'),
       icon: 'pi pi-trash',
-      acceptLabel: 'Svuota',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('notifications.confirm.clearCart.acceptLabel'),
+      rejectLabel: t('notifications.confirm.clearCart.rejectLabel'),
       acceptClass: 'p-button-danger',
       accept: onConfirm
     })
@@ -270,22 +274,22 @@ export function useClientConfirm() {
 
   const confirmPurchase = (total: string, onConfirm: () => void) => {
     confirm.require({
-      message: `Confermi l'acquisto per un totale di ${total}?`,
-      header: 'Conferma acquisto',
+      message: t('notifications.confirm.purchase.message', { total }),
+      header: t('notifications.confirm.purchase.header'),
       icon: 'pi pi-shopping-cart',
-      acceptLabel: 'Conferma',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('notifications.confirm.purchase.acceptLabel'),
+      rejectLabel: t('notifications.confirm.purchase.rejectLabel'),
       accept: onConfirm
     })
   }
 
   const confirmClaimTrial = (count: number, onConfirm: () => void) => {
     confirm.require({
-      message: `Confermi il riscatto di ${count} lead gratuiti?`,
-      header: 'Riscatta lead gratuiti',
+      message: t('notifications.confirm.claimTrial.message', { count }),
+      header: t('notifications.confirm.claimTrial.header'),
       icon: 'pi pi-gift',
-      acceptLabel: 'Riscatta',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('notifications.confirm.claimTrial.acceptLabel'),
+      rejectLabel: t('notifications.confirm.claimTrial.rejectLabel'),
       accept: onConfirm
     })
   }
@@ -302,41 +306,43 @@ export function useClientConfirm() {
  * Filter options for client area
  */
 export function useClientFilterOptions() {
-  const contactStatusOptions = [
-    { label: 'Tutti gli stati', value: '' },
-    { label: 'Nuovo', value: 'new' },
-    { label: 'Contattato', value: 'contacted' },
-    { label: 'In lavorazione', value: 'in_progress' },
-    { label: 'Non interessato', value: 'not_interested' },
-    { label: 'Convertito', value: 'converted' }
-  ]
+  const { t } = useI18n()
 
-  const acquisitionTypeOptions = [
-    { label: 'Tutti i tipi', value: '' },
-    { label: 'Esclusivo', value: 'exclusive' },
-    { label: 'Condiviso', value: 'shared' },
-    { label: 'Prova Gratuita', value: 'free_trial' }
-  ]
+  const contactStatusOptions = computed(() => [
+    { label: t('leads.status.all'), value: '' },
+    { label: t('leads.status.new'), value: 'new' },
+    { label: t('leads.status.contacted'), value: 'contacted' },
+    { label: t('leads.status.inProgress'), value: 'in_progress' },
+    { label: t('leads.status.notInterested'), value: 'not_interested' },
+    { label: t('leads.status.converted'), value: 'converted' }
+  ])
 
-  const orderStatusOptions = [
-    { label: 'Tutti gli stati', value: '' },
-    { label: 'Completato', value: 'completed' },
-    { label: 'In elaborazione', value: 'processing' },
-    { label: 'In attesa', value: 'pending' },
-    { label: 'Fallito', value: 'failed' }
-  ]
+  const acquisitionTypeOptions = computed(() => [
+    { label: t('leads.acquisitionType.all'), value: '' },
+    { label: t('leads.acquisitionType.exclusive'), value: 'exclusive' },
+    { label: t('leads.acquisitionType.shared'), value: 'shared' },
+    { label: t('leads.acquisitionType.freeTrial'), value: 'free_trial' }
+  ])
 
-  const orderTypeOptions = [
-    { label: 'Tutti i tipi', value: '' },
-    { label: 'Singolo', value: 'single' },
-    { label: 'Pacchetto', value: 'package' },
-    { label: 'Prova Gratuita', value: 'free_trial' }
-  ]
+  const orderStatusOptions = computed(() => [
+    { label: t('common.filterDefaults.allStatuses'), value: '' },
+    { label: t('orders.status.completed'), value: 'completed' },
+    { label: t('orders.status.processing'), value: 'processing' },
+    { label: t('orders.status.pending'), value: 'pending' },
+    { label: t('orders.status.failed'), value: 'failed' }
+  ])
 
-  const purchaseModeOptions = [
-    { label: 'Esclusivo', value: 'exclusive' },
-    { label: 'Condiviso', value: 'shared' }
-  ]
+  const orderTypeOptions = computed(() => [
+    { label: t('common.filterDefaults.allTypes'), value: '' },
+    { label: t('common.orderType.single'), value: 'single' },
+    { label: t('common.orderType.package'), value: 'package' },
+    { label: t('common.orderType.freeTrial'), value: 'free_trial' }
+  ])
+
+  const purchaseModeOptions = computed(() => [
+    { label: t('common.purchaseMode.exclusive'), value: 'exclusive' },
+    { label: t('common.purchaseMode.shared'), value: 'shared' }
+  ])
 
   return {
     contactStatusOptions,
@@ -351,6 +357,8 @@ export function useClientFilterOptions() {
  * Billing form validation
  */
 export function useBillingValidation() {
+  const { t } = useI18n()
+
   const errors = reactive<Record<string, string>>({
     billing_address: '',
     billing_city: '',
@@ -378,41 +386,41 @@ export function useBillingValidation() {
     Object.keys(errors).forEach(key => errors[key] = '')
 
     if (!data.billing_address) {
-      errors.billing_address = 'Inserisci l\'indirizzo'
+      errors.billing_address = t('validation.required.billingAddress')
       isValid = false
     }
 
     if (!data.billing_city) {
-      errors.billing_city = 'Inserisci la città'
+      errors.billing_city = t('validation.required.billingCity')
       isValid = false
     }
 
     if (!data.billing_province) {
-      errors.billing_province = 'Inserisci la provincia'
+      errors.billing_province = t('validation.required.billingProvince')
       isValid = false
     }
 
     if (!data.billing_zip) {
-      errors.billing_zip = 'Inserisci il CAP'
+      errors.billing_zip = t('validation.required.billingZip')
       isValid = false
     } else if (!/^\d{5}$/.test(data.billing_zip)) {
-      errors.billing_zip = 'CAP non valido (5 cifre)'
+      errors.billing_zip = t('validation.invalid.billingZip')
       isValid = false
     }
 
     // SDI code or PEC required
     if (!data.sdi_code && !data.pec_email) {
-      errors.sdi_code = 'Inserisci il codice SDI o la PEC'
+      errors.sdi_code = t('validation.required.sdiOrPec')
       isValid = false
     }
 
     if (data.sdi_code && !/^[A-Z0-9]{7}$/.test(data.sdi_code)) {
-      errors.sdi_code = 'Codice SDI non valido (7 caratteri)'
+      errors.sdi_code = t('validation.invalid.sdiCode')
       isValid = false
     }
 
     if (data.pec_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.pec_email)) {
-      errors.pec_email = 'Email PEC non valida'
+      errors.pec_email = t('validation.invalid.pecEmail')
       isValid = false
     }
 
@@ -435,6 +443,8 @@ export function useBillingValidation() {
  * Password change validation
  */
 export function usePasswordChangeValidation() {
+  const { t } = useI18n()
+
   const errors = reactive<Record<string, string>>({
     current_password: '',
     password: '',
@@ -463,23 +473,23 @@ export function usePasswordChangeValidation() {
     Object.keys(errors).forEach(key => errors[key] = '')
 
     if (!data.current_password) {
-      errors.current_password = 'Inserisci la password attuale'
+      errors.current_password = t('validation.required.currentPassword')
       isValid = false
     }
 
     if (!data.password) {
-      errors.password = 'Inserisci la nuova password'
+      errors.password = t('validation.required.newPassword')
       isValid = false
     } else if (!isStrongPassword(data.password)) {
-      errors.password = 'Min. 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero'
+      errors.password = t('validation.password.tooWeakShort')
       isValid = false
     }
 
     if (!data.password_confirmation) {
-      errors.password_confirmation = 'Conferma la nuova password'
+      errors.password_confirmation = t('validation.required.newPasswordConfirmation')
       isValid = false
     } else if (data.password !== data.password_confirmation) {
-      errors.password_confirmation = 'Le password non coincidono'
+      errors.password_confirmation = t('validation.password.mismatch')
       isValid = false
     }
 

@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const invoiceStore = useInvoiceStore()
 const {
@@ -101,9 +103,9 @@ const handleResendSdi = (invoice: Invoice) => {
   confirmResendSdi(invoice, async () => {
     const success = await invoiceStore.resendToSdi(invoice.id)
     if (success) {
-      showSuccess(`Fattura "${invoice.invoice_number}" reinviata a SDI`)
+      showSuccess(t('admin.invoices.list.toast.resendSdiSuccess', { number: invoice.invoice_number }))
     } else {
-      showError(invoiceStore.error || 'Errore nel reinvio a SDI')
+      showError(invoiceStore.error || t('admin.invoices.list.toast.resendSdiError'))
     }
   })
 }
@@ -112,9 +114,9 @@ const handleSendEmail = (invoice: Invoice) => {
   confirmSendEmail(invoice, async () => {
     const success = await invoiceStore.sendByEmail(invoice.id)
     if (success) {
-      showSuccess(`Fattura "${invoice.invoice_number}" inviata via email`)
+      showSuccess(t('admin.invoices.list.toast.sendEmailSuccess', { number: invoice.invoice_number }))
     } else {
-      showError(invoiceStore.error || 'Errore nell\'invio email')
+      showError(invoiceStore.error || t('admin.invoices.list.toast.sendEmailError'))
     }
   })
 }
@@ -134,12 +136,12 @@ const handleCreateCreditNote = async () => {
   )
 
   if (creditNote) {
-    showSuccess(`Nota di credito "${creditNote.invoice_number}" creata con successo`)
+    showSuccess(t('admin.invoices.list.toast.creditNoteSuccess', { number: creditNote.invoice_number }))
     creditNoteDialog.value = false
     invoiceForCreditNote.value = null
     loadStats()
   } else {
-    showError(invoiceStore.error || 'Errore nella creazione della nota di credito')
+    showError(invoiceStore.error || t('admin.invoices.list.toast.creditNoteError'))
   }
 }
 
@@ -147,9 +149,9 @@ const handleDownloadPdf = async (invoice: Invoice) => {
   const url = await invoiceStore.downloadPdf(invoice.id)
   if (url) {
     window.open(url, '_blank')
-    showSuccess('Download PDF avviato')
+    showSuccess(t('admin.invoices.list.toast.downloadSuccess'))
   } else {
-    showError(invoiceStore.error || 'Errore nel download del PDF')
+    showError(invoiceStore.error || t('admin.invoices.list.toast.downloadError'))
   }
 }
 
@@ -184,12 +186,12 @@ onUnmounted(() => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Fatture</h1>
-        <p class="page-subtitle">Gestione fatture elettroniche e note di credito</p>
+        <h1 class="page-title">{{ $t('admin.invoices.list.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.invoices.list.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
         <PrimeButton
-          label="Export"
+          :label="$t('admin.invoices.list.actions.export')"
           icon="pi pi-download"
           severity="secondary"
           outlined
@@ -205,7 +207,7 @@ onUnmounted(() => {
           <i class="pi pi-file"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.total_invoices || 0 }}</div>
-        <div class="kpi-card-label">Fatture Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.invoices.list.kpis.totalInvoices') }}</div>
       </div>
 
       <div class="kpi-card">
@@ -213,7 +215,7 @@ onUnmounted(() => {
           <i class="pi pi-euro"></i>
         </div>
         <div class="kpi-card-value">{{ formatCurrency(stats?.total_amount || 0) }}</div>
-        <div class="kpi-card-label">Totale Fatturato</div>
+        <div class="kpi-card-label">{{ $t('admin.invoices.list.kpis.totalRevenue') }}</div>
       </div>
 
       <div class="kpi-card">
@@ -221,7 +223,7 @@ onUnmounted(() => {
           <i class="pi pi-clock"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.by_sdi_status?.pending || 0 }}</div>
-        <div class="kpi-card-label">In Attesa SDI</div>
+        <div class="kpi-card-label">{{ $t('admin.invoices.list.kpis.pendingSdi') }}</div>
       </div>
 
       <div class="kpi-card">
@@ -229,7 +231,7 @@ onUnmounted(() => {
           <i class="pi pi-exclamation-triangle"></i>
         </div>
         <div class="kpi-card-value">{{ (stats?.by_sdi_status?.rejected || 0) + (stats?.by_sdi_status?.error || 0) }}</div>
-        <div class="kpi-card-label">Problemi SDI</div>
+        <div class="kpi-card-label">{{ $t('admin.invoices.list.kpis.sdiIssues') }}</div>
       </div>
     </div>
 
@@ -242,7 +244,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per numero, cliente, P.IVA..."
+              :placeholder="$t('admin.invoices.list.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -252,7 +254,7 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('admin.invoices.list.filters.hideFilters') : $t('admin.invoices.list.filters.showFilters')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
@@ -261,7 +263,7 @@ onUnmounted(() => {
 
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('admin.invoices.list.filters.clearFilters')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -277,13 +279,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Type Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Tipo</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.invoices.list.filters.type') }}</label>
               <PrimeSelect
                 v-model="typeFilter"
                 :options="typeOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona tipo"
+                :placeholder="$t('admin.invoices.list.filters.selectType')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -291,13 +293,13 @@ onUnmounted(() => {
 
             <!-- SDI Status Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Stato SDI</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.invoices.list.filters.sdiStatus') }}</label>
               <PrimeSelect
                 v-model="sdiStatusFilter"
                 :options="sdiStatusOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona stato"
+                :placeholder="$t('admin.invoices.list.filters.selectStatus')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -306,7 +308,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('admin.invoices.list.filters.applyFilters')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -335,7 +337,7 @@ onUnmounted(() => {
         removableSort
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} fatture"
+        :currentPageReportTemplate="$t('admin.invoices.list.table.paginatorTemplate')"
         @page="onPage"
         @sort="onSort"
       >
@@ -343,7 +345,7 @@ onUnmounted(() => {
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-file text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600">Nessuna fattura trovata</p>
+            <p class="text-neutral-600">{{ $t('admin.invoices.list.table.empty') }}</p>
           </div>
         </template>
 
@@ -351,7 +353,7 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento fatture...</span>
+            <span class="text-neutral-600">{{ $t('admin.invoices.list.table.loading') }}</span>
           </div>
         </template>
 
@@ -359,7 +361,7 @@ onUnmounted(() => {
         <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
         <!-- Invoice Number -->
-        <PrimeColumn field="invoice_number" header="Numero" sortable style="min-width: 160px">
+        <PrimeColumn field="invoice_number" :header="$t('admin.invoices.list.table.headers.number')" sortable style="min-width: 160px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <i
@@ -375,17 +377,17 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Client -->
-        <PrimeColumn field="billing_data.company_name" header="Cliente" sortable style="min-width: 200px">
+        <PrimeColumn field="billing_data.company_name" :header="$t('admin.invoices.list.table.headers.client')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div>
               <div class="font-medium text-neutral-900">{{ data.billing_data?.company_name || '-' }}</div>
-              <div class="text-xs text-neutral-500">P.IVA: {{ data.billing_data?.vat_number || '-' }}</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.invoices.list.table.vatNumber', { vat: data.billing_data?.vat_number || '-' }) }}</div>
             </div>
           </template>
         </PrimeColumn>
 
         <!-- Order -->
-        <PrimeColumn field="order.order_number" header="Ordine" style="min-width: 150px">
+        <PrimeColumn field="order.order_number" :header="$t('admin.invoices.list.table.headers.order')" style="min-width: 150px">
           <template #body="{ data }">
             <NuxtLink
               v-if="data.order"
@@ -399,7 +401,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Amount -->
-        <PrimeColumn field="total" header="Importo" sortable style="min-width: 120px">
+        <PrimeColumn field="total" :header="$t('admin.invoices.list.table.headers.amount')" sortable style="min-width: 120px">
           <template #body="{ data }">
             <span
               class="font-semibold"
@@ -411,7 +413,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- SDI Status -->
-        <PrimeColumn field="sdi_status" header="Stato SDI" sortable style="min-width: 140px">
+        <PrimeColumn field="sdi_status" :header="$t('admin.invoices.list.table.headers.sdiStatus')" sortable style="min-width: 140px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <PrimeTag
@@ -424,14 +426,14 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Issue Date -->
-        <PrimeColumn field="issued_at" header="Data Emissione" sortable style="min-width: 130px">
+        <PrimeColumn field="issued_at" :header="$t('admin.invoices.list.table.headers.issueDate')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <span class="text-neutral-600">{{ formatDate(data.issued_at) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Fatture Cloud ID -->
-        <PrimeColumn field="fatture_cloud_id" header="ID Fatture Cloud" style="min-width: 140px">
+        <PrimeColumn field="fatture_cloud_id" :header="$t('admin.invoices.list.table.headers.fattureCloudId')" style="min-width: 140px">
           <template #body="{ data }">
             <span v-if="data.fatture_cloud_id" class="text-xs text-neutral-500 font-mono">
               {{ data.fatture_cloud_id }}
@@ -441,7 +443,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 120px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.invoices.list.table.headers.actions')" style="min-width: 120px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <!-- View -->
@@ -451,7 +453,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Visualizza'"
+                v-tooltip.top="$t('admin.invoices.list.tooltip.view')"
                 @click="navigateToDetail(data)"
               />
 
@@ -462,7 +464,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Altre azioni'"
+                v-tooltip.top="$t('admin.invoices.list.tooltip.moreActions')"
                 @click="(event: Event) => ($refs[`menu-${data.id}`] as any)?.toggle(event)"
               />
 
@@ -470,28 +472,28 @@ onUnmounted(() => {
                 :ref="`menu-${data.id}`"
                 :model="[
                   {
-                    label: 'Visualizza dettagli',
+                    label: $t('admin.invoices.list.contextMenu.viewDetails'),
                     icon: 'pi pi-eye',
                     command: () => navigateToDetail(data)
                   },
                   {
-                    label: 'Scarica PDF',
+                    label: $t('admin.invoices.list.contextMenu.downloadPdf'),
                     icon: 'pi pi-download',
                     command: () => handleDownloadPdf(data)
                   },
                   {
-                    label: 'Invia via email',
+                    label: $t('admin.invoices.list.contextMenu.sendByEmail'),
                     icon: 'pi pi-envelope',
                     command: () => handleSendEmail(data)
                   },
                   { separator: true },
                   ...(canResendToSdi(data) ? [{
-                    label: 'Reinvia a SDI',
+                    label: $t('admin.invoices.list.contextMenu.resendToSdi'),
                     icon: 'pi pi-send',
                     command: () => handleResendSdi(data)
                   }] : []),
                   ...(canCreateCreditNote(data) ? [{
-                    label: 'Crea nota di credito',
+                    label: $t('admin.invoices.list.contextMenu.createCreditNote'),
                     icon: 'pi pi-file-edit',
                     command: () => openCreditNoteDialog(data)
                   }] : [])
@@ -508,7 +510,7 @@ onUnmounted(() => {
     <PrimeDialog
       v-model:visible="creditNoteDialog"
       modal
-      header="Crea Nota di Credito"
+      :header="$t('admin.invoices.list.creditNote.dialogTitle')"
       :style="{ width: '500px' }"
     >
       <div class="space-y-4">
@@ -521,7 +523,7 @@ onUnmounted(() => {
             </div>
           </div>
           <div class="text-sm text-neutral-600">
-            Importo nota di credito:
+            {{ $t('admin.invoices.list.creditNote.amount') }}
             <span class="font-semibold text-danger-600">
               {{ formatCurrency(-(invoiceForCreditNote?.total || 0)) }}
             </span>
@@ -530,12 +532,12 @@ onUnmounted(() => {
 
         <div class="form-group">
           <label class="block text-sm font-medium text-neutral-700 mb-2">
-            Motivo (opzionale)
+            {{ $t('admin.invoices.list.creditNote.reason') }}
           </label>
           <PrimeTextarea
             v-model="creditNoteReason"
             rows="3"
-            placeholder="Inserisci il motivo della nota di credito..."
+            :placeholder="$t('admin.invoices.list.creditNote.reasonPlaceholder')"
             class="w-full"
           />
         </div>
@@ -543,7 +545,7 @@ onUnmounted(() => {
         <div class="p-3 bg-warning-50 rounded-lg flex items-start gap-3">
           <i class="pi pi-exclamation-triangle text-warning-600"></i>
           <p class="text-sm text-warning-800">
-            La nota di credito verrà emessa e inviata automaticamente a SDI. Questa operazione non può essere annullata.
+            {{ $t('admin.invoices.list.creditNote.warning') }}
           </p>
         </div>
       </div>
@@ -551,13 +553,13 @@ onUnmounted(() => {
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.invoices.list.creditNote.cancel')"
             severity="secondary"
             outlined
             @click="creditNoteDialog = false"
           />
           <PrimeButton
-            label="Crea Nota di Credito"
+            :label="$t('admin.invoices.list.creditNote.create')"
             severity="warning"
             icon="pi pi-file-edit"
             :loading="invoiceStore.saving"

@@ -354,6 +354,7 @@ export const useLeadStore = defineStore('lead', {
      * Carica lista lead con filtri e paginazione
      */
     async fetchLeads() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -455,7 +456,7 @@ export const useLeadStore = defineStore('lead', {
         this.leads = response.data
         this.pagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento lead'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchLeads error:', error)
       } finally {
         this.loading = false
@@ -466,6 +467,7 @@ export const useLeadStore = defineStore('lead', {
      * Carica singolo lead
      */
     async fetchLead(id: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -475,7 +477,7 @@ export const useLeadStore = defineStore('lead', {
           const lead = mockLeads.find(l => l.id === id)
           this.currentLead = lead || null
           if (!lead) {
-            this.error = 'Lead non trovato'
+            this.error = t('common.errors.notFound')
           }
           return
         }
@@ -484,7 +486,7 @@ export const useLeadStore = defineStore('lead', {
         const response = await api<{ data: Lead }>(`/admin/leads/${id}`)
         this.currentLead = response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento lead'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchLead error:', error)
       } finally {
         this.loading = false
@@ -495,6 +497,7 @@ export const useLeadStore = defineStore('lead', {
      * Crea nuovo lead
      */
     async createLead(data: LeadCreateForm): Promise<Lead | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -539,7 +542,7 @@ export const useLeadStore = defineStore('lead', {
 
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nella creazione lead'
+        this.error = error.message || t('common.errors.createError')
         console.error('createLead error:', error)
         return null
       } finally {
@@ -551,6 +554,7 @@ export const useLeadStore = defineStore('lead', {
      * Aggiorna lead
      */
     async updateLead(id: number, data: LeadUpdateForm): Promise<Lead | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -580,7 +584,7 @@ export const useLeadStore = defineStore('lead', {
 
             return updated
           }
-          this.error = 'Lead non trovato'
+          this.error = t('common.errors.notFound')
           return null
         }
 
@@ -601,7 +605,7 @@ export const useLeadStore = defineStore('lead', {
 
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'aggiornamento lead'
+        this.error = error.message || t('common.errors.updateError')
         console.error('updateLead error:', error)
         return null
       } finally {
@@ -613,6 +617,7 @@ export const useLeadStore = defineStore('lead', {
      * Elimina lead (solo se non venduto)
      */
     async deleteLead(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -620,7 +625,7 @@ export const useLeadStore = defineStore('lead', {
         // Verifica che il lead non sia venduto
         const lead = mockLeads.find(l => l.id === id) || this.leads.find(l => l.id === id)
         if (lead && lead.status !== 'free') {
-          this.error = 'Non è possibile eliminare un lead già venduto'
+          this.error = t('common.errors.genericError')
           return false
         }
 
@@ -633,7 +638,7 @@ export const useLeadStore = defineStore('lead', {
             this.pagination.total--
             return true
           }
-          this.error = 'Lead non trovato'
+          this.error = t('common.errors.notFound')
           return false
         }
 
@@ -645,7 +650,7 @@ export const useLeadStore = defineStore('lead', {
 
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'eliminazione lead'
+        this.error = error.message || t('common.errors.deleteError')
         console.error('deleteLead error:', error)
         return false
       } finally {
@@ -657,6 +662,7 @@ export const useLeadStore = defineStore('lead', {
      * Elimina lead multipli (bulk delete - solo spam/non venduti)
      */
     async deleteLeads(ids: number[]): Promise<{ success: number; failed: number }> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -696,7 +702,7 @@ export const useLeadStore = defineStore('lead', {
 
         return { success, failed }
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'eliminazione lead'
+        this.error = error.message || t('common.errors.deleteError')
         return { success, failed }
       } finally {
         this.saving = false
@@ -707,6 +713,7 @@ export const useLeadStore = defineStore('lead', {
      * Import lead da file CSV/XLSX
      */
     async importLeads(config: LeadImportConfig): Promise<LeadImportResult | null> {
+      const { t } = useI18n()
       this.importing = true
       this.error = null
 
@@ -750,7 +757,7 @@ export const useLeadStore = defineStore('lead', {
 
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'import dei lead'
+        this.error = error.message || t('common.errors.importError')
         console.error('importLeads error:', error)
         return null
       } finally {
@@ -825,6 +832,7 @@ export const useLeadStore = defineStore('lead', {
      * Crea nuova sorgente
      */
     async createSource(data: LeadSourceCreateForm): Promise<LeadSource | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -856,7 +864,7 @@ export const useLeadStore = defineStore('lead', {
         this.sources.push(response.data)
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nella creazione sorgente'
+        this.error = error.message || t('common.errors.createError')
         return null
       } finally {
         this.saving = false
@@ -867,6 +875,7 @@ export const useLeadStore = defineStore('lead', {
      * Aggiorna sorgente
      */
     async updateSource(id: number, data: LeadSourceUpdateForm): Promise<LeadSource | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -903,7 +912,7 @@ export const useLeadStore = defineStore('lead', {
 
         return response.data
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'aggiornamento sorgente'
+        this.error = error.message || t('common.errors.updateError')
         return null
       } finally {
         this.saving = false
@@ -914,6 +923,7 @@ export const useLeadStore = defineStore('lead', {
      * Rigenera API key per una sorgente
      */
     async regenerateApiKey(id: number): Promise<string | null> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -944,7 +954,7 @@ export const useLeadStore = defineStore('lead', {
 
         return response.data.api_key
       } catch (error: any) {
-        this.error = error.message || 'Errore nella rigenerazione API key'
+        this.error = error.message || t('common.errors.genericError')
         return null
       } finally {
         this.saving = false
@@ -955,6 +965,7 @@ export const useLeadStore = defineStore('lead', {
      * Elimina sorgente
      */
     async deleteSource(id: number): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -962,7 +973,7 @@ export const useLeadStore = defineStore('lead', {
         // Verifica che non ci siano lead associati
         const hasLeads = mockLeads.some(l => l.source_id === id)
         if (hasLeads) {
-          this.error = 'Non è possibile eliminare una sorgente con lead associati'
+          this.error = t('common.errors.genericError')
           return false
         }
 
@@ -983,7 +994,7 @@ export const useLeadStore = defineStore('lead', {
         this.sources = this.sources.filter(s => s.id !== id)
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nell\'eliminazione sorgente'
+        this.error = error.message || t('common.errors.deleteError')
         return false
       } finally {
         this.saving = false

@@ -9,23 +9,24 @@ import type { ReportPeriod, ExportType, ExportFormat } from '~/types/report'
  * Azioni e notifiche per report
  */
 export function useReportActions() {
+  const { t } = useI18n()
   const toast = useToast()
   const confirm = useConfirm()
 
   const confirmExport = (type: ExportType, onConfirm: () => void) => {
     const labels: Record<ExportType, string> = {
-      leads: 'Lead',
-      orders: 'Ordini',
-      clients: 'Clienti',
-      transactions: 'Transazioni'
+      leads: t('admin.reports.dataExport.types.leads'),
+      orders: t('admin.reports.dataExport.types.orders'),
+      clients: t('admin.reports.dataExport.types.clients'),
+      transactions: t('admin.reports.dataExport.types.transactions')
     }
 
     confirm.require({
-      message: `Vuoi procedere con l'export dei dati "${labels[type]}"? Il file sarà disponibile per il download una volta completato.`,
-      header: 'Conferma Export',
+      message: t('admin.reports.confirm.exportMessage', { type: labels[type] }),
+      header: t('admin.reports.confirm.exportHeader'),
       icon: 'pi pi-download',
-      acceptLabel: 'Esporta',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('admin.reports.confirm.exportAccept'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
@@ -33,7 +34,7 @@ export function useReportActions() {
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Operazione completata',
+      summary: t('notifications.toast.summaries.success'),
       detail: message,
       life: 3000
     })
@@ -42,7 +43,7 @@ export function useReportActions() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('notifications.toast.summaries.error'),
       detail: message,
       life: 5000
     })
@@ -51,7 +52,7 @@ export function useReportActions() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Informazione',
+      summary: t('notifications.toast.summaries.info'),
       detail: message,
       life: 3000
     })
@@ -60,8 +61,8 @@ export function useReportActions() {
   const showExportStarted = () => {
     toast.add({
       severity: 'info',
-      summary: 'Export avviato',
-      detail: 'Il file sarà pronto a breve per il download',
+      summary: t('admin.reports.toast.exportStarted'),
+      detail: t('admin.reports.toast.exportStartedDetail'),
       life: 4000
     })
   }
@@ -69,8 +70,8 @@ export function useReportActions() {
   const showExportReady = (downloadUrl: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Export completato',
-      detail: 'Il file è pronto per il download',
+      summary: t('admin.reports.toast.exportCompleted'),
+      detail: t('admin.reports.toast.exportReadyDetail'),
       life: 5000
     })
   }
@@ -89,24 +90,26 @@ export function useReportActions() {
  * Formattatori per visualizzazione report
  */
 export function useReportFormatters() {
+  const { t } = useI18n()
+
   const formatPeriod = (period: ReportPeriod): string => {
     const labels: Record<ReportPeriod, string> = {
-      today: 'Oggi',
-      week: 'Questa settimana',
-      month: 'Questo mese',
-      quarter: 'Questo trimestre',
-      year: 'Quest\'anno',
-      custom: 'Personalizzato'
+      today: t('admin.reports.periods.today'),
+      week: t('admin.reports.periods.week'),
+      month: t('admin.reports.periods.month'),
+      quarter: t('admin.reports.periods.quarter'),
+      year: t('admin.reports.periods.year'),
+      custom: t('admin.reports.periods.custom')
     }
     return labels[period] || period
   }
 
   const formatExportType = (type: ExportType): string => {
     const labels: Record<ExportType, string> = {
-      leads: 'Lead',
-      orders: 'Ordini',
-      clients: 'Clienti',
-      transactions: 'Transazioni'
+      leads: t('admin.reports.dataExport.types.leads'),
+      orders: t('admin.reports.dataExport.types.orders'),
+      clients: t('admin.reports.dataExport.types.clients'),
+      transactions: t('admin.reports.dataExport.types.transactions')
     }
     return labels[type] || type
   }
@@ -219,26 +222,28 @@ export function useReportFormatters() {
  * Opzioni per filtri report
  */
 export function useReportFilterOptions() {
-  const periodOptions = [
-    { label: 'Oggi', value: 'today' },
-    { label: 'Questa settimana', value: 'week' },
-    { label: 'Questo mese', value: 'month' },
-    { label: 'Questo trimestre', value: 'quarter' },
-    { label: 'Quest\'anno', value: 'year' },
-    { label: 'Personalizzato', value: 'custom' }
-  ]
+  const { t } = useI18n()
 
-  const exportTypeOptions = [
-    { label: 'Lead', value: 'leads', icon: 'pi pi-list', description: 'Esporta tutti i lead con filtri applicati' },
-    { label: 'Ordini', value: 'orders', icon: 'pi pi-shopping-cart', description: 'Esporta ordini per il periodo selezionato' },
-    { label: 'Clienti', value: 'clients', icon: 'pi pi-users', description: 'Esporta anagrafica completa clienti' },
-    { label: 'Transazioni', value: 'transactions', icon: 'pi pi-credit-card', description: 'Esporta transazioni per prima nota' }
-  ]
+  const periodOptions = computed(() => [
+    { label: t('admin.reports.periods.today'), value: 'today' },
+    { label: t('admin.reports.periods.week'), value: 'week' },
+    { label: t('admin.reports.periods.month'), value: 'month' },
+    { label: t('admin.reports.periods.quarter'), value: 'quarter' },
+    { label: t('admin.reports.periods.year'), value: 'year' },
+    { label: t('admin.reports.periods.custom'), value: 'custom' }
+  ])
 
-  const exportFormatOptions = [
+  const exportTypeOptions = computed(() => [
+    { label: t('admin.reports.dataExport.types.leads'), value: 'leads', icon: 'pi pi-list', description: t('admin.reports.dataExport.descriptions.leads') },
+    { label: t('admin.reports.dataExport.types.orders'), value: 'orders', icon: 'pi pi-shopping-cart', description: t('admin.reports.dataExport.descriptions.orders') },
+    { label: t('admin.reports.dataExport.types.clients'), value: 'clients', icon: 'pi pi-users', description: t('admin.reports.dataExport.descriptions.clients') },
+    { label: t('admin.reports.dataExport.types.transactions'), value: 'transactions', icon: 'pi pi-credit-card', description: t('admin.reports.dataExport.descriptions.transactions') }
+  ])
+
+  const exportFormatOptions = computed(() => [
     { label: 'Excel (.xlsx)', value: 'xlsx' },
     { label: 'CSV (.csv)', value: 'csv' }
-  ]
+  ])
 
   return {
     periodOptions,

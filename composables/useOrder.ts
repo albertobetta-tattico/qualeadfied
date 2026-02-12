@@ -4,31 +4,33 @@
  */
 
 import { computed } from 'vue'
-import type { 
-  Order, 
+import type {
+  Order,
   OrderWithDetails,
-  OrderStatus, 
-  OrderType, 
+  OrderStatus,
+  OrderType,
   PaymentMethod,
   AcquisitionMode,
-  OrderItem 
+  OrderItem
 } from '~/types/order'
 
 /**
  * Formattatori per visualizzazione ordini
  */
 export function useOrderFormatters() {
+  const { t } = useI18n()
+
   /**
-   * Formatta lo stato ordine in italiano
+   * Formatta lo stato ordine
    */
   const formatStatus = (status: OrderStatus): string => {
     const labels: Record<OrderStatus, string> = {
-      pending: 'In Attesa',
-      processing: 'In Elaborazione',
-      paid: 'Pagato',
-      failed: 'Fallito',
-      refunded: 'Rimborsato',
-      cancelled: 'Annullato'
+      pending: t('orders.status.pending'),
+      processing: t('orders.status.processing'),
+      paid: t('orders.status.paid'),
+      failed: t('orders.status.failed'),
+      refunded: t('orders.status.refunded'),
+      cancelled: t('orders.status.cancelled')
     }
     return labels[status] || status
   }
@@ -49,13 +51,13 @@ export function useOrderFormatters() {
   }
 
   /**
-   * Formatta il tipo ordine in italiano
+   * Formatta il tipo ordine
    */
   const formatType = (type: OrderType): string => {
     const labels: Record<OrderType, string> = {
-      single: 'Singolo',
-      package: 'Pacchetto',
-      free_trial: 'Prova Gratuita'
+      single: t('orders.type.single'),
+      package: t('orders.type.package'),
+      free_trial: t('orders.type.freeTrial')
     }
     return labels[type] || type
   }
@@ -73,13 +75,13 @@ export function useOrderFormatters() {
   }
 
   /**
-   * Formatta il metodo di pagamento in italiano
+   * Formatta il metodo di pagamento
    */
   const formatPaymentMethod = (method: PaymentMethod): string => {
     const labels: Record<PaymentMethod, string> = {
-      card: 'Carta di Credito',
-      sepa: 'Addebito SEPA',
-      free: 'Gratuito'
+      card: t('orders.paymentMethod.card'),
+      sepa: t('orders.paymentMethod.sepa'),
+      free: t('orders.paymentMethod.free')
     }
     return labels[method] || method
   }
@@ -101,9 +103,9 @@ export function useOrderFormatters() {
    */
   const formatAcquisitionMode = (mode: AcquisitionMode): string => {
     const labels: Record<AcquisitionMode, string> = {
-      exclusive: 'Esclusivo',
-      shared: 'Condiviso',
-      free: 'Gratuito'
+      exclusive: t('orders.acquisitionMode.exclusive'),
+      shared: t('orders.acquisitionMode.shared'),
+      free: t('orders.acquisitionMode.free')
     }
     return labels[mode] || mode
   }
@@ -194,14 +196,14 @@ export function useOrderFormatters() {
       if (packageItem?.package) {
         return packageItem.package.name
       }
-      return 'Acquisto pacchetto'
+      return t('orders.description.packagePurchase')
     }
     if (order.type === 'free_trial') {
       const count = items?.length || 0
-      return `${count} lead gratuiti`
+      return t('orders.description.freeTrialLeads', { count })
     }
     const count = items?.length || 0
-    return `${count} lead singoli`
+    return t('orders.description.singleLeads', { count })
   }
 
   /**
@@ -238,12 +240,13 @@ export function useOrderFormatters() {
  * Azioni e conferme per ordini
  */
 export function useOrderActions() {
+  const { t } = useI18n()
   const toast = useToast()
 
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Operazione completata',
+      summary: t('orders.toast.success'),
       detail: message,
       life: 3000
     })
@@ -252,7 +255,7 @@ export function useOrderActions() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('orders.toast.error'),
       detail: message,
       life: 5000
     })
@@ -261,7 +264,7 @@ export function useOrderActions() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Informazione',
+      summary: t('orders.toast.info'),
       detail: message,
       life: 3000
     })
@@ -270,7 +273,7 @@ export function useOrderActions() {
   const showWarning = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('orders.toast.warning'),
       detail: message,
       life: 4000
     })
@@ -282,9 +285,9 @@ export function useOrderActions() {
   const copyOrderNumber = async (orderNumber: string) => {
     try {
       await navigator.clipboard.writeText(orderNumber)
-      showSuccess(`Numero ordine "${orderNumber}" copiato negli appunti`)
+      showSuccess(t('orders.toast.orderNumberCopied', { number: orderNumber }))
     } catch {
-      showError('Impossibile copiare negli appunti')
+      showError(t('orders.toast.cannotCopy'))
     }
   }
 
@@ -310,29 +313,31 @@ export function useOrderActions() {
  * Opzioni per dropdown e filtri
  */
 export function useOrderOptions() {
-  const statusOptions = [
-    { label: 'Tutti gli stati', value: '' },
-    { label: 'In Attesa', value: 'pending' },
-    { label: 'In Elaborazione', value: 'processing' },
-    { label: 'Pagato', value: 'paid' },
-    { label: 'Fallito', value: 'failed' },
-    { label: 'Rimborsato', value: 'refunded' },
-    { label: 'Annullato', value: 'cancelled' }
-  ]
+  const { t } = useI18n()
 
-  const typeOptions = [
-    { label: 'Tutti i tipi', value: '' },
-    { label: 'Singolo', value: 'single' },
-    { label: 'Pacchetto', value: 'package' },
-    { label: 'Prova Gratuita', value: 'free_trial' }
-  ]
+  const statusOptions = computed(() => [
+    { label: t('common.filterDefaults.allStatuses'), value: '' },
+    { label: t('orders.status.pending'), value: 'pending' },
+    { label: t('orders.status.processing'), value: 'processing' },
+    { label: t('orders.status.paid'), value: 'paid' },
+    { label: t('orders.status.failed'), value: 'failed' },
+    { label: t('orders.status.refunded'), value: 'refunded' },
+    { label: t('orders.status.cancelled'), value: 'cancelled' }
+  ])
 
-  const paymentMethodOptions = [
-    { label: 'Tutti i metodi', value: '' },
-    { label: 'Carta di Credito', value: 'card' },
-    { label: 'Addebito SEPA', value: 'sepa' },
-    { label: 'Gratuito', value: 'free' }
-  ]
+  const typeOptions = computed(() => [
+    { label: t('common.filterDefaults.allTypes'), value: '' },
+    { label: t('orders.type.single'), value: 'single' },
+    { label: t('orders.type.package'), value: 'package' },
+    { label: t('orders.type.freeTrial'), value: 'free_trial' }
+  ])
+
+  const paymentMethodOptions = computed(() => [
+    { label: t('orders.paymentMethod.all'), value: '' },
+    { label: t('orders.paymentMethod.card'), value: 'card' },
+    { label: t('orders.paymentMethod.sepa'), value: 'sepa' },
+    { label: t('orders.paymentMethod.free'), value: 'free' }
+  ])
 
   return {
     statusOptions,

@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const leadStore = useLeadStore()
 const {
@@ -47,20 +49,20 @@ const formatDateForApi = (date: Date | null | undefined): string => {
 }
 
 // Status options for dropdown
-const statusOptions = [
-  { label: 'Tutti gli stati', value: '' },
-  { label: 'Disponibile', value: 'free' },
-  { label: 'Venduto Esclusivo', value: 'sold_exclusive' },
-  { label: 'Condiviso', value: 'sold_shared' },
-  { label: 'Esaurito', value: 'exhausted' }
-]
+const statusOptions = computed(() => [
+  { label: t('admin.leads.list.filters.statusOptions.all'), value: '' },
+  { label: t('admin.leads.list.filters.statusOptions.free'), value: 'free' },
+  { label: t('admin.leads.list.filters.statusOptions.soldExclusive'), value: 'sold_exclusive' },
+  { label: t('admin.leads.list.filters.statusOptions.shared'), value: 'sold_shared' },
+  { label: t('admin.leads.list.filters.statusOptions.exhausted'), value: 'exhausted' }
+])
 
 // Mode options for dropdown
-const modeOptions = [
-  { label: 'Tutte le modalità', value: '' },
-  { label: 'Esclusivo', value: 'exclusive' },
-  { label: 'Condiviso', value: 'shared' }
-]
+const modeOptions = computed(() => [
+  { label: t('admin.leads.list.filters.modeOptions.all'), value: '' },
+  { label: t('admin.leads.list.filters.modeOptions.exclusive'), value: 'exclusive' },
+  { label: t('admin.leads.list.filters.modeOptions.shared'), value: 'shared' }
+])
 
 // Computed
 const leads = computed(() => leadStore.leads)
@@ -74,17 +76,17 @@ const stats = computed(() => leadStore.stats)
 
 // Computed for select options
 const categoryOptions = computed(() => [
-  { label: 'Tutte le categorie', value: '' },
+  { label: t('admin.leads.list.filters.allCategories'), value: '' },
   ...categories.value.map(c => ({ label: c.name, value: c.id }))
 ])
 
 const provinceOptions = computed(() => [
-  { label: 'Tutte le province', value: '' },
+  { label: t('admin.leads.list.filters.allProvinces'), value: '' },
   ...provinces.value.map(p => ({ label: `${p.name} (${p.code})`, value: p.id }))
 ])
 
 const sourceOptions = computed(() => [
-  { label: 'Tutte le fonti', value: '' },
+  { label: t('admin.leads.list.filters.allSources'), value: '' },
   ...sources.value.map(s => ({ label: s.name, value: s.id }))
 ])
 
@@ -167,7 +169,7 @@ const navigateToImport = () => {
 
 const openDeleteDialog = (lead: Lead) => {
   if (!canDelete(lead)) {
-    showError('Non è possibile eliminare un lead già venduto')
+    showError(t('admin.leads.list.toast.cannotDelete'))
     return
   }
   leadToDelete.value = lead
@@ -179,17 +181,17 @@ const handleDelete = async () => {
 
   const success = await leadStore.deleteLead(leadToDelete.value.id)
   if (success) {
-    showSuccess(`Lead di "${getFullName(leadToDelete.value)}" eliminato con successo`)
+    showSuccess(t('admin.leads.list.toast.deleteSuccess', { name: getFullName(leadToDelete.value) }))
     deleteDialog.value = false
     leadToDelete.value = null
   } else {
-    showError(leadStore.error || 'Errore nell\'eliminazione del lead')
+    showError(leadStore.error || t('admin.leads.list.toast.deleteError'))
   }
 }
 
 const handleBulkDelete = () => {
   if (deletableSelected.value.length === 0) {
-    showWarning('Nessun lead selezionato può essere eliminato')
+    showWarning(t('admin.leads.list.toast.noDeletable'))
     return
   }
 
@@ -198,10 +200,10 @@ const handleBulkDelete = () => {
     const result = await leadStore.deleteLeads(ids)
 
     if (result.success > 0) {
-      showSuccess(`${result.success} lead eliminati con successo`)
+      showSuccess(t('admin.leads.list.toast.bulkDeleteSuccess', { count: result.success }))
     }
     if (result.failed > 0) {
-      showWarning(`${result.failed} lead non eliminati (già venduti)`)
+      showWarning(t('admin.leads.list.toast.bulkDeleteFailed', { count: result.failed }))
     }
 
     selectedLeads.value = []
@@ -210,7 +212,7 @@ const handleBulkDelete = () => {
 
 const exportLeads = () => {
   // TODO: Implementare export Excel
-  showSuccess('Export in corso...')
+  showSuccess(t('admin.leads.list.toast.exportStarted'))
 }
 
 // Debounced search
@@ -254,25 +256,25 @@ onUnmounted(() => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Lead</h1>
-        <p class="page-subtitle">Gestione lead della piattaforma</p>
+        <h1 class="page-title">{{ $t('admin.leads.list.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.leads.list.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
         <PrimeButton
-          label="Nuovo Lead"
+          :label="$t('admin.leads.list.actions.newLead')"
           icon="pi pi-plus"
           severity="primary"
           @click="navigateToCreate"
         />
         <PrimeButton
-          label="Import"
+          :label="$t('admin.leads.list.actions.import')"
           icon="pi pi-upload"
           severity="secondary"
           outlined
           @click="navigateToImport"
         />
         <PrimeButton
-          label="Export"
+          :label="$t('admin.leads.list.actions.export')"
           icon="pi pi-download"
           severity="secondary"
           text
@@ -288,7 +290,7 @@ onUnmounted(() => {
           <i class="pi pi-list"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.total || 0 }}</div>
-        <div class="kpi-card-label">Lead Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.leads.list.kpis.totalLeads') }}</div>
       </div>
 
       <div class="kpi-card">
@@ -296,7 +298,7 @@ onUnmounted(() => {
           <i class="pi pi-check-circle"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.free || 0 }}</div>
-        <div class="kpi-card-label">Disponibili</div>
+        <div class="kpi-card-label">{{ $t('admin.leads.list.kpis.available') }}</div>
       </div>
 
       <div class="kpi-card">
@@ -304,7 +306,7 @@ onUnmounted(() => {
           <i class="pi pi-lock"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.sold_exclusive || 0 }}</div>
-        <div class="kpi-card-label">Esclusivi</div>
+        <div class="kpi-card-label">{{ $t('admin.leads.list.kpis.exclusive') }}</div>
       </div>
 
       <div class="kpi-card">
@@ -312,7 +314,7 @@ onUnmounted(() => {
           <i class="pi pi-users"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.sold_shared || 0 }}</div>
-        <div class="kpi-card-label">Condivisi</div>
+        <div class="kpi-card-label">{{ $t('admin.leads.list.kpis.shared') }}</div>
       </div>
 
       <div class="kpi-card">
@@ -320,7 +322,7 @@ onUnmounted(() => {
           <i class="pi pi-ban"></i>
         </div>
         <div class="kpi-card-value">{{ stats?.exhausted || 0 }}</div>
-        <div class="kpi-card-label">Esauriti</div>
+        <div class="kpi-card-label">{{ $t('admin.leads.list.kpis.exhausted') }}</div>
       </div>
     </div>
 
@@ -333,7 +335,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per nome, email, telefono, richiesta..."
+              :placeholder="$t('admin.leads.list.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -345,10 +347,10 @@ onUnmounted(() => {
           <!-- Bulk Actions -->
           <template v-if="selectedLeads.length > 0">
             <span class="text-sm text-neutral-600">
-              {{ selectedLeads.length }} selezionati
+              {{ $t('admin.leads.list.actions.selected', { count: selectedLeads.length }) }}
             </span>
             <PrimeButton
-              label="Elimina selezionati"
+              :label="$t('admin.leads.list.actions.bulkDelete')"
               icon="pi pi-trash"
               severity="danger"
               outlined
@@ -359,7 +361,7 @@ onUnmounted(() => {
           </template>
 
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('admin.leads.list.filters.hideFilters') : $t('admin.leads.list.filters.showFilters')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
@@ -368,7 +370,7 @@ onUnmounted(() => {
 
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('admin.leads.list.filters.clearFilters')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -385,13 +387,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <!-- Category Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Categoria</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.leads.list.filters.category') }}</label>
               <PrimeSelect
                 v-model="categoryFilter"
                 :options="categoryOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona categoria"
+                :placeholder="$t('admin.leads.list.filters.category')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -399,29 +401,29 @@ onUnmounted(() => {
 
             <!-- Province Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Provincia</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.leads.list.filters.province') }}</label>
               <PrimeSelect
                 v-model="provinceFilter"
                 :options="provinceOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona provincia"
+                :placeholder="$t('admin.leads.list.filters.province')"
                 class="w-full"
                 :filter="true"
-                filterPlaceholder="Cerca..."
+                :filterPlaceholder="$t('admin.leads.list.filters.searchPlaceholder')"
                 @change="applyFilters"
               />
             </div>
 
             <!-- Source Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Fonte</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.leads.list.filters.source') }}</label>
               <PrimeSelect
                 v-model="sourceFilter"
                 :options="sourceOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona fonte"
+                :placeholder="$t('admin.leads.list.filters.source')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -429,13 +431,13 @@ onUnmounted(() => {
 
             <!-- Status Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Stato</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.leads.list.filters.status') }}</label>
               <PrimeSelect
                 v-model="statusFilter"
                 :options="statusOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona stato"
+                :placeholder="$t('admin.leads.list.filters.status')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -446,13 +448,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Mode Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Modalità</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.leads.list.filters.mode') }}</label>
               <PrimeSelect
                 v-model="modeFilter"
                 :options="modeOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona modalità"
+                :placeholder="$t('admin.leads.list.filters.mode')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -460,12 +462,12 @@ onUnmounted(() => {
 
             <!-- Date Range -->
             <div class="form-group mb-0 lg:col-span-2">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Data generazione</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.leads.list.filters.dateFrom') }}</label>
               <PrimeDatePicker
                 v-model="dateRangeFilter"
                 selectionMode="range"
                 dateFormat="dd/mm/yy"
-                placeholder="Seleziona periodo"
+                :placeholder="$t('admin.leads.list.filters.dateTo')"
                 class="w-full"
                 showIcon
                 showButtonBar
@@ -477,7 +479,7 @@ onUnmounted(() => {
             <div class="form-group mb-0 text-right">
               <label class="text-sm font-medium text-neutral-700 mb-2 block invisible">Azioni</label>
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('admin.leads.list.filters.apply')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -506,7 +508,7 @@ onUnmounted(() => {
         removableSort
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} lead"
+        :currentPageReportTemplate="$t('admin.leads.list.table.paginatorTemplate')"
         @page="onPage"
         @sort="onSort"
       >
@@ -514,16 +516,16 @@ onUnmounted(() => {
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-list text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600 mb-4">Nessun lead trovato</p>
+            <p class="text-neutral-600 mb-4">{{ $t('admin.leads.list.table.empty') }}</p>
             <div class="flex justify-center gap-3">
               <PrimeButton
-                label="Aggiungi il primo lead"
+                :label="$t('admin.leads.list.actions.newLead')"
                 icon="pi pi-plus"
                 severity="primary"
                 @click="navigateToCreate"
               />
               <PrimeButton
-                label="Importa da file"
+                :label="$t('admin.leads.list.actions.import')"
                 icon="pi pi-upload"
                 severity="secondary"
                 outlined
@@ -537,7 +539,7 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento lead...</span>
+            <span class="text-neutral-600">{{ $t('admin.leads.list.table.loading') }}</span>
           </div>
         </template>
 
@@ -545,7 +547,7 @@ onUnmounted(() => {
         <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
         <!-- Contact Name -->
-        <PrimeColumn field="first_name" header="Contatto" sortable style="min-width: 180px">
+        <PrimeColumn field="first_name" :header="$t('admin.leads.list.table.headers.contact')" sortable style="min-width: 180px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
               <div
@@ -562,7 +564,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Phone -->
-        <PrimeColumn field="phone" header="Telefono" style="min-width: 130px">
+        <PrimeColumn field="phone" :header="$t('admin.leads.list.table.headers.phone')" style="min-width: 130px">
           <template #body="{ data }">
             <a
               :href="`tel:${data.phone}`"
@@ -574,7 +576,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Category -->
-        <PrimeColumn field="category_id" header="Categoria" sortable style="min-width: 150px">
+        <PrimeColumn field="category_id" :header="$t('admin.leads.list.table.headers.category')" sortable style="min-width: 150px">
           <template #body="{ data }">
             <PrimeTag
               :value="data.category?.name || '-'"
@@ -584,7 +586,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Province -->
-        <PrimeColumn field="province_id" header="Provincia" sortable style="min-width: 120px">
+        <PrimeColumn field="province_id" :header="$t('admin.leads.list.table.headers.province')" sortable style="min-width: 120px">
           <template #body="{ data }">
             <span class="text-neutral-700">
               {{ data.province?.name || '-' }}
@@ -594,7 +596,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Request Preview -->
-        <PrimeColumn field="request_text" header="Richiesta" style="min-width: 200px">
+        <PrimeColumn field="request_text" :header="$t('admin.leads.list.table.headers.request')" style="min-width: 200px">
           <template #body="{ data }">
             <span
               class="text-neutral-600 text-sm"
@@ -606,7 +608,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Status -->
-        <PrimeColumn field="status" header="Stato" sortable style="min-width: 140px">
+        <PrimeColumn field="status" :header="$t('admin.leads.list.table.headers.status')" sortable style="min-width: 140px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <span
@@ -627,7 +629,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Source -->
-        <PrimeColumn field="source_id" header="Fonte" style="min-width: 120px">
+        <PrimeColumn field="source_id" :header="$t('admin.leads.list.table.headers.source')" style="min-width: 120px">
           <template #body="{ data }">
             <span class="text-neutral-600 text-sm">
               {{ data.source?.name || '-' }}
@@ -636,14 +638,14 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Generated Date -->
-        <PrimeColumn field="generated_at" header="Data Lead" sortable style="min-width: 110px">
+        <PrimeColumn field="generated_at" :header="$t('admin.leads.list.table.headers.leadDate')" sortable style="min-width: 110px">
           <template #body="{ data }">
             <span class="text-neutral-600">{{ formatDate(data.generated_at) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 100px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.leads.list.table.headers.actions')" style="min-width: 100px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <!-- Edit -->
@@ -653,7 +655,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Modifica'"
+                v-tooltip.top="$t('admin.leads.list.contextMenu.edit')"
                 @click="navigateToEdit(data)"
               />
 
@@ -664,7 +666,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="canDelete(data) ? 'Elimina' : 'Non eliminabile'"
+                v-tooltip.top="canDelete(data) ? $t('admin.leads.list.contextMenu.delete') : $t('admin.leads.list.contextMenu.notDeletable')"
                 :disabled="!canDelete(data)"
                 @click="openDeleteDialog(data)"
               />
@@ -678,7 +680,7 @@ onUnmounted(() => {
     <PrimeDialog
       v-model:visible="deleteDialog"
       modal
-      header="Conferma Eliminazione"
+      :header="$t('admin.leads.list.dialog.deleteTitle')"
       :style="{ width: '450px' }"
     >
       <div class="flex items-start gap-4">
@@ -687,10 +689,10 @@ onUnmounted(() => {
         </div>
         <div>
           <p class="text-neutral-800 mb-2">
-            Sei sicuro di voler eliminare il lead di <strong>{{ leadToDelete ? getFullName(leadToDelete) : '' }}</strong>?
+            {{ $t('admin.leads.list.dialog.deleteSingleMessage', { name: leadToDelete ? getFullName(leadToDelete) : '' }) }}
           </p>
           <p class="text-sm text-neutral-600">
-            Questa azione non può essere annullata.
+            {{ $t('admin.leads.list.dialog.deleteIrreversible') }}
           </p>
         </div>
       </div>
@@ -698,13 +700,13 @@ onUnmounted(() => {
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.leads.list.dialog.cancel')"
             severity="secondary"
             outlined
             @click="deleteDialog = false"
           />
           <PrimeButton
-            label="Elimina"
+            :label="$t('admin.leads.list.dialog.confirm')"
             severity="danger"
             icon="pi pi-trash"
             :loading="leadStore.saving"

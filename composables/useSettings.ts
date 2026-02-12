@@ -18,16 +18,17 @@ import type {
  * Validazione operatore admin
  */
 export function useOperatorValidation() {
+  const { t } = useI18n()
   const errors = reactive<Record<string, string>>({})
 
   const validateEmail = (value: string): boolean => {
     if (!value) {
-      errors.email = 'L\'email è obbligatoria'
+      errors.email = t('validation.required.email')
       return false
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(value)) {
-      errors.email = 'Formato email non valido'
+      errors.email = t('validation.invalid.email')
       return false
     }
     delete errors.email
@@ -36,7 +37,7 @@ export function useOperatorValidation() {
 
   const validateFirstName = (value: string): boolean => {
     if (!value || value.trim().length < 2) {
-      errors.first_name = 'Il nome deve avere almeno 2 caratteri'
+      errors.first_name = t('admin.settings.validation.firstNameMinLength')
       return false
     }
     delete errors.first_name
@@ -45,7 +46,7 @@ export function useOperatorValidation() {
 
   const validateLastName = (value: string): boolean => {
     if (!value || value.trim().length < 2) {
-      errors.last_name = 'Il cognome deve avere almeno 2 caratteri'
+      errors.last_name = t('admin.settings.validation.lastNameMinLength')
       return false
     }
     delete errors.last_name
@@ -54,19 +55,19 @@ export function useOperatorValidation() {
 
   const validatePassword = (value: string, isCreate: boolean = true): boolean => {
     if (isCreate && !value) {
-      errors.password = 'La password è obbligatoria'
+      errors.password = t('validation.required.password')
       return false
     }
     if (value && value.length < 8) {
-      errors.password = 'La password deve avere almeno 8 caratteri'
+      errors.password = t('admin.settings.validation.passwordMinLength')
       return false
     }
     if (value && !/[A-Z]/.test(value)) {
-      errors.password = 'La password deve contenere almeno una maiuscola'
+      errors.password = t('admin.settings.validation.passwordUppercase')
       return false
     }
     if (value && !/[0-9]/.test(value)) {
-      errors.password = 'La password deve contenere almeno un numero'
+      errors.password = t('admin.settings.validation.passwordNumber')
       return false
     }
     delete errors.password
@@ -75,7 +76,7 @@ export function useOperatorValidation() {
 
   const validatePasswordConfirmation = (password: string, confirmation: string): boolean => {
     if (password && password !== confirmation) {
-      errors.password_confirmation = 'Le password non coincidono'
+      errors.password_confirmation = t('validation.password.mismatch')
       return false
     }
     delete errors.password_confirmation
@@ -117,40 +118,41 @@ export function useOperatorValidation() {
  * Azioni e notifiche per impostazioni
  */
 export function useSettingsActions() {
+  const { t } = useI18n()
   const toast = useToast()
   const confirm = useConfirm()
 
   const confirmDeleteOperator = (operator: AdminOperator, onConfirm: () => void) => {
     confirm.require({
-      message: `Sei sicuro di voler eliminare l'operatore "${operator.first_name} ${operator.last_name}"? Questa azione non può essere annullata.`,
-      header: 'Conferma Eliminazione',
+      message: t('admin.settings.confirm.deleteOperatorMessage', { name: `${operator.first_name} ${operator.last_name}` }),
+      header: t('admin.common.confirmDelete'),
       icon: 'pi pi-exclamation-triangle',
       acceptClass: 'p-button-danger',
-      acceptLabel: 'Elimina',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('common.actions.delete'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
 
   const confirmResetPassword = (operator: AdminOperator, onConfirm: () => void) => {
     confirm.require({
-      message: `Inviare un'email di reset password a "${operator.email}"?`,
-      header: 'Reset Password',
+      message: t('admin.settings.confirm.resetPasswordMessage', { email: operator.email }),
+      header: t('admin.settings.confirm.resetPasswordHeader'),
       icon: 'pi pi-envelope',
-      acceptLabel: 'Invia',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('common.actions.send'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
 
   const confirmDeactivateOperator = (operator: AdminOperator, onConfirm: () => void) => {
     confirm.require({
-      message: `Disattivare l'operatore "${operator.first_name} ${operator.last_name}"? Non potrà più accedere al sistema.`,
-      header: 'Disattiva Operatore',
+      message: t('admin.settings.confirm.deactivateMessage', { name: `${operator.first_name} ${operator.last_name}` }),
+      header: t('admin.settings.confirm.deactivateHeader'),
       icon: 'pi pi-user-minus',
       acceptClass: 'p-button-warning',
-      acceptLabel: 'Disattiva',
-      rejectLabel: 'Annulla',
+      acceptLabel: t('admin.settings.confirm.deactivateAccept'),
+      rejectLabel: t('common.actions.cancel'),
       accept: onConfirm
     })
   }
@@ -158,7 +160,7 @@ export function useSettingsActions() {
   const showSuccess = (message: string) => {
     toast.add({
       severity: 'success',
-      summary: 'Operazione completata',
+      summary: t('notifications.toast.summaries.success'),
       detail: message,
       life: 3000
     })
@@ -167,7 +169,7 @@ export function useSettingsActions() {
   const showError = (message: string) => {
     toast.add({
       severity: 'error',
-      summary: 'Errore',
+      summary: t('notifications.toast.summaries.error'),
       detail: message,
       life: 5000
     })
@@ -176,7 +178,7 @@ export function useSettingsActions() {
   const showInfo = (message: string) => {
     toast.add({
       severity: 'info',
-      summary: 'Informazione',
+      summary: t('notifications.toast.summaries.info'),
       detail: message,
       life: 3000
     })
@@ -185,7 +187,7 @@ export function useSettingsActions() {
   const showWarning = (message: string) => {
     toast.add({
       severity: 'warn',
-      summary: 'Attenzione',
+      summary: t('notifications.toast.summaries.warning'),
       detail: message,
       life: 4000
     })
@@ -206,11 +208,13 @@ export function useSettingsActions() {
  * Formattatori per visualizzazione impostazioni
  */
 export function useSettingsFormatters() {
+  const { t } = useI18n()
+
   const formatRole = (role: AdminRole): string => {
     const labels: Record<AdminRole, string> = {
-      super_admin: 'Super Admin',
-      admin: 'Amministratore',
-      operator: 'Operatore'
+      super_admin: t('admin.settings.roles.superAdmin'),
+      admin: t('admin.settings.roles.admin'),
+      operator: t('admin.settings.roles.operator')
     }
     return labels[role] || role
   }
@@ -226,8 +230,8 @@ export function useSettingsFormatters() {
 
   const formatStatus = (status: AdminStatus): string => {
     const labels: Record<AdminStatus, string> = {
-      active: 'Attivo',
-      inactive: 'Disattivato'
+      active: t('admin.settings.statuses.active'),
+      inactive: t('admin.settings.statuses.inactive')
     }
     return labels[status] || status
   }
@@ -242,27 +246,27 @@ export function useSettingsFormatters() {
 
   const formatFrequency = (frequency: NotificationFrequency): string => {
     const labels: Record<NotificationFrequency, string> = {
-      instant: 'Immediato',
-      hourly: 'Ogni ora',
-      daily: 'Giornaliero',
-      weekly: 'Settimanale',
-      disabled: 'Disabilitato'
+      instant: t('admin.settings.frequencies.instant'),
+      hourly: t('admin.settings.frequencies.hourly'),
+      daily: t('admin.settings.frequencies.daily'),
+      weekly: t('admin.settings.frequencies.weekly'),
+      disabled: t('admin.settings.frequencies.disabled')
     }
     return labels[frequency] || frequency
   }
 
   const formatActivityType = (type: ActivityType): string => {
     const labels: Record<ActivityType, string> = {
-      login: 'Accesso',
-      logout: 'Disconnessione',
-      create: 'Creazione',
-      update: 'Modifica',
-      delete: 'Eliminazione',
-      export: 'Export',
-      import: 'Import',
-      status_change: 'Cambio Stato',
-      password_reset: 'Reset Password',
-      config_change: 'Modifica Config'
+      login: t('admin.settings.activityTypes.login'),
+      logout: t('admin.settings.activityTypes.logout'),
+      create: t('admin.settings.activityTypes.create'),
+      update: t('admin.settings.activityTypes.update'),
+      delete: t('admin.settings.activityTypes.delete'),
+      export: t('admin.settings.activityTypes.export'),
+      import: t('admin.settings.activityTypes.import'),
+      status_change: t('admin.settings.activityTypes.statusChange'),
+      password_reset: t('admin.settings.activityTypes.passwordReset'),
+      config_change: t('admin.settings.activityTypes.configChange')
     }
     return labels[type] || type
   }
@@ -301,16 +305,16 @@ export function useSettingsFormatters() {
 
   const formatEntity = (entity: ActivityEntity): string => {
     const labels: Record<ActivityEntity, string> = {
-      user: 'Utente',
-      client: 'Cliente',
-      lead: 'Lead',
-      order: 'Ordine',
-      invoice: 'Fattura',
-      category: 'Categoria',
-      package: 'Pacchetto',
-      pricing: 'Listino',
-      admin: 'Operatore',
-      system: 'Sistema'
+      user: t('admin.settings.entities.user'),
+      client: t('admin.settings.entities.client'),
+      lead: t('admin.settings.entities.lead'),
+      order: t('admin.settings.entities.order'),
+      invoice: t('admin.settings.entities.invoice'),
+      category: t('admin.settings.entities.category'),
+      package: t('admin.settings.entities.package'),
+      pricing: t('admin.settings.entities.pricing'),
+      admin: t('admin.settings.entities.admin'),
+      system: t('admin.settings.entities.system')
     }
     return labels[entity] || entity
   }
@@ -336,7 +340,7 @@ export function useSettingsFormatters() {
   }
 
   const formatRelativeTime = (dateString: string | null | undefined): string => {
-    if (!dateString) return 'Mai'
+    if (!dateString) return t('admin.settings.time.never')
 
     const date = new Date(dateString)
     const now = new Date()
@@ -345,10 +349,10 @@ export function useSettingsFormatters() {
     const diffHours = Math.floor(diffMs / 3600000)
     const diffDays = Math.floor(diffMs / 86400000)
 
-    if (diffMins < 1) return 'Adesso'
-    if (diffMins < 60) return `${diffMins} min fa`
-    if (diffHours < 24) return `${diffHours} ore fa`
-    if (diffDays < 7) return `${diffDays} giorni fa`
+    if (diffMins < 1) return t('common.time.now')
+    if (diffMins < 60) return t('common.time.minutesAgo', { count: diffMins })
+    if (diffHours < 24) return t('common.time.hoursAgo', { count: diffHours })
+    if (diffDays < 7) return t('common.time.daysAgo', { count: diffDays })
     return formatDate(dateString)
   }
 
@@ -377,63 +381,65 @@ export function useSettingsFormatters() {
  * Opzioni per filtri e form
  */
 export function useSettingsOptions() {
-  const roleOptions = [
-    { label: 'Super Admin', value: 'super_admin' },
-    { label: 'Amministratore', value: 'admin' },
-    { label: 'Operatore', value: 'operator' }
-  ]
+  const { t } = useI18n()
 
-  const statusOptions = [
-    { label: 'Attivo', value: 'active' },
-    { label: 'Disattivato', value: 'inactive' }
-  ]
+  const roleOptions = computed(() => [
+    { label: t('admin.settings.roles.superAdmin'), value: 'super_admin' },
+    { label: t('admin.settings.roles.admin'), value: 'admin' },
+    { label: t('admin.settings.roles.operator'), value: 'operator' }
+  ])
 
-  const frequencyOptions = [
-    { label: 'Immediato', value: 'instant' },
-    { label: 'Ogni ora', value: 'hourly' },
-    { label: 'Giornaliero', value: 'daily' },
-    { label: 'Settimanale', value: 'weekly' },
-    { label: 'Disabilitato', value: 'disabled' }
-  ]
+  const statusOptions = computed(() => [
+    { label: t('admin.settings.statuses.active'), value: 'active' },
+    { label: t('admin.settings.statuses.inactive'), value: 'inactive' }
+  ])
 
-  const activityTypeOptions = [
-    { label: 'Tutti i tipi', value: '' },
-    { label: 'Accesso', value: 'login' },
-    { label: 'Disconnessione', value: 'logout' },
-    { label: 'Creazione', value: 'create' },
-    { label: 'Modifica', value: 'update' },
-    { label: 'Eliminazione', value: 'delete' },
-    { label: 'Export', value: 'export' },
-    { label: 'Import', value: 'import' },
-    { label: 'Cambio Stato', value: 'status_change' },
-    { label: 'Reset Password', value: 'password_reset' },
-    { label: 'Modifica Config', value: 'config_change' }
-  ]
+  const frequencyOptions = computed(() => [
+    { label: t('admin.settings.frequencies.instant'), value: 'instant' },
+    { label: t('admin.settings.frequencies.hourly'), value: 'hourly' },
+    { label: t('admin.settings.frequencies.daily'), value: 'daily' },
+    { label: t('admin.settings.frequencies.weekly'), value: 'weekly' },
+    { label: t('admin.settings.frequencies.disabled'), value: 'disabled' }
+  ])
 
-  const activityEntityOptions = [
-    { label: 'Tutte le entità', value: '' },
-    { label: 'Clienti', value: 'client' },
-    { label: 'Lead', value: 'lead' },
-    { label: 'Ordini', value: 'order' },
-    { label: 'Fatture', value: 'invoice' },
-    { label: 'Categorie', value: 'category' },
-    { label: 'Pacchetti', value: 'package' },
-    { label: 'Listini', value: 'pricing' },
-    { label: 'Operatori', value: 'admin' },
-    { label: 'Sistema', value: 'system' }
-  ]
+  const activityTypeOptions = computed(() => [
+    { label: t('common.filterDefaults.allTypes'), value: '' },
+    { label: t('admin.settings.activityTypes.login'), value: 'login' },
+    { label: t('admin.settings.activityTypes.logout'), value: 'logout' },
+    { label: t('admin.settings.activityTypes.create'), value: 'create' },
+    { label: t('admin.settings.activityTypes.update'), value: 'update' },
+    { label: t('admin.settings.activityTypes.delete'), value: 'delete' },
+    { label: t('admin.settings.activityTypes.export'), value: 'export' },
+    { label: t('admin.settings.activityTypes.import'), value: 'import' },
+    { label: t('admin.settings.activityTypes.statusChange'), value: 'status_change' },
+    { label: t('admin.settings.activityTypes.passwordReset'), value: 'password_reset' },
+    { label: t('admin.settings.activityTypes.configChange'), value: 'config_change' }
+  ])
 
-  const smtpEncryptionOptions = [
+  const activityEntityOptions = computed(() => [
+    { label: t('admin.settings.entityFilter.all'), value: '' },
+    { label: t('admin.settings.entities.client'), value: 'client' },
+    { label: t('admin.settings.entities.lead'), value: 'lead' },
+    { label: t('admin.settings.entities.order'), value: 'order' },
+    { label: t('admin.settings.entities.invoice'), value: 'invoice' },
+    { label: t('admin.settings.entities.category'), value: 'category' },
+    { label: t('admin.settings.entities.package'), value: 'package' },
+    { label: t('admin.settings.entities.pricing'), value: 'pricing' },
+    { label: t('admin.settings.entities.admin'), value: 'admin' },
+    { label: t('admin.settings.entities.system'), value: 'system' }
+  ])
+
+  const smtpEncryptionOptions = computed(() => [
     { label: 'TLS', value: 'tls' },
     { label: 'SSL', value: 'ssl' },
-    { label: 'Nessuna', value: 'none' }
-  ]
+    { label: t('admin.settings.smtpEncryption.none'), value: 'none' }
+  ])
 
-  const emailProviderOptions = [
+  const emailProviderOptions = computed(() => [
     { label: 'SendGrid', value: 'sendgrid' },
     { label: 'Mailgun', value: 'mailgun' },
     { label: 'Postmark', value: 'postmark' }
-  ]
+  ])
 
   return {
     roleOptions,

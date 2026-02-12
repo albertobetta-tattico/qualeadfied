@@ -10,6 +10,9 @@ definePageMeta({
   layout: 'admin'
 })
 
+// i18n
+const { t } = useI18n()
+
 // Store & Composables
 const reportStore = useReportStore()
 const {
@@ -68,7 +71,7 @@ const revenueChartData = computed(() => {
     labels: salesChart.value.labels,
     datasets: [
       {
-        label: 'Ricavi',
+        label: t('admin.reports.salesStats.chartLabels.revenue'),
         data: salesChart.value.datasets.revenue,
         ...revenueChartConfig
       }
@@ -82,7 +85,7 @@ const ordersChartData = computed(() => {
     labels: salesChart.value.labels,
     datasets: [
       {
-        label: 'Ordini',
+        label: t('admin.reports.salesStats.chartLabels.orders'),
         data: salesChart.value.datasets.orders,
         ...ordersChartConfig
       }
@@ -197,7 +200,7 @@ const handleExport = async () => {
       openDownloadUrl(result.download_url)
     }
   } else {
-    showError(reportStore.error || 'Errore durante l\'export')
+    showError(reportStore.error || t('admin.reports.toast.exportError'))
   }
 }
 
@@ -212,12 +215,12 @@ onMounted(() => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Report</h1>
-        <p class="page-subtitle">Statistiche vendite, performance e analisi dati</p>
+        <h1 class="page-title">{{ $t('admin.reports.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.reports.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
         <PrimeButton
-          label="Export Dati"
+          :label="$t('admin.reports.exportData')"
           icon="pi pi-download"
           severity="primary"
           @click="openExportDialog"
@@ -229,7 +232,7 @@ onMounted(() => {
     <div class="q-card mb-6">
       <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
         <div class="flex items-center gap-3">
-          <label class="text-sm font-medium text-neutral-700">Periodo:</label>
+          <label class="text-sm font-medium text-neutral-700">{{ $t('admin.reports.period') }}</label>
           <PrimeSelect
             v-model="periodFilter"
             :options="periodOptions"
@@ -246,18 +249,18 @@ onMounted(() => {
             <PrimeDatePicker
               v-model="dateFrom"
               dateFormat="dd/mm/yy"
-              placeholder="Data inizio"
+              :placeholder="$t('admin.reports.customDates.startDate')"
               class="w-40"
             />
             <span class="text-neutral-500">-</span>
             <PrimeDatePicker
               v-model="dateTo"
               dateFormat="dd/mm/yy"
-              placeholder="Data fine"
+              :placeholder="$t('admin.reports.customDates.endDate')"
               class="w-40"
             />
             <PrimeButton
-              label="Applica"
+              :label="$t('admin.reports.customDates.apply')"
               icon="pi pi-check"
               severity="primary"
               size="small"
@@ -273,7 +276,7 @@ onMounted(() => {
             text
             rounded
             :loading="loading"
-            v-tooltip.top="'Aggiorna dati'"
+            v-tooltip.top="$t('admin.reports.refresh')"
             @click="loadAllData"
           />
         </div>
@@ -283,7 +286,7 @@ onMounted(() => {
     <!-- Tabs -->
     <PrimeTabView v-model:activeIndex="activeTab" class="q-card">
       <!-- Tab: Statistiche Vendite -->
-      <PrimeTabPanel value="0" header="Statistiche Vendite">
+      <PrimeTabPanel value="0" :header="$t('admin.reports.tabs.salesStats')">
         <div class="pt-4 space-y-6">
           <!-- KPI Cards -->
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -292,7 +295,7 @@ onMounted(() => {
                 <i class="pi pi-euro"></i>
               </div>
               <div class="kpi-card-value">{{ formatCurrency(salesStats?.total_revenue || 0) }}</div>
-              <div class="kpi-card-label">Ricavi Totali</div>
+              <div class="kpi-card-label">{{ $t('admin.reports.salesStats.kpis.totalRevenue') }}</div>
               <div
                 v-if="salesStats?.revenue_change_percent !== undefined"
                 class="mt-2 text-sm flex items-center gap-1"
@@ -300,7 +303,7 @@ onMounted(() => {
               >
                 <i :class="getChangeIcon(salesStats.revenue_change_percent)"></i>
                 {{ formatPercentChange(salesStats.revenue_change_percent) }}
-                <span class="text-neutral-500 ml-1">vs periodo prec.</span>
+                <span class="text-neutral-500 ml-1">{{ $t('admin.reports.salesStats.vsPreviousPeriod') }}</span>
               </div>
             </div>
 
@@ -309,7 +312,7 @@ onMounted(() => {
                 <i class="pi pi-shopping-cart"></i>
               </div>
               <div class="kpi-card-value">{{ formatNumber(salesStats?.total_orders || 0) }}</div>
-              <div class="kpi-card-label">Ordini Totali</div>
+              <div class="kpi-card-label">{{ $t('admin.reports.salesStats.kpis.totalOrders') }}</div>
               <div
                 v-if="salesStats?.orders_change_percent !== undefined"
                 class="mt-2 text-sm flex items-center gap-1"
@@ -317,7 +320,7 @@ onMounted(() => {
               >
                 <i :class="getChangeIcon(salesStats.orders_change_percent)"></i>
                 {{ formatPercentChange(salesStats.orders_change_percent) }}
-                <span class="text-neutral-500 ml-1">vs periodo prec.</span>
+                <span class="text-neutral-500 ml-1">{{ $t('admin.reports.salesStats.vsPreviousPeriod') }}</span>
               </div>
             </div>
 
@@ -326,7 +329,7 @@ onMounted(() => {
                 <i class="pi pi-list"></i>
               </div>
               <div class="kpi-card-value">{{ formatNumber(salesStats?.total_leads_sold || 0) }}</div>
-              <div class="kpi-card-label">Lead Venduti</div>
+              <div class="kpi-card-label">{{ $t('admin.reports.salesStats.kpis.soldLeads') }}</div>
             </div>
 
             <div class="kpi-card">
@@ -334,7 +337,7 @@ onMounted(() => {
                 <i class="pi pi-chart-line"></i>
               </div>
               <div class="kpi-card-value">{{ formatCurrency(salesStats?.average_order_value || 0) }}</div>
-              <div class="kpi-card-label">Valore Medio Ordine</div>
+              <div class="kpi-card-label">{{ $t('admin.reports.salesStats.kpis.avgOrderValue') }}</div>
             </div>
           </div>
 
@@ -342,7 +345,7 @@ onMounted(() => {
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Revenue Chart -->
             <div class="bg-neutral-50 rounded-lg p-4">
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Andamento Ricavi</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.reports.salesStats.revenueChart') }}</h4>
               <div class="h-64">
                 <PrimeChart
                   v-if="revenueChartData"
@@ -358,7 +361,7 @@ onMounted(() => {
 
             <!-- Orders Chart -->
             <div class="bg-neutral-50 rounded-lg p-4">
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Andamento Ordini</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.reports.salesStats.ordersChart') }}</h4>
               <div class="h-64">
                 <PrimeChart
                   v-if="ordersChartData"
@@ -376,12 +379,12 @@ onMounted(() => {
       </PrimeTabPanel>
 
       <!-- Tab: Performance Categorie -->
-      <PrimeTabPanel value="1" header="Performance Categorie">
+      <PrimeTabPanel value="1" :header="$t('admin.reports.tabs.categoryPerformance')">
         <div class="pt-4 space-y-6">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Chart -->
             <div class="bg-neutral-50 rounded-lg p-4">
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Top 5 Categorie per Ricavi</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.reports.categoryPerformance.top5Chart') }}</h4>
               <div class="h-64">
                 <PrimeChart
                   v-if="categoryChartData"
@@ -397,41 +400,41 @@ onMounted(() => {
 
             <!-- Table -->
             <div class="lg:col-span-2">
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Dettaglio Performance</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.reports.categoryPerformance.detailTitle') }}</h4>
               <PrimeDataTable
                 :value="categoryPerformance"
                 :loading="loading"
                 stripedRows
                 class="text-sm"
               >
-                <PrimeColumn field="name" header="Categoria" sortable>
+                <PrimeColumn field="name" :header="$t('admin.reports.categoryPerformance.headers.category')" sortable>
                   <template #body="{ data }">
                     <span class="font-medium text-neutral-900">{{ data.name }}</span>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="total_leads" header="Lead Totali" sortable>
+                <PrimeColumn field="total_leads" :header="$t('admin.reports.categoryPerformance.headers.totalLeads')" sortable>
                   <template #body="{ data }">
                     {{ formatNumber(data.total_leads) }}
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="leads_sold" header="Venduti" sortable>
+                <PrimeColumn field="leads_sold" :header="$t('admin.reports.categoryPerformance.headers.sold')" sortable>
                   <template #body="{ data }">
                     <span class="text-success-600 font-medium">{{ formatNumber(data.leads_sold) }}</span>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="leads_available" header="Disponibili" sortable>
+                <PrimeColumn field="leads_available" :header="$t('admin.reports.categoryPerformance.headers.available')" sortable>
                   <template #body="{ data }">
                     <span :class="data.leads_available < 20 ? 'text-danger-600' : 'text-neutral-700'">
                       {{ formatNumber(data.leads_available) }}
                     </span>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="revenue" header="Ricavi" sortable>
+                <PrimeColumn field="revenue" :header="$t('admin.reports.categoryPerformance.headers.revenue')" sortable>
                   <template #body="{ data }">
                     <span class="font-semibold">{{ formatCurrency(data.revenue) }}</span>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="sell_through_rate" header="Sell-through" sortable>
+                <PrimeColumn field="sell_through_rate" :header="$t('admin.reports.categoryPerformance.headers.sellThrough')" sortable>
                   <template #body="{ data }">
                     <div class="flex items-center gap-2">
                       <div class="w-16 h-2 bg-neutral-200 rounded-full overflow-hidden">
@@ -451,12 +454,12 @@ onMounted(() => {
       </PrimeTabPanel>
 
       <!-- Tab: Analisi Geografica -->
-      <PrimeTabPanel value="2" header="Analisi Geografica">
+      <PrimeTabPanel value="2" :header="$t('admin.reports.tabs.geographicAnalysis')">
         <div class="pt-4 space-y-6">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Chart -->
             <div class="bg-neutral-50 rounded-lg p-4">
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Top 5 Regioni per Ricavi</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.reports.geographicAnalysis.top5RegionsChart') }}</h4>
               <div class="h-64">
                 <PrimeChart
                   v-if="regionChartData"
@@ -472,34 +475,34 @@ onMounted(() => {
 
             <!-- Regions Table -->
             <div class="lg:col-span-2">
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Performance per Regione</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.reports.geographicAnalysis.regionPerformance') }}</h4>
               <PrimeDataTable
                 :value="regionStats"
                 :loading="loading"
                 stripedRows
                 class="text-sm"
               >
-                <PrimeColumn field="region" header="Regione" sortable>
+                <PrimeColumn field="region" :header="$t('admin.reports.geographicAnalysis.regionHeaders.region')" sortable>
                   <template #body="{ data }">
                     <span class="font-medium text-neutral-900">{{ data.region }}</span>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="provinces_count" header="Province" sortable>
+                <PrimeColumn field="provinces_count" :header="$t('admin.reports.geographicAnalysis.regionHeaders.provinces')" sortable>
                   <template #body="{ data }">
                     {{ data.provinces_count }}
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="total_leads" header="Lead Totali" sortable>
+                <PrimeColumn field="total_leads" :header="$t('admin.reports.geographicAnalysis.regionHeaders.totalLeads')" sortable>
                   <template #body="{ data }">
                     {{ formatNumber(data.total_leads) }}
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="leads_sold" header="Venduti" sortable>
+                <PrimeColumn field="leads_sold" :header="$t('admin.reports.geographicAnalysis.regionHeaders.sold')" sortable>
                   <template #body="{ data }">
                     <span class="text-success-600 font-medium">{{ formatNumber(data.leads_sold) }}</span>
                   </template>
                 </PrimeColumn>
-                <PrimeColumn field="revenue" header="Ricavi" sortable>
+                <PrimeColumn field="revenue" :header="$t('admin.reports.geographicAnalysis.regionHeaders.revenue')" sortable>
                   <template #body="{ data }">
                     <span class="font-semibold">{{ formatCurrency(data.revenue) }}</span>
                   </template>
@@ -510,7 +513,7 @@ onMounted(() => {
 
           <!-- Province Detail -->
           <div>
-            <h4 class="text-lg font-semibold text-neutral-900 mb-4">Top Province</h4>
+            <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.reports.geographicAnalysis.topProvinces') }}</h4>
             <PrimeDataTable
               :value="provinceStats"
               :loading="loading"
@@ -519,38 +522,38 @@ onMounted(() => {
               stripedRows
               class="text-sm"
             >
-              <PrimeColumn field="province_code" header="Provincia" sortable style="width: 100px">
+              <PrimeColumn field="province_code" :header="$t('admin.reports.geographicAnalysis.provinceHeaders.province')" sortable style="width: 100px">
                 <template #body="{ data }">
                   <span class="font-mono font-bold text-primary-600">{{ data.province_code }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="province_name" header="Nome" sortable>
+              <PrimeColumn field="province_name" :header="$t('admin.reports.geographicAnalysis.provinceHeaders.name')" sortable>
                 <template #body="{ data }">
                   <span class="font-medium text-neutral-900">{{ data.province_name }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="region" header="Regione" sortable>
+              <PrimeColumn field="region" :header="$t('admin.reports.geographicAnalysis.provinceHeaders.region')" sortable>
                 <template #body="{ data }">
                   <span class="text-neutral-600">{{ data.region }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="top_category" header="Top Categoria">
+              <PrimeColumn field="top_category" :header="$t('admin.reports.geographicAnalysis.provinceHeaders.topCategory')">
                 <template #body="{ data }">
                   <PrimeTag :value="data.top_category" severity="info" v-if="data.top_category" />
                   <span v-else class="text-neutral-400">-</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="total_leads" header="Lead" sortable>
+              <PrimeColumn field="total_leads" :header="$t('admin.reports.geographicAnalysis.provinceHeaders.leads')" sortable>
                 <template #body="{ data }">
                   {{ formatNumber(data.total_leads) }}
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="leads_sold" header="Venduti" sortable>
+              <PrimeColumn field="leads_sold" :header="$t('admin.reports.geographicAnalysis.provinceHeaders.sold')" sortable>
                 <template #body="{ data }">
                   <span class="text-success-600 font-medium">{{ formatNumber(data.leads_sold) }}</span>
                 </template>
               </PrimeColumn>
-              <PrimeColumn field="revenue" header="Ricavi" sortable>
+              <PrimeColumn field="revenue" :header="$t('admin.reports.geographicAnalysis.provinceHeaders.revenue')" sortable>
                 <template #body="{ data }">
                   <span class="font-semibold">{{ formatCurrency(data.revenue) }}</span>
                 </template>
@@ -561,11 +564,11 @@ onMounted(() => {
       </PrimeTabPanel>
 
       <!-- Tab: Export Dati -->
-      <PrimeTabPanel value="3" header="Export Dati">
+      <PrimeTabPanel value="3" :header="$t('admin.reports.tabs.dataExport')">
         <div class="pt-4">
           <div class="max-w-2xl">
             <p class="text-neutral-600 mb-6">
-              Esporta i dati della piattaforma in formato Excel o CSV per analisi esterne o integrazione con altri sistemi.
+              {{ $t('admin.reports.dataExport.description') }}
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -590,7 +593,7 @@ onMounted(() => {
 
             <!-- Recent Exports -->
             <div v-if="reportStore.completedExports.length > 0" class="mt-8">
-              <h4 class="text-lg font-semibold text-neutral-900 mb-4">Export Recenti</h4>
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">{{ $t('admin.reports.dataExport.recentExports') }}</h4>
               <div class="space-y-2">
                 <div
                   v-for="exp in reportStore.completedExports.slice(0, 5)"
@@ -624,12 +627,12 @@ onMounted(() => {
     <PrimeDialog
       v-model:visible="exportDialog"
       modal
-      header="Export Dati"
+      :header="$t('admin.reports.dataExport.dialogTitle')"
       :style="{ width: '450px' }"
     >
       <div class="space-y-4">
         <div class="form-group">
-          <label class="block text-sm font-medium text-neutral-700 mb-2">Tipo di dati</label>
+          <label class="block text-sm font-medium text-neutral-700 mb-2">{{ $t('admin.reports.dataExport.dataType') }}</label>
           <PrimeSelect
             v-model="selectedExportType"
             :options="exportTypeOptions"
@@ -640,7 +643,7 @@ onMounted(() => {
         </div>
 
         <div class="form-group">
-          <label class="block text-sm font-medium text-neutral-700 mb-2">Formato</label>
+          <label class="block text-sm font-medium text-neutral-700 mb-2">{{ $t('admin.reports.dataExport.format') }}</label>
           <PrimeSelect
             v-model="selectedExportFormat"
             :options="exportFormatOptions"
@@ -653,7 +656,7 @@ onMounted(() => {
         <div class="p-3 bg-info-50 rounded-lg flex items-start gap-3">
           <i class="pi pi-info-circle text-info-600"></i>
           <p class="text-sm text-info-800">
-            L'export includerà i dati filtrati in base al periodo selezionato ({{ formatPeriod(periodFilter) }}).
+            {{ $t('admin.reports.dataExport.periodInfo', { period: formatPeriod(periodFilter) }) }}
           </p>
         </div>
       </div>
@@ -661,13 +664,13 @@ onMounted(() => {
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.reports.dataExport.cancel')"
             severity="secondary"
             outlined
             @click="exportDialog = false"
           />
           <PrimeButton
-            label="Esporta"
+            :label="$t('admin.reports.dataExport.export')"
             severity="primary"
             icon="pi pi-download"
             :loading="reportStore.exporting"

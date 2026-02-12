@@ -3,6 +3,7 @@
  * Admin Catalog Overview - Panoramica Catalogo
  * Dashboard con accesso rapido a Categorie, Province e Pacchetti
  */
+const { t } = useI18n()
 
 definePageMeta({
   layout: 'admin'
@@ -33,8 +34,8 @@ const navigateTo = (path: string) => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Catalogo</h1>
-        <p class="page-subtitle">Gestione categorie merceologiche, province e pacchetti lead</p>
+        <h1 class="page-title">{{ $t('admin.catalog.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.catalog.subtitle') }}</p>
       </div>
     </div>
 
@@ -59,9 +60,9 @@ const navigateTo = (path: string) => {
             />
           </div>
           
-          <h3 class="text-lg font-semibold text-neutral-900 mb-2">Categorie Merceologiche</h3>
+          <h3 class="text-lg font-semibold text-neutral-900 mb-2">{{ $t('admin.catalog.categories.title') }}</h3>
           <p class="text-sm text-neutral-600 mb-4">
-            Gestisci le categorie dei lead e le regole di condivisione
+            {{ $t('admin.catalog.categories.description') }}
           </p>
           
           <div class="flex items-center gap-4 pt-4 border-t border-neutral-200">
@@ -69,21 +70,21 @@ const navigateTo = (path: string) => {
               <div class="text-2xl font-bold text-neutral-900">
                 {{ formatNumber(catalogStore.categoryStats?.total || 0) }}
               </div>
-              <div class="text-xs text-neutral-500">Totali</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.categories.total') }}</div>
             </div>
             <div class="w-px h-10 bg-neutral-200"></div>
             <div>
               <div class="text-2xl font-bold text-success">
                 {{ formatNumber(catalogStore.categoryStats?.active || 0) }}
               </div>
-              <div class="text-xs text-neutral-500">Attive</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.categories.active') }}</div>
             </div>
             <div class="w-px h-10 bg-neutral-200"></div>
             <div>
               <div class="text-2xl font-bold text-primary-600">
                 {{ formatNumber(catalogStore.categoryStats?.available_leads || 0) }}
               </div>
-              <div class="text-xs text-neutral-500">Lead Disponibili</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.categories.availableLeads') }}</div>
             </div>
           </div>
         </div>
@@ -108,9 +109,9 @@ const navigateTo = (path: string) => {
             />
           </div>
           
-          <h3 class="text-lg font-semibold text-neutral-900 mb-2">Province</h3>
+          <h3 class="text-lg font-semibold text-neutral-900 mb-2">{{ $t('admin.catalog.provinces.title') }}</h3>
           <p class="text-sm text-neutral-600 mb-4">
-            Anagrafica province italiane per filtro geografico
+            {{ $t('admin.catalog.provinces.description') }}
           </p>
           
           <div class="flex items-center gap-4 pt-4 border-t border-neutral-200">
@@ -118,21 +119,21 @@ const navigateTo = (path: string) => {
               <div class="text-2xl font-bold text-neutral-900">
                 {{ formatNumber(catalogStore.provinceStats?.total || 0) }}
               </div>
-              <div class="text-xs text-neutral-500">Totali</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.provinces.total') }}</div>
             </div>
             <div class="w-px h-10 bg-neutral-200"></div>
             <div>
               <div class="text-2xl font-bold text-success">
                 {{ formatNumber(catalogStore.provinceStats?.active || 0) }}
               </div>
-              <div class="text-xs text-neutral-500">Attive</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.provinces.active') }}</div>
             </div>
             <div class="w-px h-10 bg-neutral-200"></div>
             <div>
               <div class="text-2xl font-bold text-info">
                 {{ Object.keys(catalogStore.provinceStats?.by_region || {}).length }}
               </div>
-              <div class="text-xs text-neutral-500">Regioni</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.provinces.regions') }}</div>
             </div>
           </div>
         </div>
@@ -157,9 +158,9 @@ const navigateTo = (path: string) => {
             />
           </div>
           
-          <h3 class="text-lg font-semibold text-neutral-900 mb-2">Pacchetti Lead</h3>
+          <h3 class="text-lg font-semibold text-neutral-900 mb-2">{{ $t('admin.catalog.packages.title') }}</h3>
           <p class="text-sm text-neutral-600 mb-4">
-            Configura bundle di lead acquistabili dai clienti
+            {{ $t('admin.catalog.packages.description') }}
           </p>
           
           <div class="flex items-center gap-4 pt-4 border-t border-neutral-200">
@@ -167,21 +168,21 @@ const navigateTo = (path: string) => {
               <div class="text-2xl font-bold text-neutral-900">
                 {{ formatNumber(catalogStore.packageStats?.total || 0) }}
               </div>
-              <div class="text-xs text-neutral-500">Totali</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.packages.total') }}</div>
             </div>
             <div class="w-px h-10 bg-neutral-200"></div>
             <div>
               <div class="text-2xl font-bold text-success">
                 {{ formatNumber(catalogStore.packageStats?.active || 0) }}
               </div>
-              <div class="text-xs text-neutral-500">Attivi</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.packages.active') }}</div>
             </div>
             <div class="w-px h-10 bg-neutral-200"></div>
             <div>
               <div class="text-2xl font-bold text-warning-dark">
                 {{ formatNumber(catalogStore.packageStats?.total_sales || 0) }}
               </div>
-              <div class="text-xs text-neutral-500">Vendite</div>
+              <div class="text-xs text-neutral-500">{{ $t('admin.catalog.packages.sales') }}</div>
             </div>
           </div>
         </div>
@@ -193,27 +194,27 @@ const navigateTo = (path: string) => {
       <div class="q-card-header">
         <h3 class="card-title">
           <i class="pi pi-bolt mr-2 text-primary-500"></i>
-          Azioni Rapide
+          {{ $t('admin.catalog.quickActions.title') }}
         </h3>
       </div>
       <div class="q-card-body">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <PrimeButton
-            label="Nuova Categoria"
+            :label="$t('admin.catalog.quickActions.newCategory')"
             icon="pi pi-plus"
             severity="primary"
             class="justify-start"
             @click="navigateTo('/admin/catalog/categories/create')"
           />
           <PrimeButton
-            label="Nuovo Pacchetto"
+            :label="$t('admin.catalog.quickActions.newPackage')"
             icon="pi pi-plus"
             severity="primary"
             class="justify-start"
             @click="navigateTo('/admin/catalog/packages/create')"
           />
           <PrimeButton
-            label="Gestione Listini"
+            :label="$t('admin.catalog.quickActions.managePricing')"
             icon="pi pi-euro"
             severity="secondary"
             outlined

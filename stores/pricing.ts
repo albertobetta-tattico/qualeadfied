@@ -447,6 +447,7 @@ export const usePricingStore = defineStore('pricing', {
     // ============================================
 
     async fetchCategoryPrices() {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -513,7 +514,7 @@ export const usePricingStore = defineStore('pricing', {
         this.categoryPricesWithCategory = response.data
         this.pagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento prezzi'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchCategoryPrices error:', error)
       } finally {
         this.loading = false
@@ -521,6 +522,7 @@ export const usePricingStore = defineStore('pricing', {
     },
 
     async updateCategoryPrice(categoryId: number, data: CategoryPriceForm): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -580,7 +582,7 @@ export const usePricingStore = defineStore('pricing', {
         })
         return true
       } catch (error: any) {
-        this.error = error.message || 'Errore nel salvataggio prezzi'
+        this.error = error.message || t('common.errors.saveError')
         console.error('updateCategoryPrice error:', error)
         return false
       } finally {
@@ -593,6 +595,7 @@ export const usePricingStore = defineStore('pricing', {
     // ============================================
 
     async fetchPriceHistory(categoryId?: number) {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -671,7 +674,7 @@ export const usePricingStore = defineStore('pricing', {
         this.priceHistory = response.data
         this.historyPagination = response.meta
       } catch (error: any) {
-        this.error = error.message || 'Errore nel caricamento storico prezzi'
+        this.error = error.message || t('common.errors.loadError')
         console.error('fetchPriceHistory error:', error)
       } finally {
         this.loading = false

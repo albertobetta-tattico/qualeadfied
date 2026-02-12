@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const clientStore = useClientStore()
 const { formatStatus, getStatusSeverity, formatDate, getContactFullName, getFreeTrialRemaining } = useClientFormatters()
@@ -28,20 +30,20 @@ const statusFilter = ref<ClientStatus | ''>('')
 const freeTrialFilter = ref<'active' | 'inactive' | 'exhausted' | ''>('')
 
 // Status options for dropdown
-const statusOptions = [
-  { label: 'Tutti gli stati', value: '' },
-  { label: 'Attivo', value: 'active' },
-  { label: 'In Attesa', value: 'pending' },
-  { label: 'Sospeso', value: 'suspended' }
-]
+const statusOptions = computed(() => [
+  { label: t('admin.clients.list.filters.statusOptions.all'), value: '' },
+  { label: t('admin.clients.list.filters.statusOptions.active'), value: 'active' },
+  { label: t('admin.clients.list.filters.statusOptions.pending'), value: 'pending' },
+  { label: t('admin.clients.list.filters.statusOptions.suspended'), value: 'suspended' }
+])
 
 // Free trial options
-const freeTrialOptions = [
-  { label: 'Tutti', value: '' },
-  { label: 'Prova attiva', value: 'active' },
-  { label: 'Prova non attiva', value: 'inactive' },
-  { label: 'Prova esaurita', value: 'exhausted' }
-]
+const freeTrialOptions = computed(() => [
+  { label: t('admin.clients.list.filters.freeTrialOptions.all'), value: '' },
+  { label: t('admin.clients.list.filters.freeTrialOptions.active'), value: 'active' },
+  { label: t('admin.clients.list.filters.freeTrialOptions.inactive'), value: 'inactive' },
+  { label: t('admin.clients.list.filters.freeTrialOptions.exhausted'), value: 'exhausted' }
+])
 
 // Computed
 const clients = computed(() => clientStore.clients)
@@ -104,9 +106,9 @@ const handleSuspend = async (client: Client) => {
   confirmSuspend(client, async () => {
     const success = await clientStore.suspendClient(client.id)
     if (success) {
-      showSuccess(`Cliente "${client.company_name}" sospeso con successo`)
+      showSuccess(t('admin.clients.list.toast.suspendSuccess', { name: client.company_name }))
     } else {
-      showError(clientStore.error || 'Errore nella sospensione del cliente')
+      showError(clientStore.error || t('admin.clients.list.toast.suspendError'))
     }
   })
 }
@@ -114,9 +116,9 @@ const handleSuspend = async (client: Client) => {
 const handleActivate = async (client: Client) => {
   const success = await clientStore.activateClient(client.id)
   if (success) {
-    showSuccess(`Cliente "${client.company_name}" attivato con successo`)
+    showSuccess(t('admin.clients.list.toast.activateSuccess', { name: client.company_name }))
   } else {
-    showError(clientStore.error || 'Errore nell\'attivazione del cliente')
+    showError(clientStore.error || t('admin.clients.list.toast.activateError'))
   }
 }
 
@@ -124,9 +126,9 @@ const handleResetPassword = (client: Client) => {
   confirmResetPassword(client, async () => {
     const success = await clientStore.resetPassword(client.id)
     if (success) {
-      showSuccess(`Email di reset password inviata a ${client.email}`)
+      showSuccess(t('admin.clients.list.toast.resetPasswordSuccess', { email: client.email }))
     } else {
-      showError(clientStore.error || 'Errore nell\'invio dell\'email di reset')
+      showError(clientStore.error || t('admin.clients.list.toast.resetPasswordError'))
     }
   })
 }
@@ -141,17 +143,17 @@ const handleDelete = async () => {
   
   const success = await clientStore.deleteClient(clientToDelete.value.id)
   if (success) {
-    showSuccess(`Cliente "${clientToDelete.value.company_name}" eliminato con successo`)
+    showSuccess(t('admin.clients.list.toast.deleteSuccess', { name: clientToDelete.value.company_name }))
     deleteDialog.value = false
     clientToDelete.value = null
   } else {
-    showError(clientStore.error || 'Errore nell\'eliminazione del cliente')
+    showError(clientStore.error || t('admin.clients.list.toast.deleteError'))
   }
 }
 
 const exportClients = () => {
   // TODO: Implementare export Excel
-  showSuccess('Export in corso...')
+  showSuccess(t('admin.clients.list.toast.exportStarted'))
 }
 
 // Debounced search
@@ -173,10 +175,10 @@ const getFreeTrialClass = (client: Client) => {
 }
 
 const getFreeTrialLabel = (client: Client) => {
-  if (!client.free_trial_enabled) return 'Non attiva'
+  if (!client.free_trial_enabled) return t('admin.clients.list.table.freeTrialLabels.inactive')
   const remaining = getFreeTrialRemaining(client)
-  if (remaining === 0) return 'Esaurita'
-  return `${remaining}/${client.free_trial_leads_total} rimanenti`
+  if (remaining === 0) return t('admin.clients.list.table.freeTrialLabels.exhausted')
+  return t('admin.clients.list.table.freeTrialLabels.remaining', { remaining, total: client.free_trial_leads_total })
 }
 
 // Lifecycle
@@ -195,19 +197,19 @@ onUnmounted(() => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Clienti</h1>
-        <p class="page-subtitle">Gestione clienti B2B della piattaforma</p>
+        <h1 class="page-title">{{ $t('admin.clients.list.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.clients.list.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
-        <PrimeButton 
-          label="Nuovo Cliente" 
-          icon="pi pi-plus" 
+        <PrimeButton
+          :label="$t('admin.clients.list.actions.newClient')"
+          icon="pi pi-plus"
           severity="primary"
           @click="navigateToCreate"
         />
-        <PrimeButton 
-          label="Export" 
-          icon="pi pi-download" 
+        <PrimeButton
+          :label="$t('admin.clients.list.actions.export')"
+          icon="pi pi-download"
           severity="secondary"
           outlined
           @click="exportClients"
@@ -222,7 +224,7 @@ onUnmounted(() => {
           <i class="pi pi-users"></i>
         </div>
         <div class="kpi-card-value">{{ pagination.total || 0 }}</div>
-        <div class="kpi-card-label">Clienti Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.clients.list.kpis.totalClients') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -230,7 +232,7 @@ onUnmounted(() => {
           <i class="pi pi-check-circle"></i>
         </div>
         <div class="kpi-card-value">{{ clientStore.activeClients.length }}</div>
-        <div class="kpi-card-label">Clienti Attivi</div>
+        <div class="kpi-card-label">{{ $t('admin.clients.list.kpis.activeClients') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -238,7 +240,7 @@ onUnmounted(() => {
           <i class="pi pi-clock"></i>
         </div>
         <div class="kpi-card-value">{{ clientStore.pendingClients.length }}</div>
-        <div class="kpi-card-label">In Attesa</div>
+        <div class="kpi-card-label">{{ $t('admin.clients.list.kpis.pending') }}</div>
       </div>
       
       <div class="kpi-card">
@@ -246,7 +248,7 @@ onUnmounted(() => {
           <i class="pi pi-gift"></i>
         </div>
         <div class="kpi-card-value">{{ clientStore.clientsWithFreeTrial.length }}</div>
-        <div class="kpi-card-label">Con Prova Gratuita</div>
+        <div class="kpi-card-label">{{ $t('admin.clients.list.kpis.withFreeTrial') }}</div>
       </div>
     </div>
 
@@ -259,7 +261,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per nome, email, P.IVA..."
+              :placeholder="$t('admin.clients.list.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -269,16 +271,16 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('admin.clients.list.filters.hideFilters') : $t('admin.clients.list.filters.showFilters')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('admin.clients.list.filters.clearFilters')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -294,13 +296,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Status Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Stato</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.clients.list.filters.status') }}</label>
               <PrimeSelect
                 v-model="statusFilter"
                 :options="statusOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona stato"
+                :placeholder="$t('admin.clients.list.filters.selectStatus')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -308,13 +310,13 @@ onUnmounted(() => {
 
             <!-- Free Trial Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Prova Gratuita</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.clients.list.filters.freeTrial') }}</label>
               <PrimeSelect
                 v-model="freeTrialFilter"
                 :options="freeTrialOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona..."
+                :placeholder="$t('admin.clients.list.filters.selectOption')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -323,7 +325,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('admin.clients.list.filters.applyFilters')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -352,7 +354,7 @@ onUnmounted(() => {
         removableSort
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} clienti"
+        :currentPageReportTemplate="$t('admin.clients.list.table.paginatorTemplate')"
         @page="onPage"
         @sort="onSort"
       >
@@ -360,9 +362,9 @@ onUnmounted(() => {
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-users text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600 mb-4">Nessun cliente trovato</p>
+            <p class="text-neutral-600 mb-4">{{ $t('admin.clients.list.table.empty') }}</p>
             <PrimeButton
-              label="Aggiungi il primo cliente"
+              :label="$t('admin.clients.list.actions.newClient')"
               icon="pi pi-plus"
               severity="primary"
               @click="navigateToCreate"
@@ -374,7 +376,7 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento clienti...</span>
+            <span class="text-neutral-600">{{ $t('admin.clients.list.table.loading') }}</span>
           </div>
         </template>
 
@@ -382,7 +384,7 @@ onUnmounted(() => {
         <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
         <!-- Company Name -->
-        <PrimeColumn field="company_name" header="Azienda" sortable style="min-width: 200px">
+        <PrimeColumn field="company_name" :header="$t('admin.clients.list.table.headers.company')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
               <div 
@@ -392,21 +394,21 @@ onUnmounted(() => {
               </div>
               <div>
                 <div class="font-medium text-neutral-900">{{ data.company_name }}</div>
-                <div class="text-xs text-neutral-500">P.IVA: {{ data.vat_number }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('admin.clients.list.table.vatPrefix') }}: {{ data.vat_number }}</div>
               </div>
             </div>
           </template>
         </PrimeColumn>
 
         <!-- Contact Person -->
-        <PrimeColumn field="contact_first_name" header="Referente" sortable style="min-width: 150px">
+        <PrimeColumn field="contact_first_name" :header="$t('admin.clients.list.table.headers.contact')" sortable style="min-width: 150px">
           <template #body="{ data }">
             <span class="text-neutral-700">{{ getContactFullName(data) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Email -->
-        <PrimeColumn field="email" header="Email" sortable style="min-width: 200px">
+        <PrimeColumn field="email" :header="$t('admin.clients.list.table.headers.email')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <a 
               :href="`mailto:${data.email}`" 
@@ -418,7 +420,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Phone -->
-        <PrimeColumn field="phone" header="Telefono" style="min-width: 130px">
+        <PrimeColumn field="phone" :header="$t('admin.clients.list.table.headers.phone')" style="min-width: 130px">
           <template #body="{ data }">
             <a 
               :href="`tel:${data.phone}`"
@@ -430,7 +432,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Status -->
-        <PrimeColumn field="status" header="Stato" sortable style="min-width: 120px">
+        <PrimeColumn field="status" :header="$t('admin.clients.list.table.headers.status')" sortable style="min-width: 120px">
           <template #body="{ data }">
             <PrimeTag 
               :value="formatStatus(data.status)"
@@ -440,7 +442,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Free Trial -->
-        <PrimeColumn field="free_trial_enabled" header="Prova Gratuita" style="min-width: 140px">
+        <PrimeColumn field="free_trial_enabled" :header="$t('admin.clients.list.table.headers.freeTrial')" style="min-width: 140px">
           <template #body="{ data }">
             <span 
               class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
@@ -456,14 +458,14 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Registration Date -->
-        <PrimeColumn field="created_at" header="Registrazione" sortable style="min-width: 120px">
+        <PrimeColumn field="created_at" :header="$t('admin.clients.list.table.headers.registration')" sortable style="min-width: 120px">
           <template #body="{ data }">
             <span class="text-neutral-600">{{ formatDate(data.created_at) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 120px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.clients.list.table.headers.actions')" style="min-width: 120px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <!-- Edit -->
@@ -473,7 +475,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Modifica'"
+                v-tooltip.top="$t('admin.common.edit')"
                 @click="navigateToEdit(data)"
               />
 
@@ -484,7 +486,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Altre azioni'"
+                v-tooltip.top="$t('admin.clients.list.contextMenu.moreActions')"
                 @click="(event: Event) => ($refs[`menu-${data.id}`] as any)?.toggle(event)"
               />
               
@@ -492,24 +494,24 @@ onUnmounted(() => {
                 :ref="`menu-${data.id}`"
                 :model="[
                   {
-                    label: 'Visualizza dettagli',
+                    label: $t('admin.clients.list.contextMenu.viewDetails'),
                     icon: 'pi pi-eye',
                     command: () => navigateToEdit(data)
                   },
                   {
-                    label: 'Reset password',
+                    label: $t('admin.clients.list.contextMenu.resetPassword'),
                     icon: 'pi pi-key',
                     command: () => handleResetPassword(data)
                   },
                   { separator: true },
                   {
-                    label: data.status === 'suspended' ? 'Riattiva' : 'Sospendi',
+                    label: data.status === 'suspended' ? $t('admin.clients.list.contextMenu.reactivate') : $t('admin.clients.list.contextMenu.suspend'),
                     icon: data.status === 'suspended' ? 'pi pi-play' : 'pi pi-pause',
                     command: () => data.status === 'suspended' ? handleActivate(data) : handleSuspend(data)
                   },
                   { separator: true },
                   {
-                    label: 'Elimina',
+                    label: $t('admin.clients.list.contextMenu.delete'),
                     icon: 'pi pi-trash',
                     class: 'text-danger',
                     command: () => openDeleteDialog(data)
@@ -527,7 +529,7 @@ onUnmounted(() => {
     <PrimeDialog
       v-model:visible="deleteDialog"
       modal
-      header="Conferma Eliminazione"
+      :header="$t('admin.clients.list.dialog.deleteTitle')"
       :style="{ width: '450px' }"
     >
       <div class="flex items-start gap-4">
@@ -536,24 +538,21 @@ onUnmounted(() => {
         </div>
         <div>
           <p class="text-neutral-800 mb-2">
-            Sei sicuro di voler eliminare il cliente <strong>{{ clientToDelete?.company_name }}</strong>?
-          </p>
-          <p class="text-sm text-neutral-600">
-            Questa azione non può essere annullata. Tutti i dati del cliente verranno eliminati permanentemente.
+            {{ $t('admin.clients.list.dialog.deleteMessage', { name: clientToDelete?.company_name }) }}
           </p>
         </div>
       </div>
-      
+
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.clients.list.dialog.deleteCancel')"
             severity="secondary"
             outlined
             @click="deleteDialog = false"
           />
           <PrimeButton
-            label="Elimina"
+            :label="$t('admin.clients.list.dialog.deleteConfirm')"
             severity="danger"
             icon="pi pi-trash"
             :loading="clientStore.saving"

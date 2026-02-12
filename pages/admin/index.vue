@@ -3,15 +3,16 @@
  * Admin Dashboard Page
  * Shows KPI cards, charts, and recent data tables
  */
+const { t } = useI18n()
 
 definePageMeta({
   layout: 'admin'
 })
 
 // KPI Data
-const kpiCards = [
+const kpiCards = computed(() => [
   {
-    label: 'Lead Disponibili',
+    label: t('admin.dashboard.kpis.availableLeads'),
     value: '1,234',
     icon: 'pi pi-list',
     iconClass: 'primary',
@@ -19,7 +20,7 @@ const kpiCards = [
     trendDirection: 'up'
   },
   {
-    label: 'Lead Venduti (Mese)',
+    label: t('admin.dashboard.kpis.soldLeadsMonth'),
     value: '456',
     icon: 'pi pi-shopping-cart',
     iconClass: 'success',
@@ -27,7 +28,7 @@ const kpiCards = [
     trendDirection: 'up'
   },
   {
-    label: 'Fatturato Mese',
+    label: t('admin.dashboard.kpis.revenueMonth'),
     value: '€ 12,450',
     icon: 'pi pi-euro',
     iconClass: 'accent',
@@ -35,14 +36,14 @@ const kpiCards = [
     trendDirection: 'up'
   },
   {
-    label: 'Nuovi Clienti',
+    label: t('admin.dashboard.kpis.newClients'),
     value: '28',
     icon: 'pi pi-users',
     iconClass: 'info',
     trend: '-5%',
     trendDirection: 'down'
   }
-]
+])
 
 // Recent Leads Data
 const recentLeads = ref([
@@ -135,23 +136,13 @@ const recentOrders = ref([
 
 // Status badge helpers
 const getLeadStatusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    free: 'Libero',
-    exclusive: 'Esclusivo',
-    shared: 'Condiviso',
-    exhausted: 'Esaurito'
-  }
-  return labels[status] || status
+  const key = `admin.dashboard.leadStatuses.${status}`
+  return t(key) !== key ? t(key) : status
 }
 
 const getOrderStatusLabel = (status: string) => {
-  const labels: Record<string, string> = {
-    paid: 'Pagato',
-    processing: 'In elaborazione',
-    failed: 'Fallito',
-    pending: 'In attesa'
-  }
-  return labels[status] || status
+  const key = `admin.dashboard.orderStatuses.${status}`
+  return t(key) !== key ? t(key) : status
 }
 
 const getOrderStatusSeverity = (status: string) => {
@@ -170,18 +161,18 @@ const getOrderStatusSeverity = (status: string) => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Dashboard</h1>
-        <p class="page-subtitle">Benvenuto nel pannello di amministrazione Qualeadfied</p>
+        <h1 class="page-title">{{ $t('admin.dashboard.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.dashboard.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
-        <PrimeButton 
-          label="Nuovo Lead" 
-          icon="pi pi-plus" 
+        <PrimeButton
+          :label="$t('admin.leads.list.actions.newLead')"
+          icon="pi pi-plus"
           severity="primary"
         />
-        <PrimeButton 
-          label="Export" 
-          icon="pi pi-download" 
+        <PrimeButton
+          :label="$t('admin.common.export')"
+          icon="pi pi-download"
           severity="secondary"
           outlined
         />
@@ -215,9 +206,9 @@ const getOrderStatusSeverity = (status: string) => {
       <!-- Recent Leads Card -->
       <div class="q-card">
         <div class="q-card-header">
-          <h3 class="card-title">Lead Recenti</h3>
+          <h3 class="card-title">{{ $t('admin.dashboard.recentLeads.title') }}</h3>
           <NuxtLink to="/admin/leads" class="text-sm text-primary-500 hover:text-primary-600">
-            Vedi tutti <i class="pi pi-arrow-right ml-1"></i>
+            {{ $t('admin.dashboard.recentLeads.viewAll') }} <i class="pi pi-arrow-right ml-1"></i>
           </NuxtLink>
         </div>
         <div class="q-card-body">
@@ -227,7 +218,7 @@ const getOrderStatusSeverity = (status: string) => {
             stripedRows
             class="text-sm"
           >
-            <PrimeColumn field="name" header="Nome">
+            <PrimeColumn field="name" :header="$t('admin.dashboard.recentLeads.headers.name')">
               <template #body="{ data }">
                 <div>
                   <div class="font-medium text-neutral-900">{{ data.name }}</div>
@@ -235,20 +226,20 @@ const getOrderStatusSeverity = (status: string) => {
                 </div>
               </template>
             </PrimeColumn>
-            <PrimeColumn field="category" header="Categoria">
+            <PrimeColumn field="category" :header="$t('admin.dashboard.recentLeads.headers.category')">
               <template #body="{ data }">
                 <span class="text-neutral-700">{{ data.category }}</span>
               </template>
             </PrimeColumn>
-            <PrimeColumn field="province" header="Provincia">
+            <PrimeColumn field="province" :header="$t('admin.dashboard.recentLeads.headers.province')">
               <template #body="{ data }">
                 <span class="text-neutral-600">{{ data.province }}</span>
               </template>
             </PrimeColumn>
-            <PrimeColumn field="status" header="Stato">
+            <PrimeColumn field="status" :header="$t('admin.dashboard.recentLeads.headers.status')">
               <template #body="{ data }">
-                <span 
-                  class="lead-badge" 
+                <span
+                  class="lead-badge"
                   :class="data.status"
                 >
                   {{ getLeadStatusLabel(data.status) }}
@@ -263,9 +254,9 @@ const getOrderStatusSeverity = (status: string) => {
       <!-- Recent Orders Card -->
       <div class="q-card">
         <div class="q-card-header">
-          <h3 class="card-title">Ordini Recenti</h3>
+          <h3 class="card-title">{{ $t('admin.dashboard.recentOrders.title') }}</h3>
           <NuxtLink to="/admin/orders" class="text-sm text-primary-500 hover:text-primary-600">
-            Vedi tutti <i class="pi pi-arrow-right ml-1"></i>
+            {{ $t('admin.dashboard.recentOrders.viewAll') }} <i class="pi pi-arrow-right ml-1"></i>
           </NuxtLink>
         </div>
         <div class="q-card-body">
@@ -275,22 +266,22 @@ const getOrderStatusSeverity = (status: string) => {
             stripedRows
             class="text-sm"
           >
-            <PrimeColumn field="id" header="Ordine">
+            <PrimeColumn field="id" :header="$t('admin.dashboard.recentOrders.headers.order')">
               <template #body="{ data }">
                 <span class="font-mono text-primary-600">{{ data.id }}</span>
               </template>
             </PrimeColumn>
-            <PrimeColumn field="client" header="Cliente">
+            <PrimeColumn field="client" :header="$t('admin.dashboard.recentOrders.headers.client')">
               <template #body="{ data }">
                 <span class="font-medium text-neutral-900">{{ data.client }}</span>
               </template>
             </PrimeColumn>
-            <PrimeColumn field="amount" header="Importo">
+            <PrimeColumn field="amount" :header="$t('admin.dashboard.recentOrders.headers.amount')">
               <template #body="{ data }">
                 <span class="font-semibold text-neutral-900">{{ data.amount }}</span>
               </template>
             </PrimeColumn>
-            <PrimeColumn field="status" header="Stato">
+            <PrimeColumn field="status" :header="$t('admin.dashboard.recentOrders.headers.status')">
               <template #body="{ data }">
                 <PrimeTag 
                   :value="getOrderStatusLabel(data.status)" 
@@ -298,7 +289,7 @@ const getOrderStatusSeverity = (status: string) => {
                 />
               </template>
             </PrimeColumn>
-            <PrimeColumn field="date" header="Data">
+            <PrimeColumn field="date" :header="$t('admin.dashboard.recentOrders.headers.date')">
               <template #body="{ data }">
                 <span class="text-neutral-600">{{ data.date }}</span>
               </template>
@@ -313,7 +304,7 @@ const getOrderStatusSeverity = (status: string) => {
       <!-- Top Categories -->
       <div class="q-card">
         <div class="q-card-header">
-          <h3 class="card-title">Top Categorie</h3>
+          <h3 class="card-title">{{ $t('admin.dashboard.topCategories') }}</h3>
         </div>
         <div class="q-card-body">
           <div class="space-y-4">
@@ -360,7 +351,7 @@ const getOrderStatusSeverity = (status: string) => {
       <!-- Top Provinces -->
       <div class="q-card">
         <div class="q-card-header">
-          <h3 class="card-title">Top Province</h3>
+          <h3 class="card-title">{{ $t('admin.dashboard.topProvinces') }}</h3>
         </div>
         <div class="q-card-body">
           <div class="space-y-4">
@@ -391,7 +382,7 @@ const getOrderStatusSeverity = (status: string) => {
       <!-- Activity Feed -->
       <div class="q-card">
         <div class="q-card-header">
-          <h3 class="card-title">Attività Recenti</h3>
+          <h3 class="card-title">{{ $t('admin.dashboard.activityFeed') }}</h3>
         </div>
         <div class="q-card-body">
           <div class="space-y-4">

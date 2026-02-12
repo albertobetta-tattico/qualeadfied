@@ -10,6 +10,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Route & Store
 const route = useRoute()
 const router = useRouter()
@@ -148,7 +150,7 @@ const onBlurGeneratedAt = () => {
 // Submit form
 const onSubmit = async () => {
   if (!isEditable.value) {
-    showError('Questo lead non può essere modificato')
+    showError(t('admin.leads.edit.toast.notEditable'))
     return
   }
 
@@ -160,33 +162,33 @@ const onSubmit = async () => {
   }
   
   if (!validateForm(formData)) {
-    showError('Correggi gli errori nel form prima di procedere')
+    showError(t('admin.leads.edit.toast.formErrors'))
     return
   }
 
   const updatedLead = await leadStore.updateLead(leadId.value, formData)
   
   if (updatedLead) {
-    showSuccess(`Lead di "${getFullName(updatedLead)}" aggiornato con successo`)
+    showSuccess(t('admin.leads.edit.toast.updateSuccess', { name: getFullName(updatedLead) }))
   } else {
-    showError(leadStore.error || 'Errore nell\'aggiornamento del lead')
+    showError(leadStore.error || t('admin.leads.edit.toast.updateError'))
   }
 }
 
 // Delete lead
 const handleDelete = () => {
   if (!lead.value || !isDeletable.value) {
-    showError('Questo lead non può essere eliminato')
+    showError(t('admin.leads.edit.toast.notDeletable'))
     return
   }
 
   confirmDelete(lead.value, async () => {
     const success = await leadStore.deleteLead(leadId.value)
     if (success) {
-      showSuccess('Lead eliminato con successo')
+      showSuccess(t('admin.leads.edit.toast.deleteSuccess'))
       router.push('/admin/leads')
     } else {
-      showError(leadStore.error || 'Errore nell\'eliminazione del lead')
+      showError(leadStore.error || t('admin.leads.edit.toast.deleteError'))
     }
   })
 }
@@ -224,7 +226,7 @@ onMounted(() => {
     <div v-if="initialLoading" class="flex items-center justify-center py-20">
       <div class="text-center">
         <i class="pi pi-spin pi-spinner text-4xl text-primary-500 mb-4"></i>
-        <p class="text-neutral-600">Caricamento lead...</p>
+        <p class="text-neutral-600">{{ $t('admin.leads.edit.loading') }}</p>
       </div>
     </div>
 
@@ -233,10 +235,10 @@ onMounted(() => {
       <div class="w-20 h-20 rounded-full bg-danger-light flex items-center justify-center mx-auto mb-4">
         <i class="pi pi-exclamation-triangle text-4xl text-danger"></i>
       </div>
-      <h2 class="text-xl font-semibold text-neutral-900 mb-2">Lead non trovato</h2>
-      <p class="text-neutral-600 mb-6">Il lead richiesto non esiste o è stato eliminato.</p>
+      <h2 class="text-xl font-semibold text-neutral-900 mb-2">{{ $t('admin.leads.edit.notFound') }}</h2>
+      <p class="text-neutral-600 mb-6">{{ $t('admin.leads.edit.notFoundDescription') }}</p>
       <PrimeButton
-        label="Torna all'elenco"
+        :label="$t('admin.leads.edit.backToList')"
         icon="pi pi-arrow-left"
         severity="primary"
         @click="onCancel"
@@ -276,7 +278,7 @@ onMounted(() => {
                     </span>
                   </span>
                   <span class="text-sm text-neutral-500">
-                    Lead del {{ formatDate(lead.generated_at) }}
+                    {{ $t('admin.leads.edit.leadDate') }} {{ formatDate(lead.generated_at) }}
                   </span>
                 </div>
               </div>
@@ -286,7 +288,7 @@ onMounted(() => {
         <div class="page-header-actions">
           <PrimeButton
             v-if="isDeletable"
-            label="Elimina"
+            :label="$t('admin.leads.edit.deleteButton')"
             icon="pi pi-trash"
             severity="danger"
             outlined
@@ -301,7 +303,7 @@ onMounted(() => {
           <template #icon>
             <i class="pi pi-exclamation-triangle"></i>
           </template>
-          Questo lead è già stato venduto e non può essere modificato.
+          {{ $t('admin.leads.edit.warning.notEditable') }}
         </PrimeMessage>
       </div>
 
@@ -310,21 +312,21 @@ onMounted(() => {
         <!-- Category Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Categoria</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.category') }}</span>
             <i class="pi pi-tag text-lg text-primary-500"></i>
           </div>
           <div class="font-semibold text-neutral-900">
             {{ lead.category?.name || '-' }}
           </div>
           <div class="text-xs text-neutral-500 mt-1">
-            Max condivisioni: {{ currentCategory?.max_shares || '-' }}
+            {{ $t('admin.leads.edit.infoCards.maxShares') }}: {{ currentCategory?.max_shares || '-' }}
           </div>
         </div>
 
         <!-- Province Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Provincia</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.province') }}</span>
             <i class="pi pi-map-marker text-lg text-primary-500"></i>
           </div>
           <div class="font-semibold text-neutral-900">
@@ -341,7 +343,7 @@ onMounted(() => {
         <!-- Source Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Fonte</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.source') }}</span>
             <i class="pi pi-link text-lg text-primary-500"></i>
           </div>
           <div class="font-semibold text-neutral-900">
@@ -355,14 +357,14 @@ onMounted(() => {
         <!-- Created Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Inserito il</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.insertedAt') }}</span>
             <i class="pi pi-calendar text-lg text-primary-500"></i>
           </div>
           <div class="font-semibold text-neutral-900">
             {{ formatDate(lead.created_at) }}
           </div>
           <div class="text-xs text-neutral-500 mt-1">
-            Aggiornato: {{ formatDateTime(lead.updated_at) }}
+            {{ $t('admin.leads.edit.infoCards.updatedAt') }}: {{ formatDateTime(lead.updated_at) }}
           </div>
         </div>
       </div>
@@ -370,12 +372,12 @@ onMounted(() => {
       <!-- Tabs -->
       <PrimeTabView v-model:activeIndex="activeTab" class="q-card">
         <!-- Tab: Dati Contatto -->
-        <PrimeTabPanel value="0" header="Dati Contatto">
+        <PrimeTabPanel value="0" :header="$t('admin.leads.edit.tabs.contactData')">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- First Name -->
               <div class="form-group">
-                <label for="first_name">Nome *</label>
+                <label for="first_name">{{ $t('admin.leads.edit.contactForm.firstName') }} *</label>
                 <PrimeInputText
                   id="first_name"
                   v-model="form.first_name"
@@ -389,7 +391,7 @@ onMounted(() => {
 
               <!-- Last Name -->
               <div class="form-group">
-                <label for="last_name">Cognome *</label>
+                <label for="last_name">{{ $t('admin.leads.edit.contactForm.lastName') }} *</label>
                 <PrimeInputText
                   id="last_name"
                   v-model="form.last_name"
@@ -403,7 +405,7 @@ onMounted(() => {
 
               <!-- Email -->
               <div class="form-group">
-                <label for="email">Email *</label>
+                <label for="email">{{ $t('admin.leads.edit.contactForm.email') }} *</label>
                 <PrimeInputText
                   id="email"
                   v-model="form.email"
@@ -418,7 +420,7 @@ onMounted(() => {
 
               <!-- Phone -->
               <div class="form-group">
-                <label for="phone">Telefono *</label>
+                <label for="phone">{{ $t('admin.leads.edit.contactForm.phone') }} *</label>
                 <PrimeInputText
                   id="phone"
                   v-model="form.phone"
@@ -435,14 +437,14 @@ onMounted(() => {
             <div v-if="isEditable" class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
               <PrimeButton
                 type="button"
-                label="Annulla modifiche"
+                :label="$t('admin.leads.edit.cancelChanges')"
                 severity="secondary"
                 outlined
                 @click="onReload"
               />
               <PrimeButton
                 type="submit"
-                label="Salva Modifiche"
+                :label="$t('admin.leads.edit.saveButton')"
                 icon="pi pi-check"
                 severity="primary"
                 :loading="leadStore.saving"
@@ -453,12 +455,12 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Classificazione -->
-        <PrimeTabPanel value="1" header="Classificazione">
+        <PrimeTabPanel value="1" :header="$t('admin.leads.edit.tabs.classification')">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <!-- Category -->
               <div class="form-group">
-                <label for="category_id">Categoria *</label>
+                <label for="category_id">{{ $t('admin.leads.edit.classificationForm.category') }} *</label>
                 <PrimeSelect
                   id="category_id"
                   v-model="form.category_id"
@@ -475,7 +477,7 @@ onMounted(() => {
 
               <!-- Province -->
               <div class="form-group">
-                <label for="province_id">Provincia *</label>
+                <label for="province_id">{{ $t('admin.leads.edit.classificationForm.province') }} *</label>
                 <PrimeSelect
                   id="province_id"
                   v-model="form.province_id"
@@ -493,7 +495,7 @@ onMounted(() => {
 
               <!-- Source -->
               <div class="form-group">
-                <label for="source_id">Fonte *</label>
+                <label for="source_id">{{ $t('admin.leads.edit.classificationForm.source') }} *</label>
                 <PrimeSelect
                   id="source_id"
                   v-model="form.source_id"
@@ -513,14 +515,14 @@ onMounted(() => {
             <div v-if="isEditable" class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
               <PrimeButton
                 type="button"
-                label="Annulla modifiche"
+                :label="$t('admin.leads.edit.cancelChanges')"
                 severity="secondary"
                 outlined
                 @click="onReload"
               />
               <PrimeButton
                 type="submit"
-                label="Salva Modifiche"
+                :label="$t('admin.leads.edit.saveButton')"
                 icon="pi pi-check"
                 severity="primary"
                 :loading="leadStore.saving"
@@ -531,12 +533,12 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Dettagli Richiesta -->
-        <PrimeTabPanel value="2" header="Dettagli Richiesta">
+        <PrimeTabPanel value="2" :header="$t('admin.leads.edit.tabs.requestDetails')">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <div class="grid grid-cols-1 gap-6">
               <!-- Request Text -->
               <div class="form-group">
-                <label for="request_text">Testo Richiesta</label>
+                <label for="request_text">{{ $t('admin.leads.edit.requestForm.requestText') }}</label>
                 <PrimeTextarea
                   id="request_text"
                   v-model="form.request_text"
@@ -550,7 +552,7 @@ onMounted(() => {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Generated At -->
                 <div class="form-group">
-                  <label for="generated_at">Data Generazione *</label>
+                  <label for="generated_at">{{ $t('admin.leads.edit.requestForm.generatedAt') }} *</label>
                   <PrimeDatePicker
                     id="generated_at"
                     v-model="formGeneratedAt"
@@ -567,14 +569,14 @@ onMounted(() => {
 
                 <!-- External ID -->
                 <div class="form-group">
-                  <label for="external_id">ID Esterno</label>
+                  <label for="external_id">{{ $t('admin.leads.edit.classificationForm.externalId') }}</label>
                   <PrimeInputText
                     id="external_id"
                     v-model="form.external_id"
                     class="w-full"
                     :disabled="!isEditable"
                   />
-                  <small class="form-hint">Identificativo nel sistema di origine</small>
+                  <small class="form-hint">{{ $t('admin.leads.edit.classificationForm.externalIdHint') }}</small>
                 </div>
               </div>
             </div>
@@ -583,14 +585,14 @@ onMounted(() => {
             <div v-if="isEditable" class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
               <PrimeButton
                 type="button"
-                label="Annulla modifiche"
+                :label="$t('admin.leads.edit.cancelChanges')"
                 severity="secondary"
                 outlined
                 @click="onReload"
               />
               <PrimeButton
                 type="submit"
-                label="Salva Modifiche"
+                :label="$t('admin.leads.edit.saveButton')"
                 icon="pi pi-check"
                 severity="primary"
                 :loading="leadStore.saving"
@@ -601,20 +603,20 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Storico Vendite -->
-        <PrimeTabPanel value="3" header="Storico Vendite">
+        <PrimeTabPanel value="3" :header="$t('admin.leads.edit.tabs.salesHistory')">
           <div class="pt-4">
             <div v-if="lead.status === 'free'" class="text-center py-12">
               <i class="pi pi-shopping-cart text-4xl text-neutral-400 mb-4 block"></i>
-              <p class="text-neutral-600 mb-2">Nessuna vendita registrata</p>
+              <p class="text-neutral-600 mb-2">{{ $t('admin.leads.edit.salesHistory.empty') }}</p>
               <p class="text-sm text-neutral-500">
-                Questo lead è ancora disponibile per l'acquisto
+                {{ $t('admin.leads.edit.salesHistory.availableForPurchase') }}
               </p>
             </div>
             <div v-else class="text-center py-12">
               <i class="pi pi-history text-4xl text-neutral-400 mb-4 block"></i>
-              <p class="text-neutral-600 mb-2">Storico vendite</p>
+              <p class="text-neutral-600 mb-2">{{ $t('admin.leads.edit.salesHistory.title') }}</p>
               <p class="text-sm text-neutral-500">
-                Qui verranno mostrate le vendite di questo lead
+                {{ $t('admin.leads.edit.salesHistory.description') }}
               </p>
               <!-- TODO: Implementare visualizzazione storico vendite -->
             </div>

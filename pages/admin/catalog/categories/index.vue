@@ -10,12 +10,14 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Store & Composables
 const catalogStore = useCatalogStore()
-const { 
-  formatNumber, 
-  formatDate, 
-  formatActiveStatus, 
+const {
+  formatNumber,
+  formatDate,
+  formatActiveStatus,
   getActiveStatusSeverity,
   formatLeadAvailability,
   getAvailabilityClass
@@ -34,11 +36,11 @@ const searchQuery = ref('')
 const activeFilter = ref<boolean | ''>('')
 
 // Filter options
-const activeOptions = [
-  { label: 'Tutti', value: '' },
-  { label: 'Attive', value: true },
-  { label: 'Non attive', value: false }
-]
+const activeOptions = computed(() => [
+  { label: t('admin.catalog.categories.filters.all'), value: '' },
+  { label: t('admin.catalog.categories.filters.active'), value: true },
+  { label: t('admin.catalog.categories.filters.inactive'), value: false }
+])
 
 // Computed
 const categories = computed(() => catalogStore.categories)
@@ -100,10 +102,10 @@ const handleToggleActive = (category: Category) => {
   confirmToggleCategory(category, async () => {
     const success = await catalogStore.toggleCategoryActive(category.id)
     if (success) {
-      const action = category.is_active ? 'disattivata' : 'attivata'
-      showSuccess(`Categoria "${category.name}" ${action} con successo`)
+      const action = category.is_active ? t('admin.catalog.categories.toast.deactivated') : t('admin.catalog.categories.toast.activated')
+      showSuccess(t('admin.catalog.categories.toast.toggleSuccess', { name: category.name, action }))
     } else {
-      showError(catalogStore.error || 'Errore nel cambio stato')
+      showError(catalogStore.error || t('admin.catalog.categories.toast.toggleError'))
     }
   })
 }
@@ -115,20 +117,20 @@ const openDeleteDialog = (category: Category) => {
 
 const handleDelete = async () => {
   if (!categoryToDelete.value) return
-  
+
   const success = await catalogStore.deleteCategory(categoryToDelete.value.id)
   if (success) {
-    showSuccess(`Categoria "${categoryToDelete.value.name}" eliminata con successo`)
+    showSuccess(t('admin.catalog.categories.toast.deleteSuccess', { name: categoryToDelete.value.name }))
     deleteDialog.value = false
     categoryToDelete.value = null
   } else {
-    showError(catalogStore.error || 'Errore nell\'eliminazione della categoria')
+    showError(catalogStore.error || t('admin.catalog.categories.toast.deleteError'))
   }
 }
 
 const exportCategories = () => {
   // TODO: Implementare export Excel
-  showSuccess('Export in corso...')
+  showSuccess(t('admin.catalog.categories.toast.exportInProgress'))
 }
 
 // Debounced search
@@ -167,20 +169,20 @@ onUnmounted(() => {
             rounded
             @click="router.push('/admin/catalog')"
           />
-          <h1 class="page-title mb-0">Categorie Merceologiche</h1>
+          <h1 class="page-title mb-0">{{ $t('admin.catalog.categories.title') }}</h1>
         </div>
-        <p class="page-subtitle ml-12">Gestione categorie e regole di condivisione lead</p>
+        <p class="page-subtitle ml-12">{{ $t('admin.catalog.categories.description') }}</p>
       </div>
       <div class="page-header-actions">
-        <PrimeButton 
-          label="Nuova Categoria" 
-          icon="pi pi-plus" 
+        <PrimeButton
+          :label="$t('admin.catalog.quickActions.newCategory')"
+          icon="pi pi-plus"
           severity="primary"
           @click="navigateToCreate"
         />
-        <PrimeButton 
-          label="Export" 
-          icon="pi pi-download" 
+        <PrimeButton
+          :label="$t('admin.common.export')"
+          icon="pi pi-download"
           severity="secondary"
           outlined
           @click="exportCategories"
@@ -195,31 +197,31 @@ onUnmounted(() => {
           <i class="pi pi-tag"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.total || 0) }}</div>
-        <div class="kpi-card-label">Categorie Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.categories.stats.totalCategories') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon success">
           <i class="pi pi-check-circle"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.active || 0) }}</div>
-        <div class="kpi-card-label">Categorie Attive</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.categories.stats.activeCategories') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon warning">
           <i class="pi pi-list"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.total_leads || 0) }}</div>
-        <div class="kpi-card-label">Lead Totali</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.categories.stats.totalLeads') }}</div>
       </div>
-      
+
       <div class="kpi-card">
         <div class="kpi-card-icon info">
           <i class="pi pi-check"></i>
         </div>
         <div class="kpi-card-value">{{ formatNumber(stats?.available_leads || 0) }}</div>
-        <div class="kpi-card-label">Lead Disponibili</div>
+        <div class="kpi-card-label">{{ $t('admin.catalog.categories.stats.availableLeads') }}</div>
       </div>
     </div>
 
@@ -232,7 +234,7 @@ onUnmounted(() => {
             <i class="pi pi-search" />
             <PrimeInputText
               v-model="searchQuery"
-              placeholder="Cerca per nome, slug, descrizione..."
+              :placeholder="$t('admin.catalog.categories.search.placeholder')"
               class="w-full"
               @input="onSearchInput"
             />
@@ -242,16 +244,16 @@ onUnmounted(() => {
         <!-- Filter Actions -->
         <div class="flex gap-3 items-center">
           <PrimeButton
-            :label="showFilters ? 'Nascondi filtri' : 'Mostra filtri'"
+            :label="showFilters ? $t('admin.common.filters.hide') : $t('admin.common.filters.show')"
             :icon="showFilters ? 'pi pi-filter-slash' : 'pi pi-filter'"
             severity="secondary"
             text
             @click="showFilters = !showFilters"
           />
-          
+
           <PrimeButton
             v-if="hasActiveFilters"
-            label="Pulisci filtri"
+            :label="$t('admin.common.filters.clear')"
             icon="pi pi-times"
             severity="secondary"
             outlined
@@ -267,13 +269,13 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Status Filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">Stato</label>
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.catalog.categories.table.headers.status') }}</label>
               <PrimeSelect
                 v-model="activeFilter"
                 :options="activeOptions"
                 optionLabel="label"
                 optionValue="value"
-                placeholder="Seleziona stato"
+                :placeholder="$t('admin.common.filters.selectStatus')"
                 class="w-full"
                 @change="applyFilters"
               />
@@ -282,7 +284,7 @@ onUnmounted(() => {
             <!-- Apply Button -->
             <div class="flex items-end">
               <PrimeButton
-                label="Applica Filtri"
+                :label="$t('admin.common.filters.apply')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"
@@ -311,7 +313,7 @@ onUnmounted(() => {
         removableSort
         class="text-sm"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Mostra {first} - {last} di {totalRecords} categorie"
+        :currentPageReportTemplate="$t('admin.catalog.categories.table.paginatorTemplate')"
         @page="onPage"
         @sort="onSort"
       >
@@ -319,9 +321,9 @@ onUnmounted(() => {
         <template #empty>
           <div class="text-center py-12">
             <i class="pi pi-tag text-4xl text-neutral-400 mb-4 block"></i>
-            <p class="text-neutral-600 mb-4">Nessuna categoria trovata</p>
+            <p class="text-neutral-600 mb-4">{{ $t('admin.catalog.categories.table.empty') }}</p>
             <PrimeButton
-              label="Crea la prima categoria"
+              :label="$t('admin.catalog.categories.table.createFirst')"
               icon="pi pi-plus"
               severity="primary"
               @click="navigateToCreate"
@@ -333,7 +335,7 @@ onUnmounted(() => {
         <template #loading>
           <div class="flex items-center justify-center py-8">
             <i class="pi pi-spin pi-spinner text-2xl text-primary-500 mr-3"></i>
-            <span class="text-neutral-600">Caricamento categorie...</span>
+            <span class="text-neutral-600">{{ $t('admin.catalog.categories.table.loading') }}</span>
           </div>
         </template>
 
@@ -348,10 +350,10 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Name -->
-        <PrimeColumn field="name" header="Nome Categoria" sortable style="min-width: 200px">
+        <PrimeColumn field="name" :header="$t('admin.catalog.categories.table.headers.name')" sortable style="min-width: 200px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
-              <div 
+              <div
                 class="w-10 h-10 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center flex-shrink-0"
               >
                 <i class="pi pi-tag"></i>
@@ -365,7 +367,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Description -->
-        <PrimeColumn field="description" header="Descrizione" style="min-width: 250px">
+        <PrimeColumn field="description" :header="$t('admin.catalog.categories.table.headers.description')" style="min-width: 250px">
           <template #body="{ data }">
             <span class="text-neutral-600 text-sm line-clamp-2">
               {{ data.description || '-' }}
@@ -374,7 +376,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Max Shares -->
-        <PrimeColumn field="max_shares" header="Max Condivisioni" sortable style="min-width: 130px">
+        <PrimeColumn field="max_shares" :header="$t('admin.catalog.categories.table.headers.maxShares')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <i class="pi pi-users text-neutral-400"></i>
@@ -391,14 +393,14 @@ onUnmounted(() => {
                 {{ formatLeadAvailability(data.available_leads_count || 0, data.leads_count) }}
               </span>
             </div>
-            <span v-else class="text-neutral-400">Nessun lead</span>
+            <span v-else class="text-neutral-400">{{ $t('admin.catalog.categories.table.noLeads') }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Status -->
-        <PrimeColumn field="is_active" header="Stato" sortable style="min-width: 100px">
+        <PrimeColumn field="is_active" :header="$t('admin.catalog.categories.table.headers.status')" sortable style="min-width: 100px">
           <template #body="{ data }">
-            <PrimeTag 
+            <PrimeTag
               :value="formatActiveStatus(data.is_active)"
               :severity="getActiveStatusSeverity(data.is_active)"
             />
@@ -406,14 +408,14 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Created At -->
-        <PrimeColumn field="created_at" header="Creazione" sortable style="min-width: 110px">
+        <PrimeColumn field="created_at" :header="$t('admin.catalog.categories.table.headers.createdAt')" sortable style="min-width: 110px">
           <template #body="{ data }">
             <span class="text-neutral-600 text-sm">{{ formatDate(data.created_at) }}</span>
           </template>
         </PrimeColumn>
 
         <!-- Actions -->
-        <PrimeColumn header="Azioni" style="min-width: 120px" frozen alignFrozen="right">
+        <PrimeColumn :header="$t('admin.common.actions')" style="min-width: 120px" frozen alignFrozen="right">
           <template #body="{ data }">
             <div class="flex gap-1 justify-end">
               <!-- Edit -->
@@ -423,7 +425,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Modifica'"
+                v-tooltip.top="$t('admin.common.edit')"
                 @click="navigateToEdit(data)"
               />
 
@@ -434,7 +436,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="data.is_active ? 'Disattiva' : 'Attiva'"
+                v-tooltip.top="data.is_active ? $t('admin.catalog.categories.actions.deactivate') : $t('admin.catalog.categories.actions.activate')"
                 @click="handleToggleActive(data)"
               />
 
@@ -445,7 +447,7 @@ onUnmounted(() => {
                 text
                 rounded
                 size="small"
-                v-tooltip.top="'Elimina'"
+                v-tooltip.top="$t('admin.common.delete')"
                 @click="openDeleteDialog(data)"
               />
             </div>
@@ -458,7 +460,7 @@ onUnmounted(() => {
     <PrimeDialog
       v-model:visible="deleteDialog"
       modal
-      header="Conferma Eliminazione"
+      :header="$t('admin.common.confirmDelete')"
       :style="{ width: '450px' }"
     >
       <div class="flex items-start gap-4">
@@ -467,28 +469,28 @@ onUnmounted(() => {
         </div>
         <div>
           <p class="text-neutral-800 mb-2">
-            Sei sicuro di voler eliminare la categoria <strong>{{ categoryToDelete?.name }}</strong>?
+            {{ $t('admin.catalog.categories.dialog.deleteMessage', { name: categoryToDelete?.name }) }}
           </p>
           <p v-if="categoryToDelete?.leads_count" class="text-sm text-warning-dark bg-warning-light px-3 py-2 rounded">
             <i class="pi pi-exclamation-circle mr-1"></i>
-            Questa categoria contiene {{ categoryToDelete.leads_count }} lead.
+            {{ $t('admin.catalog.categories.dialog.hasLeadsWarning', { count: categoryToDelete.leads_count }) }}
           </p>
           <p class="text-sm text-neutral-600 mt-2">
-            Questa azione non può essere annullata.
+            {{ $t('admin.catalog.categories.dialog.irreversible') }}
           </p>
         </div>
       </div>
-      
+
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.common.cancel')"
             severity="secondary"
             outlined
             @click="deleteDialog = false"
           />
           <PrimeButton
-            label="Elimina"
+            :label="$t('admin.common.delete')"
             severity="danger"
             icon="pi pi-trash"
             :loading="catalogStore.saving"

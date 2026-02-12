@@ -25,6 +25,9 @@ definePageMeta({
   layout: 'admin'
 })
 
+// i18n
+const { t } = useI18n()
+
 // Store & Composables
 const settingsStore = useSettingsStore()
 const {
@@ -123,9 +126,9 @@ const loadSystemConfig = async () => {
 const saveSystemConfig = async () => {
   const success = await settingsStore.updateSystemConfig(systemConfigForm)
   if (success) {
-    showSuccess('Configurazione salvata con successo')
+    showSuccess(t('admin.settings.toast.configSaved'))
   } else {
-    showError(settingsStore.error || 'Errore nel salvataggio')
+    showError(settingsStore.error || t('admin.settings.toast.configError'))
   }
 }
 
@@ -136,18 +139,18 @@ const loadNotifications = async () => {
 const updateNotificationFrequency = async (categoryId: number, frequency: NotificationFrequency) => {
   const success = await settingsStore.updateNotificationConfig(categoryId, { frequency })
   if (success) {
-    showSuccess('Frequenza notifica aggiornata')
+    showSuccess(t('admin.settings.toast.notificationUpdated'))
   } else {
-    showError(settingsStore.error || 'Errore nell\'aggiornamento')
+    showError(settingsStore.error || t('admin.settings.toast.notificationError'))
   }
 }
 
 const toggleNotification = async (categoryId: number, enabled: boolean) => {
   const success = await settingsStore.updateNotificationConfig(categoryId, { enabled })
   if (success) {
-    showSuccess(enabled ? 'Notifica abilitata' : 'Notifica disabilitata')
+    showSuccess(enabled ? t('admin.settings.toast.notificationEnabled') : t('admin.settings.toast.notificationDisabled'))
   } else {
-    showError(settingsStore.error || 'Errore nell\'aggiornamento')
+    showError(settingsStore.error || t('admin.settings.toast.notificationError'))
   }
 }
 
@@ -185,17 +188,17 @@ const saveOperator = async () => {
   const isCreate = operatorDialogMode.value === 'create'
 
   if (!validateForm(operatorForm, isCreate)) {
-    showError('Correggi gli errori nel form')
+    showError(t('admin.settings.toast.formError'))
     return
   }
 
   if (isCreate) {
     const result = await settingsStore.createOperator(operatorForm)
     if (result) {
-      showSuccess('Operatore creato con successo')
+      showSuccess(t('admin.settings.toast.operatorCreated'))
       operatorDialog.value = false
     } else {
-      showError(settingsStore.error || 'Errore nella creazione')
+      showError(settingsStore.error || t('admin.settings.toast.operatorError'))
     }
   } else if (editingOperatorId.value) {
     const updateData: AdminOperatorUpdateForm = {
@@ -207,10 +210,10 @@ const saveOperator = async () => {
     }
     const success = await settingsStore.updateOperator(editingOperatorId.value, updateData)
     if (success) {
-      showSuccess('Operatore aggiornato con successo')
+      showSuccess(t('admin.settings.toast.operatorUpdated'))
       operatorDialog.value = false
     } else {
-      showError(settingsStore.error || 'Errore nell\'aggiornamento')
+      showError(settingsStore.error || t('admin.settings.toast.operatorError'))
     }
   }
 }
@@ -219,9 +222,9 @@ const handleDeleteOperator = (operator: AdminOperator) => {
   confirmDeleteOperator(operator, async () => {
     const success = await settingsStore.deleteOperator(operator.id)
     if (success) {
-      showSuccess('Operatore eliminato')
+      showSuccess(t('admin.settings.toast.operatorDeleted'))
     } else {
-      showError(settingsStore.error || 'Errore nell\'eliminazione')
+      showError(settingsStore.error || t('admin.settings.toast.operatorError'))
     }
   })
 }
@@ -230,9 +233,9 @@ const handleResetPassword = (operator: AdminOperator) => {
   confirmResetPassword(operator, async () => {
     const success = await settingsStore.resetOperatorPassword(operator.id)
     if (success) {
-      showSuccess(`Email di reset inviata a ${operator.email}`)
+      showSuccess(t('admin.settings.toast.resetPasswordSent', { email: operator.email }))
     } else {
-      showError(settingsStore.error || 'Errore nel reset password')
+      showError(settingsStore.error || t('admin.settings.toast.resetPasswordError'))
     }
   })
 }
@@ -247,9 +250,9 @@ const handleToggleStatus = async (operator: AdminOperator) => {
         status: newStatus
       })
       if (success) {
-        showSuccess('Operatore disattivato')
+        showSuccess(t('admin.settings.toast.operatorDeactivated'))
       } else {
-        showError(settingsStore.error || 'Errore nella disattivazione')
+        showError(settingsStore.error || t('admin.settings.toast.operatorError'))
       }
     })
   } else {
@@ -258,9 +261,9 @@ const handleToggleStatus = async (operator: AdminOperator) => {
       status: newStatus
     })
     if (success) {
-      showSuccess('Operatore riattivato')
+      showSuccess(t('admin.settings.toast.operatorReactivated'))
     } else {
-      showError(settingsStore.error || 'Errore nella riattivazione')
+      showError(settingsStore.error || t('admin.settings.toast.operatorError'))
     }
   }
 }
@@ -301,16 +304,16 @@ const openTestEmail = () => {
 
 const sendTestEmail = async () => {
   if (!testEmailAddress.value) {
-    showError('Inserisci un indirizzo email')
+    showError(t('admin.settings.toast.emailRequired'))
     return
   }
 
   const success = await settingsStore.testEmailConfig(testEmailAddress.value)
   if (success) {
-    showSuccess('Email di test inviata')
+    showSuccess(t('admin.settings.toast.testEmailSent'))
     testEmailDialog.value = false
   } else {
-    showError(settingsStore.error || 'Errore nell\'invio')
+    showError(settingsStore.error || t('admin.settings.toast.testEmailError'))
   }
 }
 
@@ -343,12 +346,12 @@ onMounted(() => {
     <!-- Page Header -->
     <div class="page-header">
       <div class="page-header-left">
-        <h1 class="page-title">Impostazioni</h1>
-        <p class="page-subtitle">Configurazione sistema, notifiche e gestione operatori</p>
+        <h1 class="page-title">{{ $t('admin.settings.title') }}</h1>
+        <p class="page-subtitle">{{ $t('admin.settings.subtitle') }}</p>
       </div>
       <div class="page-header-actions">
         <PrimeButton
-          label="Sorgenti Lead"
+          :label="$t('admin.settings.leadSources')"
           icon="pi pi-link"
           severity="secondary"
           outlined
@@ -360,17 +363,17 @@ onMounted(() => {
     <!-- Tabs -->
     <PrimeTabView v-model:activeIndex="activeTab" class="q-card" @update:activeIndex="onTabChange">
       <!-- Tab: Configurazione Sistema -->
-      <PrimeTabPanel value="0" header="Configurazione Sistema">
+      <PrimeTabPanel value="0" :header="$t('admin.settings.tabs.systemConfig')">
         <div class="pt-4 max-w-3xl">
           <form @submit.prevent="saveSystemConfig" class="space-y-6">
             <!-- Lead e Trial -->
             <div class="bg-neutral-50 rounded-lg p-4">
               <h4 class="text-lg font-semibold text-neutral-900 mb-4">
-                <i class="pi pi-gift mr-2"></i>Lead e Prova Gratuita
+                <i class="pi pi-gift mr-2"></i>{{ $t('admin.settings.systemConfig.leadAndTrial') }}
               </h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-group">
-                  <label for="free_trial_leads">Lead Prova Gratuita Default</label>
+                  <label for="free_trial_leads">{{ $t('admin.settings.systemConfig.freeTrialLeads') }}</label>
                   <PrimeInputNumber
                     id="free_trial_leads"
                     v-model="systemConfigForm.default_free_trial_leads"
@@ -378,7 +381,7 @@ onMounted(() => {
                     :max="100"
                     class="w-full"
                   />
-                  <small class="text-neutral-500">Numero di lead gratuiti per nuovi clienti</small>
+                  <small class="text-neutral-500">{{ $t('admin.settings.systemConfig.freeTrialLeadsHint') }}</small>
                 </div>
               </div>
             </div>
@@ -386,11 +389,11 @@ onMounted(() => {
             <!-- Fatturazione -->
             <div class="bg-neutral-50 rounded-lg p-4">
               <h4 class="text-lg font-semibold text-neutral-900 mb-4">
-                <i class="pi pi-file mr-2"></i>Fatturazione
+                <i class="pi pi-file mr-2"></i>{{ $t('admin.settings.systemConfig.billing') }}
               </h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-group">
-                  <label for="vat_rate">Aliquota IVA Default (%)</label>
+                  <label for="vat_rate">{{ $t('admin.settings.systemConfig.vatRate') }}</label>
                   <PrimeInputNumber
                     id="vat_rate"
                     v-model="systemConfigForm.default_vat_rate"
@@ -401,21 +404,21 @@ onMounted(() => {
                   />
                 </div>
                 <div class="form-group">
-                  <label for="order_prefix">Prefisso Numero Ordine</label>
+                  <label for="order_prefix">{{ $t('admin.settings.systemConfig.orderPrefix') }}</label>
                   <PrimeInputText
                     id="order_prefix"
                     v-model="systemConfigForm.order_number_prefix"
                     class="w-full"
-                    placeholder="es. ORD-2024-"
+                    :placeholder="$t('admin.settings.systemConfig.orderPrefixPlaceholder')"
                   />
                 </div>
                 <div class="form-group">
-                  <label for="invoice_prefix">Prefisso Numero Fattura</label>
+                  <label for="invoice_prefix">{{ $t('admin.settings.systemConfig.invoicePrefix') }}</label>
                   <PrimeInputText
                     id="invoice_prefix"
                     v-model="systemConfigForm.invoice_number_prefix"
                     class="w-full"
-                    placeholder="es. FT-2024-"
+                    :placeholder="$t('admin.settings.systemConfig.invoicePrefixPlaceholder')"
                   />
                 </div>
               </div>
@@ -424,11 +427,11 @@ onMounted(() => {
             <!-- Email -->
             <div class="bg-neutral-50 rounded-lg p-4">
               <h4 class="text-lg font-semibold text-neutral-900 mb-4">
-                <i class="pi pi-envelope mr-2"></i>Email
+                <i class="pi pi-envelope mr-2"></i>{{ $t('admin.settings.systemConfig.email') }}
               </h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-group">
-                  <label for="sender_email">Email Mittente</label>
+                  <label for="sender_email">{{ $t('admin.settings.systemConfig.senderEmail') }}</label>
                   <PrimeInputText
                     id="sender_email"
                     v-model="systemConfigForm.sender_email"
@@ -438,7 +441,7 @@ onMounted(() => {
                   />
                 </div>
                 <div class="form-group">
-                  <label for="sender_name">Nome Mittente</label>
+                  <label for="sender_name">{{ $t('admin.settings.systemConfig.senderName') }}</label>
                   <PrimeInputText
                     id="sender_name"
                     v-model="systemConfigForm.sender_name"
@@ -449,7 +452,7 @@ onMounted(() => {
               </div>
               <div class="mt-4">
                 <PrimeButton
-                  label="Invia Email di Test"
+                  :label="$t('admin.settings.systemConfig.sendTestEmail')"
                   icon="pi pi-send"
                   severity="secondary"
                   outlined
@@ -463,7 +466,7 @@ onMounted(() => {
             <div class="flex justify-end pt-4 border-t border-neutral-200">
               <PrimeButton
                 type="submit"
-                label="Salva Configurazione"
+                :label="$t('admin.settings.systemConfig.saveConfig')"
                 icon="pi pi-check"
                 severity="primary"
                 :loading="saving"
@@ -474,10 +477,10 @@ onMounted(() => {
       </PrimeTabPanel>
 
       <!-- Tab: Notifiche Email -->
-      <PrimeTabPanel value="1" header="Notifiche Email">
+      <PrimeTabPanel value="1" :header="$t('admin.settings.tabs.emailNotifications')">
         <div class="pt-4">
           <p class="text-neutral-600 mb-6">
-            Configura la frequenza di invio delle notifiche per ogni categoria di lead.
+            {{ $t('admin.settings.emailNotifications.description') }}
           </p>
 
           <div class="overflow-x-auto">
@@ -487,13 +490,13 @@ onMounted(() => {
               stripedRows
               class="text-sm"
             >
-              <PrimeColumn field="category_name" header="Categoria" style="min-width: 200px">
+              <PrimeColumn field="category_name" :header="$t('admin.settings.emailNotifications.headers.category')" style="min-width: 200px">
                 <template #body="{ data }">
                   <span class="font-medium text-neutral-900">{{ data.category_name }}</span>
                 </template>
               </PrimeColumn>
 
-              <PrimeColumn field="enabled" header="Abilitata" style="width: 120px">
+              <PrimeColumn field="enabled" :header="$t('admin.settings.emailNotifications.headers.enabled')" style="width: 120px">
                 <template #body="{ data }">
                   <PrimeToggleSwitch
                     :modelValue="data.enabled"
@@ -502,7 +505,7 @@ onMounted(() => {
                 </template>
               </PrimeColumn>
 
-              <PrimeColumn field="frequency" header="Frequenza" style="min-width: 180px">
+              <PrimeColumn field="frequency" :header="$t('admin.settings.emailNotifications.headers.frequency')" style="min-width: 180px">
                 <template #body="{ data }">
                   <PrimeSelect
                     :modelValue="data.frequency"
@@ -516,15 +519,15 @@ onMounted(() => {
                 </template>
               </PrimeColumn>
 
-              <PrimeColumn header="Descrizione" style="min-width: 250px">
+              <PrimeColumn :header="$t('admin.settings.emailNotifications.headers.description')" style="min-width: 250px">
                 <template #body="{ data }">
                   <span class="text-sm text-neutral-500">
-                    <template v-if="!data.enabled">Notifiche disabilitate</template>
-                    <template v-else-if="data.frequency === 'instant'">Email immediata per ogni nuovo lead</template>
-                    <template v-else-if="data.frequency === 'hourly'">Riepilogo ogni ora</template>
-                    <template v-else-if="data.frequency === 'daily'">Riepilogo giornaliero</template>
-                    <template v-else-if="data.frequency === 'weekly'">Riepilogo settimanale</template>
-                    <template v-else>Notifiche disabilitate</template>
+                    <template v-if="!data.enabled">{{ $t('admin.settings.emailNotifications.descriptions.disabled') }}</template>
+                    <template v-else-if="data.frequency === 'instant'">{{ $t('admin.settings.emailNotifications.descriptions.instant') }}</template>
+                    <template v-else-if="data.frequency === 'hourly'">{{ $t('admin.settings.emailNotifications.descriptions.hourly') }}</template>
+                    <template v-else-if="data.frequency === 'daily'">{{ $t('admin.settings.emailNotifications.descriptions.daily') }}</template>
+                    <template v-else-if="data.frequency === 'weekly'">{{ $t('admin.settings.emailNotifications.descriptions.weekly') }}</template>
+                    <template v-else>{{ $t('admin.settings.emailNotifications.descriptions.disabled') }}</template>
                   </span>
                 </template>
               </PrimeColumn>
@@ -534,14 +537,14 @@ onMounted(() => {
       </PrimeTabPanel>
 
       <!-- Tab: Operatori Admin -->
-      <PrimeTabPanel value="2" header="Operatori Admin">
+      <PrimeTabPanel value="2" :header="$t('admin.settings.tabs.adminOperators')">
         <div class="pt-4">
           <div class="flex justify-between items-center mb-6">
             <p class="text-neutral-600">
-              Gestisci gli account degli operatori con accesso al backoffice.
+              {{ $t('admin.settings.operators.description') }}
             </p>
             <PrimeButton
-              label="Nuovo Operatore"
+              :label="$t('admin.settings.operators.newOperator')"
               icon="pi pi-plus"
               severity="primary"
               @click="openCreateOperator"
@@ -554,7 +557,7 @@ onMounted(() => {
             stripedRows
             class="text-sm"
           >
-            <PrimeColumn header="Operatore" style="min-width: 250px">
+            <PrimeColumn :header="$t('admin.settings.operators.headers.operator')" style="min-width: 250px">
               <template #body="{ data }">
                 <div class="flex items-center gap-3">
                   <div
@@ -571,7 +574,7 @@ onMounted(() => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="role" header="Ruolo" style="min-width: 140px">
+            <PrimeColumn field="role" :header="$t('admin.settings.operators.headers.role')" style="min-width: 140px">
               <template #body="{ data }">
                 <PrimeTag
                   :value="formatRole(data.role)"
@@ -580,7 +583,7 @@ onMounted(() => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="status" header="Stato" style="min-width: 120px">
+            <PrimeColumn field="status" :header="$t('admin.settings.operators.headers.status')" style="min-width: 120px">
               <template #body="{ data }">
                 <PrimeTag
                   :value="formatStatus(data.status)"
@@ -589,13 +592,13 @@ onMounted(() => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="last_login_at" header="Ultimo Accesso" style="min-width: 150px">
+            <PrimeColumn field="last_login_at" :header="$t('admin.settings.operators.headers.lastAccess')" style="min-width: 150px">
               <template #body="{ data }">
                 <span class="text-neutral-600">{{ formatRelativeTime(data.last_login_at) }}</span>
               </template>
             </PrimeColumn>
 
-            <PrimeColumn header="Azioni" style="min-width: 150px">
+            <PrimeColumn :header="$t('admin.settings.operators.headers.actions')" style="min-width: 150px">
               <template #body="{ data }">
                 <div class="flex gap-1">
                   <PrimeButton
@@ -604,7 +607,7 @@ onMounted(() => {
                     text
                     rounded
                     size="small"
-                    v-tooltip.top="'Modifica'"
+                    v-tooltip.top="$t('admin.settings.operators.tooltip.edit')"
                     @click="openEditOperator(data)"
                   />
                   <PrimeButton
@@ -613,7 +616,7 @@ onMounted(() => {
                     text
                     rounded
                     size="small"
-                    v-tooltip.top="'Reset Password'"
+                    v-tooltip.top="$t('admin.settings.operators.tooltip.resetPassword')"
                     @click="handleResetPassword(data)"
                   />
                   <PrimeButton
@@ -622,7 +625,7 @@ onMounted(() => {
                     text
                     rounded
                     size="small"
-                    v-tooltip.top="data.status === 'active' ? 'Disattiva' : 'Riattiva'"
+                    v-tooltip.top="data.status === 'active' ? $t('admin.settings.operators.tooltip.deactivate') : $t('admin.settings.operators.tooltip.reactivate')"
                     @click="handleToggleStatus(data)"
                   />
                   <PrimeButton
@@ -631,7 +634,7 @@ onMounted(() => {
                     text
                     rounded
                     size="small"
-                    v-tooltip.top="'Elimina'"
+                    v-tooltip.top="$t('admin.settings.operators.tooltip.delete')"
                     :disabled="data.role === 'super_admin'"
                     @click="handleDeleteOperator(data)"
                   />
@@ -643,14 +646,14 @@ onMounted(() => {
       </PrimeTabPanel>
 
       <!-- Tab: Log Attività -->
-      <PrimeTabPanel value="3" header="Log Attività">
+      <PrimeTabPanel value="3" :header="$t('admin.settings.tabs.activityLog')">
         <div class="pt-4">
           <!-- Filters -->
           <div class="flex flex-wrap gap-4 mb-6">
             <div class="flex-1 min-w-48 max-w-xs">
               <PrimeInputText
                 v-model="logSearchQuery"
-                placeholder="Cerca nei log..."
+                :placeholder="$t('admin.settings.activityLog.search')"
                 class="w-full"
                 @keyup.enter="applyLogFilters"
               />
@@ -660,7 +663,7 @@ onMounted(() => {
               :options="activityTypeOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Tipo attività"
+              :placeholder="$t('admin.settings.activityLog.typeFilter')"
               class="w-40"
               @change="applyLogFilters"
             />
@@ -669,7 +672,7 @@ onMounted(() => {
               :options="activityEntityOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Entità"
+              :placeholder="$t('admin.settings.activityLog.entityFilter')"
               class="w-40"
               @change="applyLogFilters"
             />
@@ -677,7 +680,7 @@ onMounted(() => {
               icon="pi pi-filter-slash"
               severity="secondary"
               outlined
-              v-tooltip.top="'Pulisci filtri'"
+              v-tooltip.top="$t('admin.settings.activityLog.clearFilters')"
               @click="clearLogFilters"
             />
           </div>
@@ -698,17 +701,17 @@ onMounted(() => {
             <template #empty>
               <div class="text-center py-8">
                 <i class="pi pi-history text-4xl text-neutral-400 mb-4 block"></i>
-                <p class="text-neutral-600">Nessuna attività trovata</p>
+                <p class="text-neutral-600">{{ $t('admin.settings.activityLog.empty') }}</p>
               </div>
             </template>
 
-            <PrimeColumn field="created_at" header="Data" style="min-width: 160px">
+            <PrimeColumn field="created_at" :header="$t('admin.settings.activityLog.headers.date')" style="min-width: 160px">
               <template #body="{ data }">
                 <span class="text-neutral-600">{{ formatDateTime(data.created_at) }}</span>
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="type" header="Tipo" style="min-width: 130px">
+            <PrimeColumn field="type" :header="$t('admin.settings.activityLog.headers.type')" style="min-width: 130px">
               <template #body="{ data }">
                 <PrimeTag
                   :value="formatActivityType(data.type)"
@@ -718,7 +721,7 @@ onMounted(() => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="admin_name" header="Operatore" style="min-width: 180px">
+            <PrimeColumn field="admin_name" :header="$t('admin.settings.activityLog.headers.operator')" style="min-width: 180px">
               <template #body="{ data }">
                 <div>
                   <div class="font-medium text-neutral-900">{{ data.admin_name }}</div>
@@ -727,19 +730,19 @@ onMounted(() => {
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="entity" header="Entità" style="min-width: 120px">
+            <PrimeColumn field="entity" :header="$t('admin.settings.activityLog.headers.entity')" style="min-width: 120px">
               <template #body="{ data }">
                 <span class="text-neutral-700">{{ formatEntity(data.entity) }}</span>
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="description" header="Descrizione" style="min-width: 300px">
+            <PrimeColumn field="description" :header="$t('admin.settings.activityLog.headers.description')" style="min-width: 300px">
               <template #body="{ data }">
                 <span class="text-neutral-800">{{ data.description }}</span>
               </template>
             </PrimeColumn>
 
-            <PrimeColumn field="ip_address" header="IP" style="min-width: 130px">
+            <PrimeColumn field="ip_address" :header="$t('admin.settings.activityLog.headers.ip')" style="min-width: 130px">
               <template #body="{ data }">
                 <span class="text-xs text-neutral-500 font-mono">{{ data.ip_address || '-' }}</span>
               </template>
@@ -753,13 +756,13 @@ onMounted(() => {
     <PrimeDialog
       v-model:visible="operatorDialog"
       :modal="true"
-      :header="operatorDialogMode === 'create' ? 'Nuovo Operatore' : 'Modifica Operatore'"
+      :header="operatorDialogMode === 'create' ? $t('admin.settings.operators.dialog.createTitle') : $t('admin.settings.operators.dialog.editTitle')"
       :style="{ width: '500px' }"
     >
       <form @submit.prevent="saveOperator" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
           <div class="form-group">
-            <label for="op_first_name">Nome *</label>
+            <label for="op_first_name">{{ $t('admin.settings.operators.dialog.firstName') }} *</label>
             <PrimeInputText
               id="op_first_name"
               v-model="operatorForm.first_name"
@@ -769,7 +772,7 @@ onMounted(() => {
             <small v-if="errors.first_name" class="p-error">{{ errors.first_name }}</small>
           </div>
           <div class="form-group">
-            <label for="op_last_name">Cognome *</label>
+            <label for="op_last_name">{{ $t('admin.settings.operators.dialog.lastName') }} *</label>
             <PrimeInputText
               id="op_last_name"
               v-model="operatorForm.last_name"
@@ -781,7 +784,7 @@ onMounted(() => {
         </div>
 
         <div class="form-group">
-          <label for="op_email">Email *</label>
+          <label for="op_email">{{ $t('admin.settings.operators.dialog.email') }} *</label>
           <PrimeInputText
             id="op_email"
             v-model="operatorForm.email"
@@ -793,7 +796,7 @@ onMounted(() => {
         </div>
 
         <div class="form-group">
-          <label for="op_role">Ruolo *</label>
+          <label for="op_role">{{ $t('admin.settings.operators.dialog.role') }} *</label>
           <PrimeSelect
             id="op_role"
             v-model="operatorForm.role"
@@ -807,7 +810,7 @@ onMounted(() => {
         <template v-if="operatorDialogMode === 'create'">
           <div class="grid grid-cols-2 gap-4">
             <div class="form-group">
-              <label for="op_password">Password *</label>
+              <label for="op_password">{{ $t('admin.settings.operators.dialog.password') }} *</label>
               <PrimePassword
                 id="op_password"
                 v-model="operatorForm.password"
@@ -819,7 +822,7 @@ onMounted(() => {
               <small v-if="errors.password" class="p-error">{{ errors.password }}</small>
             </div>
             <div class="form-group">
-              <label for="op_password_confirm">Conferma Password *</label>
+              <label for="op_password_confirm">{{ $t('admin.settings.operators.dialog.passwordConfirmation') }} *</label>
               <PrimePassword
                 id="op_password_confirm"
                 v-model="operatorForm.password_confirmation"
@@ -837,13 +840,13 @@ onMounted(() => {
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.settings.operators.dialog.cancel')"
             severity="secondary"
             outlined
             @click="operatorDialog = false"
           />
           <PrimeButton
-            :label="operatorDialogMode === 'create' ? 'Crea Operatore' : 'Salva Modifiche'"
+            :label="operatorDialogMode === 'create' ? $t('admin.settings.operators.dialog.createButton') : $t('admin.settings.operators.dialog.editButton')"
             severity="primary"
             icon="pi pi-check"
             :loading="saving"
@@ -857,21 +860,21 @@ onMounted(() => {
     <PrimeDialog
       v-model:visible="testEmailDialog"
       modal
-      header="Invia Email di Test"
+      :header="$t('admin.settings.testEmail.dialogTitle')"
       :style="{ width: '400px' }"
     >
       <div class="space-y-4">
         <p class="text-neutral-600">
-          Inserisci l'indirizzo email a cui inviare il messaggio di test.
+          {{ $t('admin.settings.testEmail.description') }}
         </p>
         <div class="form-group">
-          <label for="test_email">Email destinatario</label>
+          <label for="test_email">{{ $t('admin.settings.testEmail.recipient') }}</label>
           <PrimeInputText
             id="test_email"
             v-model="testEmailAddress"
             type="email"
             class="w-full"
-            placeholder="email@esempio.it"
+            :placeholder="$t('admin.settings.testEmail.placeholder')"
           />
         </div>
       </div>
@@ -879,13 +882,13 @@ onMounted(() => {
       <template #footer>
         <div class="flex justify-end gap-3">
           <PrimeButton
-            label="Annulla"
+            :label="$t('admin.settings.testEmail.cancel')"
             severity="secondary"
             outlined
             @click="testEmailDialog = false"
           />
           <PrimeButton
-            label="Invia Test"
+            :label="$t('admin.settings.testEmail.send')"
             severity="primary"
             icon="pi pi-send"
             :loading="saving"

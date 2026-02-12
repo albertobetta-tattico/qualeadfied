@@ -11,6 +11,8 @@ definePageMeta({
   layout: 'admin'
 })
 
+const { t } = useI18n()
+
 // Route & Store
 const route = useRoute()
 const router = useRouter()
@@ -69,11 +71,11 @@ const client = computed(() => clientStore.currentClient)
 const activeTab = ref(0)
 
 // Status options
-const statusOptions = [
-  { label: 'Attivo', value: 'active' },
-  { label: 'In Attesa', value: 'pending' },
-  { label: 'Sospeso', value: 'suspended' }
-]
+const statusOptions = computed(() => [
+  { label: t('admin.clients.list.filters.statusOptions.active'), value: 'active' },
+  { label: t('admin.clients.list.filters.statusOptions.pending'), value: 'pending' },
+  { label: t('admin.clients.list.filters.statusOptions.suspended'), value: 'suspended' }
+])
 
 // Province options
 const provinceOptions = [
@@ -139,16 +141,16 @@ const onSubmit = async () => {
   clearErrors()
   
   if (!validateForm(form, false)) {
-    showError('Correggi gli errori nel form prima di procedere')
+    showError(t('admin.clients.edit.toast.validationError'))
     return
   }
 
   const updatedClient = await clientStore.updateClient(clientId.value, form)
   
   if (updatedClient) {
-    showSuccess(`Cliente "${updatedClient.company_name}" aggiornato con successo`)
+    showSuccess(t('admin.clients.edit.toast.updateSuccess', { name: updatedClient.company_name }))
   } else {
-    showError(clientStore.error || 'Errore nell\'aggiornamento del cliente')
+    showError(clientStore.error || t('admin.clients.edit.toast.updateError'))
   }
 }
 
@@ -159,9 +161,9 @@ const handleSuspend = () => {
   confirmSuspend(client.value, async () => {
     const success = await clientStore.suspendClient(clientId.value)
     if (success) {
-      showSuccess('Cliente sospeso con successo')
+      showSuccess(t('admin.clients.edit.toast.suspendSuccess'))
     } else {
-      showError(clientStore.error || 'Errore nella sospensione')
+      showError(clientStore.error || t('admin.clients.edit.toast.suspendError'))
     }
   })
 }
@@ -169,9 +171,9 @@ const handleSuspend = () => {
 const handleActivate = async () => {
   const success = await clientStore.activateClient(clientId.value)
   if (success) {
-    showSuccess('Cliente attivato con successo')
+    showSuccess(t('admin.clients.edit.toast.activateSuccess'))
   } else {
-    showError(clientStore.error || 'Errore nell\'attivazione')
+    showError(clientStore.error || t('admin.clients.edit.toast.activateError'))
   }
 }
 
@@ -181,9 +183,9 @@ const handleResetPassword = () => {
   confirmResetPassword(client.value, async () => {
     const success = await clientStore.resetPassword(clientId.value)
     if (success) {
-      showSuccess(`Email di reset password inviata a ${client.value?.email}`)
+      showSuccess(t('admin.clients.edit.toast.resetPasswordSuccess', { email: client.value?.email }))
     } else {
-      showError(clientStore.error || 'Errore nell\'invio dell\'email')
+      showError(clientStore.error || t('admin.clients.edit.toast.resetPasswordError'))
     }
   })
 }
@@ -205,7 +207,7 @@ onMounted(() => {
     <div v-if="initialLoading" class="flex items-center justify-center py-20">
       <div class="text-center">
         <i class="pi pi-spin pi-spinner text-4xl text-primary-500 mb-4"></i>
-        <p class="text-neutral-600">Caricamento cliente...</p>
+        <p class="text-neutral-600">{{ $t('admin.clients.edit.loading') }}</p>
       </div>
     </div>
 
@@ -214,10 +216,10 @@ onMounted(() => {
       <div class="w-20 h-20 rounded-full bg-danger-light flex items-center justify-center mx-auto mb-4">
         <i class="pi pi-exclamation-triangle text-4xl text-danger"></i>
       </div>
-      <h2 class="text-xl font-semibold text-neutral-900 mb-2">Cliente non trovato</h2>
-      <p class="text-neutral-600 mb-6">Il cliente richiesto non esiste o è stato eliminato.</p>
+      <h2 class="text-xl font-semibold text-neutral-900 mb-2">{{ $t('admin.clients.edit.notFound') }}</h2>
+      <p class="text-neutral-600 mb-6">{{ $t('admin.clients.edit.notFoundDesc') }}</p>
       <PrimeButton
-        label="Torna all'elenco"
+        :label="$t('admin.common.back')"
         icon="pi pi-arrow-left"
         severity="primary"
         @click="onCancel"
@@ -252,7 +254,7 @@ onMounted(() => {
                     class="text-xs"
                   />
                   <span class="text-sm text-neutral-500">
-                    Registrato il {{ formatDate(client.created_at) }}
+                    {{ $t('admin.clients.edit.registeredAt', { date: formatDate(client.created_at) }) }}
                   </span>
                 </div>
               </div>
@@ -262,7 +264,7 @@ onMounted(() => {
         <div class="page-header-actions">
           <PrimeButton
             v-if="client.status === 'suspended'"
-            label="Riattiva"
+            :label="$t('admin.clients.list.contextMenu.reactivate')"
             icon="pi pi-play"
             severity="success"
             outlined
@@ -270,14 +272,14 @@ onMounted(() => {
           />
           <PrimeButton
             v-else
-            label="Sospendi"
+            :label="$t('admin.clients.list.contextMenu.suspend')"
             icon="pi pi-pause"
             severity="warning"
             outlined
             @click="handleSuspend"
           />
           <PrimeButton
-            label="Reset Password"
+            :label="$t('admin.clients.list.contextMenu.resetPassword')"
             icon="pi pi-key"
             severity="secondary"
             outlined
@@ -291,7 +293,7 @@ onMounted(() => {
         <!-- Free Trial Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Prova Gratuita</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.clients.edit.infoCards.freeTrial') }}</span>
             <i 
               class="pi text-lg"
               :class="client.free_trial_enabled ? 'pi-check-circle text-success' : 'pi-times-circle text-neutral-400'"
@@ -307,17 +309,17 @@ onMounted(() => {
                 :style="{ width: `${getFreeTrialProgress(client)}%` }"
               ></div>
             </div>
-            <span class="text-xs text-neutral-500 mt-1">lead rimanenti</span>
+            <span class="text-xs text-neutral-500 mt-1">{{ $t('admin.clients.edit.infoCards.freeTrialRemaining') }}</span>
           </div>
           <div v-else class="text-sm text-neutral-500">
-            Non attiva
+            {{ $t('admin.clients.edit.infoCards.inactive') }}
           </div>
         </div>
 
         <!-- Email Verified Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Email Verificata</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.clients.edit.infoCards.emailVerified') }}</span>
             <i 
               class="pi text-lg"
               :class="client.email_verified_at ? 'pi-check-circle text-success' : 'pi-clock text-warning'"
@@ -328,7 +330,7 @@ onMounted(() => {
               {{ formatDateTime(client.email_verified_at) }}
             </span>
             <span v-else class="text-warning-dark">
-              In attesa di verifica
+              {{ $t('admin.clients.edit.infoCards.pendingVerification') }}
             </span>
           </div>
         </div>
@@ -336,7 +338,7 @@ onMounted(() => {
         <!-- Notifications Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Notifiche Lead</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.clients.edit.infoCards.leadNotifications') }}</span>
             <i 
               class="pi text-lg"
               :class="client.notify_new_leads ? 'pi-bell text-info' : 'pi-bell-slash text-neutral-400'"
@@ -344,7 +346,7 @@ onMounted(() => {
           </div>
           <div class="text-sm">
             <span :class="client.notify_new_leads ? 'text-info-dark' : 'text-neutral-500'">
-              {{ client.notify_new_leads ? 'Attive' : 'Disattivate' }}
+              {{ client.notify_new_leads ? $t('admin.clients.edit.infoCards.active') : $t('admin.clients.edit.infoCards.inactive') }}
             </span>
           </div>
         </div>
@@ -352,7 +354,7 @@ onMounted(() => {
         <!-- Marketing Consent Card -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">Consenso Marketing</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.clients.edit.infoCards.marketingConsent') }}</span>
             <i 
               class="pi text-lg"
               :class="client.marketing_consent ? 'pi-check-circle text-success' : 'pi-times-circle text-neutral-400'"
@@ -360,7 +362,7 @@ onMounted(() => {
           </div>
           <div class="text-sm">
             <span :class="client.marketing_consent ? 'text-success-dark' : 'text-neutral-500'">
-              {{ client.marketing_consent ? 'Acconsentito' : 'Non acconsentito' }}
+              {{ client.marketing_consent ? $t('admin.clients.edit.infoCards.yes') : $t('admin.clients.edit.infoCards.no') }}
             </span>
           </div>
         </div>
@@ -369,12 +371,12 @@ onMounted(() => {
       <!-- Tabs -->
       <PrimeTabView v-model:activeIndex="activeTab" class="q-card">
         <!-- Tab: Dati Aziendali -->
-        <PrimeTabPanel value="0" header="Dati Aziendali">
+        <PrimeTabPanel value="0" :header="$t('admin.clients.edit.tabs.companyData')">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Company Name -->
               <div class="form-group">
-                <label for="company_name">Ragione Sociale *</label>
+                <label for="company_name">{{ $t('admin.clients.edit.companyForm.companyName') }} *</label>
                 <PrimeInputText
                   id="company_name"
                   v-model="form.company_name"
@@ -387,7 +389,7 @@ onMounted(() => {
 
               <!-- VAT Number -->
               <div class="form-group">
-                <label for="vat_number">Partita IVA *</label>
+                <label for="vat_number">{{ $t('admin.clients.edit.companyForm.vatNumber') }} *</label>
                 <PrimeInputText
                   id="vat_number"
                   v-model="form.vat_number"
@@ -400,7 +402,7 @@ onMounted(() => {
 
               <!-- Email -->
               <div class="form-group">
-                <label for="email">Email *</label>
+                <label for="email">{{ $t('admin.clients.edit.companyForm.email') }} *</label>
                 <PrimeInputText
                   id="email"
                   v-model="form.email"
@@ -414,7 +416,7 @@ onMounted(() => {
 
               <!-- Phone -->
               <div class="form-group">
-                <label for="phone">Telefono *</label>
+                <label for="phone">{{ $t('admin.clients.edit.companyForm.phone') }} *</label>
                 <PrimeInputText
                   id="phone"
                   v-model="form.phone"
@@ -427,7 +429,7 @@ onMounted(() => {
 
               <!-- First Name -->
               <div class="form-group">
-                <label for="contact_first_name">Nome Referente *</label>
+                <label for="contact_first_name">{{ $t('admin.clients.edit.companyForm.firstName') }} *</label>
                 <PrimeInputText
                   id="contact_first_name"
                   v-model="form.contact_first_name"
@@ -440,7 +442,7 @@ onMounted(() => {
 
               <!-- Last Name -->
               <div class="form-group">
-                <label for="contact_last_name">Cognome Referente *</label>
+                <label for="contact_last_name">{{ $t('admin.clients.edit.companyForm.lastName') }} *</label>
                 <PrimeInputText
                   id="contact_last_name"
                   v-model="form.contact_last_name"
@@ -456,14 +458,14 @@ onMounted(() => {
             <div class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
               <PrimeButton
                 type="button"
-                label="Annulla modifiche"
+                :label="$t('admin.common.cancel')"
                 severity="secondary"
                 outlined
                 @click="loadClient"
               />
               <PrimeButton
                 type="submit"
-                label="Salva Modifiche"
+                :label="$t('admin.clients.edit.saveButton')"
                 icon="pi pi-check"
                 severity="primary"
                 :loading="clientStore.saving"
@@ -474,18 +476,18 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Fatturazione -->
-        <PrimeTabPanel value="1" header="Fatturazione">
+        <PrimeTabPanel value="1" :header="$t('admin.clients.edit.tabs.billing')">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <!-- Dati Indirizzo -->
             <div>
               <h4 class="text-base font-semibold text-neutral-800 mb-4 flex items-center gap-2">
                 <i class="pi pi-map-marker text-primary-500"></i>
-                Indirizzo Fatturazione
+                {{ $t('admin.clients.edit.billingForm.billingAddress') }}
               </h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Address -->
                 <div class="form-group md:col-span-2">
-                  <label for="address">Indirizzo</label>
+                  <label for="address">{{ $t('admin.clients.edit.billingForm.address') }}</label>
                   <PrimeInputText
                     id="address"
                     v-model="form.billing_data.address"
@@ -495,7 +497,7 @@ onMounted(() => {
 
                 <!-- City -->
                 <div class="form-group">
-                  <label for="city">Città</label>
+                  <label for="city">{{ $t('admin.clients.edit.billingForm.city') }}</label>
                   <PrimeInputText
                     id="city"
                     v-model="form.billing_data.city"
@@ -505,14 +507,14 @@ onMounted(() => {
 
                 <!-- Province -->
                 <div class="form-group">
-                  <label for="province">Provincia</label>
+                  <label for="province">{{ $t('admin.clients.edit.billingForm.province') }}</label>
                   <PrimeSelect
                     id="province"
                     v-model="form.billing_data.province"
                     :options="provinceOptions"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Seleziona..."
+                    :placeholder="$t('admin.clients.list.filters.selectOption')"
                     class="w-full"
                     :filter="true"
                   />
@@ -520,7 +522,7 @@ onMounted(() => {
 
                 <!-- Postal Code -->
                 <div class="form-group">
-                  <label for="postal_code">CAP</label>
+                  <label for="postal_code">{{ $t('admin.clients.edit.billingForm.zip') }}</label>
                   <PrimeInputText
                     id="postal_code"
                     v-model="form.billing_data.postal_code"
@@ -534,7 +536,7 @@ onMounted(() => {
 
                 <!-- Country -->
                 <div class="form-group">
-                  <label for="country">Paese</label>
+                  <label for="country">{{ $t('admin.clients.edit.billingForm.country') }}</label>
                   <PrimeInputText
                     id="country"
                     v-model="form.billing_data.country"
@@ -545,7 +547,7 @@ onMounted(() => {
 
                 <!-- SDI Code -->
                 <div class="form-group">
-                  <label for="sdi_code">Codice SDI</label>
+                  <label for="sdi_code">{{ $t('admin.clients.edit.billingForm.sdiCode') }}</label>
                   <PrimeInputText
                     id="sdi_code"
                     v-model="form.billing_data.sdi_code"
@@ -559,7 +561,7 @@ onMounted(() => {
 
                 <!-- PEC -->
                 <div class="form-group">
-                  <label for="pec">PEC</label>
+                  <label for="pec">{{ $t('admin.clients.edit.billingForm.pec') }}</label>
                   <PrimeInputText
                     id="pec"
                     v-model="form.billing_data.pec"
@@ -576,53 +578,53 @@ onMounted(() => {
             <div class="pt-6 border-t border-neutral-200">
               <h4 class="text-base font-semibold text-neutral-800 mb-4 flex items-center gap-2">
                 <i class="pi pi-wallet text-primary-500"></i>
-                Dati Bancari (Pagamenti Diretti)
+                {{ $t('admin.clients.edit.billingForm.bankData') }}
               </h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- IBAN -->
                 <div class="form-group md:col-span-2">
-                  <label for="iban">IBAN</label>
+                  <label for="iban">{{ $t('admin.clients.edit.billingForm.iban') }}</label>
                   <PrimeInputText
                     id="iban"
                     v-model="form.bank_data.iban"
                     class="w-full"
                     placeholder="IT60X0542811101000000123456"
                   />
-                  <small class="form-hint">Inserisci l'IBAN per i pagamenti diretti</small>
+                  <small class="form-hint">{{ $t('admin.clients.edit.billingForm.ibanHint') }}</small>
                 </div>
 
                 <!-- Bank Account Holder -->
                 <div class="form-group">
-                  <label for="bank_account_holder">Intestatario Conto</label>
+                  <label for="bank_account_holder">{{ $t('admin.clients.edit.billingForm.bankAccountHolder') }}</label>
                   <PrimeInputText
                     id="bank_account_holder"
                     v-model="form.bank_data.bank_account_holder"
                     class="w-full"
-                    placeholder="Nome e cognome o ragione sociale"
+                    :placeholder="$t('admin.clients.edit.billingForm.bankAccountHolderPlaceholder')"
                   />
                 </div>
 
                 <!-- Bank Name -->
                 <div class="form-group">
-                  <label for="bank_name">Nome Banca</label>
+                  <label for="bank_name">{{ $t('admin.clients.edit.billingForm.bankName') }}</label>
                   <PrimeInputText
                     id="bank_name"
                     v-model="form.bank_data.bank_name"
                     class="w-full"
-                    placeholder="es. Intesa Sanpaolo"
+                    :placeholder="$t('admin.clients.edit.billingForm.bankNamePlaceholder')"
                   />
                 </div>
 
                 <!-- BIC/SWIFT -->
                 <div class="form-group">
-                  <label for="bic_swift">BIC/SWIFT</label>
+                  <label for="bic_swift">{{ $t('admin.clients.edit.billingForm.bicSwift') }}</label>
                   <PrimeInputText
                     id="bic_swift"
                     v-model="form.bank_data.bic_swift"
                     class="w-full"
-                    placeholder="es. BCITITMM"
+                    :placeholder="$t('admin.clients.edit.billingForm.bicSwiftPlaceholder')"
                   />
-                  <small class="form-hint">Opzionale - per pagamenti internazionali</small>
+                  <small class="form-hint">{{ $t('admin.clients.edit.billingForm.bicSwiftHint') }}</small>
                 </div>
               </div>
             </div>
@@ -631,14 +633,14 @@ onMounted(() => {
             <div class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
               <PrimeButton
                 type="button"
-                label="Annulla modifiche"
+                :label="$t('admin.common.cancel')"
                 severity="secondary"
                 outlined
                 @click="loadClient"
               />
               <PrimeButton
                 type="submit"
-                label="Salva Modifiche"
+                :label="$t('admin.clients.edit.saveButton')"
                 icon="pi pi-check"
                 severity="primary"
                 :loading="clientStore.saving"
@@ -649,34 +651,34 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Impostazioni -->
-        <PrimeTabPanel value="2" header="Impostazioni">
+        <PrimeTabPanel value="2" :header="$t('admin.clients.edit.tabs.settings')">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <!-- Categorie di Interesse -->
             <div>
               <h4 class="text-base font-semibold text-neutral-800 mb-4 flex items-center gap-2">
                 <i class="pi pi-tags text-primary-500"></i>
-                Categorie di Interesse
+                {{ $t('admin.clients.edit.settingsTab.categoriesOfInterest') }}
               </h4>
               <div class="form-group">
-                <label for="category_ids">Seleziona le categorie lead di interesse del cliente</label>
+                <label for="category_ids">{{ $t('admin.clients.edit.settingsTab.categoriesOfInterestDesc') }}</label>
                 <PrimeMultiSelect
                   id="category_ids"
                   v-model="form.category_ids"
                   :options="categories"
                   optionLabel="name"
                   optionValue="id"
-                  placeholder="Seleziona una o più categorie..."
+                  :placeholder="$t('admin.clients.edit.settingsTab.categoriesPlaceholder')"
                   class="w-full"
                   display="chip"
                   :filter="true"
-                  filterPlaceholder="Cerca categoria..."
+                  :filterPlaceholder="$t('admin.clients.edit.settingsTab.categoriesFilterPlaceholder')"
                 >
                   <template #option="slotProps">
                     <div class="flex items-center gap-2">
                       <span>{{ slotProps.option.name }}</span>
                       <PrimeTag
                         v-if="!slotProps.option.is_active"
-                        value="Inattiva"
+                        :value="$t('admin.clients.edit.settingsTab.categoryInactive')"
                         severity="danger"
                         class="text-xs"
                       />
@@ -684,7 +686,7 @@ onMounted(() => {
                   </template>
                 </PrimeMultiSelect>
                 <small class="form-hint">
-                  Il cliente riceverà notifiche solo per i lead delle categorie selezionate
+                  {{ $t('admin.clients.edit.settingsTab.categoriesHint') }}
                 </small>
               </div>
             </div>
@@ -693,12 +695,12 @@ onMounted(() => {
             <div class="pt-6 border-t border-neutral-200">
               <h4 class="text-base font-semibold text-neutral-800 mb-4 flex items-center gap-2">
                 <i class="pi pi-cog text-primary-500"></i>
-                Impostazioni Account
+                {{ $t('admin.clients.edit.settingsTab.accountSettings') }}
               </h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Status -->
                 <div class="form-group">
-                  <label for="status">Stato Account</label>
+                  <label for="status">{{ $t('admin.clients.edit.settingsTab.status') }}</label>
                   <PrimeSelect
                     id="status"
                     v-model="form.status"
@@ -711,7 +713,7 @@ onMounted(() => {
 
                 <!-- Free Trial Leads -->
                 <div class="form-group">
-                  <label for="free_trial_leads">Lead Prova Gratuita</label>
+                  <label for="free_trial_leads">{{ $t('admin.clients.edit.settingsTab.freeTrial') }}</label>
                   <div class="flex gap-2">
                     <PrimeInputNumber
                       id="free_trial_leads"
@@ -722,7 +724,7 @@ onMounted(() => {
                       class="flex-1"
                     />
                     <span class="text-sm text-neutral-500 self-center">
-                      ({{ client.free_trial_leads_used }} già usati)
+                      ({{ $t('admin.clients.edit.settingsTab.freeTrialUsed', { count: client.free_trial_leads_used }) }})
                     </span>
                   </div>
                 </div>
@@ -735,11 +737,11 @@ onMounted(() => {
                       v-model="form.free_trial_enabled"
                     />
                     <label for="free_trial_enabled" class="cursor-pointer mb-0">
-                      Abilita prova gratuita
+                      {{ $t('admin.clients.edit.settingsTab.enableFreeTrial') }}
                     </label>
                   </div>
                   <small class="form-hint">
-                    Se attiva, il cliente può riscattare lead gratuiti
+                    {{ $t('admin.clients.edit.settingsTab.freeTrialHint') }}
                   </small>
                 </div>
 
@@ -751,11 +753,11 @@ onMounted(() => {
                       v-model="form.notify_new_leads"
                     />
                     <label for="notify_new_leads" class="cursor-pointer mb-0">
-                      Notifiche nuovi lead
+                      {{ $t('admin.clients.edit.settingsTab.leadNotifications') }}
                     </label>
                   </div>
                   <small class="form-hint">
-                    Riceve email quando sono disponibili nuovi lead
+                    {{ $t('admin.clients.edit.settingsTab.leadNotificationsHint') }}
                   </small>
                 </div>
               </div>
@@ -763,16 +765,16 @@ onMounted(() => {
 
             <!-- Danger Zone -->
             <div class="mt-8 pt-6 border-t border-danger-light">
-              <h4 class="text-lg font-semibold text-danger mb-4">Zona Pericolosa</h4>
+              <h4 class="text-lg font-semibold text-danger mb-4">{{ $t('admin.clients.edit.settingsTab.dangerZone') }}</h4>
               <div class="flex items-center justify-between p-4 bg-danger-light rounded-lg">
                 <div>
-                  <p class="font-medium text-danger-dark">Elimina questo cliente</p>
+                  <p class="font-medium text-danger-dark">{{ $t('admin.clients.edit.settingsTab.deleteAccount') }}</p>
                   <p class="text-sm text-neutral-600">
-                    Una volta eliminato, tutti i dati del cliente saranno persi permanentemente.
+                    {{ $t('admin.clients.edit.settingsTab.deleteAccountDesc') }}
                   </p>
                 </div>
                 <PrimeButton
-                  label="Elimina Cliente"
+                  :label="$t('admin.clients.edit.settingsTab.deleteAccount')"
                   icon="pi pi-trash"
                   severity="danger"
                   outlined
@@ -784,14 +786,14 @@ onMounted(() => {
             <div class="flex justify-end gap-4 pt-4 border-t border-neutral-200">
               <PrimeButton
                 type="button"
-                label="Annulla modifiche"
+                :label="$t('admin.common.cancel')"
                 severity="secondary"
                 outlined
                 @click="loadClient"
               />
               <PrimeButton
                 type="submit"
-                label="Salva Modifiche"
+                :label="$t('admin.clients.edit.saveButton')"
                 icon="pi pi-check"
                 severity="primary"
                 :loading="clientStore.saving"
@@ -802,13 +804,13 @@ onMounted(() => {
         </PrimeTabPanel>
 
         <!-- Tab: Storico -->
-        <PrimeTabPanel value="3" header="Storico">
+        <PrimeTabPanel value="3" :header="$t('admin.clients.edit.tabs.history')">
           <div class="pt-4">
             <div class="text-center py-12">
               <i class="pi pi-history text-4xl text-neutral-400 mb-4 block"></i>
-              <p class="text-neutral-600 mb-2">Storico ordini e attività</p>
+              <p class="text-neutral-600 mb-2">{{ $t('admin.clients.edit.historyTab.title') }}</p>
               <p class="text-sm text-neutral-500">
-                Qui verranno mostrati gli ordini e le attività del cliente
+                {{ $t('admin.clients.edit.historyTab.desc') }}
               </p>
             </div>
           </div>

@@ -233,6 +233,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
      * Fetch profile data
      */
     async fetchProfile(): Promise<void> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -250,7 +251,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
         })
         this.profile = response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento profilo'
+        this.error = e.data?.message || t('common.errors.loadError')
       } finally {
         this.loading = false
       }
@@ -260,6 +261,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
      * Update profile data
      */
     async updateProfile(data: ProfileUpdateRequest): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -286,7 +288,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nell\'aggiornamento profilo'
+        this.error = e.data?.message || t('common.errors.updateError')
         return false
       } finally {
         this.saving = false
@@ -297,6 +299,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
      * Update billing data
      */
     async updateBilling(data: BillingUpdateRequest): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -329,7 +332,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nell\'aggiornamento dati fatturazione'
+        this.error = e.data?.message || t('common.errors.updateError')
         return false
       } finally {
         this.saving = false
@@ -340,6 +343,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
      * Change password
      */
     async changePassword(data: PasswordChangeRequest): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -359,7 +363,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel cambio password'
+        this.error = e.data?.message || t('common.errors.updateError')
         return false
       } finally {
         this.saving = false
@@ -370,6 +374,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
      * Update preferences
      */
     async updatePreferences(data: PreferencesUpdateRequest): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -401,7 +406,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nell\'aggiornamento preferenze'
+        this.error = e.data?.message || t('common.errors.updateError')
         return false
       } finally {
         this.saving = false
@@ -412,6 +417,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
      * Fetch dashboard stats
      */
     async fetchDashboardStats(): Promise<void> {
+      const { t } = useI18n()
       this.loading = true
       this.error = null
 
@@ -429,7 +435,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
         })
         this.dashboardStats = response.data
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel caricamento statistiche'
+        this.error = e.data?.message || t('common.errors.loadError')
       } finally {
         this.loading = false
       }
@@ -531,6 +537,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
      * Claim trial leads
      */
     async claimTrialLeads(request: TrialClaimRequest): Promise<boolean> {
+      const { t } = useI18n()
       this.saving = true
       this.error = null
 
@@ -563,7 +570,7 @@ export const useClientProfileStore = defineStore('clientProfile', {
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || 'Errore nel riscatto lead gratuiti'
+        this.error = e.data?.message || t('common.errors.genericError')
         return false
       } finally {
         this.saving = false
