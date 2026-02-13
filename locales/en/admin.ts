@@ -11,6 +11,7 @@ export default {
       soldLeadsMonth: 'Sold Leads (Month)',
       revenueMonth: 'Monthly Revenue',
       newClients: 'New Clients',
+      trend: '{trend} compared to last month',
     },
 
     recentLeads: {
@@ -109,6 +110,7 @@ export default {
           registration: 'Registration',
           actions: 'Actions',
         },
+        vatPrefix: 'VAT',
         empty: 'No clients found',
         loading: 'Loading clients...',
         freeTrialLabels: {

@@ -196,7 +196,7 @@ const getOrderStatusSeverity = (status: string) => {
             class="trend-icon" 
             :class="kpi.trendDirection === 'up' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
           ></i>
-          <span>{{ kpi.trend }} rispetto al mese scorso</span>
+          <span>{{ $t('admin.dashboard.kpis.trend', { trend: kpi.trend }) }}</span>
         </div>
       </div>
     </div>
