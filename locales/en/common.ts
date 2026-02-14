@@ -126,6 +126,17 @@ export default {
     selectProvince: 'Select province',
     selectPeriod: 'Select period',
   },
+  // Root-level filter keys (used in admin/orders, admin/pricing)
+  hideFilters: 'Hide Filters',
+  showFilters: 'Show Filters',
+  clearFilters: 'Clear filters',
+  applyFilters: 'Apply Filters',
+  selectStatus: 'Select status',
+  selectType: 'Select type',
+  selectMethod: 'Select method',
+  selectDate: 'Select date',
+  selectCategory: 'Select category',
+
   errors: {
     loadError: 'Error loading data',
     createError: 'Error creating',

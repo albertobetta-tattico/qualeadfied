@@ -479,7 +479,7 @@ onUnmounted(() => {
             <div class="form-group mb-0 text-right">
               <label class="text-sm font-medium text-neutral-700 mb-2 block invisible">Azioni</label>
               <PrimeButton
-                :label="$t('admin.leads.list.filters.apply')"
+                :label="$t('admin.leads.list.filters.applyFilters')"
                 icon="pi pi-check"
                 severity="primary"
                 @click="applyFilters"

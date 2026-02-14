@@ -97,6 +97,8 @@ export default {
           inactive: 'Trial not active',
           exhausted: 'Trial exhausted',
         },
+        selectOption: 'Select...',
+        selectStatus: 'Select status',
       },
 
       table: {
@@ -236,26 +238,52 @@ export default {
 
       form: {
         companyName: 'Company Name',
+        companyNamePlaceholder: 'Enter company name',
         vatNumber: 'VAT Number',
+        vatNumberPlaceholder: 'e.g. IT01234567890',
+        vatNumberHint: '11-digit Italian VAT number with country prefix',
         email: 'Email',
+        emailPlaceholder: 'company@example.com',
         phone: 'Phone',
+        phonePlaceholder: '+39 xxx xxx xxxx',
         firstName: 'First Name',
+        firstNamePlaceholder: 'Contact first name',
         lastName: 'Last Name',
+        lastNamePlaceholder: 'Contact last name',
         password: 'Password',
+        passwordHint: 'At least 8 characters, one uppercase and one number',
         confirmPassword: 'Confirm Password',
         address: 'Address',
-        zip: 'ZIP Code',
+        addressPlaceholder: 'Street, number',
         city: 'City',
+        cityPlaceholder: 'City',
         province: 'Province',
+        provincePlaceholder: 'Search province...',
+        zip: 'ZIP Code',
+        country: 'Country',
         iban: 'IBAN',
+        ibanHint: 'Italian IBAN (27 characters)',
         bankName: 'Bank',
+        bankNamePlaceholder: 'Bank name',
+        bankAccountHolder: 'Account Holder',
+        bankAccountHolderPlaceholder: 'Account holder name',
+        bicSwift: 'BIC/SWIFT',
+        bicSwiftPlaceholder: 'e.g. UNCRITM1XXX',
+        bicSwiftHint: 'BIC/SWIFT code of the bank (optional)',
         sdiCode: 'SDI Code',
+        sdiCodeHint: 'SDI code or PEC for electronic invoicing',
         pec: 'PEC',
+        pecPlaceholder: 'company@pec.it',
         status: 'Status',
         freeTrial: 'Free Trial',
         freeLeads: 'Free Leads',
         leadNotifications: 'Lead Notifications',
         marketingConsent: 'Marketing Consent',
+        categoriesLabel: 'Select categories',
+        categoriesPlaceholder: 'Choose categories of interest',
+        categoriesFilterPlaceholder: 'Search categories...',
+        categoriesHint: 'The client will receive notifications for leads in selected categories',
+        categoryInactive: 'Inactive',
       },
 
       buttons: {
@@ -266,6 +294,7 @@ export default {
       toast: {
         createSuccess: 'Client "{name}" successfully created',
         createError: 'Error creating client',
+        validationError: 'Fix the errors in the form before proceeding',
       },
     },
   },
@@ -299,8 +328,15 @@ export default {
         mode: 'Mode',
         dateFrom: 'Date From',
         dateTo: 'Date To',
+        showFilters: 'Show filters',
+        hideFilters: 'Hide filters',
+        clearFilters: 'Clear filters',
+        searchPlaceholder: 'Search province...',
+        apply: 'Apply',
+        applyFilters: 'Apply Filters',
         statusOptions: {
           all: 'All statuses',
+          free: 'Available',
           available: 'Available',
           soldExclusive: 'Sold Exclusive',
           shared: 'Shared',
@@ -330,6 +366,7 @@ export default {
         },
         empty: 'No leads found',
         loading: 'Loading leads...',
+        paginatorTemplate: 'From {first} to {last} of {totalRecords} leads',
       },
 
       actions: {
@@ -337,23 +374,33 @@ export default {
         import: 'Import',
         export: 'Export',
         bulkDelete: 'Delete selected',
+        selected: '{count} selected',
       },
 
       contextMenu: {
         edit: 'Edit',
         viewHistory: 'View history',
         delete: 'Delete',
+        notDeletable: 'Not deletable (already sold)',
       },
 
       dialog: {
         deleteTitle: 'Confirm Deletion',
         deleteMessage: 'Are you sure you want to delete {count} leads? This action cannot be undone.',
         deleteSingleMessage: 'Are you sure you want to delete the lead "{name}"? This action cannot be undone.',
+        deleteIrreversible: 'This action is irreversible.',
+        cancel: 'Cancel',
+        confirm: 'Delete',
       },
 
       toast: {
-        deleteSuccess: '{count} leads successfully deleted',
+        deleteSuccess: 'Lead "{name}" successfully deleted',
         deleteError: 'Error deleting leads',
+        cannotDelete: 'Cannot delete an already sold lead',
+        noDeletable: 'No selected lead can be deleted',
+        bulkDeleteSuccess: '{count} leads successfully deleted',
+        bulkDeleteFailed: '{count} leads not deleted (already sold)',
+        exportStarted: 'Export started',
       },
     },
 
@@ -580,6 +627,37 @@ export default {
       total: 'Total',
       active: 'Active',
       availableLeads: 'Available Leads',
+      createTitle: 'New Category',
+      createSubtitle: 'Enter the details to create a new product category',
+      form: {
+        basicInfo: 'Basic Information',
+        name: 'Category Name',
+        namePlaceholder: 'e.g. Residential Photovoltaic',
+        slug: 'Slug',
+        slugPlaceholder: 'e.g. residential-photovoltaic',
+        slugHint: 'Unique identifier for the category (auto-generated from name)',
+        regenerateSlug: 'Regenerate slug from name',
+        description: 'Description',
+        descriptionPlaceholder: 'Describe the product category...',
+        descriptionHint: 'The description helps classify leads in this category',
+        businessRules: 'Business Rules',
+        maxShares: 'Maximum Shares',
+        maxSharesHint: 'Maximum number of clients a lead can be sold to in shared mode',
+        sortOrder: 'Display Order',
+        sortOrderHint: 'Lower number = displayed first in the catalog',
+        isActive: 'Active Category',
+        isActiveHint: 'Active categories are visible in the catalog and can receive new leads',
+        createButton: 'Create Category',
+      },
+      info: {
+        title: 'How categories work',
+        description: 'Product categories allow you to classify leads by industry. Each category has sharing rules that determine how many times a lead can be sold.',
+      },
+      toast: {
+        formError: 'Fix the errors in the form before proceeding',
+        createSuccess: 'Category "{name}" successfully created',
+        createError: 'Error creating category',
+      },
     },
 
     provinces: {
@@ -596,6 +674,67 @@ export default {
       total: 'Total',
       active: 'Active',
       sales: 'Sales',
+      createTitle: 'New Package',
+      createSubtitle: 'Configure a new lead package for clients',
+      form: {
+        basicInfo: 'Basic Information',
+        name: 'Package Name',
+        namePlaceholder: 'e.g. Starter Pack Photovoltaic',
+        packageType: 'Package Type',
+        allCategories: 'All Categories',
+        specificCategory: 'Specific Category',
+        categories: 'Categories',
+        categoriesPlaceholder: 'Select categories',
+        categoriesFilterPlaceholder: 'Search categories...',
+        categoriesHint: 'Select the product categories included in the package',
+        description: 'Description',
+        descriptionPlaceholder: 'Describe the package content and benefits...',
+        descriptionHint: 'The description will be visible to clients in the catalog',
+        exclusiveLeads: 'Exclusive Leads',
+        exclusiveLeadsSubtitle: 'Leads sold only to one client',
+        leadQuantity: 'Quantity',
+        exclusiveLeadQuantityHint: 'Number of exclusive leads in the package',
+        totalPrice: 'Total Price',
+        priceExVat: 'ex VAT',
+        pricePerLead: 'Price per lead',
+        autoCalculated: 'auto-calculated',
+        sharedLeads: 'Shared Leads',
+        sharedLeadsSubtitle: 'Leads sold to multiple clients',
+        sharedLeadQuantityHint: 'Number of shared leads in the package',
+        summary: 'Package Summary',
+        totalLeads: 'Total Leads',
+        totalPriceLabel: 'Total Price',
+        settings: 'Settings',
+        sortOrder: 'Display Order',
+        sortOrderHint: 'Lower number = displayed first',
+        isActive: 'Active',
+        isActiveHint: 'Active packages are visible in the catalog',
+        createButton: 'Create Package',
+      },
+      info: {
+        title: 'How packages work',
+        description: 'Packages allow clients to purchase lead bundles at a discounted price. Each package can include exclusive and/or shared leads.',
+      },
+      toast: {
+        formError: 'Fix the errors in the form before proceeding',
+        createSuccess: 'Package "{name}" successfully created',
+        createError: 'Error creating package',
+      },
+    },
+
+    validation: {
+      nameMinLength: 'Name must be at least 3 characters',
+      nameMaxLength: 'Name must not exceed 100 characters',
+      quantityMin: 'Quantity must be at least 1',
+      quantityMax: 'Quantity must not exceed 1000',
+      pricePositive: 'Price must be a positive value',
+      priceMax: 'Price must not exceed 100,000',
+      packageMinLead: 'Package must contain at least 1 lead',
+    },
+
+    statuses: {
+      active: 'Active',
+      inactive: 'Inactive',
     },
 
     quickActions: {
@@ -776,6 +915,13 @@ export default {
         dateTo: 'Date To',
         amountMin: 'Min Amount (\u20ac)',
         amountMax: 'Max Amount (\u20ac)',
+        showFilters: 'Show filters',
+        hideFilters: 'Hide filters',
+        clearFilters: 'Clear filters',
+        applyFilters: 'Apply Filters',
+        selectStatus: 'Select status',
+        selectType: 'Select type',
+        selectDate: 'Select date',
       },
 
       table: {
@@ -839,6 +985,12 @@ export default {
       filters: {
         type: 'Type',
         sdiStatus: 'SDI Status',
+        showFilters: 'Show filters',
+        hideFilters: 'Hide filters',
+        clearFilters: 'Clear filters',
+        applyFilters: 'Apply Filters',
+        selectType: 'Select type',
+        selectStatus: 'Select status',
       },
 
       table: {
@@ -906,6 +1058,15 @@ export default {
     subtitle: 'Sales statistics, performance, and data analysis',
 
     period: 'Period:',
+
+    periods: {
+      today: 'Today',
+      week: 'This Week',
+      month: 'This Month',
+      quarter: 'This Quarter',
+      year: 'This Year',
+      custom: 'Custom',
+    },
 
     customDates: {
       startDate: 'Start date',
@@ -983,10 +1144,32 @@ export default {
       periodInfo: 'The export will include data filtered based on the selected period ({period}).',
       cancel: 'Cancel',
       export: 'Export',
+      types: {
+        leads: 'Leads',
+        orders: 'Orders',
+        clients: 'Clients',
+        transactions: 'Transactions',
+      },
+      descriptions: {
+        leads: 'All leads with contact and classification details',
+        orders: 'Orders with amounts and status',
+        clients: 'Client registry with billing data',
+        transactions: 'Stripe transaction log',
+      },
+    },
+
+    confirm: {
+      exportMessage: 'Do you want to export {type} data for the selected period?',
+      exportHeader: 'Confirm Export',
+      exportAccept: 'Export',
     },
 
     toast: {
       exportError: 'Error during export',
+      exportStarted: 'Export started',
+      exportStartedDetail: 'The export is being prepared',
+      exportCompleted: 'Export completed',
+      exportReadyDetail: 'The file is ready for download',
     },
   },
 
@@ -997,6 +1180,80 @@ export default {
     title: 'Settings',
     subtitle: 'System configuration, notifications, and operator management',
     leadSources: 'Lead Sources',
+
+    roles: {
+      superAdmin: 'Super Admin',
+      admin: 'Admin',
+      operator: 'Operator',
+    },
+
+    statuses: {
+      active: 'Active',
+      inactive: 'Inactive',
+    },
+
+    activityTypes: {
+      login: 'Login',
+      logout: 'Logout',
+      create: 'Create',
+      update: 'Update',
+      delete: 'Delete',
+      export: 'Export',
+      import: 'Import',
+      statusChange: 'Status Change',
+      passwordReset: 'Password Reset',
+      configChange: 'Config Change',
+    },
+
+    entities: {
+      user: 'User',
+      client: 'Client',
+      lead: 'Lead',
+      order: 'Order',
+      invoice: 'Invoice',
+      category: 'Category',
+      package: 'Package',
+      pricing: 'Pricing',
+      admin: 'Admin',
+      system: 'System',
+    },
+
+    frequencies: {
+      instant: 'Instant',
+      hourly: 'Hourly',
+      daily: 'Daily',
+      weekly: 'Weekly',
+      disabled: 'Disabled',
+    },
+
+    time: {
+      never: 'Never',
+    },
+
+    entityFilter: {
+      all: 'All entities',
+    },
+
+    validation: {
+      firstNameMinLength: 'First name must be at least 2 characters',
+      lastNameMinLength: 'Last name must be at least 2 characters',
+      passwordMinLength: 'Password must be at least 8 characters',
+      passwordUppercase: 'Password must contain at least one uppercase letter',
+      passwordNumber: 'Password must contain at least one number',
+    },
+
+    confirm: {
+      deleteOperatorMessage: 'Are you sure you want to delete the operator "{name}"?',
+      resetPasswordMessage: 'Send a password reset email to {email}?',
+      resetPasswordHeader: 'Reset Password',
+      deactivateMessage: 'Are you sure you want to deactivate the operator "{name}"?',
+      deactivateHeader: 'Deactivate Operator',
+      deactivateAccept: 'Deactivate',
+    },
+
+    smtpEncryption: {
+      none: 'None',
+    },
 
     tabs: {
       systemConfig: 'System Configuration',
@@ -1115,6 +1372,113 @@ export default {
       testEmailError: 'Error sending',
       formError: 'Fix the errors in the form',
       emailRequired: 'Enter an email address',
+    },
+
+    // Sources (settings/sources.vue)
+    sources: {
+      backToSettings: 'Back to Settings',
+      title: 'Lead Sources',
+      subtitle: 'Manage lead sources and API integrations',
+      newSource: 'New Source',
+
+      stats: {
+        totalSources: 'Total Sources',
+        active: 'Active',
+        inactive: 'Inactive',
+        withApiKey: 'With API Key',
+      },
+
+      infoBanner: 'Lead sources allow you to receive leads from different channels via API. Each source has its own API key for authentication.',
+
+      emptyState: {
+        title: 'No sources configured',
+        description: 'Create your first lead source to start receiving leads via API.',
+        createButton: 'Create Source',
+      },
+
+      headers: {
+        name: 'Name',
+        description: 'Description',
+        apiKey: 'API Key',
+        leads: 'Leads',
+        status: 'Status',
+        created: 'Created',
+        actions: 'Actions',
+      },
+
+      tooltip: {
+        hide: 'Hide API key',
+        show: 'Show API key',
+        copy: 'Copy API key',
+        regenerate: 'Regenerate API key',
+        edit: 'Edit',
+        delete: 'Delete',
+        hasLeads: 'Cannot delete: source has associated leads',
+      },
+
+      apiKeyNotConfigured: 'Not configured',
+      statusActive: 'Active',
+      statusInactive: 'Inactive',
+
+      apiDocs: {
+        title: 'API Documentation',
+        endpoint: 'Endpoint',
+        requiredHeaders: 'Required Headers',
+        examplePayload: 'Example Payload',
+        successResponse: 'Success Response',
+      },
+
+      dialog: {
+        editTitle: 'Edit Source',
+        createTitle: 'New Source',
+        sourceName: 'Source Name',
+        sourceNamePlaceholder: 'e.g. Meta Ads',
+        slug: 'Slug',
+        slugPlaceholder: 'e.g. meta-ads',
+        slugHint: 'Unique identifier for the source (lowercase, hyphens allowed)',
+        description: 'Description',
+        descriptionPlaceholder: 'Describe the lead source...',
+        activeSource: 'Active',
+        activeSourceHint: 'Active sources can receive leads via API',
+        generateApiKey: 'Generate API Key',
+        generateApiKeyHint: 'Generate an API key for this source',
+        cancel: 'Cancel',
+        saveChanges: 'Save Changes',
+        createSource: 'Create Source',
+      },
+
+      apiKeyDialog: {
+        title: 'API Key',
+        warning: 'Copy the API key now. For security reasons, it will not be shown again.',
+        copied: 'Copied to clipboard',
+      },
+
+      confirmRegenerate: {
+        message: 'Are you sure you want to regenerate the API key? The current key will stop working immediately.',
+        header: 'Regenerate API Key',
+        accept: 'Regenerate',
+        reject: 'Cancel',
+      },
+
+      confirmDelete: {
+        message: 'Are you sure you want to delete the source "{name}"? This action cannot be undone.',
+        header: 'Confirm Deletion',
+        accept: 'Delete',
+        reject: 'Cancel',
+      },
+
+      toast: {
+        apiKeyCopied: 'API key copied to clipboard',
+        apiKeyCopyError: 'Error copying API key',
+        sourceUpdated: 'Source "{name}" updated successfully',
+        updateError: 'Error updating source',
+        sourceCreated: 'Source "{name}" created successfully',
+        createError: 'Error creating source',
+        apiKeyRegenerated: 'API key regenerated successfully',
+        regenerateError: 'Error regenerating API key',
+        sourceDeleted: 'Source "{name}" deleted',
+        deleteError: 'Error deleting source',
+      },
     },
   },
 

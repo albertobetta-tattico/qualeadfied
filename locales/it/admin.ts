@@ -97,6 +97,8 @@ export default {
           inactive: 'Prova non attiva',
           exhausted: 'Prova esaurita',
         },
+        selectOption: 'Seleziona...',
+        selectStatus: 'Seleziona stato',
       },
 
       table: {
@@ -236,26 +238,52 @@ export default {
 
       form: {
         companyName: 'Ragione Sociale',
+        companyNamePlaceholder: 'Inserisci ragione sociale',
         vatNumber: 'Partita IVA',
+        vatNumberPlaceholder: 'es. IT01234567890',
+        vatNumberHint: 'Partita IVA italiana a 11 cifre con prefisso paese',
         email: 'Email',
+        emailPlaceholder: 'azienda@esempio.com',
         phone: 'Telefono',
+        phonePlaceholder: '+39 xxx xxx xxxx',
         firstName: 'Nome',
+        firstNamePlaceholder: 'Nome del referente',
         lastName: 'Cognome',
+        lastNamePlaceholder: 'Cognome del referente',
         password: 'Password',
+        passwordHint: 'Almeno 8 caratteri, una maiuscola e un numero',
         confirmPassword: 'Conferma Password',
         address: 'Indirizzo',
-        zip: 'CAP',
-        city: 'Citt\u00e0',
+        addressPlaceholder: 'Via, numero civico',
+        city: 'Città',
+        cityPlaceholder: 'Città',
         province: 'Provincia',
+        provincePlaceholder: 'Cerca provincia...',
+        zip: 'CAP',
+        country: 'Paese',
         iban: 'IBAN',
+        ibanHint: 'IBAN italiano (27 caratteri)',
         bankName: 'Banca',
+        bankNamePlaceholder: 'Nome della banca',
+        bankAccountHolder: 'Intestatario Conto',
+        bankAccountHolderPlaceholder: 'Nome intestatario del conto',
+        bicSwift: 'BIC/SWIFT',
+        bicSwiftPlaceholder: 'es. UNCRITM1XXX',
+        bicSwiftHint: 'Codice BIC/SWIFT della banca (opzionale)',
         sdiCode: 'Codice SDI',
+        sdiCodeHint: 'Codice SDI o PEC per fatturazione elettronica',
         pec: 'PEC',
+        pecPlaceholder: 'azienda@pec.it',
         status: 'Stato',
         freeTrial: 'Prova Gratuita',
         freeLeads: 'Lead Gratuiti',
         leadNotifications: 'Notifiche Lead',
         marketingConsent: 'Consenso Marketing',
+        categoriesLabel: 'Seleziona categorie',
+        categoriesPlaceholder: 'Scegli le categorie di interesse',
+        categoriesFilterPlaceholder: 'Cerca categorie...',
+        categoriesHint: 'Il cliente riceverà notifiche per i lead nelle categorie selezionate',
+        categoryInactive: 'Inattiva',
       },
 
       buttons: {
@@ -266,6 +294,7 @@ export default {
       toast: {
         createSuccess: 'Cliente "{name}" creato con successo',
         createError: 'Errore nella creazione del cliente',
+        validationError: 'Correggi gli errori nel form prima di procedere',
       },
     },
   },
@@ -296,18 +325,25 @@ export default {
         province: 'Provincia',
         source: 'Fonte',
         status: 'Stato',
-        mode: 'Modalit\u00e0',
+        mode: 'Modalità',
         dateFrom: 'Data Da',
         dateTo: 'Data A',
+        showFilters: 'Mostra filtri',
+        hideFilters: 'Nascondi filtri',
+        clearFilters: 'Pulisci filtri',
+        searchPlaceholder: 'Cerca provincia...',
+        apply: 'Applica',
+        applyFilters: 'Applica Filtri',
         statusOptions: {
           all: 'Tutti gli stati',
+          free: 'Disponibile',
           available: 'Disponibile',
           soldExclusive: 'Venduto Esclusivo',
           shared: 'Condiviso',
           exhausted: 'Esaurito',
         },
         modeOptions: {
-          all: 'Tutte le modalit\u00e0',
+          all: 'Tutte le modalità',
           exclusive: 'Esclusivo',
           shared: 'Condiviso',
         },
@@ -330,6 +366,7 @@ export default {
         },
         empty: 'Nessun lead trovato',
         loading: 'Caricamento lead...',
+        paginatorTemplate: 'Da {first} a {last} di {totalRecords} lead',
       },
 
       actions: {
@@ -337,23 +374,33 @@ export default {
         import: 'Import',
         export: 'Export',
         bulkDelete: 'Elimina selezionati',
+        selected: '{count} selezionati',
       },
 
       contextMenu: {
         edit: 'Modifica',
         viewHistory: 'Visualizza storico',
         delete: 'Elimina',
+        notDeletable: 'Non eliminabile (già venduto)',
       },
 
       dialog: {
         deleteTitle: 'Conferma Eliminazione',
-        deleteMessage: 'Sei sicuro di voler eliminare {count} lead? Questa azione non pu\u00f2 essere annullata.',
-        deleteSingleMessage: 'Sei sicuro di voler eliminare il lead "{name}"? Questa azione non pu\u00f2 essere annullata.',
+        deleteMessage: 'Sei sicuro di voler eliminare {count} lead? Questa azione non può essere annullata.',
+        deleteSingleMessage: 'Sei sicuro di voler eliminare il lead "{name}"? Questa azione non può essere annullata.',
+        deleteIrreversible: 'Questa azione è irreversibile.',
+        cancel: 'Annulla',
+        confirm: 'Elimina',
       },
 
       toast: {
-        deleteSuccess: '{count} lead eliminati con successo',
+        deleteSuccess: 'Lead "{name}" eliminato con successo',
         deleteError: 'Errore nell\'eliminazione dei lead',
+        cannotDelete: 'Non è possibile eliminare un lead già venduto',
+        noDeletable: 'Nessun lead selezionato è eliminabile',
+        bulkDeleteSuccess: '{count} lead eliminati con successo',
+        bulkDeleteFailed: '{count} lead non eliminati (già venduti)',
+        exportStarted: 'Esportazione avviata',
       },
     },
 
@@ -580,6 +627,37 @@ export default {
       total: 'Totali',
       active: 'Attive',
       availableLeads: 'Lead Disponibili',
+      createTitle: 'Nuova Categoria',
+      createSubtitle: 'Inserisci i dati per creare una nuova categoria merceologica',
+      form: {
+        basicInfo: 'Informazioni di Base',
+        name: 'Nome Categoria',
+        namePlaceholder: 'es. Fotovoltaico Residenziale',
+        slug: 'Slug',
+        slugPlaceholder: 'es. fotovoltaico-residenziale',
+        slugHint: 'Identificativo univoco della categoria (generato automaticamente dal nome)',
+        regenerateSlug: 'Rigenera slug dal nome',
+        description: 'Descrizione',
+        descriptionPlaceholder: 'Descrivi la categoria merceologica...',
+        descriptionHint: 'La descrizione aiuta a classificare i lead in questa categoria',
+        businessRules: 'Regole di Business',
+        maxShares: 'Condivisioni Massime',
+        maxSharesHint: 'Numero massimo di clienti a cui un lead può essere venduto in modalità condivisa',
+        sortOrder: 'Ordine di Visualizzazione',
+        sortOrderHint: 'Numero più basso = visualizzato prima nel catalogo',
+        isActive: 'Categoria Attiva',
+        isActiveHint: 'Le categorie attive sono visibili nel catalogo e possono ricevere nuovi lead',
+        createButton: 'Crea Categoria',
+      },
+      info: {
+        title: 'Come funzionano le categorie',
+        description: 'Le categorie merceologiche permettono di classificare i lead per settore. Ogni categoria ha regole di condivisione che determinano quante volte un lead può essere venduto.',
+      },
+      toast: {
+        formError: 'Correggi gli errori nel form prima di procedere',
+        createSuccess: 'Categoria "{name}" creata con successo',
+        createError: 'Errore nella creazione della categoria',
+      },
     },
 
     provinces: {
@@ -596,6 +674,67 @@ export default {
       total: 'Totali',
       active: 'Attivi',
       sales: 'Vendite',
+      createTitle: 'Nuovo Pacchetto',
+      createSubtitle: 'Configura un nuovo pacchetto lead per i clienti',
+      form: {
+        basicInfo: 'Informazioni di Base',
+        name: 'Nome Pacchetto',
+        namePlaceholder: 'es. Starter Pack Fotovoltaico',
+        packageType: 'Tipo Pacchetto',
+        allCategories: 'Tutte le Categorie',
+        specificCategory: 'Categoria Specifica',
+        categories: 'Categorie',
+        categoriesPlaceholder: 'Seleziona categorie',
+        categoriesFilterPlaceholder: 'Cerca categorie...',
+        categoriesHint: 'Seleziona le categorie merceologiche incluse nel pacchetto',
+        description: 'Descrizione',
+        descriptionPlaceholder: 'Descrivi il contenuto e i vantaggi del pacchetto...',
+        descriptionHint: 'La descrizione sarà visibile ai clienti nel catalogo',
+        exclusiveLeads: 'Lead Esclusivi',
+        exclusiveLeadsSubtitle: 'Lead venduti a un solo cliente',
+        leadQuantity: 'Quantità',
+        exclusiveLeadQuantityHint: 'Numero di lead esclusivi nel pacchetto',
+        totalPrice: 'Prezzo Totale',
+        priceExVat: 'IVA esclusa',
+        pricePerLead: 'Prezzo per lead',
+        autoCalculated: 'calcolato automaticamente',
+        sharedLeads: 'Lead Condivisi',
+        sharedLeadsSubtitle: 'Lead venduti a più clienti',
+        sharedLeadQuantityHint: 'Numero di lead condivisi nel pacchetto',
+        summary: 'Riepilogo Pacchetto',
+        totalLeads: 'Lead Totali',
+        totalPriceLabel: 'Prezzo Totale',
+        settings: 'Impostazioni',
+        sortOrder: 'Ordine di Visualizzazione',
+        sortOrderHint: 'Numero più basso = visualizzato prima',
+        isActive: 'Attivo',
+        isActiveHint: 'I pacchetti attivi sono visibili nel catalogo',
+        createButton: 'Crea Pacchetto',
+      },
+      info: {
+        title: 'Come funzionano i pacchetti',
+        description: 'I pacchetti permettono ai clienti di acquistare bundle di lead a prezzo scontato. Ogni pacchetto può includere lead esclusivi e/o condivisi.',
+      },
+      toast: {
+        formError: 'Correggi gli errori nel form prima di procedere',
+        createSuccess: 'Pacchetto "{name}" creato con successo',
+        createError: 'Errore nella creazione del pacchetto',
+      },
+    },
+
+    validation: {
+      nameMinLength: 'Il nome deve avere almeno 3 caratteri',
+      nameMaxLength: 'Il nome non deve superare i 100 caratteri',
+      quantityMin: 'La quantità deve essere almeno 1',
+      quantityMax: 'La quantità non deve superare 1000',
+      pricePositive: 'Il prezzo deve essere un valore positivo',
+      priceMax: 'Il prezzo non deve superare 100.000',
+      packageMinLead: 'Il pacchetto deve contenere almeno 1 lead',
+    },
+
+    statuses: {
+      active: 'Attivo',
+      inactive: 'Inattivo',
     },
 
     quickActions: {
@@ -776,6 +915,13 @@ export default {
         dateTo: 'Data A',
         amountMin: 'Importo Min (\u20ac)',
         amountMax: 'Importo Max (\u20ac)',
+        showFilters: 'Mostra filtri',
+        hideFilters: 'Nascondi filtri',
+        clearFilters: 'Pulisci filtri',
+        applyFilters: 'Applica Filtri',
+        selectStatus: 'Seleziona stato',
+        selectType: 'Seleziona tipo',
+        selectDate: 'Seleziona data',
       },
 
       table: {
@@ -839,6 +985,12 @@ export default {
       filters: {
         type: 'Tipo',
         sdiStatus: 'Stato SDI',
+        showFilters: 'Mostra filtri',
+        hideFilters: 'Nascondi filtri',
+        clearFilters: 'Pulisci filtri',
+        applyFilters: 'Applica Filtri',
+        selectType: 'Seleziona tipo',
+        selectStatus: 'Seleziona stato',
       },
 
       table: {
@@ -906,6 +1058,15 @@ export default {
     subtitle: 'Statistiche vendite, performance e analisi dati',
 
     period: 'Periodo:',
+
+    periods: {
+      today: 'Oggi',
+      week: 'Questa Settimana',
+      month: 'Questo Mese',
+      quarter: 'Questo Trimestre',
+      year: 'Quest\'Anno',
+      custom: 'Personalizzato',
+    },
 
     customDates: {
       startDate: 'Data inizio',
@@ -980,13 +1141,35 @@ export default {
       dialogTitle: 'Export Dati',
       dataType: 'Tipo di dati',
       format: 'Formato',
-      periodInfo: 'L\'export includer\u00e0 i dati filtrati in base al periodo selezionato ({period}).',
+      periodInfo: 'L\'export includerà i dati filtrati in base al periodo selezionato ({period}).',
       cancel: 'Annulla',
       export: 'Esporta',
+      types: {
+        leads: 'Lead',
+        orders: 'Ordini',
+        clients: 'Clienti',
+        transactions: 'Transazioni',
+      },
+      descriptions: {
+        leads: 'Tutti i lead con dettagli contatto e classificazione',
+        orders: 'Ordini con importi e stato',
+        clients: 'Anagrafica clienti con dati di fatturazione',
+        transactions: 'Log transazioni Stripe',
+      },
+    },
+
+    confirm: {
+      exportMessage: 'Vuoi esportare i dati di {type} per il periodo selezionato?',
+      exportHeader: 'Conferma Export',
+      exportAccept: 'Esporta',
     },
 
     toast: {
       exportError: 'Errore durante l\'export',
+      exportStarted: 'Export avviato',
+      exportStartedDetail: 'L\'export è in fase di preparazione',
+      exportCompleted: 'Export completato',
+      exportReadyDetail: 'Il file è pronto per il download',
     },
   },
 
@@ -997,6 +1180,80 @@ export default {
     title: 'Impostazioni',
     subtitle: 'Configurazione sistema, notifiche e gestione operatori',
     leadSources: 'Sorgenti Lead',
+
+    roles: {
+      superAdmin: 'Super Admin',
+      admin: 'Admin',
+      operator: 'Operatore',
+    },
+
+    statuses: {
+      active: 'Attivo',
+      inactive: 'Inattivo',
+    },
+
+    activityTypes: {
+      login: 'Login',
+      logout: 'Logout',
+      create: 'Creazione',
+      update: 'Modifica',
+      delete: 'Eliminazione',
+      export: 'Esportazione',
+      import: 'Importazione',
+      statusChange: 'Cambio Stato',
+      passwordReset: 'Reset Password',
+      configChange: 'Modifica Configurazione',
+    },
+
+    entities: {
+      user: 'Utente',
+      client: 'Cliente',
+      lead: 'Lead',
+      order: 'Ordine',
+      invoice: 'Fattura',
+      category: 'Categoria',
+      package: 'Pacchetto',
+      pricing: 'Listino',
+      admin: 'Admin',
+      system: 'Sistema',
+    },
+
+    frequencies: {
+      instant: 'Istantaneo',
+      hourly: 'Ogni ora',
+      daily: 'Giornaliero',
+      weekly: 'Settimanale',
+      disabled: 'Disabilitato',
+    },
+
+    time: {
+      never: 'Mai',
+    },
+
+    entityFilter: {
+      all: 'Tutte le entità',
+    },
+
+    validation: {
+      firstNameMinLength: 'Il nome deve avere almeno 2 caratteri',
+      lastNameMinLength: 'Il cognome deve avere almeno 2 caratteri',
+      passwordMinLength: 'La password deve avere almeno 8 caratteri',
+      passwordUppercase: 'La password deve contenere almeno una lettera maiuscola',
+      passwordNumber: 'La password deve contenere almeno un numero',
+    },
+
+    confirm: {
+      deleteOperatorMessage: 'Sei sicuro di voler eliminare l\'operatore "{name}"?',
+      resetPasswordMessage: 'Inviare un\'email di reset password a {email}?',
+      resetPasswordHeader: 'Reset Password',
+      deactivateMessage: 'Sei sicuro di voler disattivare l\'operatore "{name}"?',
+      deactivateHeader: 'Disattiva Operatore',
+      deactivateAccept: 'Disattiva',
+    },
+
+    smtpEncryption: {
+      none: 'Nessuno',
+    },
 
     tabs: {
       systemConfig: 'Configurazione Sistema',
@@ -1115,6 +1372,113 @@ export default {
       testEmailError: 'Errore nell\'invio',
       formError: 'Correggi gli errori nel form',
       emailRequired: 'Inserisci un indirizzo email',
+    },
+
+    // Sources (settings/sources.vue)
+    sources: {
+      backToSettings: 'Torna alle Impostazioni',
+      title: 'Sorgenti Lead',
+      subtitle: 'Gestisci le sorgenti di lead e le integrazioni API',
+      newSource: 'Nuova Sorgente',
+
+      stats: {
+        totalSources: 'Sorgenti Totali',
+        active: 'Attive',
+        inactive: 'Inattive',
+        withApiKey: 'Con API Key',
+      },
+
+      infoBanner: 'Le sorgenti lead permettono di ricevere lead da diversi canali tramite API. Ogni sorgente ha la propria API key per l\'autenticazione.',
+
+      emptyState: {
+        title: 'Nessuna sorgente configurata',
+        description: 'Crea la prima sorgente lead per iniziare a ricevere lead tramite API.',
+        createButton: 'Crea Sorgente',
+      },
+
+      headers: {
+        name: 'Nome',
+        description: 'Descrizione',
+        apiKey: 'API Key',
+        leads: 'Lead',
+        status: 'Stato',
+        created: 'Creazione',
+        actions: 'Azioni',
+      },
+
+      tooltip: {
+        hide: 'Nascondi API key',
+        show: 'Mostra API key',
+        copy: 'Copia API key',
+        regenerate: 'Rigenera API key',
+        edit: 'Modifica',
+        delete: 'Elimina',
+        hasLeads: 'Impossibile eliminare: la sorgente ha lead associati',
+      },
+
+      apiKeyNotConfigured: 'Non configurata',
+      statusActive: 'Attiva',
+      statusInactive: 'Inattiva',
+
+      apiDocs: {
+        title: 'Documentazione API',
+        endpoint: 'Endpoint',
+        requiredHeaders: 'Header Richiesti',
+        examplePayload: 'Payload di Esempio',
+        successResponse: 'Risposta di Successo',
+      },
+
+      dialog: {
+        editTitle: 'Modifica Sorgente',
+        createTitle: 'Nuova Sorgente',
+        sourceName: 'Nome Sorgente',
+        sourceNamePlaceholder: 'es. Meta Ads',
+        slug: 'Slug',
+        slugPlaceholder: 'es. meta-ads',
+        slugHint: 'Identificativo univoco della sorgente (minuscolo, trattini consentiti)',
+        description: 'Descrizione',
+        descriptionPlaceholder: 'Descrivi la sorgente lead...',
+        activeSource: 'Attiva',
+        activeSourceHint: 'Le sorgenti attive possono ricevere lead tramite API',
+        generateApiKey: 'Genera API Key',
+        generateApiKeyHint: 'Genera una API key per questa sorgente',
+        cancel: 'Annulla',
+        saveChanges: 'Salva Modifiche',
+        createSource: 'Crea Sorgente',
+      },
+
+      apiKeyDialog: {
+        title: 'API Key',
+        warning: 'Copia la API key adesso. Per motivi di sicurezza, non verrà mostrata di nuovo.',
+        copied: 'Copiata negli appunti',
+      },
+
+      confirmRegenerate: {
+        message: 'Sei sicuro di voler rigenerare la API key? La chiave attuale smetterà di funzionare immediatamente.',
+        header: 'Rigenera API Key',
+        accept: 'Rigenera',
+        reject: 'Annulla',
+      },
+
+      confirmDelete: {
+        message: 'Sei sicuro di voler eliminare la sorgente "{name}"? Questa azione non può essere annullata.',
+        header: 'Conferma Eliminazione',
+        accept: 'Elimina',
+        reject: 'Annulla',
+      },
+
+      toast: {
+        apiKeyCopied: 'API key copiata negli appunti',
+        apiKeyCopyError: 'Errore nella copia della API key',
+        sourceUpdated: 'Sorgente "{name}" aggiornata con successo',
+        updateError: 'Errore nell\'aggiornamento della sorgente',
+        sourceCreated: 'Sorgente "{name}" creata con successo',
+        createError: 'Errore nella creazione della sorgente',
+        apiKeyRegenerated: 'API key rigenerata con successo',
+        regenerateError: 'Errore nella rigenerazione della API key',
+        sourceDeleted: 'Sorgente "{name}" eliminata',
+        deleteError: 'Errore nell\'eliminazione della sorgente',
+      },
     },
   },
 

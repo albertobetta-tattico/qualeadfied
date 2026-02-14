@@ -306,7 +306,8 @@ onUnmounted(() => {
             </div>
 
             <!-- Apply Button -->
-            <div class="flex items-end">
+            <div class="form-group mb-0 text-right">
+              <label class="text-sm font-medium text-neutral-700 mb-2 block invisible">Azioni</label>
               <PrimeButton
                 :label="$t('admin.invoices.list.filters.applyFilters')"
                 icon="pi pi-check"
