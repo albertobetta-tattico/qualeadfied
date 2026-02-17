@@ -171,7 +171,8 @@ export const useCartStore = defineStore('cart', {
      * Fetch cart from server
      */
     async fetchCart(): Promise<void> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -199,7 +200,8 @@ export const useCartStore = defineStore('cart', {
      * Add lead to cart
      */
     async addToCart(request: AddToCartRequest): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -257,7 +259,8 @@ export const useCartStore = defineStore('cart', {
      * Update cart item (change purchase mode)
      */
     async updateItem(itemId: number, purchaseMode: PurchaseMode): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.error = null
 
       try {
@@ -296,7 +299,8 @@ export const useCartStore = defineStore('cart', {
      * Remove item from cart
      */
     async removeItem(itemId: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.error = null
 
       try {
@@ -325,7 +329,8 @@ export const useCartStore = defineStore('cart', {
      * Remove entire group from cart
      */
     async removeGroup(groupKey: string): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.error = null
 
       // Find all items in this group
@@ -370,7 +375,8 @@ export const useCartStore = defineStore('cart', {
      * Clear entire cart
      */
     async clearCart(): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.error = null
 
       try {
@@ -399,7 +405,8 @@ export const useCartStore = defineStore('cart', {
      * Create checkout / payment intent
      */
     async createCheckout(data: CheckoutData): Promise<PaymentIntent | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.checkoutLoading = true
       this.error = null
 
@@ -435,7 +442,8 @@ export const useCartStore = defineStore('cart', {
      * Confirm payment (after Stripe)
      */
     async confirmPayment(paymentIntentId: string): Promise<{ orderId: number } | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.checkoutLoading = true
       this.error = null
 

@@ -58,7 +58,7 @@ const resendEmail = async () => {
     <div class="forgot-container">
       <div class="forgot-card">
         <!-- Logo -->
-        <NuxtLink to="/landing" class="forgot-logo">
+        <NuxtLink to="/" class="forgot-logo">
           <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
         </NuxtLink>
 
@@ -82,7 +82,7 @@ const resendEmail = async () => {
               class="w-full"
               @click="resendEmail"
             />
-            <NuxtLink to="/" class="w-full">
+            <NuxtLink to="/login" class="w-full">
               <PrimeButton
                 :label="$t('auth.forgotPassword.backToLogin')"
                 severity="primary"
@@ -110,7 +110,7 @@ const resendEmail = async () => {
                 id="email"
                 v-model="form.email"
                 type="email"
-                :placeholder="$t('auth.login.emailPlaceholder')"
+                placeholder="nome@azienda.it"
                 :class="{ 'p-invalid': errors.email }"
                 class="w-full"
                 autocomplete="email"
@@ -127,7 +127,7 @@ const resendEmail = async () => {
             />
           </form>
 
-          <NuxtLink to="/" class="back-link">
+          <NuxtLink to="/login" class="back-link">
             <i class="pi pi-arrow-left mr-2"></i>
             {{ $t('auth.forgotPassword.backToLogin') }}
           </NuxtLink>

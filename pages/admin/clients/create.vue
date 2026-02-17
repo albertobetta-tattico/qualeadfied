@@ -177,7 +177,7 @@ const onCancel = () => {
                 v-model="form.email"
                 type="email"
                 :class="{ 'p-invalid': errors.email }"
-                :placeholder="$t('admin.clients.create.form.emailPlaceholder')"
+                placeholder="azienda@esempio.com"
                 class="w-full"
                 @blur="onBlur('email', form.email)"
               />
@@ -386,7 +386,7 @@ const onCancel = () => {
                 id="pec"
                 v-model="form.billing_data.pec"
                 :class="{ 'p-invalid': errors.pec }"
-                :placeholder="$t('admin.clients.create.form.pecPlaceholder')"
+                placeholder="azienda@pec.it"
                 class="w-full"
                 @blur="onBlur('pec', form.billing_data.pec)"
               />

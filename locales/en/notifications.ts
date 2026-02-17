@@ -34,6 +34,14 @@ export default {
       selectAtLeastOne: 'Select at least one lead',
     },
   },
+  // Flat alias keys used by registrati.vue (notifications.auth.*)
+  auth: {
+    loginSuccess: 'Logged in successfully',
+    loginError: 'Invalid credentials',
+    registerSuccess: 'Registration completed!',
+    registerError: 'Error during registration',
+    emailResent: 'Email sent again',
+  },
   confirm: {
     logout: {
       message: 'Are you sure you want to log out?',

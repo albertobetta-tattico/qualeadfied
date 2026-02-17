@@ -34,6 +34,14 @@ export default {
       selectAtLeastOne: 'Seleziona almeno un lead',
     },
   },
+  // Alias flat keys usati da registrati.vue (notifications.auth.*)
+  auth: {
+    loginSuccess: 'Accesso effettuato con successo',
+    loginError: 'Credenziali non valide',
+    registerSuccess: 'Registrazione completata!',
+    registerError: 'Errore durante la registrazione',
+    emailResent: 'Email inviata nuovamente',
+  },
   confirm: {
     logout: {
       message: 'Sei sicuro di voler uscire?',

@@ -370,6 +370,15 @@ const bulkTotalPrice = computed(() => {
             </template>
           </PrimeColumn>
 
+          <!-- Region -->
+          <PrimeColumn field="province.region" :header="$t('catalog.table.region')" sortable style="min-width: 100px">
+            <template #body="{ data }">
+              <span class="text-surface-600 dark:text-surface-400">
+                {{ data.province?.region }}
+              </span>
+            </template>
+          </PrimeColumn>
+
           <!-- Request Preview -->
           <PrimeColumn :header="$t('catalog.table.request')" style="min-width: 250px">
             <template #body="{ data }">

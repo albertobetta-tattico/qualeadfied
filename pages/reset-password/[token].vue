@@ -67,7 +67,7 @@ const handleSubmit = async () => {
 
 // Redirect to login
 const goToLogin = () => {
-  router.push('/')
+  router.push('/login')
 }
 </script>
 
@@ -76,7 +76,7 @@ const goToLogin = () => {
     <div class="reset-container">
       <div class="reset-card">
         <!-- Logo -->
-        <NuxtLink to="/landing" class="reset-logo">
+        <NuxtLink to="/" class="reset-logo">
           <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
         </NuxtLink>
 
@@ -172,7 +172,7 @@ const goToLogin = () => {
             />
           </form>
 
-          <NuxtLink to="/" class="back-link">
+          <NuxtLink to="/login" class="back-link">
             <i class="pi pi-arrow-left mr-2"></i>
             Torna al Login
           </NuxtLink>

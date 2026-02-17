@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // TODO: Verificare token di autenticazione
   // const { isAuthenticated } = useAuth()
   // if (!isAuthenticated.value) {
-  //   return navigateTo('/')
+  //   return navigateTo('/login')
   // }
   
   // Temporaneamente permettiamo l'accesso

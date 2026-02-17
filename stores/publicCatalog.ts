@@ -373,7 +373,8 @@ export const usePublicCatalogStore = defineStore('publicCatalog', {
      * Fetch public leads catalog
      */
     async fetchLeads(): Promise<void> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 

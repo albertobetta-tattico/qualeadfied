@@ -540,7 +540,8 @@ export const useOrderStore = defineStore('order', {
      * Carica lista ordini con filtri e paginazione
      */
     async fetchOrders() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -655,7 +656,8 @@ export const useOrderStore = defineStore('order', {
      * Carica singolo ordine con dettagli completi
      */
     async fetchOrder(id: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 

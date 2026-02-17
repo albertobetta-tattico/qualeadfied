@@ -354,7 +354,8 @@ export const useLeadStore = defineStore('lead', {
      * Carica lista lead con filtri e paginazione
      */
     async fetchLeads() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -467,7 +468,8 @@ export const useLeadStore = defineStore('lead', {
      * Carica singolo lead
      */
     async fetchLead(id: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -497,7 +499,8 @@ export const useLeadStore = defineStore('lead', {
      * Crea nuovo lead
      */
     async createLead(data: LeadCreateForm): Promise<Lead | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -554,7 +557,8 @@ export const useLeadStore = defineStore('lead', {
      * Aggiorna lead
      */
     async updateLead(id: number, data: LeadUpdateForm): Promise<Lead | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -617,7 +621,8 @@ export const useLeadStore = defineStore('lead', {
      * Elimina lead (solo se non venduto)
      */
     async deleteLead(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -662,7 +667,8 @@ export const useLeadStore = defineStore('lead', {
      * Elimina lead multipli (bulk delete - solo spam/non venduti)
      */
     async deleteLeads(ids: number[]): Promise<{ success: number; failed: number }> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -713,7 +719,8 @@ export const useLeadStore = defineStore('lead', {
      * Import lead da file CSV/XLSX
      */
     async importLeads(config: LeadImportConfig): Promise<LeadImportResult | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.importing = true
       this.error = null
 
@@ -832,7 +839,8 @@ export const useLeadStore = defineStore('lead', {
      * Crea nuova sorgente
      */
     async createSource(data: LeadSourceCreateForm): Promise<LeadSource | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -875,7 +883,8 @@ export const useLeadStore = defineStore('lead', {
      * Aggiorna sorgente
      */
     async updateSource(id: number, data: LeadSourceUpdateForm): Promise<LeadSource | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -923,7 +932,8 @@ export const useLeadStore = defineStore('lead', {
      * Rigenera API key per una sorgente
      */
     async regenerateApiKey(id: number): Promise<string | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -965,7 +975,8 @@ export const useLeadStore = defineStore('lead', {
      * Elimina sorgente
      */
     async deleteSource(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 

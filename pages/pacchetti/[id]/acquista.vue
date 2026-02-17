@@ -309,7 +309,7 @@ const processPayment = async () => {
                 </label>
                 <PrimeInputText
                   v-model="billingForm.pec_email"
-                  :placeholder="$t('packages.purchase.billing.pecEmailPlaceholder')"
+                  placeholder="azienda@pec.it"
                   class="w-full"
                   :invalid="!!errors.pec_email"
                 />

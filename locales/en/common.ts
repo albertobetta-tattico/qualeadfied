@@ -88,6 +88,7 @@ export default {
     shared: 'Shared',
     exclusivePlural: 'exclusive',
     sharedPlural: 'shared',
+    freeTrial: 'Free Trial',
   },
   time: {
     now: 'Now',

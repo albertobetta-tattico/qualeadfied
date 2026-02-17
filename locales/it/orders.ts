@@ -120,6 +120,17 @@ export default {
     cancelled: 'Annullato',
   },
 
+  // Alias for dashboard.vue compatibility (uses orders.statuses.*)
+  statuses: {
+    pending: 'In attesa',
+    paid: 'Pagato',
+    processing: 'In elaborazione',
+    completed: 'Completato',
+    failed: 'Fallito',
+    refunded: 'Rimborsato',
+    cancelled: 'Annullato',
+  },
+
   // Order types
   type: {
     all: 'Tutti i tipi',

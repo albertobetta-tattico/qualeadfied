@@ -272,7 +272,8 @@ export const useSettingsStore = defineStore('settings', {
      * Carica configurazione sistema
      */
     async fetchSystemConfig() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -298,7 +299,8 @@ export const useSettingsStore = defineStore('settings', {
      * Aggiorna configurazione sistema
      */
     async updateSystemConfig(config: SystemConfigForm): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -329,7 +331,8 @@ export const useSettingsStore = defineStore('settings', {
      * Aggiorna configurazione SMTP
      */
     async updateSmtpConfig(config: SmtpConfigForm): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -359,7 +362,8 @@ export const useSettingsStore = defineStore('settings', {
      * Testa configurazione email
      */
     async testEmailConfig(email: string): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -388,7 +392,8 @@ export const useSettingsStore = defineStore('settings', {
      * Carica configurazioni notifiche
      */
     async fetchNotificationConfigs() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -414,7 +419,8 @@ export const useSettingsStore = defineStore('settings', {
      * Aggiorna configurazione notifica categoria
      */
     async updateNotificationConfig(categoryId: number, config: Partial<CategoryNotificationConfig>): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -447,7 +453,8 @@ export const useSettingsStore = defineStore('settings', {
      * Carica lista operatori
      */
     async fetchOperators() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -473,7 +480,8 @@ export const useSettingsStore = defineStore('settings', {
      * Carica singolo operatore
      */
     async fetchOperator(id: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -499,7 +507,8 @@ export const useSettingsStore = defineStore('settings', {
      * Crea operatore
      */
     async createOperator(data: AdminOperatorCreateForm): Promise<AdminOperator | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -542,7 +551,8 @@ export const useSettingsStore = defineStore('settings', {
      * Aggiorna operatore
      */
     async updateOperator(id: number, data: AdminOperatorUpdateForm): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -590,7 +600,8 @@ export const useSettingsStore = defineStore('settings', {
      * Elimina operatore
      */
     async deleteOperator(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -622,7 +633,8 @@ export const useSettingsStore = defineStore('settings', {
      * Reset password operatore
      */
     async resetOperatorPassword(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -648,7 +660,8 @@ export const useSettingsStore = defineStore('settings', {
      * Carica log attività
      */
     async fetchActivityLogs() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 

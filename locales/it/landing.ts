@@ -17,10 +17,42 @@ export default {
   features: {
     title: 'Perch\u00e9 scegliere Qualeadfied',
     subtitle: 'La piattaforma B2B pensata per professionisti che vogliono risultati concreti',
+    items: {
+      verifiedLeads: {
+        title: 'Lead Verificati',
+        description: 'Ogni lead \u00e8 verificato e validato prima di essere messo in vendita. Contatti reali con richieste concrete.',
+      },
+      immediateDelivery: {
+        title: 'Consegna Immediata',
+        description: 'Ricevi i dati completi del cliente immediatamente dopo l\'acquisto. Nessuna attesa.',
+      },
+      guaranteedExclusivity: {
+        title: 'Esclusivit\u00e0 Garantita',
+        description: 'Scegli lead esclusivi per avere zero concorrenza, o condivisi per un prezzo pi\u00f9 accessibile.',
+      },
+      payPerUse: {
+        title: 'Paghi Solo Quello che Usi',
+        description: 'Nessun abbonamento obbligatorio. Acquista singoli lead o pacchetti in base alle tue esigenze.',
+      },
+    },
   },
   howItWorks: {
     title: 'Come Funziona',
     subtitle: 'Tre semplici passaggi per iniziare a ricevere lead qualificati',
+    steps: {
+      step1: {
+        title: 'Registrati Gratis',
+        description: 'Crea il tuo account in pochi minuti e ricevi 3 lead gratuiti per provare il servizio.',
+      },
+      step2: {
+        title: 'Scegli i Tuoi Lead',
+        description: 'Filtra per categoria e zona geografica. Scegli se acquistare in esclusiva o in condivisione.',
+      },
+      step3: {
+        title: 'Contatta e Converti',
+        description: 'Ricevi i dati completi e contatta subito il cliente. Trasforma i lead in contratti.',
+      },
+    },
   },
   categories: {
     title: 'Categorie Disponibili',

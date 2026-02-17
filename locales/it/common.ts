@@ -88,6 +88,7 @@ export default {
     shared: 'Condiviso',
     exclusivePlural: 'esclusivi',
     sharedPlural: 'condivisi',
+    freeTrial: 'Prova Gratuita',
   },
   time: {
     now: 'Adesso',

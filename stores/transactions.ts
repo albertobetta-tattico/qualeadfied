@@ -522,7 +522,8 @@ export const useTransactionStore = defineStore('transaction', {
      * Carica lista transazioni con filtri e paginazione
      */
     async fetchTransactions() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -649,7 +650,8 @@ export const useTransactionStore = defineStore('transaction', {
      * Carica singola transazione con dettagli completi
      */
     async fetchTransaction(id: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 

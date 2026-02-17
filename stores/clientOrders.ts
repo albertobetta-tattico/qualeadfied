@@ -237,7 +237,8 @@ export const useClientOrdersStore = defineStore('clientOrders', {
      * Fetch orders
      */
     async fetchOrders(): Promise<void> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -308,7 +309,8 @@ export const useClientOrdersStore = defineStore('clientOrders', {
      * Fetch order details
      */
     async fetchOrder(id: number): Promise<OrderDetail | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -352,7 +354,8 @@ export const useClientOrdersStore = defineStore('clientOrders', {
      * Download invoice
      */
     async downloadInvoice(orderId: number): Promise<string | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.error = null
 
       try {

@@ -364,7 +364,7 @@ const getAvailabilityBadge = (lead: any) => {
 
             <!-- CTA -->
             <div class="lead-cta">
-              <NuxtLink v-if="!isLoggedIn" to="/" class="w-full">
+              <NuxtLink v-if="!isLoggedIn" to="/login" class="w-full">
                 <PrimeButton
                   :label="$t('catalog.card.loginToPurchase')"
                   icon="pi pi-lock"

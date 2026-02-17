@@ -1,383 +1,728 @@
 <script setup lang="ts">
 /**
- * Login Page
- * Form di accesso per utenti registrati
+ * Homepage - Landing page pubblica
+ * Presentazione servizio e CTA per conversione
  */
-import { useLoginValidation, useAuthToast } from '~/composables/useAuth'
-import type { LoginForm } from '~/types/auth'
 
 definePageMeta({
   layout: 'public'
 })
 
 const { t } = useI18n()
-const router = useRouter()
-const route = useRoute()
-const authStore = useAuthStore()
-const { errors, hasErrors, validateForm, clearErrors } = useLoginValidation()
-const { showError, showSuccess } = useAuthToast()
 
-// Form data
-const form = reactive<LoginForm>({
-  email: '',
-  password: '',
-  remember: false
+// Store
+const catalogStore = usePublicCatalogStore()
+const homepageContent = computed(() => catalogStore.homepageContent)
+const loading = computed(() => catalogStore.loading)
+
+// Load homepage content
+onMounted(async () => {
+  await catalogStore.fetchHomepageContent()
 })
 
-// Loading state
-const loading = computed(() => authStore.loading)
-
-// Redirect URL after login
-const redirectUrl = computed(() => {
-  return (route.query.redirect as string) || '/dashboard'
-})
-
-// Handle form submit
-const handleSubmit = async () => {
-  clearErrors()
-
-  if (!validateForm(form)) {
-    return
-  }
-
-  const success = await authStore.login(form)
-
-  if (success) {
-    showSuccess(t('notifications.auth.loginSuccess'))
-    router.push(redirectUrl.value)
-  } else {
-    showError(authStore.error || t('notifications.auth.loginError'))
-  }
+// Format number with thousands separator
+const formatNumber = (num: number): string => {
+  return num.toLocaleString(useI18n().locale.value === 'it' ? 'it-IT' : 'en-US')
 }
 
-// Check if user is already logged in
-onMounted(async () => {
-  if (authStore.isLoggedIn) {
-    router.push(redirectUrl.value)
-  } else {
-    // Try to restore session
-    const restored = await authStore.checkSession()
-    if (restored) {
-      router.push(redirectUrl.value)
-    }
-  }
-})
+// Translated value propositions
+const valuePropositions = computed(() => [
+  {
+    icon: 'pi pi-verified',
+    title: t('landing.features.items.verifiedLeads.title'),
+    description: t('landing.features.items.verifiedLeads.description'),
+  },
+  {
+    icon: 'pi pi-bolt',
+    title: t('landing.features.items.immediateDelivery.title'),
+    description: t('landing.features.items.immediateDelivery.description'),
+  },
+  {
+    icon: 'pi pi-shield',
+    title: t('landing.features.items.guaranteedExclusivity.title'),
+    description: t('landing.features.items.guaranteedExclusivity.description'),
+  },
+  {
+    icon: 'pi pi-wallet',
+    title: t('landing.features.items.payPerUse.title'),
+    description: t('landing.features.items.payPerUse.description'),
+  },
+])
+
+// Translated how it works steps
+const howItWorksSteps = computed(() => [
+  {
+    step: 1,
+    title: t('landing.howItWorks.steps.step1.title'),
+    description: t('landing.howItWorks.steps.step1.description'),
+  },
+  {
+    step: 2,
+    title: t('landing.howItWorks.steps.step2.title'),
+    description: t('landing.howItWorks.steps.step2.description'),
+  },
+  {
+    step: 3,
+    title: t('landing.howItWorks.steps.step3.title'),
+    description: t('landing.howItWorks.steps.step3.description'),
+  },
+])
 </script>
 
 <template>
-  <div class="login-page">
-    <div class="login-container">
-      <!-- Left Side - Form -->
-      <div class="login-form-section">
-        <div class="login-form-wrapper">
-          <!-- Logo -->
-          <NuxtLink to="/landing" class="login-logo">
-            <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
-          </NuxtLink>
-
-          <h1 class="login-title">{{ $t('auth.login.title') }}</h1>
-          <p class="login-subtitle">{{ $t('auth.login.subtitle') }}</p>
-
-          <!-- Demo credentials hint -->
-          <div class="demo-hint">
-            <i class="pi pi-info-circle mr-2"></i>
-            <span v-html="$t('auth.login.demoHint')"></span>
-          </div>
-
-          <form @submit.prevent="handleSubmit" class="login-form">
-            <!-- Email -->
-            <div class="form-group">
-              <label for="email">{{ $t('common.labels.email') }}</label>
-              <PrimeInputText
-                id="email"
-                v-model="form.email"
-                type="email"
-                :placeholder="$t('auth.login.emailPlaceholder')"
-                :class="{ 'p-invalid': errors.email }"
-                class="w-full"
-                autocomplete="email"
+  <div class="homepage">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            {{ homepageContent?.hero.headline || $t('landing.hero.headline') }}
+          </h1>
+          <p class="hero-subtitle">
+            {{ homepageContent?.hero.subtitle || $t('landing.hero.subtitle') }}
+          </p>
+          <div class="hero-cta">
+            <NuxtLink to="/registrati">
+              <PrimeButton
+                :label="homepageContent?.hero.cta_text || $t('landing.hero.ctaText')"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                size="large"
+                class="hero-btn-primary"
               />
-              <small v-if="errors.email" class="p-error">{{ errors.email }}</small>
-            </div>
-
-            <!-- Password -->
-            <div class="form-group">
-              <div class="flex justify-between items-center mb-2">
-                <label for="password">{{ $t('common.labels.password') }}</label>
-                <NuxtLink to="/password-dimenticata" class="forgot-link">
-                  {{ $t('auth.login.forgotPassword') }}
-                </NuxtLink>
+            </NuxtLink>
+            <NuxtLink to="/catalogo">
+              <PrimeButton
+                :label="$t('landing.hero.exploreCatalog')"
+                severity="secondary"
+                outlined
+                size="large"
+              />
+            </NuxtLink>
+          </div>
+          <p class="hero-note">
+            <i class="pi pi-check-circle text-green-500 mr-2"></i>
+            {{ $t('landing.hero.freeTrialNote') }}
+          </p>
+        </div>
+        <div class="hero-image">
+          <div class="hero-illustration">
+            <div class="hero-card hero-card-1">
+              <i class="pi pi-user text-2xl text-primary-500"></i>
+              <div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.cards.newLead') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.cards.newLeadDetail') }}</div>
               </div>
-              <PrimePassword
-                id="password"
-                v-model="form.password"
-                :placeholder="$t('auth.login.passwordPlaceholder')"
-                :class="{ 'p-invalid': errors.password }"
-                class="w-full"
-                :feedback="false"
-                toggleMask
-                autocomplete="current-password"
-              />
-              <small v-if="errors.password" class="p-error">{{ errors.password }}</small>
             </div>
-
-            <!-- Remember me -->
-            <div class="form-group-checkbox">
-              <PrimeCheckbox
-                id="remember"
-                v-model="form.remember"
-                binary
-              />
-              <label for="remember" class="ml-2">{{ $t('auth.login.rememberMe') }}</label>
+            <div class="hero-card hero-card-2">
+              <i class="pi pi-check-circle text-2xl text-green-500"></i>
+              <div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.cards.verified') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.cards.verifiedDetail') }}</div>
+              </div>
             </div>
-
-            <!-- Submit Button -->
-            <PrimeButton
-              type="submit"
-              :label="$t('auth.login.submit')"
-              icon="pi pi-sign-in"
-              :loading="loading"
-              class="w-full login-btn"
-            />
-          </form>
-
-          <!-- Register link -->
-          <p class="register-link">
-            {{ $t('auth.login.noAccount') }}
-            <NuxtLink to="/registrati">{{ $t('auth.login.registerFree') }}</NuxtLink>
-          </p>
-        </div>
-      </div>
-
-      <!-- Right Side - Illustration -->
-      <div class="login-illustration-section">
-        <div class="illustration-content">
-          <h2 class="illustration-title">{{ $t('auth.login.illustrationTitle') }}</h2>
-          <p class="illustration-text">
-            {{ $t('auth.login.illustrationText') }}
-          </p>
-          <div class="illustration-features">
-            <div class="feature-item">
-              <i class="pi pi-check-circle"></i>
-              <span>{{ $t('auth.login.feature1') }}</span>
-            </div>
-            <div class="feature-item">
-              <i class="pi pi-check-circle"></i>
-              <span>{{ $t('auth.login.feature2') }}</span>
-            </div>
-            <div class="feature-item">
-              <i class="pi pi-check-circle"></i>
-              <span>{{ $t('auth.login.feature3') }}</span>
+            <div class="hero-card hero-card-3">
+              <i class="pi pi-euro text-2xl text-amber-500"></i>
+              <div>
+                <div class="text-sm font-semibold text-neutral-900">{{ $t('landing.hero.cards.exclusive') }}</div>
+                <div class="text-xs text-neutral-500">{{ $t('landing.hero.cards.exclusiveDetail') }}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Value Proposition Section -->
+    <section class="value-section">
+      <div class="section-container">
+        <h2 class="section-title">{{ $t('landing.features.title') }}</h2>
+        <p class="section-subtitle">
+          {{ $t('landing.features.subtitle') }}
+        </p>
+        <div class="value-grid">
+          <div
+            v-for="(item, index) in valuePropositions"
+            :key="index"
+            class="value-card"
+          >
+            <div class="value-icon">
+              <i :class="item.icon"></i>
+            </div>
+            <h3 class="value-title">{{ item.title }}</h3>
+            <p class="value-description">{{ item.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-section">
+      <div class="section-container">
+        <h2 class="section-title">{{ $t('landing.howItWorks.title') }}</h2>
+        <p class="section-subtitle">
+          {{ $t('landing.howItWorks.subtitle') }}
+        </p>
+        <div class="how-grid">
+          <div
+            v-for="(step, index) in howItWorksSteps"
+            :key="index"
+            class="how-step"
+          >
+            <div class="how-step-number">{{ step.step }}</div>
+            <h3 class="how-step-title">{{ step.title }}</h3>
+            <p class="how-step-description">{{ step.description }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Preview Section -->
+    <section class="categories-section">
+      <div class="section-container">
+        <h2 class="section-title">{{ $t('landing.categories.title') }}</h2>
+        <p class="section-subtitle">
+          {{ $t('landing.categories.subtitle') }}
+        </p>
+        <div class="categories-grid">
+          <NuxtLink
+            v-for="category in homepageContent?.featured_categories"
+            :key="category.id"
+            :to="`/catalogo?category=${category.id}`"
+            class="category-card"
+          >
+            <div class="category-icon">
+              <i class="pi pi-tag"></i>
+            </div>
+            <h3 class="category-name">{{ category.name }}</h3>
+            <p class="category-description">{{ category.description }}</p>
+            <span class="category-link">
+              {{ $t('landing.categories.explore') }} <i class="pi pi-arrow-right text-sm"></i>
+            </span>
+          </NuxtLink>
+        </div>
+        <div class="text-center mt-8">
+          <NuxtLink to="/catalogo">
+            <PrimeButton
+              :label="$t('landing.categories.viewAll')"
+              severity="secondary"
+              outlined
+            />
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="section-container">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">{{ formatNumber(homepageContent?.stats.total_leads_available || 0) }}+</div>
+            <div class="stat-label">{{ $t('landing.stats.leadsAvailable') }}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ homepageContent?.stats.categories_count || 0 }}</div>
+            <div class="stat-label">{{ $t('landing.stats.categories') }}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ homepageContent?.stats.provinces_covered || 0 }}</div>
+            <div class="stat-label">{{ $t('landing.stats.provincesCovered') }}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">{{ formatNumber(homepageContent?.stats.satisfied_clients || 0) }}+</div>
+            <div class="stat-label">{{ $t('landing.stats.satisfiedClients') }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="section-container">
+        <div class="cta-content">
+          <h2 class="cta-title">{{ $t('landing.cta.title') }}</h2>
+          <p class="cta-subtitle">
+            {{ $t('landing.cta.subtitle') }}
+          </p>
+          <div class="cta-buttons">
+            <NuxtLink to="/registrati">
+              <PrimeButton
+                :label="$t('landing.cta.registerFree')"
+                icon="pi pi-user-plus"
+                size="large"
+                class="cta-btn"
+              />
+            </NuxtLink>
+            <NuxtLink to="/catalogo">
+              <PrimeButton
+                :label="$t('landing.cta.exploreCatalog')"
+                severity="secondary"
+                size="large"
+                class="cta-btn-secondary"
+              />
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-.login-page {
-  min-height: 100vh;
-  background: #f8fafc;
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 5rem 1.5rem;
 }
 
-.login-container {
+.hero-container {
+  max-width: 1280px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: calc(100vh - 72px);
+  gap: 4rem;
+  align-items: center;
 }
 
 @media (max-width: 968px) {
-  .login-container {
+  .hero-container {
     grid-template-columns: 1fr;
+    text-align: center;
   }
 }
 
-/* Form Section */
-.login-form-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  background: white;
-}
-
-.login-form-wrapper {
-  width: 100%;
-  max-width: 400px;
-}
-
-.login-logo {
-  display: block;
-  text-decoration: none;
-  margin-bottom: 2.5rem;
-}
-
-.auth-logo-img {
-  height: 44px;
-  width: auto;
-}
-
-.login-title {
-  font-size: 1.75rem;
-  font-weight: 700;
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
   color: #0f172a;
-  margin-bottom: 0.5rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
 }
 
-.login-subtitle {
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
   color: #64748b;
-  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
 }
 
-.demo-hint {
-  background: #f5f5f5;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  color: #525252;
-  margin-bottom: 1.5rem;
+.hero-cta {
   display: flex;
-  align-items: center;
-}
-
-.login-form {
+  gap: 1rem;
   margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-group label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.forgot-link {
-  font-size: 0.875rem;
-  color: #2D2D2D;
-  text-decoration: none;
-}
-
-.forgot-link:hover {
-  text-decoration: underline;
-}
-
-.form-group-checkbox {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.form-group-checkbox label {
-  font-size: 0.875rem;
-  color: #64748b;
-  cursor: pointer;
-}
-
-.login-btn {
-  background: #2D2D2D !important;
-  border: none !important;
-  height: 48px;
-  font-size: 1rem;
-}
-
-.login-btn:hover {
-  background: #3D3D3D !important;
-}
-
-.p-error {
-  display: block;
-  font-size: 0.75rem;
-  color: #dc2626;
-  margin-top: 0.25rem;
-}
-
-.register-link {
-  text-align: center;
-  color: #64748b;
-  font-size: 0.875rem;
-}
-
-.register-link a {
-  color: #2D2D2D;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
-}
-
-/* Illustration Section */
-.login-illustration-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  background: #2D2D2D;
 }
 
 @media (max-width: 968px) {
-  .login-illustration-section {
+  .hero-cta {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+.hero-btn-primary {
+  background: linear-gradient(135deg, #EC4899, #DB2777) !important;
+  border: none !important;
+}
+
+.hero-note {
+  display: flex;
+  align-items: center;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 968px) {
+  .hero-note {
+    justify-content: center;
+  }
+}
+
+.hero-image {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 968px) {
+  .hero-image {
     display: none;
   }
 }
 
-.illustration-content {
-  max-width: 400px;
-  color: white;
+.hero-illustration {
+  position: relative;
+  width: 400px;
+  height: 350px;
 }
 
-.illustration-title {
-  font-size: 2rem;
+.hero-card {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.hero-card-1 {
+  top: 0;
+  left: 0;
+  animation: float 6s ease-in-out infinite;
+}
+
+.hero-card-2 {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  animation: float 6s ease-in-out infinite 1s;
+}
+
+.hero-card-3 {
+  bottom: 0;
+  left: 20%;
+  animation: float 6s ease-in-out infinite 2s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.hero-card-2 {
+  animation: float2 6s ease-in-out infinite 1s;
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(calc(-50% - 10px));
+  }
+}
+
+/* Section Common Styles */
+.section-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section-title {
+  font-size: 2.25rem;
   font-weight: 700;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-  color: white;
+  color: #0f172a;
+  text-align: center;
+  margin-bottom: 0.75rem;
 }
 
-.illustration-text {
+.section-subtitle {
   font-size: 1.125rem;
-  opacity: 0.9;
-  margin-bottom: 2rem;
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* Value Proposition Section */
+.value-section {
+  padding: 5rem 1.5rem;
+  background: white;
+}
+
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 968px) {
+  .value-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .value-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.value-card {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 16px;
+  transition: all 0.3s;
+}
+
+.value-card:hover {
+  background: #f8fafc;
+  transform: translateY(-4px);
+}
+
+.value-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(236, 72, 153, 0.05));
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.value-icon i {
+  font-size: 1.75rem;
+  color: #EC4899;
+}
+
+.value-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+}
+
+.value-description {
+  color: #64748b;
+  font-size: 0.9375rem;
   line-height: 1.6;
 }
 
-.illustration-features {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* How It Works Section */
+.how-section {
+  padding: 5rem 1.5rem;
+  background: #f8fafc;
 }
 
-.feature-item {
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+@media (max-width: 768px) {
+  .how-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.how-step {
+  text-align: center;
+  position: relative;
+}
+
+.how-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 40px;
+  right: -1.5rem;
+  width: 3rem;
+  height: 2px;
+  background: #cbd5e1;
+}
+
+@media (max-width: 768px) {
+  .how-step:not(:last-child)::after {
+    display: none;
+  }
+}
+
+.how-step-number {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: #2D2D2D;
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
 }
 
-.feature-item i {
+.how-step-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+}
+
+.how-step-description {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* Categories Section */
+.categories-section {
+  padding: 5rem 1.5rem;
+  background: white;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 968px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.category-card {
+  display: block;
+  padding: 2rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  text-decoration: none;
+  transition: all 0.3s;
+  border: 1px solid transparent;
+}
+
+.category-card:hover {
+  background: white;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+.category-icon {
+  width: 48px;
+  height: 48px;
+  background: #2D2D2D;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.category-icon i {
   color: white;
   font-size: 1.25rem;
 }
 
-.feature-item span {
+.category-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.category-description {
+  color: #64748b;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.category-link {
+  color: #EC4899;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Stats Section */
+.stats-section {
+  padding: 4rem 1.5rem;
+  background: #2D2D2D;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #93c5fd;
   font-size: 1rem;
-  opacity: 0.95;
+  font-weight: 500;
 }
 
-/* Password field fix */
-:deep(.p-password) {
-  width: 100%;
+/* CTA Section */
+.cta-section {
+  padding: 5rem 1.5rem;
+  background: #2D2D2D;
 }
 
-:deep(.p-password input) {
-  width: 100%;
+.cta-content {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.cta-subtitle {
+  font-size: 1.125rem;
+  color: #94a3b8;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cta-btn {
+  background: linear-gradient(135deg, #EC4899, #DB2777) !important;
+  border: none !important;
+}
+
+.cta-btn-secondary {
+  color: white !important;
+  border-color: #475569 !important;
+}
+
+.cta-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 </style>

@@ -92,7 +92,8 @@ export const useAuthStore = defineStore('auth', {
      * Register a new user
      */
     async register(form: RegisterForm): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -121,7 +122,8 @@ export const useAuthStore = defineStore('auth', {
      * Login user
      */
     async login(form: LoginForm): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -249,7 +251,8 @@ export const useAuthStore = defineStore('auth', {
      * Request password reset
      */
     async forgotPassword(form: ForgotPasswordForm): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -277,7 +280,8 @@ export const useAuthStore = defineStore('auth', {
      * Reset password with token
      */
     async resetPassword(form: ResetPasswordForm): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -305,7 +309,8 @@ export const useAuthStore = defineStore('auth', {
      * Verify email with token
      */
     async verifyEmail(token: string): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -330,7 +335,8 @@ export const useAuthStore = defineStore('auth', {
      * Resend verification email
      */
     async resendVerificationEmail(): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 

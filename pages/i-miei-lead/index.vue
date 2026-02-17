@@ -345,6 +345,15 @@ const viewLead = (lead: MyLead) => {
             </template>
           </PrimeColumn>
 
+          <!-- Region -->
+          <PrimeColumn field="lead.province.region" :header="t('leads.myLeads.table.region')" sortable style="min-width: 100px">
+            <template #body="{ data }">
+              <span class="text-surface-600 dark:text-surface-400">
+                {{ data.lead.province?.region }}
+              </span>
+            </template>
+          </PrimeColumn>
+
           <!-- Contact Status -->
           <PrimeColumn field="contact_status" :header="t('leads.myLeads.table.status')" sortable style="min-width: 130px">
             <template #body="{ data }">

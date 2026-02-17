@@ -592,7 +592,8 @@ export const useCatalogStore = defineStore('catalog', {
     // ============================================
 
     async fetchCategories() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -669,7 +670,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchAllCategories() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -692,7 +694,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchCategory(id: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -719,7 +722,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async createCategory(data: CategoryCreateForm): Promise<Category | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -764,7 +768,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async updateCategory(id: number, data: CategoryUpdateForm): Promise<Category | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -821,7 +826,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async deleteCategory(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -854,7 +860,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async toggleCategoryActive(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -946,7 +953,8 @@ export const useCatalogStore = defineStore('catalog', {
     // ============================================
 
     async fetchProvinces() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -1027,7 +1035,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchAllProvinces() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -1050,7 +1059,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async toggleProvinceActive(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -1134,7 +1144,8 @@ export const useCatalogStore = defineStore('catalog', {
     // ============================================
 
     async fetchPackages() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -1221,7 +1232,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchPackage(id: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -1255,7 +1267,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async createPackage(data: PackageCreateForm): Promise<Package | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -1304,7 +1317,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async updatePackage(id: number, data: PackageUpdateForm): Promise<Package | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -1365,7 +1379,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async deletePackage(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -1398,7 +1413,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async togglePackageActive(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -1491,7 +1507,8 @@ export const useCatalogStore = defineStore('catalog', {
     // ============================================
 
     async fetchCategoryPrices() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -1563,7 +1580,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchPriceForCategory(categoryId: number): Promise<CategoryPrice | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -1587,7 +1605,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async updateCategoryPrice(categoryId: number, data: CategoryPriceForm): Promise<CategoryPrice | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -1670,7 +1689,8 @@ export const useCatalogStore = defineStore('catalog', {
     },
 
     async fetchPriceHistory(categoryId?: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 

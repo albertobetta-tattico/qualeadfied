@@ -447,7 +447,8 @@ export const usePricingStore = defineStore('pricing', {
     // ============================================
 
     async fetchCategoryPrices() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -522,7 +523,8 @@ export const usePricingStore = defineStore('pricing', {
     },
 
     async updateCategoryPrice(categoryId: number, data: CategoryPriceForm): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -595,7 +597,8 @@ export const usePricingStore = defineStore('pricing', {
     // ============================================
 
     async fetchPriceHistory(categoryId?: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 

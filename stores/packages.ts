@@ -146,7 +146,8 @@ export const usePackagesStore = defineStore('packages', {
      * Fetch available packages
      */
     async fetchPackages(): Promise<void> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -170,7 +171,8 @@ export const usePackagesStore = defineStore('packages', {
      * Fetch active packages for current user
      */
     async fetchActivePackages(): Promise<void> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -198,7 +200,8 @@ export const usePackagesStore = defineStore('packages', {
      * Fetch package details
      */
     async fetchPackageDetails(packageId: number): Promise<ActivePackage | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -226,7 +229,8 @@ export const usePackagesStore = defineStore('packages', {
      * Purchase a package
      */
     async purchasePackage(packageId: number, paymentMethod: 'card' | 'sepa'): Promise<{ orderId: number } | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.purchasing = true
       this.error = null
 
@@ -288,7 +292,8 @@ export const usePackagesStore = defineStore('packages', {
       packageId: number,
       request: PackageSelectRequest
     ): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 

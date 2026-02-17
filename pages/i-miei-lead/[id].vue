@@ -119,6 +119,7 @@ const copyToClipboard = (text: string, label: string) => {
           <div class="flex flex-wrap items-center gap-2 mb-2">
             <PrimeTag :value="lead.lead.category?.name" severity="info" />
             <PrimeTag :value="lead.lead.province?.name" severity="secondary" />
+            <PrimeTag v-if="lead.lead.province?.region" :value="lead.lead.province.region" severity="warn" />
             <PrimeTag
               :value="formatAcquisitionType(lead.acquisition_type)"
               :severity="getAcquisitionTypeSeverity(lead.acquisition_type)"

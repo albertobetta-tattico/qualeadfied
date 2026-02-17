@@ -305,7 +305,8 @@ export const useClientStore = defineStore('client', {
      * Carica lista clienti con filtri e paginazione
      */
     async fetchClients() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -415,7 +416,8 @@ export const useClientStore = defineStore('client', {
      * Carica singolo cliente
      */
     async fetchClient(id: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -445,7 +447,8 @@ export const useClientStore = defineStore('client', {
      * Crea nuovo cliente
      */
     async createClient(data: ClientCreateForm): Promise<Client | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -504,7 +507,8 @@ export const useClientStore = defineStore('client', {
      * Aggiorna cliente
      */
     async updateClient(id: number, data: ClientUpdateForm): Promise<Client | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -564,7 +568,8 @@ export const useClientStore = defineStore('client', {
      * Elimina cliente
      */
     async deleteClient(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -602,7 +607,8 @@ export const useClientStore = defineStore('client', {
      * Sospendi cliente
      */
     async suspendClient(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -656,7 +662,8 @@ export const useClientStore = defineStore('client', {
      * Riattiva cliente
      */
     async activateClient(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
       
@@ -710,7 +717,8 @@ export const useClientStore = defineStore('client', {
      * Reset password cliente
      */
     async resetPassword(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
       
@@ -736,7 +744,8 @@ export const useClientStore = defineStore('client', {
      * Aggiorna configurazione prova gratuita
      */
     async updateFreeTrial(id: number, config: FreeTrialConfig): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
       

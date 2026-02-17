@@ -9,7 +9,9 @@ export default {
   empty: {
     title: 'Your cart is empty',
     subtitle: 'Start adding leads from the catalog',
+    subtitleCheckout: 'Add leads to the cart to proceed to checkout',
     cta: 'Go to Catalog',
+    browseCatalog: 'Browse Catalog',
   },
 
   // Cart group items
@@ -83,6 +85,7 @@ export default {
     errorRemoving: 'Error removing',
     errorClearing: 'Error emptying cart',
     errorAddingToCart: 'Error adding to cart',
+    checkoutSuccess: 'Order completed successfully!',
   },
 
   // Checkout page
@@ -93,6 +96,7 @@ export default {
 
     // Billing
     billingTitle: 'Billing Details',
+    billingData: 'Billing Details',
     companyName: 'Company Name',
     vatNumber: 'VAT Number',
     address: 'Address',
@@ -108,25 +112,35 @@ export default {
     sdiCodePlaceholder: 'ABC1234',
     pecEmail: 'PEC Email',
     pecEmailPlaceholder: 'company@pec.it',
+    pecPlaceholder: 'company@pec.it',
     sdiOrPecNote: '* Enter the SDI Code or PEC for electronic invoicing',
+    sdiPecHint: '* Enter the SDI Code or PEC for electronic invoicing',
 
     // Payment
     paymentTitle: 'Payment Method',
+    paymentMethod: 'Payment Method',
     cardOption: 'Credit/Debit Card',
+    creditCard: 'Credit/Debit Card',
     cardDescription: 'Visa, Mastercard, American Express',
+    cardBrands: 'Visa, Mastercard, American Express',
     sepaOption: 'SEPA Direct Debit',
+    sepa: 'SEPA Direct Debit',
     sepaDescription: 'Direct bank transfer',
     stripeSecure: 'Payments are securely processed by Stripe. We do not store your card details.',
+    stripeInfo: 'Payments are securely processed by Stripe. We do not store your card details.',
 
     // Summary
+    orderSummary: 'Order Summary',
     subtotal: 'Subtotal',
     leadItem: 'Lead #{id}',
     processing: 'Processing...',
     payButton: 'Pay {amount}',
+    pay: 'Pay {amount}',
     terms: 'By proceeding you accept the',
     termsOfService: 'Terms of Service',
     and: 'and the',
     privacyPolicy: 'Privacy Policy',
+    termsAgreement: 'By proceeding you accept the {terms} and the {privacy}',
 
     // Empty cart on checkout
     emptyTitle: 'Empty cart',
@@ -136,9 +150,13 @@ export default {
     // Toast
     orderCompleted: 'Order completed successfully!',
     errorPayment: 'Payment error',
+    paymentError: 'Payment error',
     errorCreatingPayment: 'Error creating payment',
+    paymentCreateError: 'Error creating payment',
     errorBillingUpdate: 'Error updating billing details',
+    billingUpdateError: 'Error updating billing details',
     errorFormValidation: 'Please correct the form errors',
+    fixErrors: 'Please correct the form errors',
   },
 
   // Purchase modes

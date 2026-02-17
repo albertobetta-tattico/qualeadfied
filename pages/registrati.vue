@@ -142,7 +142,7 @@ onMounted(async () => {
       <div class="register-form-section">
         <div class="register-form-wrapper">
           <!-- Logo -->
-          <NuxtLink to="/landing" class="register-logo">
+          <NuxtLink to="/" class="register-logo">
             <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
           </NuxtLink>
 
@@ -154,7 +154,7 @@ onMounted(async () => {
             <h2 class="complete-title">{{ $t('auth.register.checkEmail') }}</h2>
             <p class="complete-text" v-html="$t('auth.register.emailSentText', { email: form.email })"></p>
             <div class="complete-actions">
-              <NuxtLink to="/">
+              <NuxtLink to="/login">
                 <PrimeButton
                   :label="$t('auth.register.goToLogin')"
                   severity="primary"
@@ -192,7 +192,7 @@ onMounted(async () => {
                 <h3 class="step-title">{{ $t('auth.register.step1Title') }}</h3>
 
                 <div class="form-group">
-                  <label for="company_name">{{ $t('auth.register.companyName') }}</label>
+                  <label for="company_name">{{ $t('auth.register.companyName.label') }}</label>
                   <PrimeInputText
                     id="company_name"
                     v-model="form.company_name"
@@ -204,7 +204,7 @@ onMounted(async () => {
                 </div>
 
                 <div class="form-group">
-                  <label for="vat_number">{{ $t('auth.register.vatNumber') }}</label>
+                  <label for="vat_number">{{ $t('auth.register.vatNumber.label') }}</label>
                   <PrimeInputText
                     id="vat_number"
                     v-model="form.vat_number"
@@ -234,7 +234,7 @@ onMounted(async () => {
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="first_name">{{ $t('auth.register.firstName') }}</label>
+                    <label for="first_name">{{ $t('auth.register.firstName.label') }}</label>
                     <PrimeInputText
                       id="first_name"
                       v-model="form.first_name"
@@ -246,7 +246,7 @@ onMounted(async () => {
                   </div>
 
                   <div class="form-group">
-                    <label for="last_name">{{ $t('auth.register.lastName') }}</label>
+                    <label for="last_name">{{ $t('auth.register.lastName.label') }}</label>
                     <PrimeInputText
                       id="last_name"
                       v-model="form.last_name"
@@ -259,12 +259,12 @@ onMounted(async () => {
                 </div>
 
                 <div class="form-group">
-                  <label for="email">{{ $t('auth.register.email') }}</label>
+                  <label for="email">{{ $t('auth.register.email.label') }}</label>
                   <PrimeInputText
                     id="email"
                     v-model="form.email"
                     type="email"
-                    :placeholder="$t('auth.register.emailPlaceholder')"
+                    placeholder="mario.rossi@azienda.it"
                     :class="{ 'p-invalid': errors.email }"
                     class="w-full"
                   />
@@ -272,7 +272,7 @@ onMounted(async () => {
                 </div>
 
                 <div class="form-group">
-                  <label for="phone">{{ $t('auth.register.phone') }}</label>
+                  <label for="phone">{{ $t('auth.register.phone.label') }}</label>
                   <PrimeInputText
                     id="phone"
                     v-model="form.phone"
@@ -332,7 +332,7 @@ onMounted(async () => {
                 <h3 class="step-title">{{ $t('auth.register.step3Title') }}</h3>
 
                 <div class="form-group">
-                  <label for="password">{{ $t('auth.register.password') }}</label>
+                  <label for="password">{{ $t('auth.register.password.label') }}</label>
                   <PrimePassword
                     id="password"
                     v-model="form.password"
@@ -427,7 +427,7 @@ onMounted(async () => {
             <!-- Login link -->
             <p class="login-link">
               {{ $t('auth.register.hasAccount') }}
-              <NuxtLink to="/">{{ $t('auth.register.login') }}</NuxtLink>
+              <NuxtLink to="/login">{{ $t('auth.register.login') }}</NuxtLink>
             </p>
           </template>
         </div>

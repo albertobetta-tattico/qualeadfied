@@ -152,13 +152,13 @@ const processPayment = async () => {
               <div class="md:col-span-2 p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <p class="text-sm text-surface-500 mb-1">{{ $t('auth.register.companyName') }}</p>
+                    <p class="text-sm text-surface-500 mb-1">{{ $t('auth.register.companyName.label') }}</p>
                     <p class="font-medium text-surface-900 dark:text-surface-0">
                       {{ profileStore.profile?.company_name }}
                     </p>
                   </div>
                   <div>
-                    <p class="text-sm text-surface-500 mb-1">{{ $t('auth.register.vatNumber') }}</p>
+                    <p class="text-sm text-surface-500 mb-1">{{ $t('auth.register.vatNumber.label') }}</p>
                     <p class="font-medium text-surface-900 dark:text-surface-0">
                       {{ profileStore.profile?.vat_number }}
                     </p>
@@ -270,7 +270,7 @@ const processPayment = async () => {
                 </label>
                 <PrimeInputText
                   v-model="billingForm.pec_email"
-                  :placeholder="$t('cart.checkout.pecPlaceholder')"
+                  placeholder="azienda@pec.it"
                   class="w-full"
                   :invalid="!!errors.pec_email"
                 />

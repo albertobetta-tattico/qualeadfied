@@ -1,22 +1,21 @@
 export default {
   // Welcome section
-  welcome: 'Benvenuto, {name}!',
-  searchLead: 'Cerca Lead',
-  buyPackage: 'Acquista Pacchetto',
+  welcome: {
+    title: 'Benvenuto, {name}!',
+  },
 
   // Free trial banner
   trialBanner: {
     title: 'Prova Gratuita Attiva',
     subtitle: 'Hai ancora {count} lead gratuiti da riscattare',
-    cta: 'Riscatta Ora',
+    redeem: 'Riscatta Ora',
   },
 
   // KPI cards
   kpi: {
     leadsPurchased: 'Lead Acquistati',
-    leadsPurchasedThisMonth: '+{count} questo mese',
+    thisMonth: '+{count} questo mese',
     totalSpent: 'Spesa Totale',
-    totalSpentThisMonth: '+{amount} questo mese',
     activePackages: 'Pacchetti Attivi',
     managePackages: 'Gestisci pacchetti',
   },
@@ -26,15 +25,15 @@ export default {
     title: 'I Miei Lead Recenti',
     viewAll: 'Vedi tutti',
     empty: 'Nessun lead acquistato',
-    searchCta: 'Cerca Lead',
-
-    // Table headers
-    table: {
-      name: 'Nome',
-      category: 'Categoria',
-      province: 'Provincia',
-      status: 'Stato',
-    },
+    columnName: 'Nome',
+    columnCategory: 'Categoria',
+    columnProvince: 'Provincia',
+    columnStatus: 'Stato',
+    statusNew: 'Nuovo',
+    statusContacted: 'Contattato',
+    statusInProgress: 'In corso',
+    statusNotInterested: 'Non interessato',
+    statusConverted: 'Convertito',
   },
 
   // Recent orders table
@@ -42,22 +41,18 @@ export default {
     title: 'Ordini Recenti',
     viewAll: 'Vedi tutti',
     empty: 'Nessun ordine effettuato',
-    buyCta: 'Acquista Lead',
-
-    // Table headers
-    table: {
-      order: 'Ordine',
-      leads: 'Lead',
-      amount: 'Importo',
-      status: 'Stato',
-      date: 'Data',
-    },
+    columnOrder: 'Ordine',
+    columnLead: 'Lead',
+    columnAmount: 'Importo',
+    columnStatus: 'Stato',
+    columnDate: 'Data',
   },
 
   // Quick actions
   quickActions: {
     title: 'Azioni Rapide',
     searchLeads: 'Cerca nuovi lead',
+    buyLeads: 'Acquista lead',
     myLeads: 'I miei lead',
     myOrders: 'I miei ordini',
     buyPackage: 'Acquista pacchetto',
@@ -67,45 +62,18 @@ export default {
   accountStatus: {
     title: 'Stato Account',
     billingData: 'Dati fatturazione',
-    billingComplete: 'Completi',
-    billingIncomplete: 'Da completare',
+    complete: 'Completi',
+    incomplete: 'Da completare',
     freeTrial: 'Prova gratuita',
-    freeTrialLeads: '{count} lead',
-    freeTrialExhausted: 'Esaurita',
+    exhausted: 'Esaurita',
     emailNotifications: 'Notifiche email',
-    notificationsActive: 'Attive',
-    notificationsInactive: 'Disattive',
+    active: 'Attive',
+    inactive: 'Disattive',
   },
 
   // Notifications
   notifications: {
     title: 'Notifiche',
     empty: 'Nessuna notifica',
-  },
-
-  // Contact statuses (used in dashboard)
-  contactStatus: {
-    new: 'Nuovo',
-    contacted: 'Contattato',
-    inProgress: 'In corso',
-    notInterested: 'Non interessato',
-    converted: 'Convertito',
-  },
-
-  // Acquisition types (used in dashboard)
-  acquisitionType: {
-    exclusive: 'Esclusivo',
-    shared: 'Condiviso',
-    freeTrial: 'Prova gratuita',
-  },
-
-  // Order statuses (used in dashboard)
-  orderStatus: {
-    pending: 'In attesa',
-    paid: 'Pagato',
-    processing: 'In elaborazione',
-    completed: 'Completato',
-    failed: 'Fallito',
-    refunded: 'Rimborsato',
   },
 }

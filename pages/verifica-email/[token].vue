@@ -45,12 +45,12 @@ onMounted(async () => {
 
 // Navigate to login
 const goToLogin = () => {
-  router.push('/')
+  router.push('/login')
 }
 
 // Navigate to resend
 const goToResend = () => {
-  router.push('/?resend=true')
+  router.push('/login?resend=true')
 }
 </script>
 
@@ -59,7 +59,7 @@ const goToResend = () => {
     <div class="verify-container">
       <div class="verify-card">
         <!-- Logo -->
-        <NuxtLink to="/landing" class="verify-logo">
+        <NuxtLink to="/" class="verify-logo">
           <img src="/logo.png" alt="Qualeadfied" class="auth-logo-img" />
         </NuxtLink>
 
@@ -125,7 +125,7 @@ const goToResend = () => {
               class="w-full"
               @click="goToResend"
             />
-            <NuxtLink to="/" class="w-full">
+            <NuxtLink to="/login" class="w-full">
               <PrimeButton
                 label="Vai al Login"
                 severity="primary"

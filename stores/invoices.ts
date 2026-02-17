@@ -382,7 +382,8 @@ export const useInvoiceStore = defineStore('invoice', {
      * Carica lista fatture con filtri e paginazione
      */
     async fetchInvoices() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -509,7 +510,8 @@ export const useInvoiceStore = defineStore('invoice', {
      * Carica singola fattura con dettagli
      */
     async fetchInvoice(id: number) {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -546,7 +548,8 @@ export const useInvoiceStore = defineStore('invoice', {
      * Reinvia fattura a SDI
      */
     async resendToSdi(id: number): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -609,7 +612,8 @@ export const useInvoiceStore = defineStore('invoice', {
      * Scarica PDF fattura
      */
     async downloadPdf(id: number): Promise<string | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -636,7 +640,8 @@ export const useInvoiceStore = defineStore('invoice', {
      * Invia fattura via email al cliente
      */
     async sendByEmail(id: number, email?: string): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -665,7 +670,8 @@ export const useInvoiceStore = defineStore('invoice', {
      * Crea nota di credito
      */
     async createCreditNote(invoiceId: number, reason?: string): Promise<Invoice | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 

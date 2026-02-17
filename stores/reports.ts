@@ -204,7 +204,8 @@ export const useReportStore = defineStore('report', {
      * Carica dati dashboard completi
      */
     async fetchDashboard() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -230,7 +231,8 @@ export const useReportStore = defineStore('report', {
      * Carica statistiche vendite
      */
     async fetchSalesStats() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -271,7 +273,8 @@ export const useReportStore = defineStore('report', {
      * Carica performance categorie
      */
     async fetchCategoryPerformance() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -300,7 +303,8 @@ export const useReportStore = defineStore('report', {
      * Carica statistiche geografiche
      */
     async fetchGeographicStats() {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -331,7 +335,8 @@ export const useReportStore = defineStore('report', {
      * Avvia export dati
      */
     async startExport(request: ExportRequest): Promise<ExportStatus | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.exporting = true
       this.error = null
 

@@ -196,7 +196,8 @@ export const useMyLeadsStore = defineStore('myLeads', {
      * Fetch user's leads
      */
     async fetchLeads(): Promise<void> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -283,7 +284,8 @@ export const useMyLeadsStore = defineStore('myLeads', {
      * Fetch single lead details
      */
     async fetchLead(id: number): Promise<MyLead | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
@@ -319,7 +321,8 @@ export const useMyLeadsStore = defineStore('myLeads', {
      * Update lead status/notes
      */
     async updateLead(id: number, data: MyLeadUpdateRequest): Promise<boolean> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.saving = true
       this.error = null
 
@@ -378,7 +381,8 @@ export const useMyLeadsStore = defineStore('myLeads', {
      * Export leads to CSV/Excel
      */
     async exportLeads(format: 'csv' | 'excel'): Promise<string | null> {
-      const { t } = useI18n()
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
       this.loading = true
       this.error = null
 
