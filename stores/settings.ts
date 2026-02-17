@@ -15,7 +15,10 @@ import type {
   AdminOperatorUpdateForm,
   AdminRole,
   ActivityLog,
-  ActivityLogFilters
+  ActivityLogFilters,
+  FattureCloudConfig,
+  FattureCloudConfigForm,
+  FattureCloudTestResult
 } from '~/types/settings'
 
 interface PaginationMeta {
@@ -37,6 +40,9 @@ interface SettingsState {
   activityLogs: ActivityLog[]
   logsPagination: PaginationMeta
   logsFilters: ActivityLogFilters
+  // Fatture in Cloud
+  fattureCloudConfig: FattureCloudConfig | null
+  testingConnection: boolean
   // Stati
   loading: boolean
   saving: boolean
@@ -223,6 +229,17 @@ const mockActivityLogs: ActivityLog[] = [
   }
 ]
 
+const mockFattureCloudConfig: FattureCloudConfig = {
+  enabled: false,
+  access_token: '',
+  company_id: null,
+  company_name: '',
+  auto_send_sdi: false,
+  default_payment_method: 'bonifico',
+  connected_at: null,
+  last_sync_at: null
+}
+
 // Flag per usare mock data
 const USE_MOCK_DATA = true
 
@@ -246,6 +263,8 @@ export const useSettingsStore = defineStore('settings', {
       page: 1,
       per_page: 20
     },
+    fattureCloudConfig: null,
+    testingConnection: false,
     loading: false,
     saving: false,
     error: null
@@ -264,7 +283,14 @@ export const useSettingsStore = defineStore('settings', {
       state.notificationConfigs.filter(nc => nc.enabled),
 
     recentLogs: (state): ActivityLog[] =>
-      state.activityLogs.slice(0, 10)
+      state.activityLogs.slice(0, 10),
+
+    hasFattureCloudConfig: (state): boolean => state.fattureCloudConfig !== null,
+
+    isFattureCloudConnected: (state): boolean =>
+      state.fattureCloudConfig !== null &&
+      state.fattureCloudConfig.enabled &&
+      state.fattureCloudConfig.connected_at !== null
   },
 
   actions: {
@@ -759,6 +785,115 @@ export const useSettingsStore = defineStore('settings', {
     },
 
     /**
+     * Carica configurazione Fatture in Cloud
+     */
+    async fetchFattureCloudConfig() {
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
+      this.loading = true
+      this.error = null
+
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 300))
+          this.fattureCloudConfig = { ...mockFattureCloudConfig }
+          return
+        }
+
+        const { api } = useApi()
+        const response = await api<{ data: FattureCloudConfig }>('/admin/settings/fatture-cloud')
+        this.fattureCloudConfig = response.data
+      } catch (error: any) {
+        this.error = error.message || t('common.errors.loadError')
+        console.error('fetchFattureCloudConfig error:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    /**
+     * Aggiorna configurazione Fatture in Cloud
+     */
+    async updateFattureCloudConfig(config: FattureCloudConfigForm): Promise<boolean> {
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
+      this.saving = true
+      this.error = null
+
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+          this.fattureCloudConfig = {
+            ...this.fattureCloudConfig,
+            ...config,
+            company_name: this.fattureCloudConfig?.company_name || '',
+            connected_at: this.fattureCloudConfig?.connected_at || null,
+            last_sync_at: this.fattureCloudConfig?.last_sync_at || null
+          } as FattureCloudConfig
+          return true
+        }
+
+        const { api } = useApi()
+        const response = await api<{ data: FattureCloudConfig }>('/admin/settings/fatture-cloud', {
+          method: 'PUT',
+          body: config
+        })
+        this.fattureCloudConfig = response.data
+        return true
+      } catch (error: any) {
+        this.error = error.message || t('common.errors.updateError')
+        console.error('updateFattureCloudConfig error:', error)
+        return false
+      } finally {
+        this.saving = false
+      }
+    },
+
+    /**
+     * Testa connessione Fatture in Cloud
+     */
+    async testFattureCloudConnection(): Promise<FattureCloudTestResult> {
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
+      this.testingConnection = true
+      this.error = null
+
+      try {
+        if (USE_MOCK_DATA) {
+          await new Promise(resolve => setTimeout(resolve, 1500))
+          const result: FattureCloudTestResult = {
+            success: true,
+            company_name: 'Qualeadfied Srl',
+            company_id: 12345
+          }
+          if (this.fattureCloudConfig) {
+            this.fattureCloudConfig.company_name = result.company_name!
+            this.fattureCloudConfig.company_id = result.company_id!
+            this.fattureCloudConfig.connected_at = new Date().toISOString()
+          }
+          return result
+        }
+
+        const { api } = useApi()
+        const response = await api<{ data: FattureCloudTestResult }>('/admin/settings/fatture-cloud/test', {
+          method: 'POST'
+        })
+        if (response.data.success && this.fattureCloudConfig) {
+          this.fattureCloudConfig.company_name = response.data.company_name || ''
+          this.fattureCloudConfig.company_id = response.data.company_id || null
+          this.fattureCloudConfig.connected_at = new Date().toISOString()
+        }
+        return response.data
+      } catch (error: any) {
+        this.error = error.message || t('common.errors.genericError')
+        console.error('testFattureCloudConnection error:', error)
+        return { success: false, error: error.message }
+      } finally {
+        this.testingConnection = false
+      }
+    },
+
+    /**
      * Pulisci stato
      */
     clearState() {
@@ -767,6 +902,8 @@ export const useSettingsStore = defineStore('settings', {
       this.operators = []
       this.currentOperator = null
       this.activityLogs = []
+      this.fattureCloudConfig = null
+      this.testingConnection = false
       this.error = null
     }
   }

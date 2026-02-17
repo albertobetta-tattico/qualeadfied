@@ -447,6 +447,10 @@ export default {
         generatedAt: 'Data Generazione',
       },
 
+      customFields: {
+        title: 'Campi Aggiuntivi',
+      },
+
       salesHistory: {
         empty: 'Nessuna vendita registrata',
         headers: {
@@ -479,6 +483,7 @@ export default {
         classification: 'Classificazione',
         contactData: 'Dati Contatto',
         requestDetails: 'Dettagli Richiesta',
+        customFields: 'Campi Aggiuntivi',
       },
 
       form: {
@@ -501,6 +506,7 @@ export default {
         externalId: 'ID Esterno',
         externalIdPlaceholder: 'Riferimento dal sistema esterno',
         externalIdHint: 'Identificativo nel sistema di origine (opzionale)',
+        customFieldsHint: 'Questi campi sono definiti nella categoria selezionata. Sono tutti opzionali.',
       },
 
       buttons: {
@@ -648,6 +654,14 @@ export default {
         isActive: 'Categoria Attiva',
         isActiveHint: 'Le categorie attive sono visibili nel catalogo e possono ricevere nuovi lead',
         createButton: 'Crea Categoria',
+        customFieldsTitle: 'Campi Personalizzati',
+        customFieldsHint: 'Definisci campi di testo aggiuntivi che appariranno nei form di raccolta lead e nella scheda lead. Tutti i campi sono opzionali.',
+        fieldLabel: 'Etichetta campo',
+        fieldLabelPlaceholder: 'es. Superficie (mq)',
+        fieldKey: 'Chiave tecnica',
+        fieldKeyHint: 'Generata automaticamente dall\'etichetta',
+        noCustomFields: 'Nessun campo personalizzato definito. Clicca il pulsante sotto per aggiungerne uno.',
+        addCustomField: 'Aggiungi campo',
       },
       info: {
         title: 'Come funzionano le categorie',
@@ -804,6 +818,93 @@ export default {
         copyNumber: 'Copia numero',
         viewDetails: 'Visualizza dettagli',
         moreActions: 'Altre azioni',
+      },
+    },
+
+    // Detail ([id].vue)
+    detail: {
+      loading: 'Caricamento ordine...',
+      notFound: 'Ordine non trovato',
+      notFoundDescription: 'L\'ordine richiesto non esiste o è stato rimosso.',
+      backToList: 'Torna agli ordini',
+      copyOrderNumber: 'Copia numero ordine',
+      viewOnStripe: 'Vedi su Stripe',
+      goToClient: 'Vai al Cliente',
+      goToClientProfile: 'Vai al profilo cliente',
+
+      cards: {
+        orderTotal: 'Totale Ordine',
+        includedLeads: 'Lead Inclusi',
+        payment: 'Pagamento',
+        invoice: 'Fattura',
+      },
+
+      tabs: {
+        orderDetails: 'Dettagli Ordine',
+        client: 'Cliente',
+        payment: 'Pagamento',
+        timeline: 'Timeline',
+      },
+
+      columns: {
+        type: 'Tipo',
+        description: 'Descrizione',
+        mode: 'Modalità',
+        qty: 'Qtà',
+        unitPrice: 'Prezzo Unit.',
+        total: 'Totale',
+        package: 'Pacchetto',
+      },
+
+      orderLines: 'righe ordine',
+      leadsIncluded: 'lead inclusi',
+      noOrderLines: 'Nessuna riga ordine',
+      subtotal: 'Subtotale',
+      vat: 'IVA',
+      paidOn: 'Pagato il',
+
+      // Client tab
+      clientData: 'Dati Cliente',
+      clientDataNotAvailable: 'Dati cliente non disponibili',
+      contactPerson: 'Referente',
+      companyName: 'Ragione Sociale',
+      vatNumber: 'Partita IVA',
+      address: 'Indirizzo',
+      sdiCode: 'Codice SDI',
+      billingData: 'Dati di Fatturazione',
+      billingDataNotAvailable: 'Dati di fatturazione non disponibili',
+
+      // Payment/Invoice tab
+      transaction: 'Transazione',
+      amount: 'Importo',
+      processingDate: 'Data Elaborazione',
+      creditCard: 'Carta di Credito',
+      noTransaction: 'Nessuna transazione registrata',
+      freeTrialOrder: 'Ordine prova gratuita',
+      paymentNotProcessed: 'Pagamento non ancora elaborato',
+      openOnStripe: 'Apri su Stripe',
+
+      invoiceIssued: 'Fattura Emessa',
+      invoiceNotIssued: 'Non emessa',
+      invoiceNotYetIssued: 'Fattura non ancora emessa',
+      invoiceWillBeIssued: 'La fattura verrà emessa dopo il pagamento',
+      issueDate: 'Data Emissione',
+      sdiStatus: 'Stato SDI',
+      fattureCloudId: 'ID Fatture in Cloud',
+      downloadPdf: 'Scarica PDF',
+
+      // Timeline tab
+      timeline: {
+        orderCreated: 'Ordine Creato',
+        paymentCompleted: 'Pagamento Completato',
+        invoiceIssued: 'Fattura Emessa',
+        leadsUnlocked: 'Lead Sbloccati',
+        paymentFailed: 'Pagamento Fallito',
+        orderCancelled: 'Ordine Annullato',
+        awaitingPayment: 'In Attesa di Pagamento',
+        awaitingPaymentDescription: 'Il pagamento non è ancora stato completato',
+        leadsAvailableInPortfolio: 'lead disponibili nel portafoglio',
+        orderLabel: 'Ordine',
       },
     },
   },
@@ -1074,6 +1175,12 @@ export default {
       apply: 'Applica',
     },
 
+    filters: {
+      client: 'Cliente:',
+      allClients: 'Tutti i clienti',
+      searchClient: 'Cerca cliente...',
+    },
+
     refresh: 'Aggiorna dati',
     exportData: 'Export Dati',
 
@@ -1260,6 +1367,7 @@ export default {
       emailNotifications: 'Notifiche Email',
       adminOperators: 'Operatori Admin',
       activityLog: 'Log Attivit\u00e0',
+      fattureCloud: 'Fatture in Cloud',
     },
 
     systemConfig: {
@@ -1372,6 +1480,53 @@ export default {
       testEmailError: 'Errore nell\'invio',
       formError: 'Correggi gli errori nel form',
       emailRequired: 'Inserisci un indirizzo email',
+    },
+
+    fattureCloud: {
+      integrationTitle: 'Integrazione Fatture in Cloud',
+      integrationDescription: 'Abilita l\'integrazione con Fatture in Cloud per la gestione automatica delle fatture elettroniche.',
+
+      credentials: 'Credenziali API',
+      accessToken: 'Access Token',
+      accessTokenPlaceholder: 'Inserisci l\'access token di Fatture in Cloud',
+      accessTokenHint: 'Token di autenticazione permanente generato dal pannello Fatture in Cloud',
+      companyId: 'Company ID',
+      companyIdPlaceholder: 'es. 12345',
+      companyIdHint: 'ID numerico dell\'azienda su Fatture in Cloud',
+
+      testConnection: 'Testa Connessione',
+      connectionInfo: 'Connessione Attiva',
+      companyName: 'Azienda',
+      connectedAt: 'Connesso il',
+      lastSync: 'Ultima Sincronizzazione',
+
+      options: 'Opzioni Fatturazione',
+      defaultPaymentMethod: 'Metodo di Pagamento Predefinito',
+      defaultPaymentMethodHint: 'Metodo di pagamento usato nelle fatture generate automaticamente',
+      autoSendSdi: 'Invio Automatico a SDI',
+      autoSendSdiHint: 'Invia automaticamente le fatture al Sistema di Interscambio dopo la creazione',
+
+      paymentMethods: {
+        bonifico: 'Bonifico Bancario',
+        carta: 'Carta di Credito',
+        riba: 'Ri.Ba.',
+        contanti: 'Contanti',
+        altro: 'Altro',
+      },
+
+      saveConfig: 'Salva Configurazione',
+
+      validation: {
+        tokenRequired: 'L\'access token è obbligatorio quando l\'integrazione è abilitata',
+        companyIdRequired: 'Il Company ID è obbligatorio quando l\'integrazione è abilitata',
+      },
+
+      toast: {
+        configSaved: 'Configurazione Fatture in Cloud salvata con successo',
+        configError: 'Errore nel salvataggio della configurazione',
+        connectionSuccess: 'Connessione riuscita! Azienda: {name}',
+        connectionError: 'Connessione fallita. Verifica le credenziali.',
+      },
     },
 
     // Sources (settings/sources.vue)

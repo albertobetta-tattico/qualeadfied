@@ -4,7 +4,7 @@
  * Form per la modifica di una categoria merceologica esistente
  */
 import { useCategoryValidation, useCatalogActions, useCatalogFormatters } from '~/composables/useCatalog'
-import type { CategoryUpdateForm } from '~/types/catalog'
+import type { CategoryUpdateForm, CustomFieldDefinition } from '~/types/catalog'
 
 definePageMeta({
   layout: 'admin'
@@ -33,7 +33,8 @@ const form = reactive<CategoryUpdateForm>({
   description: '',
   max_shares: 3,
   is_active: true,
-  sort_order: 0
+  sort_order: 0,
+  custom_fields: []
 })
 
 // Loading state
@@ -51,6 +52,7 @@ watch(category, (newCategory) => {
     form.max_shares = newCategory.max_shares
     form.is_active = newCategory.is_active
     form.sort_order = newCategory.sort_order
+    form.custom_fields = newCategory.custom_fields ? newCategory.custom_fields.map(f => ({ ...f })) : []
   }
 }, { immediate: true })
 
@@ -64,6 +66,22 @@ const regenerateSlug = () => {
   if (form.name) {
     form.slug = generateSlug(form.name)
     showWarning(t('admin.catalog.categories.toast.slugRegenerated'))
+  }
+}
+
+// Custom fields management
+const addCustomField = () => {
+  form.custom_fields.push({ key: '', label: '' })
+}
+
+const removeCustomField = (index: number) => {
+  form.custom_fields.splice(index, 1)
+}
+
+const updateFieldKey = (index: number) => {
+  const label = form.custom_fields[index].label
+  if (label) {
+    form.custom_fields[index].key = generateSlug(label).replace(/-/g, '_')
   }
 }
 
@@ -285,6 +303,74 @@ onMounted(async () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Custom Fields Card -->
+        <div class="q-card">
+          <div class="q-card-header">
+            <h3 class="card-title">
+              <i class="pi pi-list mr-2 text-primary-500"></i>
+              {{ $t('admin.catalog.categories.form.customFieldsTitle') }}
+            </h3>
+          </div>
+          <div class="q-card-body">
+            <p class="text-sm text-neutral-600 mb-4">
+              {{ $t('admin.catalog.categories.form.customFieldsHint') }}
+            </p>
+
+            <!-- Field list -->
+            <div
+              v-for="(field, index) in form.custom_fields"
+              :key="index"
+              class="flex items-end gap-4 mb-4"
+            >
+              <div class="form-group flex-1">
+                <label>{{ $t('admin.catalog.categories.form.fieldLabel') }}</label>
+                <PrimeInputText
+                  v-model="field.label"
+                  :placeholder="$t('admin.catalog.categories.form.fieldLabelPlaceholder')"
+                  class="w-full"
+                  @blur="updateFieldKey(index)"
+                />
+              </div>
+              <div class="form-group flex-1">
+                <label>{{ $t('admin.catalog.categories.form.fieldKey') }}</label>
+                <PrimeInputText
+                  v-model="field.key"
+                  class="w-full"
+                  disabled
+                />
+                <small class="form-hint">{{ $t('admin.catalog.categories.form.fieldKeyHint') }}</small>
+              </div>
+              <PrimeButton
+                icon="pi pi-trash"
+                severity="danger"
+                text
+                rounded
+                @click="removeCustomField(index)"
+              />
+            </div>
+
+            <!-- Empty state -->
+            <div
+              v-if="form.custom_fields.length === 0"
+              class="text-center py-6 bg-neutral-50 rounded-lg mb-4"
+            >
+              <i class="pi pi-inbox text-2xl text-neutral-400 mb-2 block"></i>
+              <p class="text-sm text-neutral-500">
+                {{ $t('admin.catalog.categories.form.noCustomFields') }}
+              </p>
+            </div>
+
+            <!-- Add button -->
+            <PrimeButton
+              :label="$t('admin.catalog.categories.form.addCustomField')"
+              icon="pi pi-plus"
+              severity="secondary"
+              outlined
+              @click="addCustomField"
+            />
           </div>
         </div>
 

@@ -158,7 +158,8 @@ export const useReportStore = defineStore('report', {
       date_from: undefined,
       date_to: undefined,
       category_id: null,
-      province_code: undefined
+      province_code: undefined,
+      client_id: null
     },
     exports: [],
     currentExport: null,
@@ -187,6 +188,7 @@ export const useReportStore = defineStore('report', {
         state.filters.period !== 'month' ||
         state.filters.category_id ||
         state.filters.province_code ||
+        state.filters.client_id ||
         state.filters.date_from ||
         state.filters.date_to
       )
@@ -420,7 +422,8 @@ export const useReportStore = defineStore('report', {
         date_from: undefined,
         date_to: undefined,
         category_id: null,
-        province_code: undefined
+        province_code: undefined,
+        client_id: null
       }
     },
 
@@ -435,6 +438,7 @@ export const useReportStore = defineStore('report', {
       if (this.filters.date_to) params.append('date_to', this.filters.date_to)
       if (this.filters.category_id) params.append('category_id', String(this.filters.category_id))
       if (this.filters.province_code) params.append('province_code', this.filters.province_code)
+      if (this.filters.client_id) params.append('client_id', String(this.filters.client_id))
 
       return params
     },

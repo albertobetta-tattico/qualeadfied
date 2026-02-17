@@ -4,6 +4,15 @@
  */
 
 // ============================================
+// CUSTOM FIELDS
+// ============================================
+
+export interface CustomFieldDefinition {
+  key: string    // chiave tecnica, es. "superficie_tetto" (usata in Lead.extra_tags)
+  label: string  // etichetta visibile, es. "Superficie tetto (mq)"
+}
+
+// ============================================
 // CATEGORIES
 // ============================================
 
@@ -17,6 +26,7 @@ export interface Category {
   sort_order: number
   leads_count?: number
   available_leads_count?: number
+  custom_fields?: CustomFieldDefinition[]
   created_at: string
   updated_at: string
   deleted_at: string | null
@@ -29,6 +39,7 @@ export interface CategoryCreateForm {
   max_shares: number
   is_active: boolean
   sort_order: number
+  custom_fields: CustomFieldDefinition[]
 }
 
 export interface CategoryUpdateForm {
@@ -38,6 +49,7 @@ export interface CategoryUpdateForm {
   max_shares: number
   is_active: boolean
   sort_order: number
+  custom_fields: CustomFieldDefinition[]
 }
 
 export interface CategoryFilters {

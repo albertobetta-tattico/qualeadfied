@@ -15,6 +15,7 @@ const { t } = useI18n()
 
 // Store & Composables
 const reportStore = useReportStore()
+const clientStore = useClientStore()
 const {
   formatPeriod,
   formatExportType,
@@ -40,9 +41,21 @@ const selectedExportFormat = ref<ExportFormat>('xlsx')
 
 // Filtri
 const periodFilter = ref<ReportPeriod>('month')
+const clientFilter = ref<number | null>(null)
 const showCustomDates = ref(false)
 const dateFrom = ref<Date | null>(null)
 const dateTo = ref<Date | null>(null)
+
+// Client options per dropdown
+const clientOptions = computed(() => {
+  return [
+    { label: t('admin.reports.filters.allClients'), value: null },
+    ...clientStore.clients.map(c => ({
+      label: c.company_name,
+      value: c.id
+    }))
+  ]
+})
 
 // Helper per formattare date per API
 const formatDateForApi = (date: Date | null): string | undefined => {
@@ -164,6 +177,11 @@ const onPeriodChange = () => {
   }
 }
 
+const onClientChange = () => {
+  reportStore.setFilters({ client_id: clientFilter.value })
+  loadAllData()
+}
+
 const applyCustomDates = () => {
   if (dateFrom.value && dateTo.value) {
     reportStore.setFilters({
@@ -190,7 +208,8 @@ const handleExport = async () => {
     format: selectedExportFormat.value,
     filters: {
       date_from: formatDateForApi(dateFrom.value),
-      date_to: formatDateForApi(dateTo.value)
+      date_to: formatDateForApi(dateTo.value),
+      client_id: clientFilter.value || undefined
     }
   })
 
@@ -207,6 +226,7 @@ const handleExport = async () => {
 // Lifecycle
 onMounted(() => {
   loadAllData()
+  clientStore.fetchClients()
 })
 </script>
 
@@ -228,7 +248,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Period Filter -->
+    <!-- Period & Client Filter -->
     <div class="q-card mb-6">
       <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
         <div class="flex items-center gap-3">
@@ -240,6 +260,21 @@ onMounted(() => {
             optionValue="value"
             class="w-48"
             @change="onPeriodChange"
+          />
+        </div>
+
+        <div class="flex items-center gap-3">
+          <label class="text-sm font-medium text-neutral-700">{{ $t('admin.reports.filters.client') }}</label>
+          <PrimeSelect
+            v-model="clientFilter"
+            :options="clientOptions"
+            optionLabel="label"
+            optionValue="value"
+            :placeholder="$t('admin.reports.filters.allClients')"
+            class="w-56"
+            filter
+            :filterPlaceholder="$t('admin.reports.filters.searchClient')"
+            @change="onClientChange"
           />
         </div>
 

@@ -98,6 +98,20 @@ const cancelNotesEdit = () => {
   isEditingNotes.value = false
 }
 
+// Custom fields to display
+const customFieldsToShow = computed(() => {
+  const category = lead.value?.lead?.category
+  const extraTags = lead.value?.lead?.extra_tags
+  if (!category?.custom_fields || !extraTags) return []
+  return category.custom_fields
+    .map((f: any) => ({
+      key: f.key,
+      label: f.label,
+      value: extraTags[f.key] ?? ''
+    }))
+    .filter((f: any) => f.value)
+})
+
 // Copy to clipboard
 const copyToClipboard = (text: string, label: string) => {
   navigator.clipboard.writeText(text)
@@ -244,6 +258,30 @@ const copyToClipboard = (text: string, label: string) => {
                 <i class="pi pi-clock mr-1"></i>
                 {{ $t('leads.detail.requestDetails.generatedAt', { time: formatRelativeTime(lead.lead.generated_at), date: formatDateTime(lead.lead.generated_at) }) }}
               </p>
+            </div>
+          </template>
+        </PrimeCard>
+
+        <!-- Custom Fields -->
+        <PrimeCard v-if="customFieldsToShow.length > 0">
+          <template #title>
+            <div class="flex items-center gap-2">
+              <i class="pi pi-list text-primary"></i>
+              {{ $t('leads.detail.customFields.title') }}
+            </div>
+          </template>
+          <template #content>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                v-for="field in customFieldsToShow"
+                :key="field.key"
+                class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg"
+              >
+                <p class="text-sm text-surface-500 mb-1">{{ field.label }}</p>
+                <p class="font-medium text-surface-900 dark:text-surface-0">
+                  {{ field.value }}
+                </p>
+              </div>
             </div>
           </template>
         </PrimeCard>

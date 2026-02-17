@@ -13,6 +13,7 @@ import profile from './profile'
 import packages from './packages'
 import dashboard from './dashboard'
 import admin from './admin'
+import publicForm from './publicForm'
 
 export default {
   common,
@@ -29,5 +30,6 @@ export default {
   profile,
   packages,
   dashboard,
-  admin
+  admin,
+  publicForm
 }

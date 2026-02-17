@@ -48,11 +48,11 @@ interface LeadState {
 
 // Mock Categories
 const mockCategories: Category[] = [
-  { id: 1, name: 'Ristrutturazioni', slug: 'ristrutturazioni', description: 'Lavori di ristrutturazione edilizia', max_shares: 3, is_active: true, sort_order: 1, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01' },
-  { id: 2, name: 'Impianti Fotovoltaici', slug: 'fotovoltaico', description: 'Installazione pannelli solari', max_shares: 4, is_active: true, sort_order: 2, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01' },
-  { id: 3, name: 'Infissi e Serramenti', slug: 'infissi', description: 'Sostituzione infissi', max_shares: 3, is_active: true, sort_order: 3, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01' },
-  { id: 4, name: 'Caldaie e Climatizzazione', slug: 'climatizzazione', description: 'Impianti termici e condizionamento', max_shares: 5, is_active: true, sort_order: 4, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01' },
-  { id: 5, name: 'Assicurazioni', slug: 'assicurazioni', description: 'Polizze assicurative', max_shares: 2, is_active: true, sort_order: 5, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01' }
+  { id: 1, name: 'Ristrutturazioni', slug: 'ristrutturazioni', description: 'Lavori di ristrutturazione edilizia', max_shares: 3, is_active: true, sort_order: 1, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [] },
+  { id: 2, name: 'Impianti Fotovoltaici', slug: 'fotovoltaico', description: 'Installazione pannelli solari', max_shares: 4, is_active: true, sort_order: 2, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [{ key: 'superficie_tetto', label: 'Superficie tetto (mq)' }, { key: 'tipo_impianto', label: 'Tipo impianto desiderato' }] },
+  { id: 3, name: 'Infissi e Serramenti', slug: 'infissi', description: 'Sostituzione infissi', max_shares: 3, is_active: true, sort_order: 3, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [{ key: 'numero_finestre', label: 'Numero finestre' }, { key: 'materiale_preferito', label: 'Materiale preferito' }] },
+  { id: 4, name: 'Caldaie e Climatizzazione', slug: 'climatizzazione', description: 'Impianti termici e condizionamento', max_shares: 5, is_active: true, sort_order: 4, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [{ key: 'metratura_locale', label: 'Metratura locale' }] },
+  { id: 5, name: 'Assicurazioni', slug: 'assicurazioni', description: 'Polizze assicurative', max_shares: 2, is_active: true, sort_order: 5, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [] }
 ]
 
 // Mock Provinces
@@ -108,6 +108,7 @@ const mockLeads: Lead[] = [
     email: 'laura.bianchi@email.it',
     phone: '339 9876543',
     request_text: 'Interessata a impianto fotovoltaico da 6kW per villetta unifamiliare',
+    extra_tags: { superficie_tetto: '120 mq', tipo_impianto: '6kW con accumulo' },
     status: 'sold_shared',
     current_shares: 1,
     generated_at: '2024-01-19',
@@ -146,6 +147,7 @@ const mockLeads: Lead[] = [
     email: 'anna.ferrari@email.it',
     phone: '347 1112233',
     request_text: 'Preventivo sostituzione infissi 5 finestre + porta finestra',
+    extra_tags: { numero_finestre: '5 + porta finestra', materiale_preferito: 'PVC bianco' },
     status: 'sold_shared',
     current_shares: 2,
     generated_at: '2024-01-17',

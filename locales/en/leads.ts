@@ -170,6 +170,11 @@ export default {
       generatedAt: 'Request generated {time} ({date})',
     },
 
+    // Custom fields
+    customFields: {
+      title: 'Additional Information',
+    },
+
     // Notes
     notes: {
       title: 'Notes',

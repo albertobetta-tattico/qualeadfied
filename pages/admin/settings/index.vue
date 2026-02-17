@@ -7,10 +7,13 @@ import {
   useSettingsFormatters,
   useSettingsActions,
   useSettingsOptions,
-  useOperatorValidation
+  useOperatorValidation,
+  useFattureCloudOptions,
+  useFattureCloudValidation
 } from '~/composables/useSettings'
 import type {
   SystemConfigForm,
+  FattureCloudConfigForm,
   AdminOperator,
   AdminOperatorCreateForm,
   AdminOperatorUpdateForm,
@@ -59,6 +62,13 @@ const {
   activityEntityOptions
 } = useSettingsOptions()
 const { errors, hasErrors, validateForm, clearErrors } = useOperatorValidation()
+const { paymentMethodOptions } = useFattureCloudOptions()
+const {
+  errors: ficErrors,
+  hasErrors: ficHasErrors,
+  validateForm: validateFicForm,
+  clearErrors: clearFicErrors
+} = useFattureCloudValidation()
 const router = useRouter()
 
 // Navigation
@@ -96,6 +106,16 @@ const editingOperatorId = ref<number | null>(null)
 const testEmailDialog = ref(false)
 const testEmailAddress = ref('')
 
+// Fatture in Cloud
+const ficConfigForm = reactive<FattureCloudConfigForm>({
+  enabled: false,
+  access_token: '',
+  company_id: null,
+  auto_send_sdi: false,
+  default_payment_method: 'bonifico'
+})
+const ficTestResult = ref<{ success: boolean; message: string } | null>(null)
+
 // Log filters
 const logTypeFilter = ref<ActivityType | ''>('')
 const logEntityFilter = ref<ActivityEntity | ''>('')
@@ -109,6 +129,8 @@ const notificationConfigs = computed(() => settingsStore.notificationConfigs)
 const operators = computed(() => settingsStore.operators)
 const activityLogs = computed(() => settingsStore.activityLogs)
 const logsPagination = computed(() => settingsStore.logsPagination)
+const fattureCloudConfig = computed(() => settingsStore.fattureCloudConfig)
+const testingConnection = computed(() => settingsStore.testingConnection)
 
 // Methods
 const loadSystemConfig = async () => {
@@ -317,6 +339,47 @@ const sendTestEmail = async () => {
   }
 }
 
+// Fatture in Cloud methods
+const loadFattureCloudConfig = async () => {
+  await settingsStore.fetchFattureCloudConfig()
+  if (fattureCloudConfig.value) {
+    ficConfigForm.enabled = fattureCloudConfig.value.enabled
+    ficConfigForm.access_token = fattureCloudConfig.value.access_token
+    ficConfigForm.company_id = fattureCloudConfig.value.company_id
+    ficConfigForm.auto_send_sdi = fattureCloudConfig.value.auto_send_sdi
+    ficConfigForm.default_payment_method = fattureCloudConfig.value.default_payment_method
+  }
+}
+
+const saveFattureCloudConfig = async () => {
+  if (!validateFicForm(ficConfigForm)) {
+    showError(t('admin.settings.toast.formError'))
+    return
+  }
+  const success = await settingsStore.updateFattureCloudConfig(ficConfigForm)
+  if (success) {
+    showSuccess(t('admin.settings.fattureCloud.toast.configSaved'))
+  } else {
+    showError(settingsStore.error || t('admin.settings.fattureCloud.toast.configError'))
+  }
+}
+
+const testFicConnection = async () => {
+  ficTestResult.value = null
+  const result = await settingsStore.testFattureCloudConnection()
+  if (result.success) {
+    ficTestResult.value = {
+      success: true,
+      message: t('admin.settings.fattureCloud.toast.connectionSuccess', { name: result.company_name })
+    }
+  } else {
+    ficTestResult.value = {
+      success: false,
+      message: result.error || t('admin.settings.fattureCloud.toast.connectionError')
+    }
+  }
+}
+
 // Tab change handler
 const onTabChange = (index: number) => {
   switch (index) {
@@ -331,6 +394,9 @@ const onTabChange = (index: number) => {
       break
     case 3:
       if (!activityLogs.value.length) loadActivityLogs()
+      break
+    case 4:
+      if (!fattureCloudConfig.value) loadFattureCloudConfig()
       break
   }
 }
@@ -748,6 +814,142 @@ onMounted(() => {
               </template>
             </PrimeColumn>
           </PrimeDataTable>
+        </div>
+      </PrimeTabPanel>
+      <!-- Tab: Fatture in Cloud -->
+      <PrimeTabPanel value="4" :header="$t('admin.settings.tabs.fattureCloud')">
+        <div class="pt-4 max-w-3xl">
+          <form @submit.prevent="saveFattureCloudConfig" class="space-y-6">
+            <!-- Enable/Disable Toggle -->
+            <div class="bg-neutral-50 rounded-lg p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-lg font-semibold text-neutral-900">
+                    <i class="pi pi-cloud mr-2"></i>{{ $t('admin.settings.fattureCloud.integrationTitle') }}
+                  </h4>
+                  <p class="text-sm text-neutral-500 mt-1">{{ $t('admin.settings.fattureCloud.integrationDescription') }}</p>
+                </div>
+                <PrimeToggleSwitch v-model="ficConfigForm.enabled" />
+              </div>
+            </div>
+
+            <!-- Credentials Section -->
+            <div class="bg-neutral-50 rounded-lg p-4" :class="{ 'opacity-50 pointer-events-none': !ficConfigForm.enabled }">
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">
+                <i class="pi pi-key mr-2"></i>{{ $t('admin.settings.fattureCloud.credentials') }}
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group md:col-span-2">
+                  <label for="fic_access_token">{{ $t('admin.settings.fattureCloud.accessToken') }} *</label>
+                  <PrimePassword
+                    id="fic_access_token"
+                    v-model="ficConfigForm.access_token"
+                    :feedback="false"
+                    toggleMask
+                    class="w-full"
+                    :class="{ 'p-invalid': ficErrors.access_token }"
+                    :placeholder="$t('admin.settings.fattureCloud.accessTokenPlaceholder')"
+                  />
+                  <small v-if="ficErrors.access_token" class="p-error">{{ ficErrors.access_token }}</small>
+                  <small v-else class="text-neutral-500">{{ $t('admin.settings.fattureCloud.accessTokenHint') }}</small>
+                </div>
+                <div class="form-group">
+                  <label for="fic_company_id">{{ $t('admin.settings.fattureCloud.companyId') }} *</label>
+                  <PrimeInputNumber
+                    id="fic_company_id"
+                    v-model="ficConfigForm.company_id"
+                    :min="1"
+                    :useGrouping="false"
+                    class="w-full"
+                    :class="{ 'p-invalid': ficErrors.company_id }"
+                    :placeholder="$t('admin.settings.fattureCloud.companyIdPlaceholder')"
+                  />
+                  <small v-if="ficErrors.company_id" class="p-error">{{ ficErrors.company_id }}</small>
+                  <small v-else class="text-neutral-500">{{ $t('admin.settings.fattureCloud.companyIdHint') }}</small>
+                </div>
+              </div>
+
+              <!-- Test Connection -->
+              <div class="mt-4 flex items-center gap-3">
+                <PrimeButton
+                  :label="$t('admin.settings.fattureCloud.testConnection')"
+                  icon="pi pi-wifi"
+                  severity="secondary"
+                  outlined
+                  size="small"
+                  :loading="testingConnection"
+                  :disabled="!ficConfigForm.access_token || !ficConfigForm.company_id"
+                  @click="testFicConnection"
+                />
+                <div v-if="ficTestResult" class="flex items-center gap-2">
+                  <i :class="ficTestResult.success ? 'pi pi-check-circle text-green-600' : 'pi pi-times-circle text-red-600'" />
+                  <span :class="ficTestResult.success ? 'text-green-700' : 'text-red-700'" class="text-sm">
+                    {{ ficTestResult.message }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connection Info -->
+            <div v-if="fattureCloudConfig?.connected_at" class="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h4 class="text-sm font-semibold text-green-800 mb-2">
+                <i class="pi pi-check-circle mr-2"></i>{{ $t('admin.settings.fattureCloud.connectionInfo') }}
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span class="text-green-600">{{ $t('admin.settings.fattureCloud.companyName') }}:</span>
+                  <span class="font-medium text-green-900 ml-1">{{ fattureCloudConfig.company_name }}</span>
+                </div>
+                <div>
+                  <span class="text-green-600">{{ $t('admin.settings.fattureCloud.connectedAt') }}:</span>
+                  <span class="font-medium text-green-900 ml-1">{{ formatDateTime(fattureCloudConfig.connected_at) }}</span>
+                </div>
+                <div v-if="fattureCloudConfig.last_sync_at">
+                  <span class="text-green-600">{{ $t('admin.settings.fattureCloud.lastSync') }}:</span>
+                  <span class="font-medium text-green-900 ml-1">{{ formatRelativeTime(fattureCloudConfig.last_sync_at) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Options Section -->
+            <div class="bg-neutral-50 rounded-lg p-4" :class="{ 'opacity-50 pointer-events-none': !ficConfigForm.enabled }">
+              <h4 class="text-lg font-semibold text-neutral-900 mb-4">
+                <i class="pi pi-cog mr-2"></i>{{ $t('admin.settings.fattureCloud.options') }}
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label for="fic_payment_method">{{ $t('admin.settings.fattureCloud.defaultPaymentMethod') }}</label>
+                  <PrimeSelect
+                    id="fic_payment_method"
+                    v-model="ficConfigForm.default_payment_method"
+                    :options="paymentMethodOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    class="w-full"
+                  />
+                  <small class="text-neutral-500">{{ $t('admin.settings.fattureCloud.defaultPaymentMethodHint') }}</small>
+                </div>
+                <div class="form-group flex items-center pt-6">
+                  <PrimeToggleSwitch v-model="ficConfigForm.auto_send_sdi" />
+                  <div class="ml-3">
+                    <label class="font-medium text-neutral-700">{{ $t('admin.settings.fattureCloud.autoSendSdi') }}</label>
+                    <small class="text-neutral-500 block">{{ $t('admin.settings.fattureCloud.autoSendSdiHint') }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="flex justify-end pt-4 border-t border-neutral-200">
+              <PrimeButton
+                type="submit"
+                :label="$t('admin.settings.fattureCloud.saveConfig')"
+                icon="pi pi-check"
+                severity="primary"
+                :loading="saving"
+              />
+            </div>
+          </form>
         </div>
       </PrimeTabPanel>
     </PrimeTabView>

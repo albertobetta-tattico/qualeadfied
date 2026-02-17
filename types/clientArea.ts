@@ -148,6 +148,7 @@ export interface MyLead {
     email: string
     phone: string
     request_text: string
+    extra_tags?: Record<string, any>
     generated_at: string
     category?: Category
     province?: Province

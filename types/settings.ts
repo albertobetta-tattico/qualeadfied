@@ -183,3 +183,43 @@ export interface ActivityLogFilters {
   page?: number
   per_page?: number
 }
+
+/**
+ * Metodo di pagamento Fatture in Cloud
+ */
+export type FicPaymentMethod = 'bonifico' | 'carta' | 'ri.ba.' | 'contanti' | 'altro'
+
+/**
+ * Configurazione Fatture in Cloud
+ */
+export interface FattureCloudConfig {
+  enabled: boolean
+  access_token: string
+  company_id: number | null
+  company_name: string
+  auto_send_sdi: boolean
+  default_payment_method: FicPaymentMethod
+  connected_at: string | null
+  last_sync_at: string | null
+}
+
+/**
+ * Form configurazione Fatture in Cloud
+ */
+export interface FattureCloudConfigForm {
+  enabled: boolean
+  access_token: string
+  company_id: number | null
+  auto_send_sdi: boolean
+  default_payment_method: FicPaymentMethod
+}
+
+/**
+ * Risultato test connessione Fatture in Cloud
+ */
+export interface FattureCloudTestResult {
+  success: boolean
+  company_name?: string
+  company_id?: number
+  error?: string
+}

@@ -152,6 +152,7 @@ export interface ReportFilters {
   date_to?: string
   category_id?: number | null
   province_code?: string
+  client_id?: number | null
 }
 
 /**
@@ -165,6 +166,7 @@ export interface ExportRequest {
     date_to?: string
     status?: string
     category_id?: number
+    client_id?: number
   }
 }
 

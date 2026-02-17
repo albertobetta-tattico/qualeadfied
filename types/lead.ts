@@ -13,6 +13,14 @@
 export type LeadStatus = 'free' | 'sold_exclusive' | 'sold_shared' | 'exhausted'
 
 /**
+ * Definizione campo personalizzato (testo)
+ */
+export interface CustomFieldDefinition {
+  key: string
+  label: string
+}
+
+/**
  * Categoria merceologica
  */
 export interface Category {
@@ -23,6 +31,7 @@ export interface Category {
   max_shares: number
   is_active: boolean
   sort_order: number
+  custom_fields?: CustomFieldDefinition[]
   deleted_at: string | null
   created_at: string
   updated_at: string
@@ -226,4 +235,18 @@ export interface CategoryPrices {
   shared_prices: Record<string, number>
   valid_from: string
   valid_to: string | null
+}
+
+/**
+ * Form per invio lead da form pubblico
+ */
+export interface PublicLeadSubmission {
+  category_slug: string
+  province_id: number | null
+  first_name: string
+  last_name: string
+  email: string
+  phone: string
+  request_text?: string
+  extra_tags?: Record<string, string>
 }

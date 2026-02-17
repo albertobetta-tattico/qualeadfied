@@ -11,7 +11,8 @@ import type {
   NotificationFrequency,
   ActivityType,
   ActivityEntity,
-  AdminOperatorCreateForm
+  AdminOperatorCreateForm,
+  FattureCloudConfigForm
 } from '~/types/settings'
 
 /**
@@ -449,5 +450,70 @@ export function useSettingsOptions() {
     activityEntityOptions,
     smtpEncryptionOptions,
     emailProviderOptions
+  }
+}
+
+/**
+ * Opzioni per Fatture in Cloud
+ */
+export function useFattureCloudOptions() {
+  const { t } = useI18n()
+
+  const paymentMethodOptions = computed(() => [
+    { label: t('admin.settings.fattureCloud.paymentMethods.bonifico'), value: 'bonifico' },
+    { label: t('admin.settings.fattureCloud.paymentMethods.carta'), value: 'carta' },
+    { label: t('admin.settings.fattureCloud.paymentMethods.riba'), value: 'ri.ba.' },
+    { label: t('admin.settings.fattureCloud.paymentMethods.contanti'), value: 'contanti' },
+    { label: t('admin.settings.fattureCloud.paymentMethods.altro'), value: 'altro' }
+  ])
+
+  return {
+    paymentMethodOptions
+  }
+}
+
+/**
+ * Validazione configurazione Fatture in Cloud
+ */
+export function useFattureCloudValidation() {
+  const { t } = useI18n()
+  const errors = reactive<Record<string, string>>({})
+
+  const validateAccessToken = (value: string, enabled: boolean): boolean => {
+    if (enabled && !value.trim()) {
+      errors.access_token = t('admin.settings.fattureCloud.validation.tokenRequired')
+      return false
+    }
+    delete errors.access_token
+    return true
+  }
+
+  const validateCompanyId = (value: number | null, enabled: boolean): boolean => {
+    if (enabled && (!value || value <= 0)) {
+      errors.company_id = t('admin.settings.fattureCloud.validation.companyIdRequired')
+      return false
+    }
+    delete errors.company_id
+    return true
+  }
+
+  const validateForm = (form: FattureCloudConfigForm): boolean => {
+    let isValid = true
+    isValid = validateAccessToken(form.access_token, form.enabled) && isValid
+    isValid = validateCompanyId(form.company_id, form.enabled) && isValid
+    return isValid
+  }
+
+  const clearErrors = () => {
+    Object.keys(errors).forEach(key => delete errors[key])
+  }
+
+  const hasErrors = computed(() => Object.keys(errors).length > 0)
+
+  return {
+    errors,
+    hasErrors,
+    validateForm,
+    clearErrors
   }
 }

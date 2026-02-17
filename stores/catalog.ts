@@ -87,7 +87,11 @@ const mockCategories: Category[] = [
     available_leads_count: 85,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-15T00:00:00Z',
-    deleted_at: null
+    deleted_at: null,
+    custom_fields: [
+      { key: 'superficie_tetto', label: 'Superficie tetto (mq)' },
+      { key: 'tipo_impianto', label: 'Tipo impianto desiderato' }
+    ],
   },
   {
     id: 2,
@@ -101,7 +105,11 @@ const mockCategories: Category[] = [
     available_leads_count: 62,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-10T00:00:00Z',
-    deleted_at: null
+    deleted_at: null,
+    custom_fields: [
+      { key: 'numero_finestre', label: 'Numero finestre' },
+      { key: 'materiale_preferito', label: 'Materiale preferito' }
+    ],
   },
   {
     id: 3,
@@ -115,7 +123,10 @@ const mockCategories: Category[] = [
     available_leads_count: 48,
     created_at: '2024-01-02T00:00:00Z',
     updated_at: '2024-01-18T00:00:00Z',
-    deleted_at: null
+    deleted_at: null,
+    custom_fields: [
+      { key: 'metratura_locale', label: 'Metratura locale' }
+    ],
   },
   {
     id: 4,
@@ -129,7 +140,8 @@ const mockCategories: Category[] = [
     available_leads_count: 110,
     created_at: '2024-01-03T00:00:00Z',
     updated_at: '2024-01-20T00:00:00Z',
-    deleted_at: null
+    deleted_at: null,
+    custom_fields: [],
   },
   {
     id: 5,
@@ -143,7 +155,8 @@ const mockCategories: Category[] = [
     available_leads_count: 35,
     created_at: '2024-01-04T00:00:00Z',
     updated_at: '2024-01-12T00:00:00Z',
-    deleted_at: null
+    deleted_at: null,
+    custom_fields: [],
   },
   {
     id: 6,
@@ -157,7 +170,8 @@ const mockCategories: Category[] = [
     available_leads_count: 20,
     created_at: '2024-01-05T00:00:00Z',
     updated_at: '2024-01-08T00:00:00Z',
-    deleted_at: null
+    deleted_at: null,
+    custom_fields: [],
   }
 ]
 
@@ -738,6 +752,7 @@ export const useCatalogStore = defineStore('catalog', {
             max_shares: data.max_shares,
             is_active: data.is_active,
             sort_order: data.sort_order,
+            custom_fields: data.custom_fields || [],
             leads_count: 0,
             available_leads_count: 0,
             created_at: new Date().toISOString(),

@@ -159,6 +159,31 @@ const onCreateAnother = async () => {
   }
 }
 
+// Custom fields for selected category
+const categoryCustomFields = computed(() => {
+  if (!form.category_id) return []
+  const cat = leadStore.activeCategories.find((c: any) => c.id === form.category_id)
+  return cat?.custom_fields || []
+})
+
+// Initialize extra_tags when category changes
+watch(() => form.category_id, (newCategoryId) => {
+  if (!newCategoryId) {
+    form.extra_tags = {}
+    return
+  }
+  const cat = leadStore.activeCategories.find((c: any) => c.id === newCategoryId)
+  if (cat?.custom_fields) {
+    const newTags: Record<string, string> = {}
+    for (const field of cat.custom_fields) {
+      newTags[field.key] = form.extra_tags?.[field.key] || ''
+    }
+    form.extra_tags = newTags
+  } else {
+    form.extra_tags = {}
+  }
+})
+
 // Lifecycle
 onMounted(() => {
   loadData()
@@ -393,6 +418,31 @@ onMounted(() => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Custom Fields Card -->
+      <div v-if="categoryCustomFields.length > 0" class="q-card">
+        <div class="q-card-header">
+          <h3 class="card-title">
+            <i class="pi pi-list mr-2 text-primary-500"></i>
+            {{ $t('admin.leads.create.sections.customFields') }}
+          </h3>
+        </div>
+        <div class="q-card-body">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div v-for="field in categoryCustomFields" :key="field.key" class="form-group">
+              <label :for="'cf_' + field.key">{{ field.label }}</label>
+              <PrimeInputText
+                :id="'cf_' + field.key"
+                v-model="(form.extra_tags as Record<string, any>)[field.key]"
+                class="w-full"
+              />
+            </div>
+          </div>
+          <small class="form-hint mt-2">
+            {{ $t('admin.leads.create.form.customFieldsHint') }}
+          </small>
         </div>
       </div>
 

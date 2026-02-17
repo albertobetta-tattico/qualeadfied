@@ -501,7 +501,8 @@ export function useCategoryForm(initialData?: Category) {
     description: '',
     max_shares: 3,
     is_active: true,
-    sort_order: 0
+    sort_order: 0,
+    custom_fields: []
   }
 
   const form = reactive<CategoryCreateForm>({
@@ -510,7 +511,8 @@ export function useCategoryForm(initialData?: Category) {
     description: initialData?.description || defaultForm.description,
     max_shares: initialData?.max_shares || defaultForm.max_shares,
     is_active: initialData?.is_active ?? defaultForm.is_active,
-    sort_order: initialData?.sort_order || defaultForm.sort_order
+    sort_order: initialData?.sort_order || defaultForm.sort_order,
+    custom_fields: initialData?.custom_fields ? initialData.custom_fields.map(f => ({ ...f })) : []
   })
 
   const updateSlugFromName = () => {
@@ -526,6 +528,7 @@ export function useCategoryForm(initialData?: Category) {
     form.max_shares = initialData?.max_shares || defaultForm.max_shares
     form.is_active = initialData?.is_active ?? defaultForm.is_active
     form.sort_order = initialData?.sort_order || defaultForm.sort_order
+    form.custom_fields = initialData?.custom_fields ? initialData.custom_fields.map(f => ({ ...f })) : []
   }
 
   return {

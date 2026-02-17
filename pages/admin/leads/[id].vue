@@ -203,6 +203,13 @@ const onReload = () => {
   loadLead()
 }
 
+// Custom fields for selected category
+const categoryCustomFields = computed(() => {
+  if (!form.category_id) return []
+  const cat = leadStore.activeCategories.find((c: any) => c.id === form.category_id)
+  return cat?.custom_fields || []
+})
+
 // Status badge styling
 const getStatusClass = (status: string): string => {
   const classes: Record<string, string> = {
@@ -577,6 +584,23 @@ onMounted(() => {
                     :disabled="!isEditable"
                   />
                   <small class="form-hint">{{ $t('admin.leads.edit.classificationForm.externalIdHint') }}</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Fields -->
+            <div v-if="categoryCustomFields.length > 0" class="mt-6">
+              <h4 class="text-sm font-medium text-neutral-700 mb-4">
+                {{ $t('admin.leads.edit.customFields.title') }}
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div v-for="field in categoryCustomFields" :key="field.key" class="form-group">
+                  <label :for="'cf_' + field.key">{{ field.label }}</label>
+                  <PrimeInputText
+                    :id="'cf_' + field.key"
+                    v-model="(form.extra_tags as Record<string, any>)[field.key]"
+                    class="w-full"
+                  />
                 </div>
               </div>
             </div>
