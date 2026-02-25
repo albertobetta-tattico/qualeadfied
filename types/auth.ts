@@ -121,3 +121,33 @@ export interface ApiError {
   message: string
   errors?: ValidationErrors
 }
+
+// ──────────────────────────────────────────────────────────────
+// Admin Authentication Types
+// ──────────────────────────────────────────────────────────────
+
+export type AdminRole = 'super_admin' | 'admin' | 'operator'
+export type AdminStatusType = 'active' | 'inactive'
+
+export interface AdminUser {
+  id: number
+  email: string
+  first_name: string
+  last_name: string
+  role: AdminRole
+  status: AdminStatusType
+  last_login_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface AdminLoginForm {
+  email: string
+  password: string
+}
+
+export interface AdminAuthResponse {
+  message: string
+  admin: AdminUser
+  token: string
+}

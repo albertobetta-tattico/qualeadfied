@@ -5,8 +5,45 @@
  */
 
 const { t } = useI18n()
+const router = useRouter()
+const adminAuthStore = useAdminAuthStore()
 const sidebarCollapsed = ref(false)
 const sidebarOpen = ref(false) // For mobile
+const showUserMenu = ref(false)
+
+// Check admin session on mount
+onMounted(async () => {
+  if (!adminAuthStore.isLoggedIn) {
+    const restored = await adminAuthStore.checkSession()
+    if (!restored) {
+      router.push('/admin/login')
+      return
+    }
+  }
+})
+
+// Handle logout
+const handleLogout = async () => {
+  await adminAuthStore.logout()
+  router.push('/admin/login')
+}
+
+// Toggle user menu
+const toggleUserMenu = () => {
+  showUserMenu.value = !showUserMenu.value
+}
+
+// Close menu on outside click
+onMounted(() => {
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('.admin-header-user')) {
+        showUserMenu.value = false
+      }
+    })
+  }
+})
 
 const toggleSidebar = () => {
   if (window.innerWidth < 1024) {
@@ -186,13 +223,21 @@ const currentPageTitle = computed(() => {
           </button>
 
           <!-- User Menu -->
-          <div class="admin-header-user">
-            <div class="avatar">AM</div>
+          <div class="admin-header-user" @click="toggleUserMenu">
+            <div class="avatar">{{ adminAuthStore.adminInitials }}</div>
             <div class="user-info">
-              <div class="name">Admin User</div>
-              <div class="role">{{ $t('layouts.adminHeader.administrator') }}</div>
+              <div class="name">{{ adminAuthStore.adminFullName || 'Admin' }}</div>
+              <div class="role">{{ adminAuthStore.adminRole || $t('layouts.adminHeader.administrator') }}</div>
             </div>
             <i class="pi pi-chevron-down text-neutral-400 hidden lg:block"></i>
+
+            <!-- Dropdown menu -->
+            <div v-if="showUserMenu" class="user-dropdown">
+              <div class="user-dropdown-item" @click="handleLogout">
+                <i class="pi pi-sign-out"></i>
+                <span>Logout</span>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -239,5 +284,45 @@ const currentPageTitle = computed(() => {
   min-width: 38px;
   position: relative;
   left: -4px;
+}
+
+/* User dropdown */
+.admin-header-user {
+  position: relative;
+  cursor: pointer;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.user-dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.user-dropdown-item i {
+  font-size: 1rem;
+  color: #6b7280;
 }
 </style>
