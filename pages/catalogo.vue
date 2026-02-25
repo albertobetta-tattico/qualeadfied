@@ -350,7 +350,7 @@ const getAvailabilityBadge = (lead: any) => {
             <!-- Price -->
             <div class="lead-price">
               <span class="lead-price-label">{{ $t('catalog.card.startingFrom') }}</span>
-              <span class="lead-price-value">{{ formatPrice(lead.base_price) }}</span>
+              <span class="lead-price-value">{{ formatPrice(lead.base_price ?? 0) }}</span>
             </div>
 
             <!-- Availability -->

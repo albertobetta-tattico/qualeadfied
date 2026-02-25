@@ -3,52 +3,17 @@
  * Pinia store for user authentication and profile management
  */
 import { defineStore } from 'pinia'
+import type { components } from '~/types/api.generated'
 import type {
-  User,
   UserWithProfile,
   ClientProfile,
   RegisterForm,
   LoginForm,
   ForgotPasswordForm,
-  ResetPasswordForm,
-  AuthResponse,
-  MessageResponse
+  ResetPasswordForm
 } from '~/types/auth'
 
-const USE_MOCK_DATA = true
-
-// Mock user data
-const mockUser: UserWithProfile = {
-  id: 1,
-  email: 'mario.rossi@example.com',
-  email_verified_at: '2025-01-10T10:00:00Z',
-  role: 'client',
-  status: 'active',
-  created_at: '2025-01-01T10:00:00Z',
-  updated_at: '2025-01-10T10:00:00Z',
-  profile: {
-    id: 1,
-    user_id: 1,
-    company_name: 'Rossi Costruzioni S.r.l.',
-    vat_number: 'IT12345678901',
-    phone: '+39 02 1234567',
-    first_name: 'Mario',
-    last_name: 'Rossi',
-    billing_address: 'Via Roma 123',
-    billing_city: 'Milano',
-    billing_province: 'MI',
-    billing_zip: '20100',
-    billing_country: 'IT',
-    sdi_code: 'ABC1234',
-    pec_email: 'rossisrl@pec.it',
-    free_trial_enabled: true,
-    free_trial_leads_remaining: 3,
-    email_notifications_enabled: true,
-    marketing_consent: false,
-    created_at: '2025-01-01T10:00:00Z',
-    updated_at: '2025-01-10T10:00:00Z'
-  }
-}
+type User = components['schemas']['User']
 
 interface AuthState {
   user: UserWithProfile | null
@@ -88,9 +53,6 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    /**
-     * Register a new user
-     */
     async register(form: RegisterForm): Promise<boolean> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -98,29 +60,25 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          // Simulate successful registration
-          return true
-        }
-
-        const response = await $fetch<MessageResponse>('/api/auth/register', {
-          method: 'POST',
-          body: form
+        const client = useTypedApi()
+        const { error } = await client.POST('/auth/register', {
+          body: {
+            email: form.email,
+            password: form.password,
+            password_confirmation: form.password_confirmation,
+          },
         })
 
+        if (error) throw error
         return true
       } catch (e: any) {
-        this.error = e.data?.message || t('common.errors.genericError')
+        this.error = e.data?.message || e.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false
       }
     },
 
-    /**
-     * Login user
-     */
     async login(form: LoginForm): Promise<boolean> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -128,65 +86,42 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 800))
-
-          // Mock validation
-          if (form.email !== 'demo@example.com' && form.email !== 'mario.rossi@example.com') {
-            this.error = t('common.errors.genericError')
-            return false
-          }
-
-          this.user = mockUser
-          this.token = 'mock-token-12345'
-          this.isAuthenticated = true
-
-          // Store token in localStorage
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('auth_token', this.token)
-          }
-
-          return true
-        }
-
-        const response = await $fetch<AuthResponse>('/api/auth/login', {
-          method: 'POST',
-          body: form
+        const client = useTypedApi()
+        const { data, error } = await client.POST('/auth/login', {
+          body: {
+            email: form.email,
+            password: form.password,
+          },
         })
 
-        this.user = response.user
-        this.token = response.token
+        if (error) throw error
+
+        // The API returns User without profile; cast for now
+        // TODO: Load profile separately or extend the /auth/login endpoint
+        this.user = data.user as unknown as UserWithProfile
+        this.token = data.token
         this.isAuthenticated = true
 
         if (typeof window !== 'undefined') {
-          localStorage.setItem('auth_token', response.token)
+          localStorage.setItem('auth_token', data.token)
         }
 
         return true
       } catch (e: any) {
-        this.error = e.data?.message || t('common.errors.genericError')
+        this.error = e.data?.message || e.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false
       }
     },
 
-    /**
-     * Logout user
-     */
     async logout(): Promise<void> {
       this.loading = true
 
       try {
-        if (!USE_MOCK_DATA) {
-          await $fetch('/api/auth/logout', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${this.token}`
-            }
-          })
-        }
-      } catch (e) {
+        const client = useTypedApi()
+        await client.POST('/auth/logout')
+      } catch {
         // Ignore logout errors
       } finally {
         this.user = null
@@ -201,9 +136,6 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    /**
-     * Fetch current user from API
-     */
     async fetchUser(): Promise<boolean> {
       const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
 
@@ -215,26 +147,18 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 300))
-          this.user = mockUser
-          this.token = token
-          this.isAuthenticated = true
-          return true
-        }
+        const client = useTypedApi()
+        const { data, error } = await client.GET('/auth/me')
 
-        const response = await $fetch<{ user: UserWithProfile }>('/api/auth/user', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+        if (error) throw error
 
-        this.user = response.user
+        // The API returns User without profile; cast for now
+        this.user = data.user as unknown as UserWithProfile
         this.token = token
         this.isAuthenticated = true
 
         return true
-      } catch (e) {
+      } catch {
         this.user = null
         this.token = null
         this.isAuthenticated = false
@@ -247,9 +171,6 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    /**
-     * Request password reset
-     */
     async forgotPassword(form: ForgotPasswordForm): Promise<boolean> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -257,28 +178,21 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          return true
-        }
-
-        await $fetch<MessageResponse>('/api/auth/forgot-password', {
-          method: 'POST',
-          body: form
+        const client = useTypedApi()
+        const { error } = await client.POST('/auth/forgot-password', {
+          body: { email: form.email },
         })
 
+        if (error) throw error
         return true
       } catch (e: any) {
-        this.error = e.data?.message || t('common.errors.sendEmailError')
+        this.error = e.data?.message || e.message || t('common.errors.sendEmailError')
         return false
       } finally {
         this.loading = false
       }
     },
 
-    /**
-     * Reset password with token
-     */
     async resetPassword(form: ResetPasswordForm): Promise<boolean> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -286,28 +200,26 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          return true
-        }
-
-        await $fetch<MessageResponse>('/api/auth/reset-password', {
-          method: 'POST',
-          body: form
+        const client = useTypedApi()
+        const { error } = await client.POST('/auth/reset-password', {
+          body: {
+            token: form.token,
+            email: form.email,
+            password: form.password,
+            password_confirmation: form.password_confirmation,
+          },
         })
 
+        if (error) throw error
         return true
       } catch (e: any) {
-        this.error = e.data?.message || t('common.errors.genericError')
+        this.error = e.data?.message || e.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false
       }
     },
 
-    /**
-     * Verify email with token
-     */
     async verifyEmail(token: string): Promise<boolean> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -315,56 +227,23 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 1000))
-          return true
-        }
-
-        await $fetch<MessageResponse>(`/api/auth/verify-email/${token}`)
-
-        return true
-      } catch (e: any) {
-        this.error = e.data?.message || t('common.errors.genericError')
-        return false
-      } finally {
-        this.loading = false
-      }
-    },
-
-    /**
-     * Resend verification email
-     */
-    async resendVerificationEmail(): Promise<boolean> {
-      const { $i18n } = useNuxtApp()
-      const t = $i18n.t
-      this.loading = true
-      this.error = null
-
-      try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-          return true
-        }
-
-        await $fetch<MessageResponse>('/api/auth/resend-verification', {
+        const config = useRuntimeConfig()
+        await $fetch(`${config.public.apiBase}/auth/verify-email`, {
           method: 'POST',
+          body: { token },
           headers: {
-            Authorization: `Bearer ${this.token}`
+            Accept: 'application/json'
           }
         })
-
         return true
       } catch (e: any) {
-        this.error = e.data?.message || t('common.errors.sendEmailError')
+        this.error = e.data?.message || e.message || t('common.errors.genericError')
         return false
       } finally {
         this.loading = false
       }
     },
 
-    /**
-     * Check if session is still valid
-     */
     async checkSession(): Promise<boolean> {
       if (!this.token) {
         const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
@@ -375,9 +254,6 @@ export const useAuthStore = defineStore('auth', {
       return await this.fetchUser()
     },
 
-    /**
-     * Clear error state
-     */
     clearError(): void {
       this.error = null
     }

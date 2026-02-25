@@ -33,210 +33,14 @@ interface LeadState {
   stats: LeadStats | null
   pagination: PaginationMeta
   filters: LeadFilters
-  
-  // Dati di supporto
   categories: Category[]
   provinces: Province[]
   sources: LeadSource[]
-  
-  // Stati UI
   loading: boolean
   saving: boolean
   importing: boolean
   error: string | null
 }
-
-// Mock Categories
-const mockCategories: Category[] = [
-  { id: 1, name: 'Ristrutturazioni', slug: 'ristrutturazioni', description: 'Lavori di ristrutturazione edilizia', max_shares: 3, is_active: true, sort_order: 1, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [] },
-  { id: 2, name: 'Impianti Fotovoltaici', slug: 'fotovoltaico', description: 'Installazione pannelli solari', max_shares: 4, is_active: true, sort_order: 2, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [{ key: 'superficie_tetto', label: 'Superficie tetto (mq)' }, { key: 'tipo_impianto', label: 'Tipo impianto desiderato' }] },
-  { id: 3, name: 'Infissi e Serramenti', slug: 'infissi', description: 'Sostituzione infissi', max_shares: 3, is_active: true, sort_order: 3, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [{ key: 'numero_finestre', label: 'Numero finestre' }, { key: 'materiale_preferito', label: 'Materiale preferito' }] },
-  { id: 4, name: 'Caldaie e Climatizzazione', slug: 'climatizzazione', description: 'Impianti termici e condizionamento', max_shares: 5, is_active: true, sort_order: 4, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [{ key: 'metratura_locale', label: 'Metratura locale' }] },
-  { id: 5, name: 'Assicurazioni', slug: 'assicurazioni', description: 'Polizze assicurative', max_shares: 2, is_active: true, sort_order: 5, deleted_at: null, created_at: '2024-01-01', updated_at: '2024-01-01', custom_fields: [] }
-]
-
-// Mock Provinces
-const mockProvinces: Province[] = [
-  { id: 1, name: 'Milano', code: 'MI', region: 'Lombardia', is_active: true },
-  { id: 2, name: 'Roma', code: 'RM', region: 'Lazio', is_active: true },
-  { id: 3, name: 'Napoli', code: 'NA', region: 'Campania', is_active: true },
-  { id: 4, name: 'Torino', code: 'TO', region: 'Piemonte', is_active: true },
-  { id: 5, name: 'Bologna', code: 'BO', region: 'Emilia-Romagna', is_active: true },
-  { id: 6, name: 'Firenze', code: 'FI', region: 'Toscana', is_active: true },
-  { id: 7, name: 'Bari', code: 'BA', region: 'Puglia', is_active: true },
-  { id: 8, name: 'Palermo', code: 'PA', region: 'Sicilia', is_active: true },
-  { id: 9, name: 'Genova', code: 'GE', region: 'Liguria', is_active: true },
-  { id: 10, name: 'Venezia', code: 'VE', region: 'Veneto', is_active: true }
-]
-
-// Mock Lead Sources
-const mockSources: LeadSource[] = [
-  { id: 1, name: 'Meta Ads', slug: 'meta-ads', description: 'Lead da campagne Facebook/Instagram', api_key: 'meta_xxxxxx', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' },
-  { id: 2, name: 'Google Ads', slug: 'google-ads', description: 'Lead da campagne Google', api_key: 'google_xxxxxx', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' },
-  { id: 3, name: 'Sito Web', slug: 'website', description: 'Lead da form sul sito', api_key: 'web_xxxxxx', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' },
-  { id: 4, name: 'Manuale', slug: 'manual', description: 'Inserimento manuale da backoffice', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' }
-]
-
-// Mock Leads
-const mockLeads: Lead[] = [
-  {
-    id: 1,
-    category_id: 1,
-    province_id: 1,
-    source_id: 1,
-    first_name: 'Mario',
-    last_name: 'Rossi',
-    email: 'mario.rossi@email.it',
-    phone: '333 1234567',
-    request_text: 'Vorrei un preventivo per la ristrutturazione del bagno',
-    status: 'free',
-    current_shares: 0,
-    generated_at: '2024-01-20',
-    created_at: '2024-01-20T10:00:00Z',
-    updated_at: '2024-01-20T10:00:00Z',
-    category: mockCategories[0],
-    province: mockProvinces[0],
-    source: mockSources[0]
-  },
-  {
-    id: 2,
-    category_id: 2,
-    province_id: 2,
-    source_id: 2,
-    first_name: 'Laura',
-    last_name: 'Bianchi',
-    email: 'laura.bianchi@email.it',
-    phone: '339 9876543',
-    request_text: 'Interessata a impianto fotovoltaico da 6kW per villetta unifamiliare',
-    extra_tags: { superficie_tetto: '120 mq', tipo_impianto: '6kW con accumulo' },
-    status: 'sold_shared',
-    current_shares: 1,
-    generated_at: '2024-01-19',
-    created_at: '2024-01-19T14:30:00Z',
-    updated_at: '2024-01-21T09:00:00Z',
-    category: mockCategories[1],
-    province: mockProvinces[1],
-    source: mockSources[1]
-  },
-  {
-    id: 3,
-    category_id: 1,
-    province_id: 3,
-    source_id: 1,
-    first_name: 'Giuseppe',
-    last_name: 'Verdi',
-    email: 'g.verdi@email.it',
-    phone: '340 5551234',
-    request_text: 'Richiesta preventivo per ristrutturazione completa appartamento 80mq',
-    status: 'sold_exclusive',
-    current_shares: 0,
-    generated_at: '2024-01-18',
-    created_at: '2024-01-18T11:15:00Z',
-    updated_at: '2024-01-19T16:00:00Z',
-    category: mockCategories[0],
-    province: mockProvinces[2],
-    source: mockSources[0]
-  },
-  {
-    id: 4,
-    category_id: 3,
-    province_id: 4,
-    source_id: 3,
-    first_name: 'Anna',
-    last_name: 'Ferrari',
-    email: 'anna.ferrari@email.it',
-    phone: '347 1112233',
-    request_text: 'Preventivo sostituzione infissi 5 finestre + porta finestra',
-    extra_tags: { numero_finestre: '5 + porta finestra', materiale_preferito: 'PVC bianco' },
-    status: 'sold_shared',
-    current_shares: 2,
-    generated_at: '2024-01-17',
-    created_at: '2024-01-17T09:00:00Z',
-    updated_at: '2024-01-22T10:00:00Z',
-    category: mockCategories[2],
-    province: mockProvinces[3],
-    source: mockSources[2]
-  },
-  {
-    id: 5,
-    category_id: 4,
-    province_id: 5,
-    source_id: 1,
-    first_name: 'Paolo',
-    last_name: 'Colombo',
-    email: 'paolo.colombo@email.it',
-    phone: '335 4445566',
-    request_text: 'Informazioni su caldaia a condensazione + condizionatore',
-    status: 'exhausted',
-    current_shares: 5,
-    generated_at: '2024-01-15',
-    created_at: '2024-01-15T15:00:00Z',
-    updated_at: '2024-01-23T12:00:00Z',
-    category: mockCategories[3],
-    province: mockProvinces[4],
-    source: mockSources[0]
-  },
-  {
-    id: 6,
-    category_id: 2,
-    province_id: 6,
-    source_id: 2,
-    first_name: 'Francesca',
-    last_name: 'Ricci',
-    email: 'f.ricci@email.it',
-    phone: '331 7778899',
-    request_text: 'Preventivo impianto fotovoltaico con accumulo',
-    status: 'free',
-    current_shares: 0,
-    generated_at: '2024-01-22',
-    created_at: '2024-01-22T08:30:00Z',
-    updated_at: '2024-01-22T08:30:00Z',
-    category: mockCategories[1],
-    province: mockProvinces[5],
-    source: mockSources[1]
-  },
-  {
-    id: 7,
-    category_id: 5,
-    province_id: 1,
-    source_id: 3,
-    first_name: 'Marco',
-    last_name: 'Gallo',
-    email: 'marco.gallo@email.it',
-    phone: '338 2223344',
-    request_text: 'Richiesta preventivo polizza casa',
-    status: 'sold_shared',
-    current_shares: 1,
-    generated_at: '2024-01-21',
-    created_at: '2024-01-21T16:45:00Z',
-    updated_at: '2024-01-22T14:00:00Z',
-    category: mockCategories[4],
-    province: mockProvinces[0],
-    source: mockSources[2]
-  },
-  {
-    id: 8,
-    category_id: 1,
-    province_id: 7,
-    source_id: 4,
-    first_name: 'Claudia',
-    last_name: 'Martini',
-    email: 'claudia.martini@email.it',
-    phone: '342 9990001',
-    request_text: 'Ristrutturazione cucina e soggiorno open space',
-    status: 'free',
-    current_shares: 0,
-    generated_at: '2024-01-23',
-    created_at: '2024-01-23T09:00:00Z',
-    updated_at: '2024-01-23T09:00:00Z',
-    category: mockCategories[0],
-    province: mockProvinces[6],
-    source: mockSources[3]
-  }
-]
-
-// Flag per usare mock data
-const USE_MOCK_DATA = true
 
 export const useLeadStore = defineStore('lead', {
   state: (): LeadState => ({
@@ -271,22 +75,22 @@ export const useLeadStore = defineStore('lead', {
 
   getters: {
     hasLeads: (state): boolean => state.leads.length > 0,
-    
-    freeLeads: (state): Lead[] => 
+
+    freeLeads: (state): Lead[] =>
       state.leads.filter(l => l.status === 'free'),
-    
-    soldExclusiveLeads: (state): Lead[] => 
+
+    soldExclusiveLeads: (state): Lead[] =>
       state.leads.filter(l => l.status === 'sold_exclusive'),
-    
-    soldSharedLeads: (state): Lead[] => 
+
+    soldSharedLeads: (state): Lead[] =>
       state.leads.filter(l => l.status === 'sold_shared'),
-    
+
     exhaustedLeads: (state): Lead[] =>
       state.leads.filter(l => l.status === 'exhausted'),
 
     availableLeads: (state): Lead[] =>
       state.leads.filter(l => l.status === 'free' || l.status === 'sold_shared'),
-    
+
     hasActiveFilters: (state): boolean => {
       return !!(
         state.filters.search ||
@@ -313,48 +117,38 @@ export const useLeadStore = defineStore('lead', {
       return state.sources.find(s => s.id === id)
     },
 
-    activeCategories: (state): Category[] => 
+    activeCategories: (state): Category[] =>
       state.categories.filter(c => c.is_active),
 
-    activeProvinces: (state): Province[] => 
+    activeProvinces: (state): Province[] =>
       state.provinces.filter(p => p.is_active),
 
-    activeSources: (state): LeadSource[] => 
+    activeSources: (state): LeadSource[] =>
       state.sources.filter(s => s.is_active)
   },
 
   actions: {
-    /**
-     * Carica dati di supporto (categorie, province, sorgenti)
-     */
     async fetchSupportData() {
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 200))
-          this.categories = [...mockCategories]
-          this.provinces = [...mockProvinces]
-          this.sources = [...mockSources]
-          return
-        }
-
-        const { api } = useApi()
+        const client = useTypedApi()
         const [categoriesRes, provincesRes, sourcesRes] = await Promise.all([
-          api<{ data: Category[] }>('/admin/categories'),
-          api<{ data: Province[] }>('/admin/provinces'),
-          api<{ data: LeadSource[] }>('/admin/lead-sources')
+          client.GET('/admin/categories'),
+          client.GET('/admin/provinces'),
+          client.GET('/admin/lead-sources')
         ])
 
-        this.categories = categoriesRes.data
-        this.provinces = provincesRes.data
-        this.sources = sourcesRes.data
+        if (categoriesRes.error) throw categoriesRes.error
+        if (provincesRes.error) throw provincesRes.error
+        if (sourcesRes.error) throw sourcesRes.error
+
+        this.categories = (categoriesRes.data as any).data
+        this.provinces = (provincesRes.data as any).data
+        this.sources = (sourcesRes.data as any).data
       } catch (error: any) {
         console.error('fetchSupportData error:', error)
       }
     },
 
-    /**
-     * Carica lista lead con filtri e paginazione
-     */
     async fetchLeads() {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -362,102 +156,29 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
+        const client = useTypedApi()
 
-          // Applica filtri ai mock data
-          let filtered = [...mockLeads]
+        const query: Record<string, string> = {}
+        if (this.filters.search) query.search = this.filters.search
+        if (this.filters.category_id) query.category_id = String(this.filters.category_id)
+        if (this.filters.province_id) query.province_id = String(this.filters.province_id)
+        if (this.filters.source_id) query.source_id = String(this.filters.source_id)
+        if (this.filters.status) query.status = this.filters.status
+        if (this.filters.generated_from) query.generated_from = this.filters.generated_from
+        if (this.filters.generated_to) query.generated_to = this.filters.generated_to
+        if (this.filters.sort_by) query.sort_by = this.filters.sort_by
+        if (this.filters.sort_order) query.sort_order = this.filters.sort_order
+        query.page = String(this.filters.page || 1)
+        query.per_page = String(this.filters.per_page || 10)
 
-          // Filtro ricerca
-          if (this.filters.search) {
-            const search = this.filters.search.toLowerCase()
-            filtered = filtered.filter(l =>
-              l.first_name.toLowerCase().includes(search) ||
-              l.last_name.toLowerCase().includes(search) ||
-              l.email.toLowerCase().includes(search) ||
-              l.phone.includes(search) ||
-              l.request_text?.toLowerCase().includes(search)
-            )
-          }
+        const { data, error } = await client.GET('/admin/leads', {
+          params: { query }
+        })
 
-          // Filtro categoria
-          if (this.filters.category_id) {
-            filtered = filtered.filter(l => l.category_id === this.filters.category_id)
-          }
+        if (error) throw error
 
-          // Filtro provincia
-          if (this.filters.province_id) {
-            filtered = filtered.filter(l => l.province_id === this.filters.province_id)
-          }
-
-          // Filtro sorgente
-          if (this.filters.source_id) {
-            filtered = filtered.filter(l => l.source_id === this.filters.source_id)
-          }
-
-          // Filtro stato
-          if (this.filters.status) {
-            filtered = filtered.filter(l => l.status === this.filters.status)
-          }
-
-          // Filtro data generazione
-          if (this.filters.generated_from) {
-            filtered = filtered.filter(l => l.generated_at >= this.filters.generated_from!)
-          }
-          if (this.filters.generated_to) {
-            filtered = filtered.filter(l => l.generated_at <= this.filters.generated_to!)
-          }
-
-          // Ordinamento
-          const sortField = this.filters.sort_by || 'created_at'
-          const sortOrder = this.filters.sort_order === 'asc' ? 1 : -1
-          filtered.sort((a, b) => {
-            const aVal = (a as any)[sortField]
-            const bVal = (b as any)[sortField]
-            if (typeof aVal === 'string') {
-              return aVal.localeCompare(bVal) * sortOrder
-            }
-            return (aVal - bVal) * sortOrder
-          })
-
-          // Paginazione
-          const page = this.filters.page || 1
-          const perPage = this.filters.per_page || 10
-          const start = (page - 1) * perPage
-          const end = start + perPage
-
-          this.leads = filtered.slice(start, end)
-          this.pagination = {
-            current_page: page,
-            last_page: Math.ceil(filtered.length / perPage),
-            per_page: perPage,
-            total: filtered.length
-          }
-          return
-        }
-
-        // Chiamata API reale
-        const { api } = useApi()
-        const params = new URLSearchParams()
-
-        if (this.filters.search) params.append('search', this.filters.search)
-        if (this.filters.category_id) params.append('category_id', String(this.filters.category_id))
-        if (this.filters.province_id) params.append('province_id', String(this.filters.province_id))
-        if (this.filters.source_id) params.append('source_id', String(this.filters.source_id))
-        if (this.filters.status) params.append('status', this.filters.status)
-        if (this.filters.generated_from) params.append('generated_from', this.filters.generated_from)
-        if (this.filters.generated_to) params.append('generated_to', this.filters.generated_to)
-        if (this.filters.sort_by) params.append('sort_by', this.filters.sort_by)
-        if (this.filters.sort_order) params.append('sort_order', this.filters.sort_order)
-        params.append('page', String(this.filters.page || 1))
-        params.append('per_page', String(this.filters.per_page || 10))
-
-        const response = await api<{ data: Lead[], meta: PaginationMeta }>(
-          `/admin/leads?${params.toString()}`
-        )
-
-        this.leads = response.data
-        this.pagination = response.meta
+        this.leads = (data as any).data
+        this.pagination = (data as any).meta
       } catch (error: any) {
         this.error = error.message || t('common.errors.loadError')
         console.error('fetchLeads error:', error)
@@ -466,9 +187,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Carica singolo lead
-     */
     async fetchLead(id: number) {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -476,19 +194,14 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 300))
-          const lead = mockLeads.find(l => l.id === id)
-          this.currentLead = lead || null
-          if (!lead) {
-            this.error = t('common.errors.notFound')
-          }
-          return
-        }
+        const client = useTypedApi()
+        const { data, error } = await client.GET('/admin/leads/{lead}', {
+          params: { path: { lead: id } }
+        })
 
-        const { api } = useApi()
-        const response = await api<{ data: Lead }>(`/admin/leads/${id}`)
-        this.currentLead = response.data
+        if (error) throw error
+
+        this.currentLead = (data as any).data
       } catch (error: any) {
         this.error = error.message || t('common.errors.loadError')
         console.error('fetchLead error:', error)
@@ -497,9 +210,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Crea nuovo lead
-     */
     async createLead(data: LeadCreateForm): Promise<Lead | null> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -507,45 +217,18 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const newLead: Lead = {
-            id: Math.max(...mockLeads.map(l => l.id)) + 1,
-            category_id: data.category_id!,
-            province_id: data.province_id!,
-            source_id: data.source_id!,
-            first_name: data.first_name,
-            last_name: data.last_name,
-            email: data.email,
-            phone: data.phone,
-            request_text: data.request_text,
-            extra_tags: data.extra_tags,
-            status: 'free',
-            current_shares: 0,
-            external_id: data.external_id,
-            generated_at: data.generated_at,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            category: this.categories.find(c => c.id === data.category_id),
-            province: this.provinces.find(p => p.id === data.province_id),
-            source: this.sources.find(s => s.id === data.source_id)
-          }
-          mockLeads.push(newLead)
-          this.leads.unshift(newLead)
-          this.pagination.total++
-          return newLead
-        }
-
-        const { api } = useApi()
-        const response = await api<{ data: Lead }>('/admin/leads', {
-          method: 'POST',
-          body: data
+        const client = useTypedApi()
+        const { data: responseData, error } = await client.POST('/admin/leads', {
+          body: data as any
         })
 
-        this.leads.unshift(response.data)
+        if (error) throw error
+
+        const newLead = (responseData as any).data
+        this.leads.unshift(newLead)
         this.pagination.total++
 
-        return response.data
+        return newLead
       } catch (error: any) {
         this.error = error.message || t('common.errors.createError')
         console.error('createLead error:', error)
@@ -555,9 +238,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Aggiorna lead
-     */
     async updateLead(id: number, data: LeadUpdateForm): Promise<Lead | null> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -565,51 +245,21 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const index = mockLeads.findIndex(l => l.id === id)
-          if (index !== -1) {
-            const updated: Lead = {
-              ...mockLeads[index],
-              ...data,
-              updated_at: new Date().toISOString(),
-              category: this.categories.find(c => c.id === data.category_id),
-              province: this.provinces.find(p => p.id === data.province_id),
-              source: this.sources.find(s => s.id === data.source_id)
-            }
-            mockLeads[index] = updated
-
-            const listIndex = this.leads.findIndex(l => l.id === id)
-            if (listIndex !== -1) {
-              this.leads[listIndex] = updated
-            }
-
-            if (this.currentLead?.id === id) {
-              this.currentLead = updated
-            }
-
-            return updated
-          }
-          this.error = t('common.errors.notFound')
-          return null
-        }
-
-        const { api } = useApi()
-        const response = await api<{ data: Lead }>(`/admin/leads/${id}`, {
-          method: 'PUT',
-          body: data
+        const client = useTypedApi()
+        const { data: responseData, error } = await client.PUT('/admin/leads/{lead}', {
+          params: { path: { lead: id } },
+          body: data as any
         })
 
+        if (error) throw error
+
+        const updatedLead = (responseData as any).data
+
         const index = this.leads.findIndex(l => l.id === id)
-        if (index !== -1) {
-          this.leads[index] = response.data
-        }
+        if (index !== -1) this.leads[index] = updatedLead
+        if (this.currentLead?.id === id) this.currentLead = updatedLead
 
-        if (this.currentLead?.id === id) {
-          this.currentLead = response.data
-        }
-
-        return response.data
+        return updatedLead
       } catch (error: any) {
         this.error = error.message || t('common.errors.updateError')
         console.error('updateLead error:', error)
@@ -619,9 +269,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Elimina lead (solo se non venduto)
-     */
     async deleteLead(id: number): Promise<boolean> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -629,28 +276,18 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        // Verifica che il lead non sia venduto
-        const lead = mockLeads.find(l => l.id === id) || this.leads.find(l => l.id === id)
+        const lead = this.leads.find(l => l.id === id)
         if (lead && lead.status !== 'free') {
           this.error = t('common.errors.genericError')
           return false
         }
 
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const index = mockLeads.findIndex(l => l.id === id)
-          if (index !== -1) {
-            mockLeads.splice(index, 1)
-            this.leads = this.leads.filter(l => l.id !== id)
-            this.pagination.total--
-            return true
-          }
-          this.error = t('common.errors.notFound')
-          return false
-        }
+        const client = useTypedApi()
+        const { error } = await client.DELETE('/admin/leads/{lead}', {
+          params: { path: { lead: id } }
+        })
 
-        const { api } = useApi()
-        await api(`/admin/leads/${id}`, { method: 'DELETE' })
+        if (error) throw error
 
         this.leads = this.leads.filter(l => l.id !== id)
         this.pagination.total--
@@ -665,9 +302,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Elimina lead multipli (bulk delete - solo spam/non venduti)
-     */
     async deleteLeads(ids: number[]): Promise<{ success: number; failed: number }> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -678,33 +312,26 @@ export const useLeadStore = defineStore('lead', {
       let failed = 0
 
       try {
+        const client = useTypedApi()
+
         for (const id of ids) {
-          const lead = mockLeads.find(l => l.id === id) || this.leads.find(l => l.id === id)
+          const lead = this.leads.find(l => l.id === id)
           if (lead && lead.status !== 'free') {
             failed++
             continue
           }
 
-          if (USE_MOCK_DATA) {
-            const index = mockLeads.findIndex(l => l.id === id)
-            if (index !== -1) {
-              mockLeads.splice(index, 1)
-              success++
-            } else {
-              failed++
-            }
-          } else {
-            try {
-              const { api } = useApi()
-              await api(`/admin/leads/${id}`, { method: 'DELETE' })
-              success++
-            } catch {
-              failed++
-            }
+          try {
+            const { error } = await client.DELETE('/admin/leads/{lead}', {
+              params: { path: { lead: id } }
+            })
+            if (error) throw error
+            success++
+          } catch {
+            failed++
           }
         }
 
-        // Aggiorna lista
         this.leads = this.leads.filter(l => !ids.includes(l.id) || l.status !== 'free')
         this.pagination.total -= success
 
@@ -717,51 +344,31 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Import lead da file CSV/XLSX
-     */
-    async importLeads(config: LeadImportConfig): Promise<LeadImportResult | null> {
+    async importLeads(importConfig: LeadImportConfig): Promise<LeadImportResult | null> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
       this.importing = true
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 2000))
-          // Simula risultato import
-          return {
-            total_rows: 50,
-            imported: 47,
-            skipped: 2,
-            errors: [
-              { row: 12, message: 'Email non valida' },
-              { row: 35, message: 'Provincia non trovata' }
-            ]
-          }
-        }
-
-        const { api } = useApi()
+        const config = useRuntimeConfig()
         const formData = new FormData()
-        if (config.file) {
-          formData.append('file', config.file)
-        }
-        if (config.category_id) {
-          formData.append('category_id', String(config.category_id))
-        }
-        if (config.source_id) {
-          formData.append('source_id', String(config.source_id))
-        }
-        formData.append('mapping', JSON.stringify(config.mapping))
-        formData.append('skip_header', config.skip_header ? '1' : '0')
-        formData.append('duplicate_strategy', config.duplicate_strategy)
+        if (importConfig.file) formData.append('file', importConfig.file)
+        if (importConfig.category_id) formData.append('category_id', String(importConfig.category_id))
+        if (importConfig.source_id) formData.append('source_id', String(importConfig.source_id))
+        formData.append('mapping', JSON.stringify(importConfig.mapping))
+        formData.append('skip_header', importConfig.skip_header ? '1' : '0')
+        formData.append('duplicate_strategy', importConfig.duplicate_strategy)
 
-        const response = await api<{ data: LeadImportResult }>('/admin/leads/import', {
+        const response = await $fetch<{ data: LeadImportResult }>(`${config.public.apiBase}/admin/leads/import`, {
           method: 'POST',
-          body: formData
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Accept: 'application/json'
+          }
         })
 
-        // Ricarica lista lead dopo import
         await this.fetchLeads()
 
         return response.data
@@ -774,72 +381,34 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Carica statistiche lead
-     */
     async fetchStats() {
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 200))
-          this.stats = {
-            total: mockLeads.length,
-            free: mockLeads.filter(l => l.status === 'free').length,
-            sold_exclusive: mockLeads.filter(l => l.status === 'sold_exclusive').length,
-            sold_shared: mockLeads.filter(l => l.status === 'sold_shared').length,
-            exhausted: mockLeads.filter(l => l.status === 'exhausted').length,
-            by_category: mockCategories.map(c => ({
-              category_id: c.id,
-              category_name: c.name,
-              count: mockLeads.filter(l => l.category_id === c.id).length
-            })),
-            by_province: mockProvinces.slice(0, 5).map(p => ({
-              province_id: p.id,
-              province_name: p.name,
-              count: mockLeads.filter(l => l.province_id === p.id).length
-            })),
-            by_source: mockSources.map(s => ({
-              source_id: s.id,
-              source_name: s.name,
-              count: mockLeads.filter(l => l.source_id === s.id).length
-            }))
+        const config = useRuntimeConfig()
+        const response = await $fetch<{ data: LeadStats }>(`${config.public.apiBase}/admin/leads/stats`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Accept: 'application/json'
           }
-          return
-        }
+        })
 
-        const { api } = useApi()
-        const response = await api<{ data: LeadStats }>('/admin/leads/stats')
         this.stats = response.data
       } catch (error: any) {
         console.error('fetchStats error:', error)
       }
     },
 
-    // ============================================
-    // GESTIONE SORGENTI LEAD
-    // ============================================
-
-    /**
-     * Carica lista sorgenti
-     */
+    // LEAD SOURCES
     async fetchSources() {
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 200))
-          this.sources = [...mockSources]
-          return
-        }
-
-        const { api } = useApi()
-        const response = await api<{ data: LeadSource[] }>('/admin/lead-sources')
-        this.sources = response.data
+        const client = useTypedApi()
+        const { data, error } = await client.GET('/admin/lead-sources')
+        if (error) throw error
+        this.sources = (data as any).data
       } catch (error: any) {
         console.error('fetchSources error:', error)
       }
     },
 
-    /**
-     * Crea nuova sorgente
-     */
     async createSource(data: LeadSourceCreateForm): Promise<LeadSource | null> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -847,32 +416,15 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const newSource: LeadSource = {
-            id: Math.max(...mockSources.map(s => s.id)) + 1,
-            name: data.name,
-            slug: data.slug,
-            description: data.description,
-            api_key: `api_${Date.now()}`,
-            is_active: data.is_active,
-            config: data.config,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }
-          mockSources.push(newSource)
-          this.sources.push(newSource)
-          return newSource
-        }
-
-        const { api } = useApi()
-        const response = await api<{ data: LeadSource }>('/admin/lead-sources', {
-          method: 'POST',
-          body: data
+        const client = useTypedApi()
+        const { data: responseData, error } = await client.POST('/admin/lead-sources', {
+          body: data as any
         })
+        if (error) throw error
 
-        this.sources.push(response.data)
-        return response.data
+        const newSource = (responseData as any).data
+        this.sources.push(newSource)
+        return newSource
       } catch (error: any) {
         this.error = error.message || t('common.errors.createError')
         return null
@@ -881,9 +433,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Aggiorna sorgente
-     */
     async updateSource(id: number, data: LeadSourceUpdateForm): Promise<LeadSource | null> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -891,37 +440,18 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const index = mockSources.findIndex(s => s.id === id)
-          if (index !== -1) {
-            const updated: LeadSource = {
-              ...mockSources[index],
-              ...data,
-              updated_at: new Date().toISOString()
-            }
-            mockSources[index] = updated
-            const listIndex = this.sources.findIndex(s => s.id === id)
-            if (listIndex !== -1) {
-              this.sources[listIndex] = updated
-            }
-            return updated
-          }
-          return null
-        }
-
-        const { api } = useApi()
-        const response = await api<{ data: LeadSource }>(`/admin/lead-sources/${id}`, {
-          method: 'PUT',
-          body: data
+        const client = useTypedApi()
+        const { data: responseData, error } = await client.PUT('/admin/lead-sources/{leadSource}', {
+          params: { path: { leadSource: id } },
+          body: data as any
         })
+        if (error) throw error
 
+        const updatedSource = (responseData as any).data
         const index = this.sources.findIndex(s => s.id === id)
-        if (index !== -1) {
-          this.sources[index] = response.data
-        }
+        if (index !== -1) this.sources[index] = updatedSource
 
-        return response.data
+        return updatedSource
       } catch (error: any) {
         this.error = error.message || t('common.errors.updateError')
         return null
@@ -930,9 +460,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Rigenera API key per una sorgente
-     */
     async regenerateApiKey(id: number): Promise<string | null> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -940,29 +467,17 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const newKey = `api_${Date.now()}_${Math.random().toString(36).substring(7)}`
-          const index = mockSources.findIndex(s => s.id === id)
-          if (index !== -1) {
-            mockSources[index].api_key = newKey
-            const listIndex = this.sources.findIndex(s => s.id === id)
-            if (listIndex !== -1) {
-              this.sources[listIndex].api_key = newKey
-            }
+        const config = useRuntimeConfig()
+        const response = await $fetch<{ data: { api_key: string } }>(`${config.public.apiBase}/admin/lead-sources/${id}/regenerate-key`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Accept: 'application/json'
           }
-          return newKey
-        }
-
-        const { api } = useApi()
-        const response = await api<{ data: { api_key: string } }>(`/admin/lead-sources/${id}/regenerate-key`, {
-          method: 'POST'
         })
 
         const index = this.sources.findIndex(s => s.id === id)
-        if (index !== -1) {
-          this.sources[index].api_key = response.data.api_key
-        }
+        if (index !== -1) this.sources[index].api_key = response.data.api_key
 
         return response.data.api_key
       } catch (error: any) {
@@ -973,9 +488,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Elimina sorgente
-     */
     async deleteSource(id: number): Promise<boolean> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
@@ -983,26 +495,11 @@ export const useLeadStore = defineStore('lead', {
       this.error = null
 
       try {
-        // Verifica che non ci siano lead associati
-        const hasLeads = mockLeads.some(l => l.source_id === id)
-        if (hasLeads) {
-          this.error = t('common.errors.genericError')
-          return false
-        }
-
-        if (USE_MOCK_DATA) {
-          await new Promise(resolve => setTimeout(resolve, 500))
-          const index = mockSources.findIndex(s => s.id === id)
-          if (index !== -1) {
-            mockSources.splice(index, 1)
-            this.sources = this.sources.filter(s => s.id !== id)
-            return true
-          }
-          return false
-        }
-
-        const { api } = useApi()
-        await api(`/admin/lead-sources/${id}`, { method: 'DELETE' })
+        const client = useTypedApi()
+        const { error } = await client.DELETE('/admin/lead-sources/{leadSource}', {
+          params: { path: { leadSource: id } }
+        })
+        if (error) throw error
 
         this.sources = this.sources.filter(s => s.id !== id)
         return true
@@ -1014,20 +511,11 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Imposta filtri
-     */
     setFilters(filters: Partial<LeadFilters>) {
       this.filters = { ...this.filters, ...filters }
-      // Reset page se cambiano altri filtri
-      if (!('page' in filters)) {
-        this.filters.page = 1
-      }
+      if (!('page' in filters)) this.filters.page = 1
     },
 
-    /**
-     * Reset filtri
-     */
     resetFilters() {
       this.filters = {
         search: '',
@@ -1042,9 +530,6 @@ export const useLeadStore = defineStore('lead', {
       }
     },
 
-    /**
-     * Pulisci stato
-     */
     clearState() {
       this.leads = []
       this.currentLead = null

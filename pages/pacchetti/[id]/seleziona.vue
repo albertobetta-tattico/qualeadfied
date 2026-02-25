@@ -62,7 +62,7 @@ const availableLeads = computed(() => {
   if (!currentPackage.value?.category_id) {
     return catalogStore.leads
   }
-  return catalogStore.leads.filter(l => l.category_id === currentPackage.value?.category_id)
+  return catalogStore.leads.filter(l => (l.category_id ?? l.category?.id) === currentPackage.value?.category_id)
 })
 
 // Can select more leads
