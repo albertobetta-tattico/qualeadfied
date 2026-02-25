@@ -255,7 +255,7 @@ export const useCatalogStore = defineStore('catalog', {
       this.error = null
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: Category }>(`${config.public.apiBase}/admin/categories/${id}/toggle-active`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: Category }>(`${config.public.apiBase}/admin/categories/${id}/toggle-active`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         const index = this.categories.findIndex(c => c.id === id)
         if (index !== -1) this.categories[index] = response.data
         if (this.currentCategory?.id === id) this.currentCategory = response.data
@@ -269,7 +269,7 @@ export const useCatalogStore = defineStore('catalog', {
     async fetchCategoryStats() {
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: CategoryStats }>(`${config.public.apiBase}/admin/categories/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: CategoryStats }>(`${config.public.apiBase}/admin/categories/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         this.categoryStats = response.data
       } catch (error: any) { console.error('fetchCategoryStats error:', error) }
     },
@@ -324,7 +324,7 @@ export const useCatalogStore = defineStore('catalog', {
       this.error = null
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: Province }>(`${config.public.apiBase}/admin/provinces/${id}/toggle-active`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: Province }>(`${config.public.apiBase}/admin/provinces/${id}/toggle-active`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         const index = this.provinces.findIndex(p => p.id === id)
         if (index !== -1) this.provinces[index] = response.data
         return true
@@ -337,7 +337,7 @@ export const useCatalogStore = defineStore('catalog', {
     async fetchProvinceStats() {
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: ProvinceStats }>(`${config.public.apiBase}/admin/provinces/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: ProvinceStats }>(`${config.public.apiBase}/admin/provinces/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         this.provinceStats = response.data
       } catch (error: any) { console.error('fetchProvinceStats error:', error) }
     },
@@ -449,7 +449,7 @@ export const useCatalogStore = defineStore('catalog', {
       this.error = null
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: Package }>(`${config.public.apiBase}/admin/packages/${id}/toggle-active`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: Package }>(`${config.public.apiBase}/admin/packages/${id}/toggle-active`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         const index = this.packages.findIndex(p => p.id === id)
         if (index !== -1) this.packages[index] = response.data
         if (this.currentPackage?.id === id) this.currentPackage = response.data
@@ -463,7 +463,7 @@ export const useCatalogStore = defineStore('catalog', {
     async fetchPackageStats() {
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: PackageStats }>(`${config.public.apiBase}/admin/packages/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: PackageStats }>(`${config.public.apiBase}/admin/packages/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         this.packageStats = response.data
       } catch (error: any) { console.error('fetchPackageStats error:', error) }
     },
@@ -484,7 +484,7 @@ export const useCatalogStore = defineStore('catalog', {
         if (this.pricingFilters.category_id) params.append('category_id', String(this.pricingFilters.category_id))
         params.append('page', String(this.pricingFilters.page || 1))
         params.append('per_page', String(this.pricingFilters.per_page || 20))
-        const response = await $fetch<{ data: CategoryPriceWithCategory[]; meta: PaginationMeta }>(`${config.public.apiBase}/admin/pricing?${params.toString()}`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: CategoryPriceWithCategory[]; meta: PaginationMeta }>(`${config.public.apiBase}/admin/pricing?${params.toString()}`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         this.categoryPricesWithCategory = response.data
         this.pricingPagination = response.meta
       } catch (error: any) {
@@ -499,7 +499,7 @@ export const useCatalogStore = defineStore('catalog', {
       this.error = null
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: CategoryPrice }>(`${config.public.apiBase}/admin/pricing/${categoryId}`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: CategoryPrice }>(`${config.public.apiBase}/admin/pricing/${categoryId}`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         return response.data
       } catch (error: any) {
         this.error = error.message || t('common.errors.loadError')
@@ -514,7 +514,7 @@ export const useCatalogStore = defineStore('catalog', {
       this.error = null
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: CategoryPrice }>(`${config.public.apiBase}/admin/pricing/${categoryId}`, { method: 'PUT', headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json', 'Content-Type': 'application/json' }, body: data })
+        const response = await $fetch<{ data: CategoryPrice }>(`${config.public.apiBase}/admin/pricing/${categoryId}`, { method: 'PUT', headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json', 'Content-Type': 'application/json' }, body: data })
         const index = this.categoryPricesWithCategory.findIndex(p => p.category_id === categoryId)
         if (index !== -1) this.categoryPricesWithCategory[index] = { ...this.categoryPricesWithCategory[index], ...response.data }
         return response.data
@@ -532,7 +532,7 @@ export const useCatalogStore = defineStore('catalog', {
       try {
         const config = useRuntimeConfig()
         const params = categoryId ? `?category_id=${categoryId}` : ''
-        const response = await $fetch<{ data: PriceHistoryEntry[] }>(`${config.public.apiBase}/admin/pricing/history${params}`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: PriceHistoryEntry[] }>(`${config.public.apiBase}/admin/pricing/history${params}`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         this.priceHistory = response.data
       } catch (error: any) {
         this.error = error.message || t('common.errors.loadError')
@@ -542,7 +542,7 @@ export const useCatalogStore = defineStore('catalog', {
     async fetchPricingStats() {
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: PricingStats }>(`${config.public.apiBase}/admin/pricing/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}`, Accept: 'application/json' } })
+        const response = await $fetch<{ data: PricingStats }>(`${config.public.apiBase}/admin/pricing/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}`, Accept: 'application/json' } })
         this.pricingStats = response.data
       } catch (error: any) { console.error('fetchPricingStats error:', error) }
     },

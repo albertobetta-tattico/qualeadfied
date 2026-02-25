@@ -13,7 +13,8 @@ export const useTypedApi = () => {
       request.headers.set('Accept', 'application/json')
 
       if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('auth_token')
+        // Check admin_token first (admin pages), then auth_token (client pages)
+        const token = localStorage.getItem('admin_token') || localStorage.getItem('auth_token')
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`)
         }

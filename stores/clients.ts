@@ -157,7 +157,7 @@ export const useClientStore = defineStore('client', {
           method: 'POST',
           body: data,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -248,7 +248,7 @@ export const useClientStore = defineStore('client', {
         const response = await $fetch<{ data: Client }>(`${config.public.apiBase}/admin/users/${id}/suspend`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -278,7 +278,7 @@ export const useClientStore = defineStore('client', {
         const response = await $fetch<{ data: Client }>(`${config.public.apiBase}/admin/users/${id}/activate`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -308,7 +308,7 @@ export const useClientStore = defineStore('client', {
         await $fetch(`${config.public.apiBase}/admin/users/${id}/reset-password`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -333,7 +333,7 @@ export const useClientStore = defineStore('client', {
         const response = await $fetch<{ data: Client }>(`${config.public.apiBase}/admin/users/${id}/free-trial`, {
           method: 'PUT',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           },
           body: {
@@ -361,7 +361,7 @@ export const useClientStore = defineStore('client', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: ClientStats }>(`${config.public.apiBase}/admin/users/stats`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })

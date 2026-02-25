@@ -165,7 +165,7 @@ export const useTransactionStore = defineStore('transaction', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: TransactionStats }>(`${config.public.apiBase}/admin/transactions/stats`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })

@@ -330,7 +330,7 @@ const mockPriceHistory: PriceHistoryEntry[] = [
 ]
 
 // Flag per usare mock data
-const USE_MOCK_DATA = true
+const USE_MOCK_DATA = false
 
 export const usePricingStore = defineStore('pricing', {
   state: (): PricingState => ({

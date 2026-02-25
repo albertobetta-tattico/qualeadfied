@@ -163,7 +163,7 @@ export const useInvoiceStore = defineStore('invoice', {
         const response = await $fetch<{ data: Invoice }>(`${config.public.apiBase}/admin/invoices/${id}/resend-sdi`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -194,7 +194,7 @@ export const useInvoiceStore = defineStore('invoice', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: { url: string } }>(`${config.public.apiBase}/admin/invoices/${id}/pdf`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -219,7 +219,7 @@ export const useInvoiceStore = defineStore('invoice', {
         await $fetch(`${config.public.apiBase}/admin/invoices/${id}/send-email`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           },
           body: email ? { email } : {}
@@ -245,7 +245,7 @@ export const useInvoiceStore = defineStore('invoice', {
         const response = await $fetch<{ data: Invoice }>(`${config.public.apiBase}/admin/invoices/${invoiceId}/credit-note`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           },
           body: reason ? { reason } : {}
@@ -269,7 +269,7 @@ export const useInvoiceStore = defineStore('invoice', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: InvoiceStats }>(`${config.public.apiBase}/admin/invoices/stats`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })

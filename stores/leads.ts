@@ -364,7 +364,7 @@ export const useLeadStore = defineStore('lead', {
           method: 'POST',
           body: formData,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -386,7 +386,7 @@ export const useLeadStore = defineStore('lead', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: LeadStats }>(`${config.public.apiBase}/admin/leads/stats`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -471,7 +471,7 @@ export const useLeadStore = defineStore('lead', {
         const response = await $fetch<{ data: { api_key: string } }>(`${config.public.apiBase}/admin/lead-sources/${id}/regenerate-key`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })

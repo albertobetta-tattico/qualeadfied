@@ -106,7 +106,7 @@ export const useReportStore = defineStore('report', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: DashboardData }>(`${config.public.apiBase}/admin/dashboard`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -131,7 +131,7 @@ export const useReportStore = defineStore('report', {
         const response = await $fetch<{ data: { stats: SalesStats; chart: SalesChartData } }>(
           `${config.public.apiBase}/admin/reports/sales?${params.toString()}`, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+              Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
               Accept: 'application/json'
             }
           }
@@ -158,7 +158,7 @@ export const useReportStore = defineStore('report', {
         const response = await $fetch<{ data: CategoryPerformance[] }>(
           `${config.public.apiBase}/admin/reports/categories?${params.toString()}`, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+              Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
               Accept: 'application/json'
             }
           }
@@ -184,7 +184,7 @@ export const useReportStore = defineStore('report', {
         const response = await $fetch<{ data: { provinces: ProvinceStats[]; regions: RegionStats[] } }>(
           `${config.public.apiBase}/admin/reports/geographic?${params.toString()}`, {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+              Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
               Accept: 'application/json'
             }
           }
@@ -211,7 +211,7 @@ export const useReportStore = defineStore('report', {
           method: 'POST',
           body: request,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -233,7 +233,7 @@ export const useReportStore = defineStore('report', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: ExportStatus }>(`${config.public.apiBase}/admin/reports/export/${exportId}`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })

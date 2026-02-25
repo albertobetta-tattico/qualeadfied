@@ -162,7 +162,7 @@ export const useOrderStore = defineStore('order', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: OrderStats }>(`${config.public.apiBase}/admin/orders/stats`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })

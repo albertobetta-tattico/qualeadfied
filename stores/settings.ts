@@ -126,7 +126,7 @@ export const useSettingsStore = defineStore('settings', {
           method: 'PUT',
           body: configData,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -154,7 +154,7 @@ export const useSettingsStore = defineStore('settings', {
           method: 'PUT',
           body: configData,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -181,7 +181,7 @@ export const useSettingsStore = defineStore('settings', {
           method: 'POST',
           body: { email },
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -206,7 +206,7 @@ export const useSettingsStore = defineStore('settings', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: CategoryNotificationConfig[] }>(`${config.public.apiBase}/admin/settings/notifications`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -231,7 +231,7 @@ export const useSettingsStore = defineStore('settings', {
           method: 'PUT',
           body: configData,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -382,7 +382,7 @@ export const useSettingsStore = defineStore('settings', {
         await $fetch(`${config.public.apiBase}/admin/admins/${id}/reset-password`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -458,7 +458,7 @@ export const useSettingsStore = defineStore('settings', {
         const config = useRuntimeConfig()
         const response = await $fetch<{ data: FattureCloudConfig }>(`${config.public.apiBase}/admin/settings/fatture-cloud`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -483,7 +483,7 @@ export const useSettingsStore = defineStore('settings', {
           method: 'PUT',
           body: configData,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
@@ -509,7 +509,7 @@ export const useSettingsStore = defineStore('settings', {
         const response = await $fetch<{ data: FattureCloudTestResult }>(`${config.public.apiBase}/admin/settings/fatture-cloud/test`, {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
             Accept: 'application/json'
           }
         })
