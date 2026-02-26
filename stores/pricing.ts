@@ -720,8 +720,8 @@ export const usePricingStore = defineStore('pricing', {
 
         // API reale
         const { api } = useApi()
-        const response = await api<PricingStats>('/admin/pricing/stats')
-        this.pricingStats = response
+        const response = await api<{ data: PricingStats }>('/admin/pricing/stats')
+        this.pricingStats = response.data
       } catch (error: any) {
         console.error('fetchPricingStats error:', error)
       }

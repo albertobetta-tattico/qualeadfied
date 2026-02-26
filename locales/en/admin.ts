@@ -120,6 +120,7 @@ export default {
           exhausted: 'Exhausted',
           remaining: '{remaining}/{total} remaining',
         },
+        paginatorTemplate: 'Showing {first} - {last} of {totalRecords} clients',
       },
 
       actions: {
@@ -133,6 +134,7 @@ export default {
         suspend: 'Suspend',
         reactivate: 'Reactivate',
         delete: 'Delete',
+        moreActions: 'More actions',
       },
 
       dialog: {
@@ -156,12 +158,16 @@ export default {
       editTitle: 'Edit Client',
       statusLabel: 'Status',
       registeredAt: 'Registered on {date}',
+      loading: 'Loading client...',
+      notFound: 'Client not found',
+      notFoundDesc: 'The requested client does not exist or has been removed.',
 
       infoCards: {
         freeTrial: 'Free Trial',
         emailVerified: 'Email Verified',
         leadNotifications: 'Lead Notifications',
         marketingConsent: 'Marketing Consent',
+        pendingVerification: 'Pending verification',
         yes: 'Yes',
         no: 'No',
         active: 'Active',
@@ -187,22 +193,40 @@ export default {
 
       billingForm: {
         address: 'Address',
+        billingAddress: 'Billing Address',
         zip: 'ZIP Code',
         city: 'City',
         province: 'Province',
+        country: 'Country',
         sdiCode: 'SDI Code',
         pec: 'PEC',
         bankData: 'Bank Details',
         iban: 'IBAN',
+        ibanHint: 'Italian IBAN (27 characters)',
         bankName: 'Bank',
+        bankNamePlaceholder: 'Bank name',
+        bankAccountHolder: 'Account Holder',
+        bankAccountHolderPlaceholder: 'Account holder name',
+        bicSwift: 'BIC/SWIFT',
+        bicSwiftPlaceholder: 'e.g. UNCRITM1XXX',
+        bicSwiftHint: 'BIC/SWIFT code of the bank (optional)',
       },
 
       settingsTab: {
         categoriesOfInterest: 'Categories of Interest',
+        categoriesOfInterestDesc: 'Categories for which the client receives lead notifications',
+        categoriesPlaceholder: 'Select categories',
+        categoriesFilterPlaceholder: 'Search categories...',
+        categoriesHint: 'The client will receive notifications for leads in selected categories',
+        categoryInactive: 'Inactive',
         accountSettings: 'Account Settings',
         status: 'Account Status',
         freeTrial: 'Free Trial',
+        enableFreeTrial: 'Enable Free Trial',
+        freeTrialHint: 'Number of free leads remaining for the client',
+        freeTrialUsed: '{count} free leads used',
         leadNotifications: 'Lead Notifications',
+        leadNotificationsHint: 'Enable email notifications for new available leads',
         marketingConsent: 'Marketing Consent',
         dangerZone: 'Danger Zone',
         resetPassword: 'Reset Password',
@@ -211,6 +235,11 @@ export default {
         suspendAccountDesc: 'Temporarily suspend client access',
         deleteAccount: 'Delete Account',
         deleteAccountDesc: 'Permanently delete the client and all their data',
+      },
+
+      historyTab: {
+        title: 'Order History',
+        desc: 'Recent orders placed by the client',
       },
 
       saveButton: 'Save Changes',
@@ -408,12 +437,21 @@ export default {
     edit: {
       editTitle: 'Edit Lead',
       editSubtitle: 'Edit lead data',
+      loading: 'Loading lead...',
+      notFound: 'Lead not found',
+      notFoundDescription: 'The requested lead does not exist or has been removed.',
+      backToList: 'Back to Leads',
+      leadDate: 'Lead Date',
+      cancelChanges: 'Cancel Changes',
+      deleteButton: 'Delete Lead',
 
       infoCards: {
         category: 'Category',
         province: 'Province',
         source: 'Source',
         insertedAt: 'Inserted on',
+        updatedAt: 'Updated on',
+        maxShares: 'Max Shares',
       },
 
       tabs: {
@@ -436,6 +474,7 @@ export default {
         source: 'Lead Source',
         sellingMode: 'Selling Mode',
         externalId: 'External ID',
+        externalIdHint: 'Identifier in the source system (optional)',
         sellingModeOptions: {
           exclusive: 'Exclusive',
           shared: 'Shared',
@@ -452,7 +491,10 @@ export default {
       },
 
       salesHistory: {
+        title: 'Sales History',
+        description: 'List of sales made for this lead',
         empty: 'No sales recorded',
+        availableForPurchase: 'Available for purchase',
         headers: {
           buyer: 'Buyer',
           order: 'Order',
@@ -635,6 +677,11 @@ export default {
       availableLeads: 'Available Leads',
       createTitle: 'New Category',
       createSubtitle: 'Enter the details to create a new product category',
+      editTitle: 'Edit Category',
+      warning: {
+        title: 'Warning',
+        deactivateWithLeads: 'This category has {count} active leads. Deactivating it means new leads cannot be assigned to this category.',
+      },
       form: {
         basicInfo: 'Basic Information',
         name: 'Category Name',
@@ -649,8 +696,11 @@ export default {
         businessRules: 'Business Rules',
         maxShares: 'Maximum Shares',
         maxSharesHint: 'Maximum number of clients a lead can be sold to in shared mode',
+        maxSharesHintEdit: 'The change does not affect already sold leads',
         sortOrder: 'Display Order',
         sortOrderHint: 'Lower number = displayed first in the catalog',
+        sortOrderHintEdit: 'Change the position in the catalog',
+        slugEditHint: 'Changing the slug may affect existing links',
         isActive: 'Active Category',
         isActiveHint: 'Active categories are visible in the catalog and can receive new leads',
         createButton: 'Create Category',
@@ -671,15 +721,117 @@ export default {
         formError: 'Fix the errors in the form before proceeding',
         createSuccess: 'Category "{name}" successfully created',
         createError: 'Error creating category',
+        deactivated: 'Category "{name}" deactivated',
+        activated: 'Category "{name}" activated',
+        toggleSuccess: 'Category status updated successfully',
+        toggleError: 'Error updating category status',
+        deleteSuccess: 'Category "{name}" successfully deleted',
+        deleteError: 'Error deleting category',
+        exportInProgress: 'Exporting categories...',
+      },
+      stats: {
+        totalCategories: 'Total Categories',
+        activeCategories: 'Active Categories',
+        totalLeads: 'Total Leads',
+        availableLeads: 'Available Leads',
+        categoryId: 'Category ID',
+        createdAt: 'Created At',
+      },
+      search: {
+        placeholder: 'Search categories by name...',
+      },
+      filters: {
+        all: 'All',
+        active: 'Active',
+        inactive: 'Inactive',
+      },
+      table: {
+        headers: {
+          name: 'Name',
+          description: 'Description',
+          maxShares: 'Max Shares',
+          status: 'Status',
+          createdAt: 'Created At',
+        },
+        paginatorTemplate: 'Showing {first} - {last} of {totalRecords} categories',
+        empty: 'No categories found',
+        createFirst: 'Create the first category',
+        loading: 'Loading categories...',
+        noLeads: 'No leads',
+      },
+      actions: {
+        deactivate: 'Deactivate',
+        activate: 'Activate',
+      },
+      dialog: {
+        deleteMessage: 'Are you sure you want to delete the category "{name}"?',
+        hasLeadsWarning: 'Warning: this category contains {count} leads',
+        irreversible: 'This action cannot be undone.',
       },
     },
 
     provinces: {
       title: 'Provinces',
+      subtitle: 'Manage Italian provinces for geographic lead classification',
       description: 'Italian provinces directory for geographic filtering',
       total: 'Total',
       active: 'Active',
       regions: 'Regions',
+      info: {
+        title: 'How provinces work',
+        description: 'Provinces are used to geographically classify leads. Clients can filter leads by province and receive notifications only for their areas of interest.',
+      },
+      stats: {
+        totalProvinces: 'Total Provinces',
+        activeProvinces: 'Active Provinces',
+        inactiveProvinces: 'Inactive Provinces',
+        totalRegions: 'Total Regions',
+        totalLeads: 'Total Leads',
+      },
+      search: {
+        placeholder: 'Search provinces by name or code...',
+      },
+      filters: {
+        all: 'All',
+        active: 'Active',
+        inactive: 'Inactive',
+        allRegions: 'All regions',
+        selectRegion: 'Select region',
+        searchRegion: 'Search region...',
+      },
+      table: {
+        headers: {
+          code: 'Code',
+          name: 'Name',
+          region: 'Region',
+          leads: 'Leads',
+          status: 'Status',
+        },
+        paginatorTemplate: 'Showing {first} - {last} of {totalRecords} provinces',
+        empty: 'No provinces found',
+        loading: 'Loading provinces...',
+        noLeads: 'No leads',
+      },
+      actions: {
+        deactivate: 'Deactivate',
+        activate: 'Activate',
+        activateSelected: 'Activate selected',
+        deactivateSelected: 'Deactivate selected',
+      },
+      dialog: {
+        deleteMessage: 'Are you sure you want to delete the province "{name}"?',
+        hasLeadsWarning: 'Warning: this province contains {count} leads',
+        irreversible: 'This action cannot be undone.',
+      },
+      toast: {
+        deactivated: 'Province "{name}" deactivated',
+        activated: 'Province "{name}" activated',
+        toggleSuccess: 'Province status updated successfully',
+        toggleError: 'Error updating province status',
+        deleteSuccess: 'Province "{name}" successfully deleted',
+        deleteError: 'Error deleting province',
+        exportInProgress: 'Exporting provinces...',
+      },
     },
 
     packages: {
@@ -690,6 +842,12 @@ export default {
       sales: 'Sales',
       createTitle: 'New Package',
       createSubtitle: 'Configure a new lead package for clients',
+      editTitle: 'Edit Package',
+      allCategories: 'All Categories',
+      warning: {
+        title: 'Warning',
+        deactivateWithSales: 'This package has {count} associated sales. Deactivating it will make it unavailable for purchase.',
+      },
       form: {
         basicInfo: 'Basic Information',
         name: 'Package Name',
@@ -704,25 +862,39 @@ export default {
         description: 'Description',
         descriptionPlaceholder: 'Describe the package content and benefits...',
         descriptionHint: 'The description will be visible to clients in the catalog',
+        exclusive: 'Exclusive',
+        shared: 'Shared',
+        specificCategories: 'Specific Categories',
         exclusiveLeads: 'Exclusive Leads',
         exclusiveLeadsSubtitle: 'Leads sold only to one client',
         leadQuantity: 'Quantity',
+        exclusiveLeadQuantityLabel: 'Exclusive Lead Quantity',
         exclusiveLeadQuantityHint: 'Number of exclusive leads in the package',
+        exclusivePriceLabel: 'Exclusive Leads Price',
+        exclusivePriceHint: 'Total price for exclusive leads',
+        exclusivePricePerLead: 'per lead',
         totalPrice: 'Total Price',
+        totalPackagePrice: 'Total Package Price',
         priceExVat: 'ex VAT',
         pricePerLead: 'Price per lead',
         autoCalculated: 'auto-calculated',
         sharedLeads: 'Shared Leads',
         sharedLeadsSubtitle: 'Leads sold to multiple clients',
+        sharedLeadQuantityLabel: 'Shared Lead Quantity',
         sharedLeadQuantityHint: 'Number of shared leads in the package',
+        sharedPriceLabel: 'Shared Leads Price',
+        sharedPriceHint: 'Total price for shared leads',
+        sharedPricePerLead: 'per lead',
         summary: 'Package Summary',
         totalLeads: 'Total Leads',
         totalPriceLabel: 'Total Price',
         settings: 'Settings',
         sortOrder: 'Display Order',
         sortOrderHint: 'Lower number = displayed first',
+        sortOrderHintEdit: 'Change the position in the catalog',
         isActive: 'Active',
         isActiveHint: 'Active packages are visible in the catalog',
+        isActiveHintEdit: 'Deactivate to hide the package from the catalog',
         createButton: 'Create Package',
       },
       info: {
@@ -733,6 +905,60 @@ export default {
         formError: 'Fix the errors in the form before proceeding',
         createSuccess: 'Package "{name}" successfully created',
         createError: 'Error creating package',
+        deactivated: 'Package "{name}" deactivated',
+        activated: 'Package "{name}" activated',
+        toggleSuccess: 'Package status updated successfully',
+        toggleError: 'Error updating package status',
+        deleteSuccess: 'Package "{name}" successfully deleted',
+        deleteError: 'Error deleting package',
+        exportInProgress: 'Exporting packages...',
+      },
+      stats: {
+        totalPackages: 'Total Packages',
+        activePackages: 'Active Packages',
+        totalSales: 'Total Sales',
+        totalRevenue: 'Total Revenue',
+        packageId: 'Package ID',
+        createdAt: 'Created At',
+        generatedRevenue: 'Generated Revenue',
+      },
+      search: {
+        placeholder: 'Search packages by name...',
+      },
+      filters: {
+        all: 'All',
+        active: 'Active',
+        inactive: 'Inactive',
+        selectCategory: 'Select category',
+      },
+      table: {
+        headers: {
+          name: 'Name',
+          description: 'Description',
+          leads: 'Included Leads',
+          exclusiveLeads: 'Exclusive Leads',
+          sharedLeads: 'Shared Leads',
+          categories: 'Categories',
+          price: 'Price',
+          total: 'Total',
+          sales: 'Sales',
+          salesCount: 'No. Sales',
+          status: 'Status',
+          createdAt: 'Created At',
+        },
+        paginatorTemplate: 'Showing {first} - {last} of {totalRecords} packages',
+        empty: 'No packages found',
+        createFirst: 'Create the first package',
+        loading: 'Loading packages...',
+      },
+      actions: {
+        deactivate: 'Deactivate',
+        activate: 'Activate',
+      },
+      dialog: {
+        deleteMessage: 'Are you sure you want to delete the package "{name}"?',
+        hasSalesWarning: 'Warning: this package has {count} associated sales',
+        irreversible: 'This action cannot be undone.',
       },
     },
 
@@ -988,6 +1214,61 @@ export default {
         slotPositive: 'The price for slot {number} must be positive',
       },
     },
+
+    // History (history.vue)
+    history: {
+      subtitle: 'History of all price list changes',
+      backToPricing: 'Back to Price Lists',
+      searchPlaceholder: 'Search by category...',
+      exportExcel: 'Export Excel',
+      loading: 'Loading history...',
+      empty: 'No price changes found',
+      emptySubtext: 'The history is automatically populated when category prices are modified.',
+      paginatorTemplate: 'Showing {first} - {last} of {totalRecords} changes',
+      from: 'from',
+      to: 'to',
+      inEffect: 'In effect',
+      system: 'System',
+
+      stats: {
+        totalChanges: 'Total Changes',
+        changesThisMonth: 'Changes This Month',
+        categoriesModified: 'Categories Modified',
+        lastChange: 'Last Change',
+      },
+
+      filters: {
+        category: 'Category',
+        allCategories: 'All categories',
+        selectCategory: 'Select category',
+        dateFrom: 'Date From',
+        dateTo: 'Date To',
+      },
+
+      columns: {
+        category: 'Category',
+        exclusivePrice: 'Exclusive Price',
+        sharedPrices: 'Shared Prices',
+        validityPeriod: 'Validity Period',
+        changeDate: 'Change Date',
+        operator: 'Operator',
+      },
+
+      dialog: {
+        title: 'Price Change Detail',
+        close: 'Close',
+        exclusivePrice: 'Exclusive Price',
+        sharedPrices: 'Shared Prices',
+        validityPeriod: 'Validity Period',
+        validFrom: 'Valid from',
+        validUntil: 'Valid until',
+        modifiedOn: 'Modified on',
+        status: 'Status',
+        active: 'Active',
+        replaced: 'Replaced',
+        currentlyInEffect: 'Currently in effect',
+      },
+    },
   },
 
   // ==========================================
@@ -1061,6 +1342,82 @@ export default {
         goToOrder: 'Go to order',
         goToClient: 'Go to client',
       },
+
+      tooltip: {
+        moreActions: 'More actions',
+      },
+    },
+
+    // Detail ([id].vue)
+    detail: {
+      loading: 'Loading transaction...',
+      notFound: 'Transaction not found',
+      notFoundDescription: 'The requested transaction does not exist or has been removed.',
+      backToList: 'Back to transactions',
+      copyPaymentIntentId: 'Copy Payment Intent ID',
+      openOnStripe: 'Open on Stripe',
+      goToOrder: 'Go to Order',
+      goToOrderLink: 'Go to order',
+      goToClientProfile: 'Go to client profile',
+
+      cards: {
+        amount: 'Amount',
+        method: 'Method',
+        order: 'Order',
+        processing: 'Processing',
+      },
+
+      tabs: {
+        details: 'Details',
+        client: 'Client',
+        timeline: 'Timeline',
+        refunds: 'Refunds',
+        stripeResponse: 'Stripe Response',
+      },
+
+      // Details tab
+      paymentDetails: 'Payment Details',
+      stripeIds: 'Stripe IDs',
+      currency: 'Currency',
+      cardDetails: 'Card Details',
+      expiry: 'Expiry',
+      country: 'Country',
+      bank: 'Bank',
+      sepaDetails: 'SEPA Details',
+      sepaDebit: 'SEPA Debit',
+      transactionError: 'Transaction Error',
+      errorCode: 'Error Code',
+      errorMessage: 'Error Message',
+
+      // Order info
+      associatedOrder: 'Associated Order',
+      orderTotal: 'Order Total',
+      orderType: 'Order Type',
+      awaiting: 'Awaiting',
+
+      // Client tab
+      clientData: 'Client Data',
+      clientDataNotAvailable: 'Client data not available',
+      contactPerson: 'Contact Person',
+
+      // Timeline tab
+      noEvents: 'No events recorded',
+
+      // Refunds tab
+      noRefunds: 'No refunds recorded',
+      totalRefunded: 'Total Refunded',
+      refundsManagedOnStripe: 'Refunds are managed directly on Stripe.',
+      refundColumns: {
+        refundId: 'Refund ID',
+        reason: 'Reason',
+      },
+
+      // Stripe Response tab
+      fullApiResponse: 'Full API Response',
+      copyJson: 'Copy JSON',
+      expand: 'Expand',
+      collapse: 'Collapse',
+      responseArchiveNote: 'The API response is archived at the time of the transaction and may not reflect the current state on Stripe.',
     },
   },
 
@@ -1147,6 +1504,79 @@ export default {
       tooltip: {
         view: 'View',
         moreActions: 'More actions',
+      },
+    },
+
+    // Detail ([id].vue)
+    detail: {
+      loading: 'Loading invoice...',
+      notFound: 'Invoice not found',
+      notFoundDescription: 'The requested invoice does not exist or has been removed.',
+      backToList: 'Back to invoices',
+      issuedOn: 'Issued on',
+      downloadPdf: 'Download PDF',
+      sendEmail: 'Send Email',
+      resendSdi: 'Resend SDI',
+      creditNote: 'Credit Note',
+
+      cards: {
+        totalAmount: 'Invoice Total',
+        sdiStatus: 'SDI Status',
+        fattureCloud: 'Fatture in Cloud',
+        dates: 'Dates',
+      },
+
+      issueLabel: 'Issue',
+      dueLabel: 'Due',
+      sentLabel: 'SDI Sent',
+      notSynced: 'Not synced',
+      vatIncluded: 'VAT {rate}% included',
+
+      tabs: {
+        details: 'Details',
+        billingData: 'Billing Data',
+        client: 'Client',
+        sdiStatus: 'SDI Status',
+      },
+
+      invoiceLines: 'Invoice Lines',
+      columns: {
+        description: 'Description',
+        quantity: 'Quantity',
+        unitPrice: 'Unit Price',
+        vat: 'VAT',
+        total: 'Total',
+      },
+      taxableAmount: 'Taxable Amount',
+      vatLabel: 'VAT',
+      notes: 'Notes',
+      linkedOrder: 'Linked Order',
+      viewOrder: 'View Order',
+
+      // Billing tab
+      holderData: 'Holder Data',
+      companyName: 'Company Name',
+      vatNumber: 'VAT Number',
+      address: 'Address',
+      sdiCode: 'SDI Code',
+      goToClient: 'Go to Client',
+
+      // SDI tab
+      resendToSdi: 'Resend to SDI',
+      sdiDescriptions: {
+        pending: 'The invoice is awaiting submission to the Exchange System.',
+        sent: 'The invoice has been sent to the Exchange System and is being processed.',
+        delivered: 'The invoice has been delivered to the recipient.',
+        accepted: 'The invoice has been accepted by the recipient.',
+        rejected: 'The invoice was rejected. Please check the data and resend.',
+        notDelivered: 'The invoice could not be delivered. Delivery will be retried.',
+        error: 'An error occurred while sending the invoice.',
+      },
+      chronology: 'Chronology',
+      timeline: {
+        invoiceCreated: 'Invoice Created',
+        invoiceIssued: 'Invoice Issued',
+        sentToSdi: 'Sent to SDI',
       },
     },
   },

@@ -113,7 +113,8 @@ export const useClientStore = defineStore('client', {
         })
         if (error) throw error
 
-        this.clients = (data as any).data
+        // Transform User+clientProfile into flat Client objects
+        this.clients = ((data as any).data || []).map((user: any) => this._transformUserToClient(user))
         this.pagination = (data as any).meta
       } catch (error: any) {
         this.error = error.message || t('common.errors.loadError')
@@ -136,7 +137,7 @@ export const useClientStore = defineStore('client', {
         })
         if (error) throw error
 
-        this.currentClient = (data as any).data
+        this.currentClient = this._transformUserToClient((data as any).data)
       } catch (error: any) {
         this.error = error.message || t('common.errors.loadError')
         console.error('fetchClient error:', error)
@@ -392,6 +393,38 @@ export const useClientStore = defineStore('client', {
       this.currentClient = null
       this.stats = null
       this.error = null
+    },
+
+    /**
+     * Transform backend User+clientProfile into flat Client object
+     * Backend returns: { id, email, status, role, client_profile: { company_name, ... } }
+     * Frontend expects: { id, company_name, email, status, ... }
+     */
+    _transformUserToClient(user: any): Client {
+      const cp = user.client_profile || {}
+      return {
+        id: user.id,
+        company_name: cp.company_name || user.email || '-',
+        vat_number: cp.vat_number || '',
+        email: user.email || '',
+        phone: cp.phone || '',
+        contact_first_name: cp.contact_first_name || '',
+        contact_last_name: cp.contact_last_name || '',
+        status: user.status || 'pending',
+        free_trial_enabled: cp.free_trial_enabled || false,
+        free_trial_leads_total: cp.free_trial_leads_total || 0,
+        free_trial_leads_used: cp.free_trial_leads_used || 0,
+        billing_data: cp.billing_data || null,
+        bank_data: cp.bank_data || null,
+        category_ids: cp.category_ids || [],
+        terms_accepted: cp.terms_accepted || false,
+        privacy_accepted: cp.privacy_accepted || false,
+        marketing_consent: cp.marketing_consent || false,
+        notify_new_leads: cp.notify_new_leads || false,
+        email_verified_at: user.email_verified_at || null,
+        created_at: user.created_at || '',
+        updated_at: user.updated_at || '',
+      }
     }
   }
 })
