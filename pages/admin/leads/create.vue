@@ -31,7 +31,10 @@ const form = reactive<Omit<LeadCreateForm, 'generated_at'>>({
   phone: '',
   request_text: '',
   extra_tags: {},
-  external_id: ''
+  external_id: '',
+  medium: '',
+  campaign: '',
+  country: 'IT'
 })
 
 // Helper to format Date to string for API
@@ -148,6 +151,8 @@ const onCreateAnother = async () => {
     form.phone = ''
     form.request_text = ''
     form.external_id = ''
+    form.medium = ''
+    form.campaign = ''
     formGeneratedAt.value = new Date()
     
     // Keep the context
@@ -416,6 +421,56 @@ onMounted(() => {
                 />
                 <small class="form-hint">{{ $t('admin.leads.create.form.externalIdHint') }}</small>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracking & Acquisition Card -->
+      <div class="q-card">
+        <div class="q-card-header">
+          <h3 class="card-title">
+            <i class="pi pi-chart-line mr-2 text-primary-500"></i>
+            {{ $t('admin.leads.create.sections.tracking') }}
+          </h3>
+        </div>
+        <div class="q-card-body">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Country -->
+            <div class="form-group">
+              <label for="country">{{ $t('admin.leads.create.form.country') }} *</label>
+              <PrimeInputText
+                id="country"
+                v-model="form.country"
+                placeholder="IT"
+                class="w-full"
+                maxlength="2"
+              />
+              <small class="form-hint">{{ $t('admin.leads.create.form.countryHint') }}</small>
+            </div>
+
+            <!-- Medium -->
+            <div class="form-group">
+              <label for="medium">{{ $t('admin.leads.create.form.medium') }}</label>
+              <PrimeInputText
+                id="medium"
+                v-model="form.medium"
+                :placeholder="$t('admin.leads.create.form.mediumPlaceholder')"
+                class="w-full"
+              />
+              <small class="form-hint">{{ $t('admin.leads.create.form.mediumHint') }}</small>
+            </div>
+
+            <!-- Campaign -->
+            <div class="form-group">
+              <label for="campaign">{{ $t('admin.leads.create.form.campaign') }}</label>
+              <PrimeInputText
+                id="campaign"
+                v-model="form.campaign"
+                :placeholder="$t('admin.leads.create.form.campaignPlaceholder')"
+                class="w-full"
+              />
+              <small class="form-hint">{{ $t('admin.leads.create.form.campaignHint') }}</small>
             </div>
           </div>
         </div>

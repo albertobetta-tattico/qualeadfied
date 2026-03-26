@@ -235,13 +235,13 @@
           <h4 class="text-lg font-semibold mb-3">{{ $t('admin.settings.sources.apiDocs.endpoint') }}</h4>
 
           <div class="code-block">
-            <code>POST /api/external/leads</code>
+            <code>POST /api/import/lead</code>
           </div>
 
           <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.requiredHeaders') }}</h4>
           <div class="code-block">
             <pre>Content-Type: application/json
-X-API-Key: {api_key}</pre>
+X-Api-Key: {api_key}</pre>
           </div>
 
           <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.examplePayload') }}</h4>
@@ -249,22 +249,30 @@ X-API-Key: {api_key}</pre>
             <pre>{
   "first_name": "Mario",
   "last_name": "Rossi",
-  "email": "mario.rossi@email.it",
+  "email": "mario.rossi@gmail.com",
   "phone": "+39 333 1234567",
-  "category_slug": "ristrutturazioni",
-  "province_code": "MI",
-  "request_text": "Richiedo preventivo per...",
-  "external_id": "ext_12345"
+  "category": "fotovoltaico",
+  "province": "MI",
+  "country": "IT",
+  "medium": "cpc",
+  "campaign": "fotovoltaico-primavera-2026",
+  "request_text": "Vorrei un preventivo per impianto fotovoltaico 6kW con accumulo.",
+  "external_id": "DELERA-00123",
+  "extra_tags": ["urgente", "residenziale"],
+  "generated_at": "2026-03-24"
 }</pre>
           </div>
 
           <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.successResponse') }}</h4>
           <div class="code-block">
             <pre>{
-  "success": true,
+  "message": "Lead imported successfully.",
   "data": {
-    "id": 123,
-    "status": "free"
+    "id": 81,
+    "status": "free",
+    "first_name": "Mario",
+    "last_name": "Rossi",
+    "email": "mario.rossi@gmail.com"
   }
 }</pre>
           </div>
@@ -381,43 +389,7 @@ X-API-Key: {api_key}</pre>
       </template>
     </PrimeDialog>
 
-    <!-- API Key Display Dialog -->
-    <PrimeDialog
-      v-model:visible="apiKeyDialogVisible"
-      :header="$t('admin.settings.sources.apiKeyDialog.title')"
-      :modal="true"
-      :closable="true"
-      :style="{ width: '550px' }"
-    >
-      <div class="api-key-display">
-        <PrimeMessage severity="warn" :closable="false" class="mb-4">
-          <i class="pi pi-exclamation-triangle mr-2"></i>
-          {{ $t('admin.settings.sources.apiKeyDialog.warning') }}
-        </PrimeMessage>
 
-        <div class="api-key-box">
-          <code class="api-key-full">{{ newApiKey }}</code>
-          <PrimeButton
-            icon="pi pi-copy"
-            :label="$t('admin.settings.sources.tooltip.copy')"
-            severity="secondary"
-            @click="copyApiKey(newApiKey)"
-          />
-        </div>
-      </div>
-
-      <template #footer>
-        <PrimeButton
-          :label="$t('admin.settings.sources.apiKeyDialog.copied')"
-          icon="pi pi-check"
-          @click="apiKeyDialogVisible = false"
-        />
-      </template>
-    </PrimeDialog>
-
-    <!-- Confirm Dialog -->
-    <PrimeConfirmDialog />
-    <PrimeToast />
   </div>
 </template>
 
@@ -456,11 +428,9 @@ const toast = useToast()
 const loading = ref(false)
 const saving = ref(false)
 const dialogVisible = ref(false)
-const apiKeyDialogVisible = ref(false)
 const isEditing = ref(false)
 const currentSource = ref<LeadSource | null>(null)
 const generateApiKey = ref(true)
-const newApiKey = ref('')
 const showApiKey = ref<Record<number, boolean>>({})
 
 // Form
@@ -605,18 +575,14 @@ const saveSource = async () => {
         name: form.name,
         slug: form.slug,
         description: form.description,
-        is_active: form.is_active
+        is_active: form.is_active,
+        generate_api_key: generateApiKey.value
       })
 
       if (result) {
         showSuccess(t('admin.settings.sources.toast.sourceCreated'))
         closeDialog()
-
-        // Se è stata generata una API key, mostrala
-        if (generateApiKey.value && result.api_key) {
-          newApiKey.value = result.api_key
-          apiKeyDialogVisible.value = true
-        }
+        await leadStore.fetchSources()
       } else {
         showError(leadStore.error || t('admin.settings.sources.toast.createError'))
       }
@@ -639,8 +605,6 @@ const confirmRegenerateKey = (source: LeadSource) => {
       try {
         const newKey = await leadStore.regenerateApiKey(source.id)
         if (newKey) {
-          newApiKey.value = newKey
-          apiKeyDialogVisible.value = true
           showSuccess(t('admin.settings.sources.toast.apiKeyRegenerated'))
         } else {
           showError(leadStore.error || t('admin.settings.sources.toast.regenerateError'))
@@ -871,7 +835,7 @@ onMounted(() => {
 }
 
 .code-block {
-  background: var(--gray-900);
+  background: #1e293b !important;
   border-radius: 8px;
   padding: 1rem;
   overflow-x: auto;
@@ -879,7 +843,8 @@ onMounted(() => {
   code, pre {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.875rem;
-    color: var(--green-400);
+    color: #ffffff !important;
+    background: transparent !important;
     margin: 0;
     white-space: pre;
   }

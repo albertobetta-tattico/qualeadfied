@@ -52,7 +52,10 @@ const form = reactive<Omit<LeadUpdateForm, 'generated_at'>>({
   phone: '',
   request_text: '',
   extra_tags: {},
-  external_id: ''
+  external_id: '',
+  medium: '',
+  campaign: '',
+  country: 'IT'
 })
 
 // Current lead
@@ -130,6 +133,9 @@ const loadLead = async () => {
     form.request_text = lead.value.request_text || ''
     form.extra_tags = lead.value.extra_tags || {}
     form.external_id = lead.value.external_id || ''
+    form.medium = lead.value.medium || ''
+    form.campaign = lead.value.campaign || ''
+    form.country = lead.value.country || 'IT'
     formGeneratedAt.value = parseDate(lead.value.generated_at)
   }
   
@@ -584,6 +590,47 @@ onMounted(() => {
                     :disabled="!isEditable"
                   />
                   <small class="form-hint">{{ $t('admin.leads.edit.classificationForm.externalIdHint') }}</small>
+                </div>
+              </div>
+
+              <!-- Tracking Fields -->
+              <h4 class="text-sm font-medium text-neutral-700 mt-6 mb-4">
+                <i class="pi pi-chart-line mr-2 text-primary-500"></i>
+                {{ $t('admin.leads.edit.requestForm.trackingTitle') }}
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Country -->
+                <div class="form-group">
+                  <label for="country">{{ $t('admin.leads.edit.requestForm.country') }} *</label>
+                  <PrimeInputText
+                    id="country"
+                    v-model="form.country"
+                    class="w-full"
+                    :disabled="!isEditable"
+                    maxlength="2"
+                  />
+                </div>
+
+                <!-- Medium -->
+                <div class="form-group">
+                  <label for="medium">{{ $t('admin.leads.edit.requestForm.medium') }}</label>
+                  <PrimeInputText
+                    id="medium"
+                    v-model="form.medium"
+                    class="w-full"
+                    :disabled="!isEditable"
+                  />
+                </div>
+
+                <!-- Campaign -->
+                <div class="form-group">
+                  <label for="campaign">{{ $t('admin.leads.edit.requestForm.campaign') }}</label>
+                  <PrimeInputText
+                    id="campaign"
+                    v-model="form.campaign"
+                    class="w-full"
+                    :disabled="!isEditable"
+                  />
                 </div>
               </div>
             </div>

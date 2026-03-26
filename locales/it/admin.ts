@@ -484,6 +484,10 @@ export default {
       requestForm: {
         requestText: 'Testo Richiesta',
         generatedAt: 'Data Generazione',
+        trackingTitle: 'Tracciamento Acquisizione',
+        country: 'Paese',
+        medium: 'Mezzo',
+        campaign: 'Campagna',
       },
 
       customFields: {
@@ -525,6 +529,7 @@ export default {
         classification: 'Classificazione',
         contactData: 'Dati Contatto',
         requestDetails: 'Dettagli Richiesta',
+        tracking: 'Tracciamento Acquisizione',
         customFields: 'Campi Aggiuntivi',
       },
 
@@ -548,6 +553,14 @@ export default {
         externalId: 'ID Esterno',
         externalIdPlaceholder: 'Riferimento dal sistema esterno',
         externalIdHint: 'Identificativo nel sistema di origine (opzionale)',
+        country: 'Paese',
+        countryHint: 'Codice ISO 3166-1 alpha-2 (es. IT, DE, FR)',
+        medium: 'Mezzo',
+        mediumPlaceholder: 'es. cpc, organic, social, email',
+        mediumHint: 'Il mezzo di acquisizione del lead (opzionale)',
+        campaign: 'Campagna',
+        campaignPlaceholder: 'es. fotovoltaico-primavera-2026',
+        campaignHint: 'Nome della campagna di acquisizione (opzionale)',
         customFieldsHint: 'Questi campi sono definiti nella categoria selezionata. Sono tutti opzionali.',
       },
 

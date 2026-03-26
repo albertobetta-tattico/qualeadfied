@@ -81,11 +81,16 @@ export interface Lead {
   // Dati richiesta
   request_text?: string
   extra_tags?: Record<string, any>
-  
+
+  // Tracciamento acquisizione
+  medium?: string
+  campaign?: string
+  country: string
+
   // Stato vendita
   status: LeadStatus
   current_shares: number
-  
+
   // Riferimenti esterni
   external_id?: string
   generated_at: string
@@ -115,6 +120,9 @@ export interface LeadCreateForm {
   extra_tags?: Record<string, any>
   generated_at: string
   external_id?: string
+  medium?: string
+  campaign?: string
+  country: string
 }
 
 /**
@@ -132,6 +140,9 @@ export interface LeadUpdateForm {
   extra_tags?: Record<string, any>
   generated_at: string
   external_id?: string
+  medium?: string
+  campaign?: string
+  country: string
 }
 
 /**
@@ -144,6 +155,9 @@ export interface LeadFilters {
   source_id?: number | ''
   status?: LeadStatus | ''
   mode?: 'exclusive' | 'shared' | ''
+  country?: string
+  medium?: string
+  campaign?: string
   date_from?: string
   date_to?: string
   generated_from?: string
@@ -192,6 +206,9 @@ export interface LeadFieldMapping {
   request_text?: number | null
   external_id?: number | null
   generated_at?: number | null
+  medium?: number | null
+  campaign?: number | null
+  country?: number | null
 }
 
 /**
@@ -213,6 +230,7 @@ export interface LeadSourceCreateForm {
   description?: string
   is_active: boolean
   config?: Record<string, any>
+  generate_api_key?: boolean
 }
 
 /**

@@ -484,6 +484,10 @@ export default {
       requestForm: {
         requestText: 'Request Text',
         generatedAt: 'Generation Date',
+        trackingTitle: 'Acquisition Tracking',
+        country: 'Country',
+        medium: 'Medium',
+        campaign: 'Campaign',
       },
 
       customFields: {
@@ -525,6 +529,7 @@ export default {
         classification: 'Classification',
         contactData: 'Contact Data',
         requestDetails: 'Request Details',
+        tracking: 'Acquisition Tracking',
         customFields: 'Additional Fields',
       },
 
@@ -548,6 +553,14 @@ export default {
         externalId: 'External ID',
         externalIdPlaceholder: 'Reference from external system',
         externalIdHint: 'Identifier in the source system (optional)',
+        country: 'Country',
+        countryHint: 'ISO 3166-1 alpha-2 code (e.g. IT, DE, FR)',
+        medium: 'Medium',
+        mediumPlaceholder: 'e.g. cpc, organic, social, email',
+        mediumHint: 'The lead acquisition medium (optional)',
+        campaign: 'Campaign',
+        campaignPlaceholder: 'e.g. solar-spring-2026',
+        campaignHint: 'Acquisition campaign name (optional)',
         customFieldsHint: 'These fields are defined in the selected category. All are optional.',
       },
 
