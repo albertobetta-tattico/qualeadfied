@@ -30,10 +30,10 @@ const config = reactive<LeadImportConfig>({
   category_id: null,
   source_id: null,
   mapping: {
-    first_name: null,
-    last_name: null,
+    full_name: null,
     email: null,
     phone: null,
+    address: null,
     province_code: null,
     request_text: null,
     external_id: null,
@@ -66,10 +66,10 @@ const duplicateOptions = computed(() => [
 
 // Field mapping labels
 const mappingFields = computed(() => [
-  { key: 'first_name', label: t('admin.leads.import.step3.fields.firstName'), required: true },
-  { key: 'last_name', label: t('admin.leads.import.step3.fields.lastName'), required: true },
+  { key: 'full_name', label: t('admin.leads.import.step3.fields.fullName'), required: true },
   { key: 'email', label: t('admin.leads.import.step3.fields.email'), required: true },
   { key: 'phone', label: t('admin.leads.import.step3.fields.phone'), required: true },
+  { key: 'address', label: t('admin.leads.import.step3.fields.address'), required: false },
   { key: 'province_code', label: t('admin.leads.import.step3.fields.provinceCode'), required: false },
   { key: 'request_text', label: t('admin.leads.import.step3.fields.requestText'), required: false },
   { key: 'external_id', label: t('admin.leads.import.step3.fields.externalId'), required: false },
@@ -90,7 +90,7 @@ const columnOptions = computed(() => {
 
 // Check if mapping is valid
 const isMappingValid = computed(() => {
-  const requiredFields: (keyof LeadFieldMapping)[] = ['first_name', 'last_name', 'email', 'phone']
+  const requiredFields: (keyof LeadFieldMapping)[] = ['full_name', 'email', 'phone']
   return requiredFields.every(field => config.mapping[field] !== null)
 })
 
@@ -179,12 +179,13 @@ const parseCSVLine = (line: string): string[] => {
 // Auto-map columns based on header names
 const autoMapColumns = () => {
   const headerMap: Record<string, keyof LeadFieldMapping> = {
-    'nome': 'first_name',
-    'first_name': 'first_name',
-    'firstname': 'first_name',
-    'cognome': 'last_name',
-    'last_name': 'last_name',
-    'lastname': 'last_name',
+    'nome': 'full_name',
+    'full_name': 'full_name',
+    'fullname': 'full_name',
+    'nome completo': 'full_name',
+    'nome e cognome': 'full_name',
+    'nominativo': 'full_name',
+    'name': 'full_name',
     'email': 'email',
     'e-mail': 'email',
     'mail': 'email',
@@ -193,6 +194,9 @@ const autoMapColumns = () => {
     'tel': 'phone',
     'cellulare': 'phone',
     'mobile': 'phone',
+    'indirizzo': 'address',
+    'address': 'address',
+    'via': 'address',
     'provincia': 'province_code',
     'province': 'province_code',
     'prov': 'province_code',
@@ -224,10 +228,10 @@ const clearFile = () => {
   previewData.value = []
   fileHeaders.value = []
   config.mapping = {
-    first_name: null,
-    last_name: null,
+    full_name: null,
     email: null,
     phone: null,
+    address: null,
     province_code: null,
     request_text: null,
     external_id: null,

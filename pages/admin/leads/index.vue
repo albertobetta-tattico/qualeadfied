@@ -547,16 +547,16 @@ onUnmounted(() => {
         <PrimeColumn selectionMode="multiple" headerStyle="width: 3rem" />
 
         <!-- Contact Name -->
-        <PrimeColumn field="first_name" :header="$t('admin.leads.list.table.headers.contact')" sortable style="min-width: 180px">
+        <PrimeColumn field="full_name" :header="$t('admin.leads.list.table.headers.contact')" sortable style="min-width: 180px">
           <template #body="{ data }">
             <div class="flex items-center gap-3">
               <div
                 class="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-semibold text-sm flex-shrink-0"
               >
-                {{ data.first_name.charAt(0) }}{{ data.last_name.charAt(0) }}
+                {{ data.full_name?.charAt(0) || '?' }}
               </div>
               <div>
-                <div class="font-medium text-neutral-900">{{ getFullName(data) }}</div>
+                <div class="font-medium text-neutral-900">{{ data.full_name }}</div>
                 <div class="text-xs text-neutral-500">{{ data.email }}</div>
               </div>
             </div>
@@ -589,8 +589,11 @@ onUnmounted(() => {
         <PrimeColumn field="province_id" :header="$t('admin.leads.list.table.headers.province')" sortable style="min-width: 120px">
           <template #body="{ data }">
             <span class="text-neutral-700">
-              {{ data.province?.name || '-' }}
-              <span v-if="data.province?.code" class="text-neutral-500">({{ data.province.code }})</span>
+              <template v-if="data.province">
+                {{ data.province.name }}
+                <span class="text-neutral-500">({{ data.province.code }})</span>
+              </template>
+              <span v-else class="text-neutral-400">N/D</span>
             </span>
           </template>
         </PrimeColumn>

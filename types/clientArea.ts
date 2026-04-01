@@ -142,11 +142,11 @@ export interface MyLead {
   lead: {
     id: number
     category_id: number
-    province_id: number
-    first_name: string
-    last_name: string
+    province_id: number | null
+    full_name: string
     email: string
     phone: string
+    address?: string
     request_text: string
     extra_tags?: Record<string, any>
     generated_at: string
@@ -225,9 +225,8 @@ export interface OrderItem {
   lead: {
     id: number
     category_id: number
-    province_id: number
-    first_name: string
-    last_name: string
+    province_id: number | null
+    full_name: string
     request_text: string
     generated_at: string
     category?: Category

@@ -308,11 +308,11 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Contact Name -->
-          <PrimeColumn field="lead.first_name" :header="t('leads.myLeads.table.contact')" sortable style="min-width: 180px">
+          <PrimeColumn field="lead.full_name" :header="t('leads.myLeads.table.contact')" sortable style="min-width: 180px">
             <template #body="{ data }">
               <div>
                 <p class="font-semibold text-surface-900 dark:text-surface-0">
-                  {{ data.lead.first_name }} {{ data.lead.last_name }}
+                  {{ data.lead.full_name }}
                 </p>
                 <p class="text-xs text-surface-500">{{ data.lead.email }}</p>
               </div>

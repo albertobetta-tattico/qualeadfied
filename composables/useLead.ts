@@ -60,15 +60,6 @@ export function useLeadValidation() {
     return true
   }
 
-  const validateProvinceId = (value: number | null): boolean => {
-    if (!value) {
-      errors.province_id = t('leads.validation.selectProvince')
-      return false
-    }
-    delete errors.province_id
-    return true
-  }
-
   const validateSourceId = (value: number | null): boolean => {
     if (!value) {
       errors.source_id = t('leads.validation.selectSource')
@@ -100,18 +91,14 @@ export function useLeadValidation() {
 
   const validateField = (field: string, value: any): boolean => {
     switch (field) {
-      case 'first_name':
-        return validateRequired(field, value, t('common.labels.name'))
-      case 'last_name':
-        return validateRequired(field, value, t('common.labels.lastName'))
+      case 'full_name':
+        return validateRequired(field, value, t('common.labels.fullName'))
       case 'email':
         return validateEmail(value)
       case 'phone':
         return validatePhone(value)
       case 'category_id':
         return validateCategoryId(value)
-      case 'province_id':
-        return validateProvinceId(value)
       case 'source_id':
         return validateSourceId(value)
       case 'generated_at':
@@ -124,12 +111,10 @@ export function useLeadValidation() {
   const validateForm = (form: LeadCreateForm | LeadUpdateForm): boolean => {
     let isValid = true
 
-    isValid = validateRequired('first_name', form.first_name, t('common.labels.name')) && isValid
-    isValid = validateRequired('last_name', form.last_name, t('common.labels.lastName')) && isValid
+    isValid = validateRequired('full_name', form.full_name, t('common.labels.fullName')) && isValid
     isValid = validateEmail(form.email) && isValid
     isValid = validatePhone(form.phone) && isValid
     isValid = validateCategoryId(form.category_id) && isValid
-    isValid = validateProvinceId(form.province_id) && isValid
     isValid = validateSourceId(form.source_id) && isValid
     isValid = validateGeneratedAt(form.generated_at) && isValid
 
@@ -171,7 +156,7 @@ export function useLeadActions() {
     }
 
     confirm.require({
-      message: t('leads.confirm.delete.message', { name: `${lead.first_name} ${lead.last_name}` }),
+      message: t('leads.confirm.delete.message', { name: lead.full_name }),
       header: t('leads.confirm.delete.header'),
       icon: 'pi pi-exclamation-triangle',
       acceptClass: 'p-button-danger',
@@ -309,7 +294,7 @@ export function useLeadFormatters() {
   }
 
   const getFullName = (lead: Lead): string => {
-    return `${lead.first_name} ${lead.last_name}`.trim() || '-'
+    return lead.full_name || '-'
   }
 
   const truncateText = (text: string | undefined, maxLength: number = 80): string => {
@@ -367,12 +352,12 @@ export function useLeadForm(initialData?: Lead) {
 
   const form = reactive<LeadCreateForm>({
     category_id: initialData?.category_id || null,
-    province_id: initialData?.province_id || null,
+    province_id: initialData?.province_id ?? null,
     source_id: initialData?.source_id || null,
-    first_name: initialData?.first_name || '',
-    last_name: initialData?.last_name || '',
+    full_name: initialData?.full_name || '',
     email: initialData?.email || '',
     phone: initialData?.phone || '',
+    address: initialData?.address || '',
     request_text: initialData?.request_text || '',
     extra_tags: initialData?.extra_tags || {},
     generated_at: initialData?.generated_at || today,
@@ -381,12 +366,12 @@ export function useLeadForm(initialData?: Lead) {
 
   const resetForm = () => {
     form.category_id = initialData?.category_id || null
-    form.province_id = initialData?.province_id || null
+    form.province_id = initialData?.province_id ?? null
     form.source_id = initialData?.source_id || null
-    form.first_name = initialData?.first_name || ''
-    form.last_name = initialData?.last_name || ''
+    form.full_name = initialData?.full_name || ''
     form.email = initialData?.email || ''
     form.phone = initialData?.phone || ''
+    form.address = initialData?.address || ''
     form.request_text = initialData?.request_text || ''
     form.extra_tags = initialData?.extra_tags || {}
     form.generated_at = initialData?.generated_at || today

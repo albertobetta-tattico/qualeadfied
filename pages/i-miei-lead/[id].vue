@@ -132,7 +132,7 @@ const copyToClipboard = (text: string, label: string) => {
         <div>
           <div class="flex flex-wrap items-center gap-2 mb-2">
             <PrimeTag :value="lead.lead.category?.name" severity="info" />
-            <PrimeTag :value="lead.lead.province?.name" severity="secondary" />
+            <PrimeTag v-if="lead.lead.province?.name" :value="lead.lead.province.name" severity="secondary" />
             <PrimeTag v-if="lead.lead.province?.region" :value="lead.lead.province.region" severity="warn" />
             <PrimeTag
               :value="formatAcquisitionType(lead.acquisition_type)"
@@ -140,7 +140,7 @@ const copyToClipboard = (text: string, label: string) => {
             />
           </div>
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-            {{ lead.lead.first_name }} {{ lead.lead.last_name }}
+            {{ lead.lead.full_name }}
           </h1>
           <p class="text-surface-600 dark:text-surface-400">
             {{ $t('leads.detail.purchasedOn', { date: formatDate(lead.purchased_at) }) }}

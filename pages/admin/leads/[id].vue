@@ -44,12 +44,12 @@ const formGeneratedAt = ref<Date | null>(null)
 
 const form = reactive<Omit<LeadUpdateForm, 'generated_at'>>({
   category_id: 0,
-  province_id: 0,
+  province_id: null,
   source_id: 0,
-  first_name: '',
-  last_name: '',
+  full_name: '',
   email: '',
   phone: '',
+  address: '',
   request_text: '',
   extra_tags: {},
   external_id: '',
@@ -124,12 +124,12 @@ const loadLead = async () => {
   if (lead.value) {
     // Populate form with lead data
     form.category_id = lead.value.category_id
-    form.province_id = lead.value.province_id
+    form.province_id = lead.value.province_id ?? null
     form.source_id = lead.value.source_id
-    form.first_name = lead.value.first_name
-    form.last_name = lead.value.last_name
+    form.full_name = lead.value.full_name
     form.email = lead.value.email
     form.phone = lead.value.phone
+    form.address = lead.value.address || ''
     form.request_text = lead.value.request_text || ''
     form.extra_tags = lead.value.extra_tags || {}
     form.external_id = lead.value.external_id || ''
@@ -275,7 +275,7 @@ onMounted(() => {
               <div 
                 class="w-12 h-12 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-lg"
               >
-                {{ lead.first_name.charAt(0) }}{{ lead.last_name.charAt(0) }}
+                {{ lead.full_name.charAt(0) }}
               </div>
               <div>
                 <h1 class="page-title mb-0">{{ getFullName(lead) }}</h1>
@@ -343,13 +343,13 @@ onMounted(() => {
             <i class="pi pi-map-marker text-lg text-primary-500"></i>
           </div>
           <div class="font-semibold text-neutral-900">
-            {{ lead.province?.name || '-' }}
+            {{ lead.province?.name || 'N/D' }}
             <span v-if="lead.province?.code" class="text-neutral-500 font-normal">
               ({{ lead.province.code }})
             </span>
           </div>
           <div class="text-xs text-neutral-500 mt-1">
-            {{ lead.province?.region || '-' }}
+            {{ lead.province?.region || '' }}
           </div>
         </div>
 
@@ -388,32 +388,18 @@ onMounted(() => {
         <PrimeTabPanel value="0" :header="$t('admin.leads.edit.tabs.contactData')">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- First Name -->
-              <div class="form-group">
-                <label for="first_name">{{ $t('admin.leads.edit.contactForm.firstName') }} *</label>
+              <!-- Full Name -->
+              <div class="form-group md:col-span-2">
+                <label for="full_name">{{ $t('admin.leads.edit.contactForm.fullName') }} *</label>
                 <PrimeInputText
-                  id="first_name"
-                  v-model="form.first_name"
-                  :class="{ 'p-invalid': errors.first_name }"
+                  id="full_name"
+                  v-model="form.full_name"
+                  :class="{ 'p-invalid': errors.full_name }"
                   class="w-full"
                   :disabled="!isEditable"
-                  @blur="onBlur('first_name', form.first_name)"
+                  @blur="onBlur('full_name', form.full_name)"
                 />
-                <small v-if="errors.first_name" class="p-error">{{ errors.first_name }}</small>
-              </div>
-
-              <!-- Last Name -->
-              <div class="form-group">
-                <label for="last_name">{{ $t('admin.leads.edit.contactForm.lastName') }} *</label>
-                <PrimeInputText
-                  id="last_name"
-                  v-model="form.last_name"
-                  :class="{ 'p-invalid': errors.last_name }"
-                  class="w-full"
-                  :disabled="!isEditable"
-                  @blur="onBlur('last_name', form.last_name)"
-                />
-                <small v-if="errors.last_name" class="p-error">{{ errors.last_name }}</small>
+                <small v-if="errors.full_name" class="p-error">{{ errors.full_name }}</small>
               </div>
 
               <!-- Email -->
@@ -443,6 +429,19 @@ onMounted(() => {
                   @blur="onBlur('phone', form.phone)"
                 />
                 <small v-if="errors.phone" class="p-error">{{ errors.phone }}</small>
+              </div>
+
+              <!-- Address -->
+              <div class="form-group md:col-span-2">
+                <label for="address">{{ $t('admin.leads.edit.contactForm.address') }}</label>
+                <PrimeInputText
+                  id="address"
+                  v-model="form.address"
+                  class="w-full"
+                  :disabled="!isEditable"
+                  placeholder="Via Roma 1, Milano"
+                />
+                <small class="form-hint">{{ $t('admin.leads.edit.contactForm.addressHint') }}</small>
               </div>
             </div>
 
@@ -488,22 +487,20 @@ onMounted(() => {
                 <small v-if="errors.category_id" class="p-error">{{ errors.category_id }}</small>
               </div>
 
-              <!-- Province -->
+              <!-- Province (facoltativa) -->
               <div class="form-group">
-                <label for="province_id">{{ $t('admin.leads.edit.classificationForm.province') }} *</label>
+                <label for="province_id">{{ $t('admin.leads.edit.classificationForm.province') }}</label>
                 <PrimeSelect
                   id="province_id"
                   v-model="form.province_id"
                   :options="provinceOptions"
                   optionLabel="label"
                   optionValue="value"
-                  :class="{ 'p-invalid': errors.province_id }"
                   class="w-full"
                   :filter="true"
                   :disabled="!isEditable"
-                  @blur="onBlur('province_id', form.province_id)"
+                  showClear
                 />
-                <small v-if="errors.province_id" class="p-error">{{ errors.province_id }}</small>
               </div>
 
               <!-- Source -->

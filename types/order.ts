@@ -49,12 +49,11 @@ export interface OrderClient {
  */
 export interface OrderLead {
   id: number
-  first_name: string
-  last_name: string
+  full_name: string
   email: string
   phone: string
   category_name: string
-  province_code: string
+  province_code: string | null
 }
 
 /**

@@ -462,10 +462,11 @@ export default {
       },
 
       contactForm: {
-        firstName: 'First Name',
-        lastName: 'Last Name',
+        fullName: 'Full Name',
         email: 'Email',
         phone: 'Phone',
+        address: 'Address',
+        addressHint: 'Full address or location data (optional)',
       },
 
       classificationForm: {
@@ -541,10 +542,11 @@ export default {
         provinceFilter: 'Search province...',
         source: 'Lead Source',
         sourcePlaceholder: 'Select source',
-        firstName: 'First Name',
-        lastName: 'Last Name',
+        fullName: 'Full Name',
         email: 'Email',
         phone: 'Phone',
+        address: 'Address',
+        addressHint: 'Full address or location data (optional)',
         requestText: 'Request Text',
         requestTextPlaceholder: 'Describe the contact\'s request...',
         requestTextHint: 'The request text helps qualify the lead',
@@ -622,10 +624,10 @@ export default {
         title: 'Field Mapping',
         description: 'Map the file columns to lead fields. Fields marked with * are required.',
         fields: {
-          firstName: 'First Name',
-          lastName: 'Last Name',
+          fullName: 'Full Name',
           email: 'Email',
           phone: 'Phone',
+          address: 'Address',
           provinceCode: 'Province (code)',
           requestText: 'Request Text',
           externalId: 'External ID',

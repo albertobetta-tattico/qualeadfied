@@ -146,7 +146,7 @@ const getPaymentMethodLabel = (method: string): string => {
                     <Tag :value="item.lead?.province?.code" severity="secondary" size="small" />
                   </div>
                   <h4 class="font-medium text-surface-900 dark:text-surface-0">
-                    {{ item.lead?.first_name }} {{ item.lead?.last_name?.charAt(0) }}.
+                    {{ item.lead?.full_name }}
                   </h4>
                   <p class="text-sm text-surface-500 line-clamp-1">
                     {{ item.lead?.request_text }}

@@ -73,10 +73,10 @@ export interface Lead {
   source_id: number
   
   // Dati anagrafici
-  first_name: string
-  last_name: string
+  full_name: string
   email: string
   phone: string
+  address?: string
   
   // Dati richiesta
   request_text?: string
@@ -112,10 +112,10 @@ export interface LeadCreateForm {
   category_id: number | null
   province_id: number | null
   source_id: number | null
-  first_name: string
-  last_name: string
+  full_name: string
   email: string
   phone: string
+  address?: string
   request_text?: string
   extra_tags?: Record<string, any>
   generated_at: string
@@ -130,12 +130,12 @@ export interface LeadCreateForm {
  */
 export interface LeadUpdateForm {
   category_id: number
-  province_id: number
+  province_id: number | null
   source_id: number
-  first_name: string
-  last_name: string
+  full_name: string
   email: string
   phone: string
+  address?: string
   request_text?: string
   extra_tags?: Record<string, any>
   generated_at: string
@@ -198,10 +198,10 @@ export interface LeadImportConfig {
  * Mapping campi per import
  */
 export interface LeadFieldMapping {
-  first_name?: number | null
-  last_name?: number | null
+  full_name?: number | null
   email?: number | null
   phone?: number | null
+  address?: number | null
   province_code?: number | null
   request_text?: number | null
   external_id?: number | null
@@ -261,10 +261,10 @@ export interface CategoryPrices {
 export interface PublicLeadSubmission {
   category_slug: string
   province_id: number | null
-  first_name: string
-  last_name: string
+  full_name: string
   email: string
   phone: string
+  address?: string
   request_text?: string
   extra_tags?: Record<string, string>
 }

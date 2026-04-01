@@ -303,7 +303,7 @@ onMounted(() => {
                   <template #body="{ data }">
                     <div v-if="data.lead">
                       <div class="font-medium text-neutral-900">
-                        {{ data.lead.first_name }} {{ data.lead.last_name }}
+                        {{ data.lead.full_name }}
                       </div>
                       <div class="text-xs text-neutral-500">
                         {{ data.lead.category_name }} - {{ data.lead.province_code }}

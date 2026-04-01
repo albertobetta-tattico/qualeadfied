@@ -462,10 +462,11 @@ export default {
       },
 
       contactForm: {
-        firstName: 'Nome',
-        lastName: 'Cognome',
+        fullName: 'Nome Completo',
         email: 'Email',
         phone: 'Telefono',
+        address: 'Indirizzo',
+        addressHint: 'Indirizzo completo o dati di localizzazione (opzionale)',
       },
 
       classificationForm: {
@@ -541,10 +542,11 @@ export default {
         provinceFilter: 'Cerca provincia...',
         source: 'Fonte Lead',
         sourcePlaceholder: 'Seleziona fonte',
-        firstName: 'Nome',
-        lastName: 'Cognome',
+        fullName: 'Nome Completo',
         email: 'Email',
         phone: 'Telefono',
+        address: 'Indirizzo',
+        addressHint: 'Indirizzo completo o dati di localizzazione (opzionale)',
         requestText: 'Testo Richiesta',
         requestTextPlaceholder: 'Descrivi la richiesta del contatto...',
         requestTextHint: 'Il testo della richiesta aiuta a qualificare il lead',
@@ -622,10 +624,10 @@ export default {
         title: 'Mapping Campi',
         description: 'Associa le colonne del file ai campi del lead. I campi con * sono obbligatori.',
         fields: {
-          firstName: 'Nome',
-          lastName: 'Cognome',
+          fullName: 'Nome Completo',
           email: 'Email',
           phone: 'Telefono',
+          address: 'Indirizzo',
           provinceCode: 'Provincia (codice)',
           requestText: 'Testo Richiesta',
           externalId: 'ID Esterno',
@@ -2043,12 +2045,6 @@ export default {
         cancel: 'Annulla',
         saveChanges: 'Salva Modifiche',
         createSource: 'Crea Sorgente',
-      },
-
-      apiKeyDialog: {
-        title: 'API Key',
-        warning: 'Copia la API key adesso. Per motivi di sicurezza, non verrà mostrata di nuovo.',
-        copied: 'Copiata negli appunti',
       },
 
       confirmRegenerate: {

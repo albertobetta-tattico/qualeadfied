@@ -28,8 +28,7 @@ interface DashboardApiData {
   }
   recent_leads: Array<{
     id: number
-    first_name: string
-    last_name: string
+    full_name: string
     email: string
     status: string
     current_shares: number
@@ -135,7 +134,7 @@ const recentLeads = computed(() => {
   if (!dashboardData.value?.recent_leads) return []
   return dashboardData.value.recent_leads.map(lead => ({
     id: lead.id,
-    name: `${lead.first_name} ${lead.last_name}`,
+    name: lead.full_name || '-',
     email: lead.email,
     category: lead.category?.name || '-',
     province: lead.province?.name || '-',

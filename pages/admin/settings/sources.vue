@@ -212,7 +212,7 @@
                   rounded
                   severity="danger"
                   :disabled="!canDeleteSource(data)"
-                  @click="confirmDeleteSource(data)"
+                  @click.stop="confirmDeleteSource(data)"
                   v-tooltip.top="canDeleteSource(data) ? $t('admin.settings.sources.tooltip.delete') : $t('admin.settings.sources.tooltip.hasLeads')"
                 />
               </div>
@@ -235,22 +235,31 @@
           <h4 class="text-lg font-semibold mb-3">{{ $t('admin.settings.sources.apiDocs.endpoint') }}</h4>
 
           <div class="code-block">
+            <button class="copy-btn" @click="copyCode(codeSnippets.endpoint)">
+              <i class="pi pi-copy"></i>
+            </button>
             <code>POST /api/import/lead</code>
           </div>
 
           <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.requiredHeaders') }}</h4>
           <div class="code-block">
+            <button class="copy-btn" @click="copyCode(codeSnippets.headers)">
+              <i class="pi pi-copy"></i>
+            </button>
             <pre>Content-Type: application/json
 X-Api-Key: {api_key}</pre>
           </div>
 
           <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.examplePayload') }}</h4>
           <div class="code-block">
+            <button class="copy-btn" @click="copyCode(codeSnippets.payload)">
+              <i class="pi pi-copy"></i>
+            </button>
             <pre>{
-  "first_name": "Mario",
-  "last_name": "Rossi",
+  "full_name": "Mario Rossi",
   "email": "mario.rossi@gmail.com",
   "phone": "+39 333 1234567",
+  "address": "Via Roma 12, 20100 Milano",
   "category": "fotovoltaico",
   "province": "MI",
   "country": "IT",
@@ -259,19 +268,21 @@ X-Api-Key: {api_key}</pre>
   "request_text": "Vorrei un preventivo per impianto fotovoltaico 6kW con accumulo.",
   "external_id": "DELERA-00123",
   "extra_tags": ["urgente", "residenziale"],
-  "generated_at": "2026-03-24"
+  "generated_at": "2026-04-01"
 }</pre>
           </div>
 
           <h4 class="text-lg font-semibold mt-6 mb-3">{{ $t('admin.settings.sources.apiDocs.successResponse') }}</h4>
           <div class="code-block">
+            <button class="copy-btn" @click="copyCode(codeSnippets.successResponse)">
+              <i class="pi pi-copy"></i>
+            </button>
             <pre>{
   "message": "Lead imported successfully.",
   "data": {
     "id": 81,
     "status": "free",
-    "first_name": "Mario",
-    "last_name": "Rossi",
+    "full_name": "Mario Rossi",
     "email": "mario.rossi@gmail.com"
   }
 }</pre>
@@ -488,6 +499,44 @@ const copyApiKey = async (key: string) => {
   } catch {
     showError(t('admin.settings.sources.toast.apiKeyCopyError'))
   }
+}
+
+const copyCode = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    showSuccess(t('admin.settings.sources.toast.apiKeyCopied'))
+  } catch {
+    showError(t('admin.settings.sources.toast.apiKeyCopyError'))
+  }
+}
+
+const codeSnippets = {
+  endpoint: 'POST /api/import/lead',
+  headers: 'Content-Type: application/json\nX-Api-Key: {api_key}',
+  payload: `{
+  "full_name": "Mario Rossi",
+  "email": "mario.rossi@gmail.com",
+  "phone": "+39 333 1234567",
+  "address": "Via Roma 12, 20100 Milano",
+  "category": "fotovoltaico",
+  "province": "MI",
+  "country": "IT",
+  "medium": "cpc",
+  "campaign": "fotovoltaico-primavera-2026",
+  "request_text": "Vorrei un preventivo per impianto fotovoltaico 6kW con accumulo.",
+  "external_id": "DELERA-00123",
+  "extra_tags": ["urgente", "residenziale"],
+  "generated_at": "2026-04-01"
+}`,
+  successResponse: `{
+  "message": "Lead imported successfully.",
+  "data": {
+    "id": 81,
+    "status": "free",
+    "full_name": "Mario Rossi",
+    "email": "mario.rossi@gmail.com"
+  }
+}`,
 }
 
 const getLeadCountBySource = (sourceId: number): string => {
@@ -835,9 +884,11 @@ onMounted(() => {
 }
 
 .code-block {
+  position: relative;
   background: #1e293b !important;
   border-radius: 8px;
   padding: 1rem;
+  padding-top: 2.5rem;
   overflow-x: auto;
 
   code, pre {
@@ -847,6 +898,37 @@ onMounted(() => {
     background: transparent !important;
     margin: 0;
     white-space: pre;
+
+    &::selection {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+  }
+}
+
+.copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #94a3b8;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  i {
+    font-size: 0.8125rem;
   }
 }
 

@@ -423,7 +423,6 @@ export const useLeadStore = defineStore('lead', {
         if (error) throw error
 
         const newSource = (responseData as any).data
-        this.sources.push(newSource)
         return newSource
       } catch (error: any) {
         this.error = error.message || t('common.errors.createError')

@@ -25,10 +25,10 @@ const form = reactive<Omit<LeadCreateForm, 'generated_at'>>({
   category_id: null,
   province_id: null,
   source_id: null,
-  first_name: '',
-  last_name: '',
+  full_name: '',
   email: '',
   phone: '',
+  address: '',
   request_text: '',
   extra_tags: {},
   external_id: '',
@@ -110,7 +110,7 @@ const onSubmit = async () => {
   const lead = await leadStore.createLead(formData)
 
   if (lead) {
-    showSuccess(t('admin.leads.create.toast.createSuccess', { name: `${lead.first_name} ${lead.last_name}` }))
+    showSuccess(t('admin.leads.create.toast.createSuccess', { name: lead.full_name }))
     router.push('/admin/leads')
   } else {
     showError(leadStore.error || t('admin.leads.create.toast.createError'))
@@ -139,16 +139,16 @@ const onCreateAnother = async () => {
   const lead = await leadStore.createLead(formData)
 
   if (lead) {
-    showSuccess(t('admin.leads.create.toast.createSuccess', { name: `${lead.first_name} ${lead.last_name}` }))
+    showSuccess(t('admin.leads.create.toast.createSuccess', { name: lead.full_name }))
     // Reset form but keep category and source
     const savedCategoryId = form.category_id
     const savedSourceId = form.source_id
     const savedProvinceId = form.province_id
     
-    form.first_name = ''
-    form.last_name = ''
+    form.full_name = ''
     form.email = ''
     form.phone = ''
+    form.address = ''
     form.request_text = ''
     form.external_id = ''
     form.medium = ''
@@ -252,9 +252,9 @@ onMounted(() => {
               <small v-if="errors.category_id" class="p-error">{{ errors.category_id }}</small>
             </div>
 
-            <!-- Province -->
+            <!-- Province (facoltativa) -->
             <div class="form-group">
-              <label for="province_id">{{ $t('admin.leads.create.form.province') }} *</label>
+              <label for="province_id">{{ $t('admin.leads.create.form.province') }}</label>
               <PrimeSelect
                 id="province_id"
                 v-model="form.province_id"
@@ -262,11 +262,10 @@ onMounted(() => {
                 optionLabel="label"
                 optionValue="value"
                 :placeholder="$t('admin.leads.create.form.provincePlaceholder')"
-                :class="{ 'p-invalid': errors.province_id }"
                 class="w-full"
                 :filter="true"
                 :filterPlaceholder="$t('admin.leads.create.form.provinceFilter')"
-                @blur="onBlur('province_id', form.province_id)"
+                showClear
               >
                 <template #option="slotProps">
                   <div class="flex justify-between items-center w-full">
@@ -275,7 +274,6 @@ onMounted(() => {
                   </div>
                 </template>
               </PrimeSelect>
-              <small v-if="errors.province_id" class="p-error">{{ errors.province_id }}</small>
             </div>
 
             <!-- Source -->
@@ -308,32 +306,18 @@ onMounted(() => {
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- First Name -->
-            <div class="form-group">
-              <label for="first_name">{{ $t('admin.leads.create.form.firstName') }} *</label>
+            <!-- Full Name -->
+            <div class="form-group md:col-span-2">
+              <label for="full_name">{{ $t('admin.leads.create.form.fullName') }} *</label>
               <PrimeInputText
-                id="first_name"
-                v-model="form.first_name"
-                :class="{ 'p-invalid': errors.first_name }"
-                placeholder="Mario"
+                id="full_name"
+                v-model="form.full_name"
+                :class="{ 'p-invalid': errors.full_name }"
+                placeholder="Mario Rossi"
                 class="w-full"
-                @blur="onBlur('first_name', form.first_name)"
+                @blur="onBlur('full_name', form.full_name)"
               />
-              <small v-if="errors.first_name" class="p-error">{{ errors.first_name }}</small>
-            </div>
-
-            <!-- Last Name -->
-            <div class="form-group">
-              <label for="last_name">{{ $t('admin.leads.create.form.lastName') }} *</label>
-              <PrimeInputText
-                id="last_name"
-                v-model="form.last_name"
-                :class="{ 'p-invalid': errors.last_name }"
-                placeholder="Rossi"
-                class="w-full"
-                @blur="onBlur('last_name', form.last_name)"
-              />
-              <small v-if="errors.last_name" class="p-error">{{ errors.last_name }}</small>
+              <small v-if="errors.full_name" class="p-error">{{ errors.full_name }}</small>
             </div>
 
             <!-- Email -->
@@ -363,6 +347,18 @@ onMounted(() => {
                 @blur="onBlur('phone', form.phone)"
               />
               <small v-if="errors.phone" class="p-error">{{ errors.phone }}</small>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group md:col-span-2">
+              <label for="address">{{ $t('admin.leads.create.form.address') }}</label>
+              <PrimeInputText
+                id="address"
+                v-model="form.address"
+                placeholder="Via Roma 1, Milano"
+                class="w-full"
+              />
+              <small class="form-hint">{{ $t('admin.leads.create.form.addressHint') }}</small>
             </div>
           </div>
         </div>

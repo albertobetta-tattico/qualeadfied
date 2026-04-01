@@ -70,6 +70,7 @@ export default {
     email: 'Email',
     phone: 'Phone',
     name: 'First Name',
+    fullName: 'Full Name',
     lastName: 'Last Name',
     companyName: 'Company Name',
     vatNumber: 'VAT Number',
