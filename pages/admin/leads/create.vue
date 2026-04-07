@@ -34,6 +34,7 @@ const form = reactive<Omit<LeadCreateForm, 'generated_at'>>({
   external_id: '',
   medium: '',
   campaign: '',
+  origin: '',
   country: 'IT'
 })
 
@@ -292,6 +293,18 @@ onMounted(() => {
               />
               <small v-if="errors.source_id" class="p-error">{{ errors.source_id }}</small>
             </div>
+
+            <!-- Origin / Sorgente (facoltativa) -->
+            <div class="form-group">
+              <label for="origin">{{ $t('admin.leads.create.form.origin') }}</label>
+              <PrimeInputText
+                id="origin"
+                v-model="form.origin"
+                class="w-full"
+                :placeholder="$t('admin.leads.create.form.originPlaceholder')"
+                maxlength="50"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -376,16 +389,19 @@ onMounted(() => {
           <div class="grid grid-cols-1 gap-6">
             <!-- Request Text -->
             <div class="form-group">
-              <label for="request_text">{{ $t('admin.leads.create.form.requestText') }}</label>
+              <label for="request_text">{{ $t('admin.leads.create.form.requestText') }} *</label>
               <PrimeTextarea
                 id="request_text"
                 v-model="form.request_text"
                 rows="4"
                 :placeholder="$t('admin.leads.create.form.requestTextPlaceholder')"
+                :class="{ 'p-invalid': errors.request_text }"
                 class="w-full"
                 autoResize
+                @blur="onBlur('request_text', form.request_text)"
               />
-              <small class="form-hint">{{ $t('admin.leads.create.form.requestTextHint') }}</small>
+              <small v-if="errors.request_text" class="p-error">{{ errors.request_text }}</small>
+              <small v-else class="form-hint">{{ $t('admin.leads.create.form.requestTextHint') }}</small>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

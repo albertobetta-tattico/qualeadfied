@@ -103,6 +103,8 @@ export function useLeadValidation() {
         return validateSourceId(value)
       case 'generated_at':
         return validateGeneratedAt(value)
+      case 'request_text':
+        return validateRequired(field, value, t('admin.leads.create.form.requestText'))
       default:
         return true
     }
@@ -117,6 +119,7 @@ export function useLeadValidation() {
     isValid = validateCategoryId(form.category_id) && isValid
     isValid = validateSourceId(form.source_id) && isValid
     isValid = validateGeneratedAt(form.generated_at) && isValid
+    isValid = validateRequired('request_text', form.request_text, t('admin.leads.create.form.requestText')) && isValid
 
     return isValid
   }

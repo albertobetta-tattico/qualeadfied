@@ -79,12 +79,13 @@ export interface Lead {
   address?: string
   
   // Dati richiesta
-  request_text?: string
+  request_text: string
   extra_tags?: Record<string, any>
 
   // Tracciamento acquisizione
   medium?: string
   campaign?: string
+  origin?: string | null
   country: string
 
   // Stato vendita
@@ -116,12 +117,13 @@ export interface LeadCreateForm {
   email: string
   phone: string
   address?: string
-  request_text?: string
+  request_text: string
   extra_tags?: Record<string, any>
   generated_at: string
   external_id?: string
   medium?: string
   campaign?: string
+  origin?: string | null
   country: string
 }
 
@@ -136,12 +138,13 @@ export interface LeadUpdateForm {
   email: string
   phone: string
   address?: string
-  request_text?: string
+  request_text: string
   extra_tags?: Record<string, any>
   generated_at: string
   external_id?: string
   medium?: string
   campaign?: string
+  origin?: string | null
   country: string
 }
 
@@ -265,6 +268,6 @@ export interface PublicLeadSubmission {
   email: string
   phone: string
   address?: string
-  request_text?: string
+  request_text: string
   extra_tags?: Record<string, string>
 }

@@ -34,7 +34,7 @@ export default {
     items: {
       dashboard: 'Dashboard',
       clients: 'Clienti',
-      leads: 'Lead',
+      leads: 'Leads',
       catalog: 'Catalogo',
       pricing: 'Listini',
       orders: 'Ordini',

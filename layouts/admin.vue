@@ -65,7 +65,7 @@ const menuItems = computed(() => [
     section: t('navigation.adminMenu.sections.management'),
     items: [
       { label: t('navigation.adminMenu.items.clients'), icon: 'pi pi-users', to: '/admin/clients', badge: null },
-      { label: t('navigation.adminMenu.items.leads'), icon: 'pi pi-list', to: '/admin/leads', badge: '12' },
+      { label: t('navigation.adminMenu.items.leads'), icon: 'pi pi-list', to: '/admin/leads', badge: null },
       { label: t('navigation.adminMenu.items.catalog'), icon: 'pi pi-tag', to: '/admin/catalog', badge: null },
       { label: t('navigation.adminMenu.items.pricing'), icon: 'pi pi-euro', to: '/admin/pricing', badge: null },
     ]
@@ -216,11 +216,13 @@ const currentPageTitle = computed(() => {
 
           <LanguageSwitcher />
 
-          <!-- Notifications -->
+          <!-- Notifications - temporaneamente disattivata
           <button class="admin-header-icon-btn">
             <i class="pi pi-bell text-lg"></i>
             <span class="badge">3</span>
           </button>
+          -->
+
 
           <!-- User Menu -->
           <div class="admin-header-user" @click="toggleUserMenu">

@@ -88,9 +88,17 @@ const kpiCards = computed(() => {
   const kpis = dashboardData.value?.kpis
   if (!kpis) return []
 
-  const formatTrend = (value: number) => {
+  // Il backend ritorna `null` quando non c'è una baseline (mese precedente a 0).
+  // In quel caso mostriamo "—" invece di un fuorviante "0%".
+  const formatTrend = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return '—'
     if (value === 0) return '0%'
     return value > 0 ? `+${value}%` : `${value}%`
+  }
+
+  const trendDirection = (value: number | null | undefined): 'up' | 'down' | 'neutral' => {
+    if (value === null || value === undefined) return 'neutral'
+    return value >= 0 ? 'up' : 'down'
   }
 
   return [
@@ -100,7 +108,7 @@ const kpiCards = computed(() => {
       icon: 'pi pi-list',
       iconClass: 'primary',
       trend: formatTrend(kpis.leads_trend),
-      trendDirection: kpis.leads_trend >= 0 ? 'up' : 'down'
+      trendDirection: trendDirection(kpis.leads_trend)
     },
     {
       label: t('admin.dashboard.kpis.soldLeadsMonth'),
@@ -108,7 +116,7 @@ const kpiCards = computed(() => {
       icon: 'pi pi-shopping-cart',
       iconClass: 'success',
       trend: formatTrend(kpis.orders_trend),
-      trendDirection: kpis.orders_trend >= 0 ? 'up' : 'down'
+      trendDirection: trendDirection(kpis.orders_trend)
     },
     {
       label: t('admin.dashboard.kpis.revenueMonth'),
@@ -116,7 +124,7 @@ const kpiCards = computed(() => {
       icon: 'pi pi-euro',
       iconClass: 'accent',
       trend: formatTrend(kpis.revenue_trend),
-      trendDirection: kpis.revenue_trend >= 0 ? 'up' : 'down'
+      trendDirection: trendDirection(kpis.revenue_trend)
     },
     {
       label: t('admin.dashboard.kpis.newClients'),
@@ -124,7 +132,7 @@ const kpiCards = computed(() => {
       icon: 'pi pi-users',
       iconClass: 'info',
       trend: formatTrend(kpis.new_clients_trend),
-      trendDirection: kpis.new_clients_trend >= 0 ? 'up' : 'down'
+      trendDirection: trendDirection(kpis.new_clients_trend)
     }
   ]
 })
@@ -247,6 +255,7 @@ const getOrderStatusSeverity = (status: string) => {
           <div class="kpi-card-label">{{ kpi.label }}</div>
           <div class="kpi-card-trend" :class="kpi.trendDirection">
             <i
+              v-if="kpi.trendDirection !== 'neutral'"
               class="trend-icon"
               :class="kpi.trendDirection === 'up' ? 'pi pi-arrow-up' : 'pi pi-arrow-down'"
             ></i>

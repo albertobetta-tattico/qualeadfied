@@ -55,6 +55,7 @@ const form = reactive<Omit<LeadUpdateForm, 'generated_at'>>({
   external_id: '',
   medium: '',
   campaign: '',
+  origin: '',
   country: 'IT'
 })
 
@@ -135,6 +136,7 @@ const loadLead = async () => {
     form.external_id = lead.value.external_id || ''
     form.medium = lead.value.medium || ''
     form.campaign = lead.value.campaign || ''
+    form.origin = lead.value.origin || ''
     form.country = lead.value.country || 'IT'
     formGeneratedAt.value = parseDate(lead.value.generated_at)
   }
@@ -519,6 +521,19 @@ onMounted(() => {
                 />
                 <small v-if="errors.source_id" class="p-error">{{ errors.source_id }}</small>
               </div>
+
+              <!-- Origin / Sorgente (facoltativa) -->
+              <div class="form-group">
+                <label for="origin">{{ $t('admin.leads.edit.classificationForm.origin') }}</label>
+                <PrimeInputText
+                  id="origin"
+                  v-model="form.origin"
+                  class="w-full"
+                  :disabled="!isEditable"
+                  :placeholder="$t('admin.leads.edit.classificationForm.originPlaceholder')"
+                  maxlength="50"
+                />
+              </div>
             </div>
 
             <!-- Action Buttons -->
@@ -548,15 +563,18 @@ onMounted(() => {
             <div class="grid grid-cols-1 gap-6">
               <!-- Request Text -->
               <div class="form-group">
-                <label for="request_text">{{ $t('admin.leads.edit.requestForm.requestText') }}</label>
+                <label for="request_text">{{ $t('admin.leads.edit.requestForm.requestText') }} *</label>
                 <PrimeTextarea
                   id="request_text"
                   v-model="form.request_text"
                   rows="6"
+                  :class="{ 'p-invalid': errors.request_text }"
                   class="w-full"
                   :disabled="!isEditable"
                   autoResize
+                  @blur="onBlur('request_text', form.request_text)"
                 />
+                <small v-if="errors.request_text" class="p-error">{{ errors.request_text }}</small>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

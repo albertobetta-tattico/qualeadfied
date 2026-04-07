@@ -131,10 +131,15 @@ export const useLeadStore = defineStore('lead', {
     async fetchSupportData() {
       try {
         const client = useTypedApi()
+        // per_page alto: dobbiamo ottenere TUTTE le categorie/province/sources
+        // (es. ~110 province italiane), altrimenti la paginazione di default (20)
+        // tronca la lista e le PrimeSelect non riescono a fare match con il
+        // v-model del lead in edit, mostrandosi vuote.
+        const supportQuery = { query: { per_page: '1000' } }
         const [categoriesRes, provincesRes, sourcesRes] = await Promise.all([
-          client.GET('/admin/categories'),
-          client.GET('/admin/provinces'),
-          client.GET('/admin/lead-sources')
+          client.GET('/admin/categories', { params: supportQuery as any }),
+          client.GET('/admin/provinces', { params: supportQuery as any }),
+          client.GET('/admin/lead-sources', { params: supportQuery as any })
         ])
 
         if (categoriesRes.error) throw categoriesRes.error
