@@ -1352,6 +1352,7 @@ export default {
         viewDetails: 'View details',
         openStripe: 'Open on Stripe',
         copyId: 'Copy ID',
+        moreActions: 'More actions',
       },
 
       contextMenu: {
@@ -1360,10 +1361,6 @@ export default {
         copyPaymentIntentId: 'Copy Payment Intent ID',
         goToOrder: 'Go to order',
         goToClient: 'Go to client',
-      },
-
-      tooltip: {
-        moreActions: 'More actions',
       },
     },
 
