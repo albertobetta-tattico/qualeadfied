@@ -153,9 +153,11 @@ export const useLeadStore = defineStore('lead', {
           $fetch<any>(`${baseUrl}/admin/lead-sources`, { headers, query })
         ])
 
-        this.categories = categoriesRes.data
-        this.provinces = provincesRes.data
-        this.sources = sourcesRes.data
+        // Normalizziamo gli id a number: alcuni cast Laravel tornano stringhe
+        // ed eviteremo type mismatch con il v-model delle PrimeSelect.
+        this.categories = (categoriesRes.data || []).map((c: any) => ({ ...c, id: Number(c.id) }))
+        this.provinces = (provincesRes.data || []).map((p: any) => ({ ...p, id: Number(p.id) }))
+        this.sources = (sourcesRes.data || []).map((s: any) => ({ ...s, id: Number(s.id) }))
       } catch (error: any) {
         console.error('fetchSupportData error:', error)
       }

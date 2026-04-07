@@ -123,10 +123,13 @@ const loadLead = async () => {
   ])
   
   if (lead.value) {
-    // Populate form with lead data
-    form.category_id = lead.value.category_id
-    form.province_id = lead.value.province_id ?? null
-    form.source_id = lead.value.source_id
+    // Populate form with lead data.
+    // CAST esplicito a Number: alcune colonne tornano come stringhe dal backend
+    // (Laravel serializza certi cast in modo inconsistente). Le PrimeSelect
+    // confrontano con === e non matchano "1" con 1, lasciando il dropdown vuoto.
+    form.category_id = lead.value.category_id != null ? Number(lead.value.category_id) : 0
+    form.province_id = lead.value.province_id != null ? Number(lead.value.province_id) : null
+    form.source_id = lead.value.source_id != null ? Number(lead.value.source_id) : 0
     form.full_name = lead.value.full_name
     form.email = lead.value.email
     form.phone = lead.value.phone
