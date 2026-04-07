@@ -520,6 +520,13 @@ export default {
       toast: {
         saveSuccess: 'Lead aggiornato con successo',
         saveError: 'Errore nell\'aggiornamento del lead',
+        updateSuccess: 'Lead "{name}" aggiornato con successo',
+        updateError: 'Errore nell\'aggiornamento del lead',
+        deleteSuccess: 'Lead eliminato con successo',
+        deleteError: 'Errore nell\'eliminazione del lead',
+        notEditable: 'Questo lead non pu\u00f2 essere modificato perch\u00e9 \u00e8 gi\u00e0 stato venduto.',
+        notDeletable: 'Questo lead non pu\u00f2 essere eliminato perch\u00e9 \u00e8 gi\u00e0 stato venduto.',
+        formErrors: 'Correggi gli errori nel form prima di salvare',
       },
     },
 
