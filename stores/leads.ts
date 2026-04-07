@@ -130,25 +130,32 @@ export const useLeadStore = defineStore('lead', {
   actions: {
     async fetchSupportData() {
       try {
-        const client = useTypedApi()
-        // per_page alto: dobbiamo ottenere TUTTE le categorie/province/sources
-        // (es. ~110 province italiane), altrimenti la paginazione di default (20)
-        // tronca la lista e le PrimeSelect non riescono a fare match con il
-        // v-model del lead in edit, mostrandosi vuote.
-        const supportQuery = { query: { per_page: '1000' } }
+        // Usiamo $fetch diretto invece del typed client perché openapi-fetch
+        // scarta i query params non dichiarati nello schema OpenAPI: gli endpoint
+        // /admin/categories, /admin/provinces, /admin/lead-sources non dichiarano
+        // `per_page` e quindi il typed client lo eliminerebbe → la risposta
+        // tornerebbe paginata a 20 record (default backend) e per le ~110 province
+        // italiane le PrimeSelect non riuscirebbero a fare match con il v-model
+        // del lead in edit, mostrandosi vuote. Forziamo per_page=1000.
+        const config = useRuntimeConfig()
+        const baseUrl = config.public.apiBase as string
+        const token = typeof window !== 'undefined'
+          ? (localStorage.getItem('admin_token') || localStorage.getItem('auth_token'))
+          : null
+        const headers: Record<string, string> = { Accept: 'application/json' }
+        if (token) headers.Authorization = `Bearer ${token}`
+
+        const query = { per_page: 1000 }
+
         const [categoriesRes, provincesRes, sourcesRes] = await Promise.all([
-          client.GET('/admin/categories', { params: supportQuery as any }),
-          client.GET('/admin/provinces', { params: supportQuery as any }),
-          client.GET('/admin/lead-sources', { params: supportQuery as any })
+          $fetch<any>(`${baseUrl}/admin/categories`, { headers, query }),
+          $fetch<any>(`${baseUrl}/admin/provinces`, { headers, query }),
+          $fetch<any>(`${baseUrl}/admin/lead-sources`, { headers, query })
         ])
 
-        if (categoriesRes.error) throw categoriesRes.error
-        if (provincesRes.error) throw provincesRes.error
-        if (sourcesRes.error) throw sourcesRes.error
-
-        this.categories = (categoriesRes.data as any).data
-        this.provinces = (provincesRes.data as any).data
-        this.sources = (sourcesRes.data as any).data
+        this.categories = categoriesRes.data
+        this.provinces = provincesRes.data
+        this.sources = sourcesRes.data
       } catch (error: any) {
         console.error('fetchSupportData error:', error)
       }
