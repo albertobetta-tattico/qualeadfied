@@ -157,6 +157,21 @@ export default defineNuxtConfig({
   ],
 
   // ============================================
+  // NITRO (Prerender / static generation)
+  // ============================================
+  // L'app è SPA pura (ssr: false). `nuxt generate` di default fa comunque
+  // crawl di tutte le route, ma il prerenderer SSR fallisce su Nuxt 3.20 +
+  // vue-bundle-renderer 2.2 (`rendererContext._entrypoints is not iterable`).
+  // Disabilitiamo il crawl: produciamo solo `200.html` come fallback SPA,
+  // che è esattamente ciò di cui ha bisogno il deploy via Apache + .htaccess.
+  nitro: {
+    prerender: {
+      crawlLinks: false,
+      routes: ['/']
+    }
+  },
+
+  // ============================================
   // VITE CONFIGURATION
   // ============================================
   vite: {
