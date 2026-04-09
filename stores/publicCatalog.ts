@@ -151,9 +151,16 @@ export const usePublicCatalogStore = defineStore('publicCatalog', {
     },
 
     async fetchHomepageContent(): Promise<void> {
-      // Homepage content is not yet a backend API endpoint
       this.loading = true
+      this.error = null
       try {
+        const config = useRuntimeConfig()
+        const data = await $fetch<HomepageContent>('/public/homepage-content', {
+          baseURL: config.public.apiBase as string,
+        })
+        this.homepageContent = data
+      } catch (e: any) {
+        console.error('Error fetching homepage content:', e)
         this.homepageContent = null
       } finally {
         this.loading = false

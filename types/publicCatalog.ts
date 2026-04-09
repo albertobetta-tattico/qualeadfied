@@ -77,18 +77,18 @@ export interface PublicCatalogStats {
  * Homepage content
  */
 export interface HomepageContent {
-  hero: {
+  hero?: {
     headline: string
     subtitle: string
     cta_text: string
     image_url?: string
   }
-  value_propositions: Array<{
+  value_propositions?: Array<{
     icon: string
     title: string
     description: string
   }>
-  how_it_works: Array<{
+  how_it_works?: Array<{
     step: number
     title: string
     description: string
