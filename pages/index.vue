@@ -76,15 +76,15 @@ const howItWorksSteps = computed(() => [
       <div class="hero-container">
         <div class="hero-content">
           <h1 class="hero-title">
-            {{ homepageContent?.hero.headline || $t('landing.hero.headline') }}
+            {{ homepageContent?.hero?.headline || $t('landing.hero.headline') }}
           </h1>
           <p class="hero-subtitle">
-            {{ homepageContent?.hero.subtitle || $t('landing.hero.subtitle') }}
+            {{ homepageContent?.hero?.subtitle || $t('landing.hero.subtitle') }}
           </p>
           <div class="hero-cta">
             <NuxtLink to="/registrati">
               <PrimeButton
-                :label="homepageContent?.hero.cta_text || $t('landing.hero.ctaText')"
+                :label="homepageContent?.hero?.cta_text || $t('landing.hero.ctaText')"
                 icon="pi pi-arrow-right"
                 iconPos="right"
                 size="large"
@@ -218,19 +218,19 @@ const howItWorksSteps = computed(() => [
       <div class="section-container">
         <div class="stats-grid">
           <div class="stat-item">
-            <div class="stat-number">{{ formatNumber(homepageContent?.stats.total_leads_available || 0) }}+</div>
+            <div class="stat-number">{{ formatNumber(homepageContent?.stats?.total_leads_available || 0) }}+</div>
             <div class="stat-label">{{ $t('landing.stats.leadsAvailable') }}</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number">{{ homepageContent?.stats.categories_count || 0 }}</div>
+            <div class="stat-number">{{ homepageContent?.stats?.categories_count || 0 }}</div>
             <div class="stat-label">{{ $t('landing.stats.categories') }}</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number">{{ homepageContent?.stats.provinces_covered || 0 }}</div>
+            <div class="stat-number">{{ homepageContent?.stats?.provinces_covered || 0 }}</div>
             <div class="stat-label">{{ $t('landing.stats.provincesCovered') }}</div>
           </div>
           <div class="stat-item">
-            <div class="stat-number">{{ formatNumber(homepageContent?.stats.satisfied_clients || 0) }}+</div>
+            <div class="stat-number">{{ formatNumber(homepageContent?.stats?.satisfied_clients || 0) }}+</div>
             <div class="stat-label">{{ $t('landing.stats.satisfiedClients') }}</div>
           </div>
         </div>
