@@ -754,6 +754,13 @@ export default {
         deleteSuccess: 'Category "{name}" successfully deleted',
         deleteError: 'Error deleting category',
         exportInProgress: 'Exporting categories...',
+        copyLeadchangeLink: 'Copy cross-selling link',
+        linkCopied: 'Cross-selling link copied to clipboard',
+        linkCopyError: 'Error copying link',
+        slugRegenerated: 'Slug regenerated from name',
+        updateSuccess: 'Category "{name}" successfully updated',
+        updateError: 'Error updating category',
+        notFound: 'Category not found',
       },
       stats: {
         totalCategories: 'Total Categories',

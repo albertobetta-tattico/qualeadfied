@@ -68,7 +68,7 @@ export interface LeadSource {
  */
 export interface Lead {
   id: number
-  category_id: number
+  category_ids?: number[]
   province_id: number
   source_id: number
   
@@ -101,7 +101,7 @@ export interface Lead {
   updated_at: string
 
   // Relazioni (opzionali, per visualizzazione)
-  category?: Category
+  categories?: Category[]
   province?: Province
   source?: LeadSource
 }
@@ -110,7 +110,7 @@ export interface Lead {
  * Form per creazione lead
  */
 export interface LeadCreateForm {
-  category_id: number | null
+  category_ids: number[]
   province_id: number | null
   source_id: number | null
   full_name: string
@@ -131,7 +131,7 @@ export interface LeadCreateForm {
  * Form per aggiornamento lead
  */
 export interface LeadUpdateForm {
-  category_id: number
+  category_ids: number[]
   province_id: number | null
   source_id: number
   full_name: string

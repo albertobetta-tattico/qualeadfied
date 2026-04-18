@@ -330,7 +330,7 @@ const getAvailabilityBadge = (lead: any) => {
             <!-- Category Badge -->
             <div class="lead-card-header">
               <PrimeTag
-                :value="lead.category?.name || 'Categoria'"
+                :value="lead.categories?.[0]?.name || 'Categoria'"
                 severity="primary"
               />
               <span class="lead-date">{{ formatRelativeTime(lead.generated_at) }}</span>

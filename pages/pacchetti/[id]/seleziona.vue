@@ -224,7 +224,7 @@ const redeemLeads = async () => {
             <div class="flex-grow">
               <!-- Tags -->
               <div class="flex items-center gap-2 mb-2">
-                <Tag :value="lead.category?.name" severity="info" size="small" />
+                <Tag v-for="cat in ((lead as any).categories || [])" :key="cat.id" :value="cat.name" severity="info" size="small" class="mr-1" />
                 <Tag :value="lead.province?.code" severity="secondary" size="small" />
               </div>
 

@@ -144,11 +144,11 @@ const recentLeads = computed(() => {
     id: lead.id,
     name: lead.full_name || '-',
     email: lead.email,
-    category: lead.category?.name || '-',
+    category: lead.categories?.[0]?.name || '-',
     province: lead.province?.name || '-',
     status: lead.status,
-    slots: lead.status === 'shared' && lead.category
-      ? `${lead.current_shares}/${lead.category.max_shares}`
+    slots: lead.status === 'shared' && lead.categories?.[0]
+      ? `${lead.current_shares}/${lead.categories[0].max_shares}`
       : undefined,
     date: new Date(lead.created_at).toLocaleDateString('it-IT')
   }))

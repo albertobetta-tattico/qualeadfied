@@ -131,7 +131,7 @@ const copyToClipboard = (text: string, label: string) => {
       <div v-if="lead" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div class="flex flex-wrap items-center gap-2 mb-2">
-            <PrimeTag :value="lead.lead.category?.name" severity="info" />
+            <PrimeTag v-for="cat in ((lead.lead as any).categories || [])" :key="cat.id" :value="cat.name" severity="info" class="mr-1" />
             <PrimeTag v-if="lead.lead.province?.name" :value="lead.lead.province.name" severity="secondary" />
             <PrimeTag v-if="lead.lead.province?.region" :value="lead.lead.province.region" severity="warn" />
             <PrimeTag

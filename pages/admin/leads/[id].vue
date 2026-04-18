@@ -43,7 +43,7 @@ const initialLoading = ref(true)
 const formGeneratedAt = ref<Date | null>(null)
 
 const form = reactive<Omit<LeadUpdateForm, 'generated_at'>>({
-  category_id: 0,
+  category_ids: [],
   province_id: null,
   source_id: 0,
   full_name: '',
@@ -91,9 +91,9 @@ const sourceOptions = computed(() =>
   }))
 )
 
-// Get category for current lead
-const currentCategory = computed(() => 
-  leadStore.getCategoryById(lead.value?.category_id || 0)
+// Get categories for current lead
+const currentCategories = computed(() =>
+  lead.value?.categories || []
 )
 
 // Check if lead can be edited
@@ -127,7 +127,7 @@ const loadLead = async () => {
     // CAST esplicito a Number: alcune colonne tornano come stringhe dal backend
     // (Laravel serializza certi cast in modo inconsistente). Le PrimeSelect
     // confrontano con === e non matchano "1" con 1, lasciando il dropdown vuoto.
-    form.category_id = lead.value.category_id != null ? Number(lead.value.category_id) : 0
+    form.category_ids = (lead.value.categories || []).map((c: any) => Number(c.id))
     form.province_id = lead.value.province_id != null ? Number(lead.value.province_id) : null
     form.source_id = lead.value.source_id != null ? Number(lead.value.source_id) : 0
     form.full_name = lead.value.full_name
@@ -214,11 +214,15 @@ const onReload = () => {
   loadLead()
 }
 
-// Custom fields for selected category
+// Custom fields for selected categories
 const categoryCustomFields = computed(() => {
-  if (!form.category_id) return []
-  const cat = leadStore.activeCategories.find((c: any) => c.id === form.category_id)
-  return cat?.custom_fields || []
+  if (!form.category_ids.length) return []
+  const fields: any[] = []
+  for (const catId of form.category_ids) {
+    const cat = leadStore.activeCategories.find((c: any) => c.id === catId)
+    if (cat?.custom_fields) fields.push(...cat.custom_fields)
+  }
+  return fields
 })
 
 // Status badge styling
@@ -292,7 +296,7 @@ onMounted(() => {
                     <i class="pi mr-1" :class="getStatusIcon(lead.status)"></i>
                     {{ formatStatus(lead.status) }}
                     <span v-if="lead.status === 'sold_shared'" class="ml-1">
-                      ({{ formatSharesDisplay(lead, currentCategory) }})
+                      ({{ formatSharesDisplay(lead, currentCategories[0]) }})
                     </span>
                   </span>
                   <span class="text-sm text-neutral-500">
@@ -333,11 +337,16 @@ onMounted(() => {
             <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.category') }}</span>
             <i class="pi pi-tag text-lg text-primary-500"></i>
           </div>
-          <div class="font-semibold text-neutral-900">
-            {{ lead.category?.name || '-' }}
-          </div>
-          <div class="text-xs text-neutral-500 mt-1">
-            {{ $t('admin.leads.edit.infoCards.maxShares') }}: {{ currentCategory?.max_shares || '-' }}
+          <div class="font-semibold text-neutral-900 flex flex-wrap items-center gap-1 min-h-[28px]">
+            <template v-if="currentCategories.length">
+              <PrimeTag
+                v-for="cat in currentCategories"
+                :key="cat.id"
+                :value="cat.name"
+                severity="info"
+              />
+            </template>
+            <span v-else>-</span>
           </div>
         </div>
 
@@ -347,9 +356,9 @@ onMounted(() => {
             <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.province') }}</span>
             <i class="pi pi-map-marker text-lg text-primary-500"></i>
           </div>
-          <div class="font-semibold text-neutral-900">
+          <div class="font-semibold text-neutral-900 flex items-center min-h-[28px]">
             {{ lead.province?.name || 'N/D' }}
-            <span v-if="lead.province?.code" class="text-neutral-500 font-normal">
+            <span v-if="lead.province?.code" class="text-neutral-500 font-normal ml-1">
               ({{ lead.province.code }})
             </span>
           </div>
@@ -364,7 +373,7 @@ onMounted(() => {
             <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.source') }}</span>
             <i class="pi pi-link text-lg text-primary-500"></i>
           </div>
-          <div class="font-semibold text-neutral-900">
+          <div class="font-semibold text-neutral-900 flex items-center min-h-[28px]">
             {{ lead.source?.name || '-' }}
           </div>
           <div v-if="lead.external_id" class="text-xs text-neutral-500 mt-1">
@@ -475,21 +484,22 @@ onMounted(() => {
         <PrimeTabPanel value="1" :header="$t('admin.leads.edit.tabs.classification')">
           <form @submit.prevent="onSubmit" class="space-y-6 pt-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <!-- Category -->
+              <!-- Categories (multi-select) -->
               <div class="form-group">
-                <label for="category_id">{{ $t('admin.leads.edit.classificationForm.category') }} *</label>
-                <PrimeSelect
-                  id="category_id"
-                  v-model="form.category_id"
+                <label for="category_ids">{{ $t('admin.leads.edit.classificationForm.category') }} *</label>
+                <PrimeMultiSelect
+                  id="category_ids"
+                  v-model="form.category_ids"
                   :options="categoryOptions"
                   optionLabel="label"
                   optionValue="value"
-                  :class="{ 'p-invalid': errors.category_id }"
+                  :class="{ 'p-invalid': errors.category_ids }"
                   class="w-full"
                   :disabled="!isEditable"
-                  @blur="onBlur('category_id', form.category_id)"
+                  display="chip"
+                  :filter="true"
                 />
-                <small v-if="errors.category_id" class="p-error">{{ errors.category_id }}</small>
+                <small v-if="errors.category_ids" class="p-error">{{ errors.category_ids }}</small>
               </div>
 
               <!-- Province (facoltativa) -->
@@ -734,6 +744,14 @@ onMounted(() => {
   font-size: 0.75rem;
   color: #6c757d;
   margin-top: 0.25rem;
+}
+
+:deep(.p-multiselect) {
+  min-height: 3rem;
+}
+
+:deep(.p-multiselect-label) {
+  height: 100%;
 }
 
 .p-error {

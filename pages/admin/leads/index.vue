@@ -575,13 +575,19 @@ onUnmounted(() => {
           </template>
         </PrimeColumn>
 
-        <!-- Category -->
-        <PrimeColumn field="category_id" :header="$t('admin.leads.list.table.headers.category')" sortable style="min-width: 150px">
+        <!-- Categories -->
+        <PrimeColumn :header="$t('admin.leads.list.table.headers.category')" style="min-width: 150px">
           <template #body="{ data }">
-            <PrimeTag
-              :value="data.category?.name || '-'"
-              severity="secondary"
-            />
+            <template v-if="data.categories?.length">
+              <PrimeTag
+                v-for="cat in data.categories"
+                :key="cat.id"
+                :value="cat.name"
+                severity="secondary"
+                class="mr-1"
+              />
+            </template>
+            <span v-else>-</span>
           </template>
         </PrimeColumn>
 

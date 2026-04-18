@@ -142,7 +142,7 @@ const getPaymentMethodLabel = (method: string): string => {
               >
                 <div class="flex-grow">
                   <div class="flex items-center gap-2 mb-1">
-                    <Tag :value="item.lead?.category?.name" severity="info" size="small" />
+                    <Tag v-for="cat in ((item.lead as any)?.categories || [])" :key="cat.id" :value="cat.name" severity="info" size="small" class="mr-1" />
                     <Tag :value="item.lead?.province?.code" severity="secondary" size="small" />
                   </div>
                   <h4 class="font-medium text-surface-900 dark:text-surface-0">

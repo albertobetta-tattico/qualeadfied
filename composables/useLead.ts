@@ -116,7 +116,7 @@ export function useLeadValidation() {
     isValid = validateRequired('full_name', form.full_name, t('common.labels.fullName')) && isValid
     isValid = validateEmail(form.email) && isValid
     isValid = validatePhone(form.phone) && isValid
-    isValid = validateCategoryId(form.category_id) && isValid
+    isValid = validateCategoryId((form as any).category_id ?? (form as any).category_ids?.[0]) && isValid
     isValid = validateSourceId(form.source_id) && isValid
     isValid = validateGeneratedAt(form.generated_at) && isValid
     isValid = validateRequired('request_text', form.request_text, t('admin.leads.create.form.requestText')) && isValid
@@ -354,7 +354,7 @@ export function useLeadForm(initialData?: Lead) {
   const today = new Date().toISOString().split('T')[0]
 
   const form = reactive<LeadCreateForm>({
-    category_id: initialData?.category_id || null,
+    category_ids: initialData?.category_ids || [],
     province_id: initialData?.province_id ?? null,
     source_id: initialData?.source_id || null,
     full_name: initialData?.full_name || '',
@@ -368,7 +368,7 @@ export function useLeadForm(initialData?: Lead) {
   })
 
   const resetForm = () => {
-    form.category_id = initialData?.category_id || null
+    form.category_ids = initialData?.category_ids || []
     form.province_id = initialData?.province_id ?? null
     form.source_id = initialData?.source_id || null
     form.full_name = initialData?.full_name || ''

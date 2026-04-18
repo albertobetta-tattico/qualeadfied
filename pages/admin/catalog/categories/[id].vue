@@ -10,7 +10,7 @@ definePageMeta({
   layout: 'admin'
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // Route params
 const route = useRoute()
@@ -104,6 +104,22 @@ const onSubmit = async () => {
   }
 }
 
+// Copy leadchange URL to clipboard with localized placeholders
+const copyLeadchangeUrl = async () => {
+  if (category.value?.leadchange_url) {
+    try {
+      let url = category.value.leadchange_url
+      if (locale.value === 'it') {
+        url = url.replace('USER_EMAIL', 'EMAIL_UTENTE').replace('USER_PHONE', 'TEL_UTENTE')
+      }
+      await navigator.clipboard.writeText(url)
+      showSuccess(t('admin.catalog.categories.toast.linkCopied'))
+    } catch {
+      showError(t('admin.catalog.categories.toast.linkCopyError'))
+    }
+  }
+}
+
 // Cancel and go back
 const onCancel = () => {
   router.push('/admin/catalog/categories')
@@ -142,7 +158,18 @@ onMounted(async () => {
             />
             <h1 class="page-title mb-0">{{ $t('admin.catalog.categories.editTitle') }}</h1>
           </div>
-          <p class="page-subtitle ml-12">{{ category.name }}</p>
+          <div class="flex items-center gap-3 ml-12">
+            <PrimeTag :value="category.name" severity="info" class="text-sm" />
+            <PrimeButton
+              v-if="category.leadchange_url"
+              icon="pi pi-copy"
+              :label="$t('admin.catalog.categories.toast.copyLeadchangeLink')"
+              severity="secondary"
+              outlined
+              size="small"
+              @click="copyLeadchangeUrl"
+            />
+          </div>
         </div>
         <div class="page-header-actions">
           <PrimeTag

@@ -329,9 +329,12 @@ const viewLead = (lead: MyLead) => {
           </PrimeColumn>
 
           <!-- Category -->
-          <PrimeColumn field="lead.category.name" :header="t('leads.myLeads.table.category')" sortable style="min-width: 130px">
+          <PrimeColumn :header="t('leads.myLeads.table.category')" style="min-width: 130px">
             <template #body="{ data }">
-              <PrimeTag :value="data.lead.category?.name" severity="info" size="small" />
+              <template v-if="data.lead?.categories?.length">
+                <PrimeTag v-for="cat in data.lead.categories" :key="cat.id" :value="cat.name" severity="info" size="small" class="mr-1" />
+              </template>
+              <span v-else>-</span>
             </template>
           </PrimeColumn>
 

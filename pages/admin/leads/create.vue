@@ -22,7 +22,7 @@ const { showSuccess, showError } = useLeadActions()
 const formGeneratedAt = ref<Date | null>(new Date())
 
 const form = reactive<Omit<LeadCreateForm, 'generated_at'>>({
-  category_id: null,
+  category_ids: [],
   province_id: null,
   source_id: null,
   full_name: '',
@@ -142,10 +142,10 @@ const onCreateAnother = async () => {
   if (lead) {
     showSuccess(t('admin.leads.create.toast.createSuccess', { name: lead.full_name }))
     // Reset form but keep category and source
-    const savedCategoryId = form.category_id
+    const savedCategoryIds = [...form.category_ids]
     const savedSourceId = form.source_id
     const savedProvinceId = form.province_id
-    
+
     form.full_name = ''
     form.email = ''
     form.phone = ''
@@ -155,9 +155,9 @@ const onCreateAnother = async () => {
     form.medium = ''
     form.campaign = ''
     formGeneratedAt.value = new Date()
-    
+
     // Keep the context
-    form.category_id = savedCategoryId
+    form.category_ids = savedCategoryIds
     form.source_id = savedSourceId
     form.province_id = savedProvinceId
   } else {
@@ -167,18 +167,22 @@ const onCreateAnother = async () => {
 
 // Custom fields for selected category
 const categoryCustomFields = computed(() => {
-  if (!form.category_id) return []
-  const cat = leadStore.activeCategories.find((c: any) => c.id === form.category_id)
-  return cat?.custom_fields || []
+  if (!form.category_ids.length) return []
+  const fields: any[] = []
+  for (const catId of form.category_ids) {
+    const cat = leadStore.activeCategories.find((c: any) => c.id === catId)
+    if (cat?.custom_fields) fields.push(...cat.custom_fields)
+  }
+  return fields
 })
 
-// Initialize extra_tags when category changes
-watch(() => form.category_id, (newCategoryId) => {
-  if (!newCategoryId) {
+// Initialize extra_tags when categories change
+watch(() => form.category_ids, (newCategoryIds) => {
+  if (!newCategoryIds.length) {
     form.extra_tags = {}
     return
   }
-  const cat = leadStore.activeCategories.find((c: any) => c.id === newCategoryId)
+  const cat = leadStore.activeCategories.find((c: any) => c.id === newCategoryIds[0])
   if (cat?.custom_fields) {
     const newTags: Record<string, string> = {}
     for (const field of cat.custom_fields) {

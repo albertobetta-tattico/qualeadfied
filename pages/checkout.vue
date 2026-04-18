@@ -392,7 +392,7 @@ const processPayment = async () => {
                       Lead #{{ item.lead_id }}
                     </p>
                     <p class="text-xs text-surface-500">
-                      {{ item.lead?.category?.name }} - {{ formatPurchaseMode(item.purchase_mode) }}
+                      {{ (item.lead as any)?.categories?.[0]?.name || '-' }} - {{ formatPurchaseMode(item.purchase_mode) }}
                     </p>
                   </div>
                   <p class="text-sm font-medium text-surface-900 dark:text-surface-0">
