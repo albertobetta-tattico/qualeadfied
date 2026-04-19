@@ -116,7 +116,7 @@ export const usePackagesStore = defineStore('packages', {
       }
     },
 
-    async purchasePackage(packageId: number, paymentMethod: 'card' | 'sepa'): Promise<{ orderId: number } | null> {
+    async purchasePackage(packageId: number, paymentMethod: 'card' | 'sepa'): Promise<{ clientSecret: string; orderId: number } | null> {
       const { $i18n } = useNuxtApp()
       const t = $i18n.t
       this.purchasing = true
@@ -124,9 +124,35 @@ export const usePackagesStore = defineStore('packages', {
 
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: { order_id: number; active_package: ActivePackage } }>(`${config.public.apiBase}/packages/purchase`, {
+        const response = await $fetch<{ data: { client_secret: string; order_id: number; package_id: number; amount: number } }>(`${config.public.apiBase}/packages/purchase`, {
           method: 'POST',
           body: { package_id: packageId, payment_method: paymentMethod },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Accept: 'application/json'
+          }
+        })
+
+        return { clientSecret: response.data.client_secret, orderId: response.data.order_id }
+      } catch (e: any) {
+        this.error = e.data?.message || t('common.errors.paymentError')
+        return null
+      } finally {
+        this.purchasing = false
+      }
+    },
+
+    async confirmPackagePurchase(paymentIntentId: string): Promise<{ orderId: number } | null> {
+      const { $i18n } = useNuxtApp()
+      const t = $i18n.t
+      this.purchasing = true
+      this.error = null
+
+      try {
+        const config = useRuntimeConfig()
+        const response = await $fetch<{ data: { order_id: number; active_package: ActivePackage } }>(`${config.public.apiBase}/packages/purchase/confirm`, {
+          method: 'POST',
+          body: { payment_intent_id: paymentIntentId },
           headers: {
             Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
             Accept: 'application/json'

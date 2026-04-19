@@ -43,6 +43,10 @@ const billingForm = ref({
 // Loading states
 const processing = ref(false)
 
+// Stripe state
+const stripeCardForm = ref<{ confirmCard: () => Promise<{ id: string; status: string }>; cardComplete: boolean } | null>(null)
+const clientSecret = ref<string | null>(null)
+
 // Fetch data on mount
 onMounted(async () => {
   await Promise.all([
@@ -97,6 +101,12 @@ const processPayment = async () => {
     return
   }
 
+  // Card must be filled when paying with card
+  if (paymentMethod.value === 'card' && !stripeCardForm.value?.cardComplete) {
+    showError('Compila i dati della carta')
+    return
+  }
+
   processing.value = true
 
   try {
@@ -109,15 +119,35 @@ const processPayment = async () => {
       }
     }
 
-    // Purchase package
-    const result = await packagesStore.purchasePackage(packageId.value, paymentMethod.value)
-
-    if (result) {
-      showSuccess(t('packages.purchase.toast.success'))
-      // Redirect to active packages
-      router.push('/pacchetti/attivi')
-    } else {
+    // Step 1: create the PaymentIntent on the backend (creates pending order)
+    const intent = await packagesStore.purchasePackage(packageId.value, paymentMethod.value)
+    if (!intent) {
       showError(packagesStore.error || t('packages.purchase.toast.errorPurchase'))
+      return
+    }
+
+    clientSecret.value = intent.clientSecret
+
+    // Step 2: confirm payment on Stripe with the card data
+    if (paymentMethod.value === 'card') {
+      await nextTick()
+      try {
+        const confirmed = await stripeCardForm.value!.confirmCard()
+        if (confirmed.status !== 'succeeded') {
+          showError(`Pagamento non completato (status: ${confirmed.status})`)
+          return
+        }
+        // Step 3: notify backend to fulfill (create UserPackage)
+        const result = await packagesStore.confirmPackagePurchase(confirmed.id)
+        if (result) {
+          showSuccess(t('packages.purchase.toast.success'))
+          router.push('/pacchetti/attivi')
+        } else {
+          showError(packagesStore.error || t('packages.purchase.toast.errorPurchase'))
+        }
+      } catch (err: any) {
+        showError(err.message || 'Pagamento rifiutato')
+      }
     }
   } finally {
     processing.value = false
@@ -386,6 +416,15 @@ const processPayment = async () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- Stripe Card Form (shown only when card is selected) -->
+            <div v-if="paymentMethod === 'card'" class="mt-4">
+              <StripeCardForm
+                ref="stripeCardForm"
+                :client-secret="clientSecret"
+                :billing-name="profileStore.profile?.company_name"
+              />
             </div>
           </template>
         </PrimeCard>

@@ -33,6 +33,11 @@ const billingForm = ref({
 // Loading states
 const processing = ref(false)
 
+// Stripe state
+const stripeCardForm = ref<{ confirmCard: () => Promise<{ id: string; status: string }>; cardComplete: boolean } | null>(null)
+const clientSecret = ref<string | null>(null)
+const cardReady = ref(false)
+
 // Fetch data on mount
 onMounted(async () => {
   await Promise.all([
@@ -69,6 +74,12 @@ const processPayment = async () => {
     return
   }
 
+  // Card must be filled when paying with card
+  if (paymentMethod.value === 'card' && !stripeCardForm.value?.cardComplete) {
+    showError('Compila i dati della carta')
+    return
+  }
+
   processing.value = true
 
   try {
@@ -81,7 +92,7 @@ const processPayment = async () => {
       }
     }
 
-    // Process checkout - create checkout data and confirm payment
+    // Step 1: create the PaymentIntent on the backend
     const checkoutData = {
       billing_address: billingForm.value.billing_address,
       billing_city: billingForm.value.billing_city,
@@ -99,15 +110,38 @@ const processPayment = async () => {
       return
     }
 
-    // In a real app, we would use Stripe.js here. For mock, just confirm
-    const result = await cartStore.confirmPayment(paymentIntent.client_secret)
+    clientSecret.value = paymentIntent.client_secret
 
-    if (result) {
-      showSuccess(t('cart.toast.checkoutSuccess'))
-      // Redirect to order confirmation
-      router.push(`/ordini/${result.orderId}`)
+    // Step 2: confirm the payment on Stripe with the card data
+    if (paymentMethod.value === 'card') {
+      // Wait one tick so the StripeCardForm receives the new client_secret
+      await nextTick()
+      try {
+        const confirmed = await stripeCardForm.value!.confirmCard()
+        if (confirmed.status !== 'succeeded') {
+          showError(`Pagamento non completato (status: ${confirmed.status})`)
+          return
+        }
+        // Step 3: notify backend to fulfill the order
+        const result = await cartStore.confirmPayment(confirmed.id)
+        if (result) {
+          showSuccess(t('cart.toast.checkoutSuccess'))
+          router.push(`/ordini/${result.orderId}`)
+        } else {
+          showError(cartStore.error || t('cart.checkout.paymentError'))
+        }
+      } catch (err: any) {
+        showError(err.message || 'Pagamento rifiutato')
+      }
     } else {
-      showError(cartStore.error || t('cart.checkout.paymentError'))
+      // SEPA flow not yet UI-integrated — just call confirm (existing behavior)
+      const result = await cartStore.confirmPayment(paymentIntent.client_secret.split('_secret_')[0])
+      if (result) {
+        showSuccess(t('cart.toast.checkoutSuccess'))
+        router.push(`/ordini/${result.orderId}`)
+      } else {
+        showError(cartStore.error || t('cart.checkout.paymentError'))
+      }
     }
   } finally {
     processing.value = false
@@ -359,6 +393,16 @@ const processPayment = async () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- Stripe Card Form (shown only when card is selected) -->
+            <div v-if="paymentMethod === 'card'" class="mt-4">
+              <StripeCardForm
+                ref="stripeCardForm"
+                :client-secret="clientSecret"
+                :billing-name="profileStore.profile?.company_name"
+                @ready="cardReady = true"
+              />
             </div>
 
             <!-- Stripe info -->
