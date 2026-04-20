@@ -117,7 +117,7 @@ const logout = async () => {
               <div>
                 <p class="text-sm text-surface-500 mb-1">{{ $t('profile.company.email') }}</p>
                 <p class="font-medium text-surface-900 dark:text-surface-0">
-                  {{ profileStore.profile.email }}
+                  {{ (profileStore.profile as any).user?.email ?? profileStore.profile.email ?? '—' }}
                 </p>
               </div>
             </div>

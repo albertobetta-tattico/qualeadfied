@@ -47,7 +47,7 @@ export const useClientOrdersStore = defineStore('clientOrders', {
     totalOrders: (state): number => state.pagination.total,
 
     totalSpent: (state): number => {
-      return state.orders.reduce((sum, order) => sum + order.total, 0)
+      return state.orders.reduce((sum, order) => sum + Number(order.total), 0)
     },
 
     completedOrders: (state): Order[] => {

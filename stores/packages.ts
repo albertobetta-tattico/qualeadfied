@@ -80,14 +80,19 @@ export const usePackagesStore = defineStore('packages', {
       this.error = null
 
       try {
-        const client = useTypedApi()
-
-        const { data, error } = await client.GET('/user-packages')
-        if (error) throw error
-
-        this.activePackages = (data as any).data
+        // openapi-fetch typed client sometimes returns an empty body when the
+        // endpoint isn't in the generated schema; fallback to raw $fetch to be safe
+        const config = useRuntimeConfig()
+        const response = await $fetch<{ data: ActivePackage[] }>(`${config.public.apiBase}/user-packages`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            Accept: 'application/json'
+          }
+        })
+        this.activePackages = response?.data ?? []
       } catch (e: any) {
         this.error = e.data?.message || e.message || t('common.errors.loadError')
+        this.activePackages = []
       } finally {
         this.loading = false
       }

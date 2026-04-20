@@ -135,13 +135,15 @@ export const usePublicCatalogStore = defineStore('publicCatalog', {
         if (error) throw error
 
         this.leads = data.data
+        // API response wraps pagination inside `meta` (Laravel API Resources convention)
+        const meta = (data as any).meta ?? data
         this.pagination = {
-          current_page: data.current_page,
-          last_page: data.last_page,
-          per_page: data.per_page,
-          total: data.total,
-          from: data.current_page,
-          to: data.per_page
+          current_page: meta.current_page ?? 1,
+          last_page: meta.last_page ?? 1,
+          per_page: meta.per_page ?? 15,
+          total: meta.total ?? this.leads.length,
+          from: meta.from ?? 1,
+          to: meta.to ?? this.leads.length
         }
       } catch (e: any) {
         this.error = e.data?.message || t('common.errors.loadError')

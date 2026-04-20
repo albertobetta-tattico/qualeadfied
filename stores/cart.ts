@@ -35,7 +35,7 @@ export const useCartStore = defineStore('cart', {
     itemCount: (state): number => state.items.length,
 
     subtotal: (state): number => {
-      return state.items.reduce((sum, item) => sum + item.price, 0)
+      return state.items.reduce((sum, item) => sum + Number(item.price), 0)
     },
 
     vatAmount(): number {
@@ -70,8 +70,10 @@ export const useCartStore = defineStore('cart', {
       const groupsMap = new Map<string, CartGroup>()
 
       for (const item of state.items) {
-        const categoryId = item.lead?.category_id || 0
-        const category = item.lead?.category
+        // Backend returns `categories` (array) — use the first one for grouping
+        const leadCategories = (item.lead as any)?.categories as Array<{ id: number; name: string; slug: string; max_shares: number; is_active: boolean; sort_order: number; deleted_at: string | null; created_at: string; updated_at: string }> | undefined
+        const category = leadCategories?.[0] ?? item.lead?.category
+        const categoryId = category?.id ?? item.lead?.category_id ?? 0
         const key = `${categoryId}-${item.purchase_mode}`
 
         if (!groupsMap.has(key)) {
@@ -89,7 +91,7 @@ export const useCartStore = defineStore('cart', {
         const group = groupsMap.get(key)!
         group.items.push(item)
         group.totalLeads++
-        group.totalPrice += item.price
+        group.totalPrice += Number(item.price)
 
         const province = item.lead?.province
         if (province && !group.provinces.some(p => p.id === province.id)) {

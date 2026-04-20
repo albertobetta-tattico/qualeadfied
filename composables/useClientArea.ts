@@ -18,9 +18,11 @@ import type {
 export function useClientFormatters() {
   const { t } = useI18n()
 
-  // Format currency
-  const formatCurrency = (amount: number): string => {
-    return amount.toLocaleString('it-IT', {
+  // Format currency - coerces string/null/number to Number before formatting
+  const formatCurrency = (amount: number | string | null | undefined): string => {
+    const n = Number(amount ?? 0)
+    if (!Number.isFinite(n)) return '—'
+    return n.toLocaleString('it-IT', {
       style: 'currency',
       currency: 'EUR',
       minimumFractionDigits: 2

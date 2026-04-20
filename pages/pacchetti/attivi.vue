@@ -72,7 +72,7 @@ const selectLeads = (pkg: ActivePackage) => {
         </p>
       </div>
       <NuxtLink to="/pacchetti">
-        <Button
+        <PrimeButton
           :label="$t('packages.active.buyNew')"
           icon="pi pi-plus"
         />
@@ -81,12 +81,12 @@ const selectLeads = (pkg: ActivePackage) => {
 
     <!-- Loading State -->
     <div v-if="packagesStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Active Packages -->
     <div v-else-if="packagesStore.activePackages.length > 0" class="space-y-4">
-      <Card
+      <PrimeCard
         v-for="pkg in packagesStore.activePackages"
         :key="pkg.id"
         class="active-package-card"
@@ -96,8 +96,8 @@ const selectLeads = (pkg: ActivePackage) => {
             <!-- Package Info -->
             <div class="flex-grow">
               <div class="flex items-center gap-3 mb-2">
-                <Tag v-if="pkg.category_id" :value="`Categoria #${pkg.category_id}`" severity="info" />
-                <Tag v-else :value="$t('packages.active.allCategories')" severity="secondary" />
+                <PrimeTagv-if="pkg.category_id" :value="`Categoria #${pkg.category_id}`" severity="info" />
+                <PrimeTagv-else :value="$t('packages.active.allCategories')" severity="secondary" />
                 <Tag
                   :value="$t('packages.active.daysRemaining', { count: getDaysRemaining(pkg.expires_at) })"
                   :severity="getStatusSeverity(pkg)"
@@ -121,7 +121,7 @@ const selectLeads = (pkg: ActivePackage) => {
                   {{ getTotalLeadsUsed(pkg) }} / {{ getTotalLeads(pkg) }}
                 </span>
               </div>
-              <ProgressBar
+              <PrimeProgressBar
                 :value="getProgressPercentage(pkg)"
                 :showValue="false"
                 class="h-2"
@@ -133,7 +133,7 @@ const selectLeads = (pkg: ActivePackage) => {
 
             <!-- Actions -->
             <div class="flex flex-col gap-2 lg:w-48">
-              <Button
+              <PrimeButton
                 :label="$t('packages.active.selectLeads')"
                 icon="pi pi-list"
                 :disabled="getRemainingLeads(pkg) === 0"
@@ -155,7 +155,7 @@ const selectLeads = (pkg: ActivePackage) => {
             </div>
           </div>
         </template>
-      </Card>
+      </PrimeCard>
     </div>
 
     <!-- Empty State -->
@@ -168,12 +168,12 @@ const selectLeads = (pkg: ActivePackage) => {
         {{ $t('packages.active.empty.subtitle') }}
       </p>
       <NuxtLink to="/pacchetti">
-        <Button :label="$t('packages.active.empty.explore')" icon="pi pi-box" size="large" />
+        <PrimeButton :label="$t('packages.active.empty.explore')" icon="pi pi-box" size="large" />
       </NuxtLink>
     </div>
 
     <!-- Benefits Reminder -->
-    <Card v-if="packagesStore.activePackages.length === 0" class="mt-8 bg-primary-50 dark:bg-primary-900/20">
+    <PrimeCard v-if="packagesStore.activePackages.length === 0" class="mt-8 bg-primary-50 dark:bg-primary-900/20">
       <template #content>
         <div class="flex flex-col md:flex-row items-center gap-6">
           <div class="flex-shrink-0">
@@ -191,12 +191,12 @@ const selectLeads = (pkg: ActivePackage) => {
           </div>
           <div class="flex-shrink-0">
             <NuxtLink to="/pacchetti">
-              <Button :label="$t('packages.active.whyBuy.learnMore')" icon="pi pi-arrow-right" />
+              <PrimeButton :label="$t('packages.active.whyBuy.learnMore')" icon="pi pi-arrow-right" />
             </NuxtLink>
           </div>
         </div>
       </template>
-    </Card>
+    </PrimeCard>
   </div>
 </template>
 
