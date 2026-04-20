@@ -449,7 +449,7 @@ onUnmounted(() => {
           <template #body="{ data }">
             <div class="text-center">
               <div class="font-semibold text-neutral-900">{{ formatNumber(data.exclusive_lead_quantity + data.shared_lead_quantity) }} lead</div>
-              <div class="text-xs text-success font-medium">{{ formatCurrency(data.exclusive_price + data.shared_price) }}</div>
+              <div class="text-xs text-success font-medium">{{ formatCurrency((Number(data.exclusive_price) * Number(data.exclusive_lead_quantity)) + (Number(data.shared_price) * Number(data.shared_lead_quantity))) }}</div>
             </div>
           </template>
         </PrimeColumn>

@@ -390,11 +390,11 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Client -->
-        <PrimeColumn field="client.company_name" :header="$t('admin.orders.list.table.headers.client')" sortable style="min-width: 200px">
+        <PrimeColumn field="user.client_profile.company_name" :header="$t('admin.orders.list.table.headers.client')" sortable style="min-width: 200px">
           <template #body="{ data }">
-            <div v-if="data.client">
-              <div class="font-medium text-neutral-900">{{ data.client.company_name }}</div>
-              <div class="text-xs text-neutral-500">{{ data.client.email }}</div>
+            <div v-if="(data as any).user?.client_profile || (data as any).client">
+              <div class="font-medium text-neutral-900">{{ (data as any).user?.client_profile?.company_name || (data as any).client?.company_name }}</div>
+              <div class="text-xs text-neutral-500">{{ (data as any).user?.email || (data as any).client?.email }}</div>
             </div>
             <span v-else class="text-neutral-400">-</span>
           </template>

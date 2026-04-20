@@ -446,11 +446,19 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Client -->
-        <PrimeColumn field="client.company_name" :header="$t('admin.transactions.list.table.headers.client')" sortable style="min-width: 200px">
+        <PrimeColumn field="order.user.client_profile.company_name" :header="$t('admin.transactions.list.table.headers.client')" sortable style="min-width: 200px">
           <template #body="{ data }">
-            <div v-if="data.client" class="cursor-pointer" @click="navigateToClient(data)">
-              <div class="font-medium text-neutral-900 hover:text-primary-600">{{ data.client.company_name }}</div>
-              <div class="text-xs text-neutral-500">{{ data.client.email }}</div>
+            <div
+              v-if="(data as any).order?.user?.client_profile || (data as any).client"
+              class="cursor-pointer"
+              @click="navigateToClient(data)"
+            >
+              <div class="font-medium text-neutral-900 hover:text-primary-600">
+                {{ (data as any).order?.user?.client_profile?.company_name || (data as any).client?.company_name }}
+              </div>
+              <div class="text-xs text-neutral-500">
+                {{ (data as any).order?.user?.email || (data as any).client?.email }}
+              </div>
             </div>
             <span v-else class="text-neutral-400">-</span>
           </template>
