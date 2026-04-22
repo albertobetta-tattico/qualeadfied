@@ -148,8 +148,13 @@ export default {
         deleteSuccess: 'Client "{name}" successfully deleted',
         deleteError: 'Error deleting client',
         suspendSuccess: 'Client "{name}" suspended',
+        suspendError: 'Error suspending client',
         reactivateSuccess: 'Client "{name}" reactivated',
+        activateSuccess: 'Client "{name}" activated',
+        activateError: 'Error activating client',
         resetPasswordSuccess: 'Password reset email sent to {email}',
+        resetPasswordError: 'Error resetting password',
+        exportStarted: 'Export started',
       },
     },
 
@@ -247,6 +252,15 @@ export default {
       toast: {
         saveSuccess: 'Client successfully updated',
         saveError: 'Error updating client',
+        validationError: 'Fix the errors in the form before proceeding',
+        updateSuccess: 'Client "{name}" successfully updated',
+        updateError: 'Error updating client',
+        suspendSuccess: 'Client suspended successfully',
+        suspendError: 'Error suspending client',
+        activateSuccess: 'Client activated successfully',
+        activateError: 'Error activating client',
+        resetPasswordSuccess: 'Password reset email sent to {email}',
+        resetPasswordError: 'Error resetting password',
       },
     },
 
@@ -325,6 +339,15 @@ export default {
         createError: 'Error creating client',
         validationError: 'Fix the errors in the form before proceeding',
       },
+    },
+
+    validation: {
+      fieldRequired: '{field} is required',
+      vatNumberFormat: 'Invalid VAT number (11 digits)',
+      passwordMinLength: 'Password must be at least 8 characters',
+      passwordUppercase: 'Password must contain at least one uppercase letter',
+      passwordLowercase: 'Password must contain at least one lowercase letter',
+      passwordNumber: 'Password must contain at least one number',
     },
   },
 

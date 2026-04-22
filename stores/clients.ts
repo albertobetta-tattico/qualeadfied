@@ -154,7 +154,7 @@ export const useClientStore = defineStore('client', {
 
       try {
         const config = useRuntimeConfig()
-        const responseData = await $fetch<{ data: Client }>(`${config.public.apiBase}/admin/users`, {
+        const responseData = await $fetch<{ data: any }>(`${config.public.apiBase}/admin/users`, {
           method: 'POST',
           body: data,
           headers: {
@@ -163,7 +163,7 @@ export const useClientStore = defineStore('client', {
           }
         })
 
-        const newClient = responseData.data
+        const newClient = this._transformUserToClient(responseData.data)
         this.clients.unshift(newClient)
         this.pagination.total++
 
@@ -191,7 +191,7 @@ export const useClientStore = defineStore('client', {
         })
         if (error) throw error
 
-        const updated = (responseData as any).data
+        const updated = this._transformUserToClient((responseData as any).data)
 
         const index = this.clients.findIndex(c => c.id === id)
         if (index !== -1) {
@@ -246,7 +246,7 @@ export const useClientStore = defineStore('client', {
 
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: Client }>(`${config.public.apiBase}/admin/users/${id}/suspend`, {
+        const response = await $fetch<{ data: any }>(`${config.public.apiBase}/admin/users/${id}/suspend`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
@@ -254,9 +254,10 @@ export const useClientStore = defineStore('client', {
           }
         })
 
+        const transformed = this._transformUserToClient(response.data)
         const index = this.clients.findIndex(c => c.id === id)
-        if (index !== -1) this.clients[index] = response.data
-        if (this.currentClient?.id === id) this.currentClient = response.data
+        if (index !== -1) this.clients[index] = transformed
+        if (this.currentClient?.id === id) this.currentClient = transformed
 
         return true
       } catch (error: any) {
@@ -276,7 +277,7 @@ export const useClientStore = defineStore('client', {
 
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: Client }>(`${config.public.apiBase}/admin/users/${id}/activate`, {
+        const response = await $fetch<{ data: any }>(`${config.public.apiBase}/admin/users/${id}/activate`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
@@ -284,9 +285,10 @@ export const useClientStore = defineStore('client', {
           }
         })
 
+        const transformed = this._transformUserToClient(response.data)
         const index = this.clients.findIndex(c => c.id === id)
-        if (index !== -1) this.clients[index] = response.data
-        if (this.currentClient?.id === id) this.currentClient = response.data
+        if (index !== -1) this.clients[index] = transformed
+        if (this.currentClient?.id === id) this.currentClient = transformed
 
         return true
       } catch (error: any) {
@@ -331,7 +333,7 @@ export const useClientStore = defineStore('client', {
 
       try {
         const config = useRuntimeConfig()
-        const response = await $fetch<{ data: Client }>(`${config.public.apiBase}/admin/users/${id}/free-trial`, {
+        const response = await $fetch<{ data: any }>(`${config.public.apiBase}/admin/users/${id}/free-trial`, {
           method: 'PUT',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('admin_token')}`,
@@ -343,9 +345,10 @@ export const useClientStore = defineStore('client', {
           }
         })
 
+        const transformed = this._transformUserToClient(response.data)
         const index = this.clients.findIndex(c => c.id === id)
-        if (index !== -1) this.clients[index] = response.data
-        if (this.currentClient?.id === id) this.currentClient = response.data
+        if (index !== -1) this.clients[index] = transformed
+        if (this.currentClient?.id === id) this.currentClient = transformed
 
         return true
       } catch (error: any) {
@@ -408,19 +411,34 @@ export const useClientStore = defineStore('client', {
         vat_number: cp.vat_number || '',
         email: user.email || '',
         phone: cp.phone || '',
-        contact_first_name: cp.contact_first_name || '',
-        contact_last_name: cp.contact_last_name || '',
+        contact_first_name: cp.first_name || cp.contact_first_name || '',
+        contact_last_name: cp.last_name || cp.contact_last_name || '',
         status: user.status || 'pending',
         free_trial_enabled: cp.free_trial_enabled || false,
-        free_trial_leads_total: cp.free_trial_leads_total || 0,
+        free_trial_leads_total: cp.free_trial_leads_remaining ?? cp.free_trial_leads_total ?? 0,
         free_trial_leads_used: cp.free_trial_leads_used || 0,
-        billing_data: cp.billing_data || null,
-        bank_data: cp.bank_data || null,
-        category_ids: cp.category_ids || [],
+        billing_data: {
+          address: cp.billing_address || '',
+          city: cp.billing_city || '',
+          province: cp.billing_province || '',
+          postal_code: cp.billing_zip || '',
+          country: cp.billing_country || 'IT',
+          sdi_code: cp.sdi_code || '',
+          pec: cp.pec_email || '',
+        },
+        bank_data: {
+          iban: cp.bank_iban || '',
+          bank_account_holder: cp.bank_account_holder || '',
+          bic_swift: cp.bank_bic_swift || '',
+          bank_name: cp.bank_name || '',
+        },
+        category_ids: Array.isArray(cp.categories)
+          ? cp.categories.map((c: any) => c.id)
+          : (cp.category_ids || []),
         terms_accepted: cp.terms_accepted || false,
         privacy_accepted: cp.privacy_accepted || false,
         marketing_consent: cp.marketing_consent || false,
-        notify_new_leads: cp.notify_new_leads || false,
+        notify_new_leads: cp.email_notifications_enabled ?? cp.notify_new_leads ?? false,
         email_verified_at: user.email_verified_at || null,
         created_at: user.created_at || '',
         updated_at: user.updated_at || '',

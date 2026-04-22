@@ -148,8 +148,13 @@ export default {
         deleteSuccess: 'Cliente "{name}" eliminato con successo',
         deleteError: 'Errore nell\'eliminazione del cliente',
         suspendSuccess: 'Cliente "{name}" sospeso',
+        suspendError: 'Errore nella sospensione del cliente',
         reactivateSuccess: 'Cliente "{name}" riattivato',
+        activateSuccess: 'Cliente "{name}" attivato',
+        activateError: 'Errore nell\'attivazione del cliente',
         resetPasswordSuccess: 'Email di reset password inviata a {email}',
+        resetPasswordError: 'Errore nel reset della password',
+        exportStarted: 'Esportazione avviata',
       },
     },
 
@@ -247,6 +252,15 @@ export default {
       toast: {
         saveSuccess: 'Cliente aggiornato con successo',
         saveError: 'Errore nell\'aggiornamento del cliente',
+        validationError: 'Correggi gli errori nel form prima di procedere',
+        updateSuccess: 'Cliente "{name}" aggiornato con successo',
+        updateError: 'Errore nell\'aggiornamento del cliente',
+        suspendSuccess: 'Cliente sospeso con successo',
+        suspendError: 'Errore nella sospensione del cliente',
+        activateSuccess: 'Cliente attivato con successo',
+        activateError: 'Errore nell\'attivazione del cliente',
+        resetPasswordSuccess: 'Email di reset password inviata a {email}',
+        resetPasswordError: 'Errore nel reset della password',
       },
     },
 
@@ -325,6 +339,15 @@ export default {
         createError: 'Errore nella creazione del cliente',
         validationError: 'Correggi gli errori nel form prima di procedere',
       },
+    },
+
+    validation: {
+      fieldRequired: '{field} è obbligatorio',
+      vatNumberFormat: 'Partita IVA non valida (11 cifre)',
+      passwordMinLength: 'La password deve avere almeno 8 caratteri',
+      passwordUppercase: 'La password deve contenere almeno una lettera maiuscola',
+      passwordLowercase: 'La password deve contenere almeno una lettera minuscola',
+      passwordNumber: 'La password deve contenere almeno un numero',
     },
   },
 
