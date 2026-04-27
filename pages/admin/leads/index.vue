@@ -224,9 +224,12 @@ const onSearchInput = () => {
   }, 500)
 }
 
-// Get category for lead (for max_shares display)
+// Get category for lead (for max_shares display).
+// Uses the first attached category as the reference for max_shares.
 const getCategoryForLead = (lead: Lead): Category | undefined => {
-  return leadStore.getCategoryById(lead.category_id)
+  const firstCat = lead.categories?.[0]
+  if (!firstCat) return undefined
+  return leadStore.getCategoryById(firstCat.id) || (firstCat as Category)
 }
 
 // Badge styling per stato

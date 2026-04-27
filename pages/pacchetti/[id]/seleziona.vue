@@ -57,12 +57,13 @@ onMounted(async () => {
   }
 })
 
-// Filter leads by package category
+// Filter leads by package category (m2m: a lead may belong to multiple categories)
 const availableLeads = computed(() => {
-  if (!currentPackage.value?.category_id) {
+  const pkgCatId = currentPackage.value?.category_id
+  if (!pkgCatId) {
     return catalogStore.leads
   }
-  return catalogStore.leads.filter(l => (l.category_id ?? l.category?.id) === currentPackage.value?.category_id)
+  return catalogStore.leads.filter(l => l.categories?.some((c: any) => c.id === pkgCatId))
 })
 
 // Can select more leads

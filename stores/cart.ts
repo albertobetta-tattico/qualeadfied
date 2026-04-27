@@ -212,9 +212,11 @@ export const useCartStore = defineStore('cart', {
 
       const [categoryIdStr, purchaseMode] = groupKey.split('-')
       const categoryId = parseInt(categoryIdStr, 10)
-      const itemsToRemove = this.items.filter(
-        item => item.lead?.category_id === categoryId && item.purchase_mode === purchaseMode
-      )
+      const itemsToRemove = this.items.filter(item => {
+        const cats = (item.lead as any)?.categories as Array<{ id: number }> | undefined
+        const itemCatId = cats?.[0]?.id ?? item.lead?.category?.id ?? item.lead?.category_id
+        return itemCatId === categoryId && item.purchase_mode === purchaseMode
+      })
 
       if (itemsToRemove.length === 0) return true
 

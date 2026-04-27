@@ -231,19 +231,21 @@ onMounted(() => {
         </div>
         <div class="q-card-body">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Category -->
+            <!-- Category (multipla, m2m) -->
             <div class="form-group">
-              <label for="category_id">{{ $t('admin.leads.create.form.category') }} *</label>
-              <PrimeSelect
-                id="category_id"
-                v-model="form.category_id"
+              <label for="category_ids">{{ $t('admin.leads.create.form.category') }} *</label>
+              <PrimeMultiSelect
+                id="category_ids"
+                v-model="form.category_ids"
                 :options="categoryOptions"
                 optionLabel="label"
                 optionValue="value"
                 :placeholder="$t('admin.leads.create.form.categoryPlaceholder')"
                 :class="{ 'p-invalid': errors.category_id }"
                 class="w-full"
-                @blur="onBlur('category_id', form.category_id)"
+                display="chip"
+                filter
+                @blur="onBlur('category_id', form.category_ids?.[0])"
               >
                 <template #option="slotProps">
                   <div>
@@ -253,7 +255,7 @@ onMounted(() => {
                     </div>
                   </div>
                 </template>
-              </PrimeSelect>
+              </PrimeMultiSelect>
               <small v-if="errors.category_id" class="p-error">{{ errors.category_id }}</small>
             </div>
 
