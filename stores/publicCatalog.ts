@@ -123,13 +123,31 @@ export const usePublicCatalogStore = defineStore('publicCatalog', {
 
       try {
         const client = useTypedApi()
+        const query: Record<string, string | number> = {}
+        if (this.filters.category_id !== '' && this.filters.category_id != null) {
+          query.category_id = Number(this.filters.category_id)
+        }
+        if (this.filters.province_id !== '' && this.filters.province_id != null) {
+          query.province_id = Number(this.filters.province_id)
+        }
+        if (this.filters.availability) {
+          query.availability = this.filters.availability
+        }
+        if (this.filters.sort_by) {
+          query.sort_by = this.filters.sort_by
+        }
+        if (this.filters.sort_order) {
+          query.sort_order = this.filters.sort_order
+        }
+        if (this.filters.page && this.filters.page > 1) {
+          query.page = this.filters.page
+        }
+        if (this.filters.per_page) {
+          query.per_page = this.filters.per_page
+        }
+
         const { data, error } = await client.GET('/public/leads', {
-          params: {
-            query: {
-              ...(this.filters.category_id ? { category_id: String(this.filters.category_id) } : {}),
-              ...(this.filters.province_id ? { province_id: String(this.filters.province_id) } : {}),
-            },
-          },
+          params: { query: query as any },
         })
 
         if (error) throw error

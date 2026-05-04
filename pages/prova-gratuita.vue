@@ -219,8 +219,8 @@ const claimTrialLeads = () => {
                 {{ leadsClaimed }}/{{ leadsTotal }}
               </span>
             </div>
-            <ProgressBar
-              :value="(leadsClaimed / leadsTotal) * 100"
+            <PrimeProgressBar
+              :value="leadsTotal > 0 ? (leadsClaimed / leadsTotal) * 100 : 0"
               :showValue="false"
               class="h-2"
             />
@@ -460,7 +460,7 @@ const claimTrialLeads = () => {
                 <div class="flex items-center gap-2">
                   <i class="pi pi-users text-surface-400"></i>
                   <span class="text-surface-600 dark:text-surface-400">
-                    {{ data.shared_slots_available }} slot
+                    {{ $t('catalog.trial.slots', { count: data.shared_slots_available ?? 0 }, data.shared_slots_available ?? 0) }}
                   </span>
                 </div>
               </template>

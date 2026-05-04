@@ -142,8 +142,7 @@ export const useCartStore = defineStore('cart', {
           body: {
             lead_id: request.lead_id,
             purchase_mode: request.purchase_mode,
-            price: request.purchase_mode === 'exclusive' ? 45 : 15
-          }
+          } as any
         })
         if (error) throw error
 

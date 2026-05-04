@@ -51,22 +51,23 @@ const pkg = computed(() => catalogStore.currentPackage)
 // Computed
 const categories = computed(() => catalogStore.categoriesForSelect)
 
+// Coercion numerica: PrimeInputNumber può legare valori string in alcuni stati,
+// e `+` concatena stringhe (bug: "20"+"10" = "2010").
+const exclusiveQty = computed(() => Number(form.exclusive_lead_quantity) || 0)
+const sharedQty = computed(() => Number(form.shared_lead_quantity) || 0)
+const exclusivePriceTotal = computed(() => Number(form.exclusive_price) || 0)
+const sharedPriceTotal = computed(() => Number(form.shared_price) || 0)
+
 const exclusivePricePerLead = computed(() => {
-  if (form.exclusive_lead_quantity > 0) {
-    return form.exclusive_price / form.exclusive_lead_quantity
-  }
-  return 0
+  return exclusiveQty.value > 0 ? exclusivePriceTotal.value / exclusiveQty.value : 0
 })
 
 const sharedPricePerLead = computed(() => {
-  if (form.shared_lead_quantity > 0) {
-    return form.shared_price / form.shared_lead_quantity
-  }
-  return 0
+  return sharedQty.value > 0 ? sharedPriceTotal.value / sharedQty.value : 0
 })
 
-const totalLeads = computed(() => form.exclusive_lead_quantity + form.shared_lead_quantity)
-const totalPrice = computed(() => form.exclusive_price + form.shared_price)
+const totalLeads = computed(() => exclusiveQty.value + sharedQty.value)
+const totalPrice = computed(() => exclusivePriceTotal.value + sharedPriceTotal.value)
 
 // Populate form when package is loaded
 watch(pkg, (newPkg) => {
