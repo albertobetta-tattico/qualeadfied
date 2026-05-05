@@ -32,16 +32,6 @@ const form = reactive<PackageCreateForm>({
   sort_order: 0
 })
 
-// Category selection mode
-const categoryMode = ref<'all' | 'specific'>('all')
-
-// Watch category mode to reset category_ids
-watch(categoryMode, (mode) => {
-  if (mode === 'all') {
-    form.category_ids = []
-  }
-})
-
 // Computed
 const categories = computed(() => catalogStore.categoriesForSelect)
 
@@ -152,44 +142,22 @@ onMounted(async () => {
             </div>
 
             <!-- Category Mode -->
-            <div class="form-group">
-              <label>{{ $t('admin.catalog.packages.form.packageType') }} *</label>
-              <div class="flex gap-4 mt-2">
-                <div class="flex items-center gap-2">
-                  <PrimeRadioButton
-                    v-model="categoryMode"
-                    inputId="cat-all"
-                    value="all"
-                  />
-                  <label for="cat-all" class="cursor-pointer text-sm">{{ $t('admin.catalog.packages.form.allCategories') }}</label>
-                </div>
-                <div class="flex items-center gap-2">
-                  <PrimeRadioButton
-                    v-model="categoryMode"
-                    inputId="cat-specific"
-                    value="specific"
-                  />
-                  <label for="cat-specific" class="cursor-pointer text-sm">{{ $t('admin.catalog.packages.form.specificCategory') }}</label>
-                </div>
-              </div>
-            </div>
-
-            <!-- Category Selection (if specific) -->
-            <div v-if="categoryMode === 'specific'" class="form-group md:col-span-2">
-              <label for="category_ids">{{ $t('admin.catalog.packages.form.categories') }} *</label>
+            <!-- Category Selection (empty = all categories) -->
+            <div class="form-group md:col-span-2">
+              <label for="category_ids">{{ $t('admin.catalog.packages.form.categories') }}</label>
               <PrimeMultiSelect
                 id="category_ids"
                 v-model="form.category_ids"
                 :options="categories"
                 optionLabel="label"
                 optionValue="value"
-                :placeholder="$t('admin.catalog.packages.form.categoriesPlaceholder')"
+                :placeholder="$t('admin.catalog.packages.form.allCategories')"
                 class="w-full"
                 :filter="categories.length > 5"
                 :filterPlaceholder="$t('admin.catalog.packages.form.categoriesFilterPlaceholder')"
                 display="chip"
               />
-              <small class="form-hint">{{ $t('admin.catalog.packages.form.categoriesHint') }}</small>
+              <small class="form-hint">Lascia vuoto per applicare il pacchetto a tutte le categorie.</small>
             </div>
 
             <!-- Description -->

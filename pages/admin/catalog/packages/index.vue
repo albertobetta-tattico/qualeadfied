@@ -448,8 +448,8 @@ onUnmounted(() => {
         <PrimeColumn :header="$t('admin.catalog.packages.table.headers.total')" style="min-width: 120px">
           <template #body="{ data }">
             <div class="text-center">
-              <div class="font-semibold text-neutral-900">{{ formatNumber(data.exclusive_lead_quantity + data.shared_lead_quantity) }} lead</div>
-              <div class="text-xs text-success font-medium">{{ formatCurrency((Number(data.exclusive_price) * Number(data.exclusive_lead_quantity)) + (Number(data.shared_price) * Number(data.shared_lead_quantity))) }}</div>
+              <div class="font-semibold text-neutral-900">{{ formatNumber((Number(data.exclusive_lead_quantity) || 0) + (Number(data.shared_lead_quantity) || 0)) }} lead</div>
+              <div class="text-xs text-success font-medium">{{ formatCurrency((Number(data.exclusive_price) || 0) + (Number(data.shared_price) || 0)) }}</div>
             </div>
           </template>
         </PrimeColumn>

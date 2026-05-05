@@ -104,10 +104,19 @@ const toggleNotifications = (event: Event) => {
 
 // Load initial data
 onMounted(async () => {
-  // Check auth
+  // The `auth` middleware already gated the route on token presence.
+  // Here we only validate the session in the background. Failure is NOT
+  // treated as a hard logout (transient errors must not bounce to /login):
+  // checkSession() / fetchUser() take care of clearing the token only on
+  // a real 401 from /auth/me.
   if (!authStore.isLoggedIn) {
-    const restored = await authStore.checkSession()
-    if (!restored) {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
+    if (!token) {
+      router.push('/login?redirect=' + route.fullPath)
+      return
+    }
+    await authStore.checkSession()
+    if (!localStorage.getItem('auth_token')) {
       router.push('/login?redirect=' + route.fullPath)
       return
     }

@@ -148,23 +148,32 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         const client = useTypedApi()
-        const { data, error } = await client.GET('/auth/me')
+        const { data, error, response } = await client.GET('/auth/me')
 
-        if (error) throw error
+        if (error) {
+          // Only treat 401 as an actual auth failure that warrants wiping the
+          // stored token. Network errors and transient 5xx must NOT log the
+          // user out — keep the token so the next call can succeed.
+          const status = response?.status
+          if (status === 401) {
+            this.user = null
+            this.token = null
+            this.isAuthenticated = false
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('auth_token')
+            }
+          }
+          return false
+        }
 
-        // The API returns User without profile; cast for now
         this.user = data.user as unknown as UserWithProfile
         this.token = token
         this.isAuthenticated = true
 
         return true
       } catch {
-        this.user = null
-        this.token = null
-        this.isAuthenticated = false
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('auth_token')
-        }
+        // Network-level failure (no response): keep the token, just report
+        // the session as not yet validated.
         return false
       } finally {
         this.loading = false

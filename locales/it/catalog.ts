@@ -114,29 +114,6 @@ export default {
     claimLeads: 'Riscatta Lead',
     selectPeriod: 'Seleziona periodo',
     generationDate: 'Data generazione',
-    statusCard: {
-      available: 'Disponibili',
-      redeemed: 'Riscattati',
-      total: 'Totali',
-      progress: 'Progresso',
-    },
-    infoNote: 'I lead della prova gratuita vengono assegnati in modalit\u00e0 <strong>condivisa</strong>. Non \u00e8 possibile selezionarli in modalit\u00e0 esclusiva.',
-    completed: {
-      title: 'Prova gratuita completata',
-      subtitle: 'Hai gi\u00e0 utilizzato tutti i tuoi lead gratuiti. Ora puoi acquistare lead dal catalogo.',
-      goToCatalog: 'Vai al Catalogo',
-      buyPackage: 'Acquista Pacchetto',
-    },
-    selectionLimitReached: {
-      title: 'Limite di selezione raggiunto',
-      message: 'Hai selezionato il massimo di {count} lead disponibili per la prova gratuita. Per selezionare altri lead, deseleziona prima quelli gi\u00e0 scelti.',
-    },
-    bulkActions: {
-      selectedCount: '{selected} di {total} lead selezionati',
-      sharedMode: 'Modalit\u00e0 Condivisa',
-      redeemLeads: 'Riscatta {count} lead',
-      deselectAllTooltip: 'Deseleziona tutti',
-    },
     table: {
       id: 'ID',
       category: 'Categoria',
