@@ -107,7 +107,7 @@ watch(marketingConsent, (newValue, oldValue) => {
                     {{ $t('profile.preferences.emailNotifications.description') }}
                   </p>
                 </div>
-                <ToggleSwitch v-model="emailNotifications" />
+                <PrimeToggleSwitch v-model="emailNotifications" />
               </div>
 
               <p class="text-sm text-surface-500">
@@ -154,7 +154,7 @@ watch(marketingConsent, (newValue, oldValue) => {
                     {{ $t('profile.preferences.marketing.description') }}
                   </p>
                 </div>
-                <ToggleSwitch v-model="marketingConsent" />
+                <PrimeToggleSwitch v-model="marketingConsent" />
               </div>
 
               <p class="text-sm text-surface-500">

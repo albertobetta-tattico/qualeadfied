@@ -188,7 +188,14 @@ export const usePublicCatalogStore = defineStore('publicCatalog', {
     },
 
     setFilters(filters: Partial<PublicCatalogFilters>): void {
-      this.filters = { ...this.filters, ...filters, page: 1 }
+      // Only reset to page 1 when the filters change. If the caller explicitly
+      // passes `page` (pagination clicks), respect it.
+      const hasPage = Object.prototype.hasOwnProperty.call(filters, 'page')
+      this.filters = {
+        ...this.filters,
+        ...filters,
+        page: hasPage ? (filters.page as number) : 1,
+      }
     },
 
     resetFilters(): void {

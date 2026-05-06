@@ -163,14 +163,14 @@ const selectableCount = computed(() => {
   return selectedLeads.value.filter(lead => !isInCart(lead.id)).length
 })
 
-// Calculate bulk total price
+// Calculate bulk total price (uses real prices from the API, not heuristics)
 const bulkTotalPrice = computed(() => {
   return selectedLeads.value
     .filter(lead => !isInCart(lead.id))
     .reduce((sum, lead) => {
       const price = bulkPurchaseMode.value === 'exclusive'
-        ? lead.base_price * 3
-        : lead.base_price
+        ? Number(lead.exclusive_price) || 0
+        : Number(lead.shared_price ?? lead.base_price) || 0
       return sum + price
     }, 0)
 })
@@ -416,11 +416,11 @@ const bulkTotalPrice = computed(() => {
               <div class="flex gap-3">
                 <div class="text-center">
                   <p class="text-xs text-surface-500">{{ $t('common.labels.exclusive') }}</p>
-                  <p class="font-bold text-primary">{{ formatCurrency(data.base_price * 3) }}</p>
+                  <p class="font-bold text-primary">{{ formatCurrency(Number(data.exclusive_price) || 0) }}</p>
                 </div>
                 <div class="text-center">
                   <p class="text-xs text-surface-500">{{ $t('common.labels.shared') }}</p>
-                  <p class="font-bold text-surface-700 dark:text-surface-300">{{ formatCurrency(data.base_price) }}</p>
+                  <p class="font-bold text-surface-700 dark:text-surface-300">{{ formatCurrency(Number(data.shared_price ?? data.base_price) || 0) }}</p>
                 </div>
               </div>
             </template>
