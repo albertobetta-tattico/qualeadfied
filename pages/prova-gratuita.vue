@@ -409,6 +409,7 @@ const claimTrialLeads = () => {
             :paginator="true"
             :rows="catalogStore.pagination.per_page"
             :totalRecords="catalogStore.pagination.total"
+            :first="(catalogStore.pagination.current_page - 1) * catalogStore.pagination.per_page"
             :lazy="true"
             :rowsPerPageOptions="[10, 25, 50]"
             stripedRows
