@@ -413,8 +413,7 @@ import type { LeadSource, LeadSourceCreateForm } from '~/types/lead'
 
 // Page meta
 definePageMeta({
-  layout: 'admin',
-  middleware: ['auth']
+  layout: 'admin'
 })
 
 // i18n
