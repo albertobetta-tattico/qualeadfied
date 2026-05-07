@@ -132,7 +132,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
 
             <!-- Pricing -->
             <div class="space-y-2">
-              <div class="flex items-center justify-center gap-2">
+              <div v-if="pkg.discount_percent && pkg.discount_percent > 0" class="flex items-center justify-center gap-2">
                 <span class="text-surface-400 line-through">
                   {{ formatCurrency(pkg.original_price) }}
                 </span>
@@ -145,7 +145,7 @@ const purchasePackage = async (pkg: LeadPackage) => {
               <p class="text-4xl font-bold text-primary">
                 {{ formatCurrency(pkg.price) }}
               </p>
-              <p class="text-sm text-surface-500">
+              <p v-if="pkg.total_leads > 0" class="text-sm text-surface-500">
                 {{ formatCurrency(Math.round(pkg.price / pkg.total_leads)) }} {{ $t('packages.card.perLead') }}
               </p>
             </div>

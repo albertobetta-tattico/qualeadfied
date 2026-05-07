@@ -110,6 +110,19 @@ const processPayment = async () => {
       return
     }
 
+    // Free-trial-only cart (total = 0): backend already fulfilled the order
+    // and bypassed Stripe (client_secret is null). Skip the card flow.
+    if ((paymentIntent as any).free_order_id) {
+      showSuccess(t('cart.toast.checkoutSuccess'))
+      router.push(`/ordini/${(paymentIntent as any).free_order_id}`)
+      return
+    }
+
+    if (!paymentIntent.client_secret) {
+      showError(cartStore.error || t('cart.checkout.paymentCreateError'))
+      return
+    }
+
     clientSecret.value = paymentIntent.client_secret
 
     // Step 2: confirm the payment on Stripe with the card data
