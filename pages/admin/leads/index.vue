@@ -38,6 +38,14 @@ const searchQuery = ref('')
 const categoryFilter = ref<number | ''>('')
 const provinceFilter = ref<number | ''>('')
 const sourceFilter = ref<number | ''>('')
+// Single combined free-text filter for sorgente / mezzo / campagna.
+// The backend OR-matches across `source.name`, `medium`, `campaign`.
+const sourceTextFilter = ref('')
+let sourceTextTimeout: ReturnType<typeof setTimeout>
+const onSourceTextInput = () => {
+  clearTimeout(sourceTextTimeout)
+  sourceTextTimeout = setTimeout(applyFilters, 350)
+}
 const statusFilter = ref<LeadStatus | ''>('')
 const modeFilter = ref<'exclusive' | 'shared' | ''>('')
 const dateRangeFilter = ref<Date[] | null>(null)
@@ -118,11 +126,12 @@ const applyFilters = () => {
     category_id: categoryFilter.value,
     province_id: provinceFilter.value,
     source_id: sourceFilter.value,
+    source_text: sourceTextFilter.value,
     status: statusFilter.value,
     mode: modeFilter.value,
     generated_from: formatDateForApi(dateRangeFilter.value?.[0]),
     generated_to: formatDateForApi(dateRangeFilter.value?.[1])
-  })
+  } as any)
   loadLeads()
 }
 
@@ -131,6 +140,7 @@ const clearFilters = () => {
   categoryFilter.value = ''
   provinceFilter.value = ''
   sourceFilter.value = ''
+  sourceTextFilter.value = ''
   statusFilter.value = ''
   modeFilter.value = ''
   dateRangeFilter.value = null
@@ -418,17 +428,14 @@ onUnmounted(() => {
               />
             </div>
 
-            <!-- Source Filter -->
+            <!-- Source / Medium / Campaign — single free-text filter -->
             <div class="form-group mb-0">
-              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.leads.list.filters.source') }}</label>
-              <PrimeSelect
-                v-model="sourceFilter"
-                :options="sourceOptions"
-                optionLabel="label"
-                optionValue="value"
-                :placeholder="$t('admin.leads.list.filters.source')"
+              <label class="text-sm font-medium text-neutral-700 mb-2 block">{{ $t('admin.leads.list.filters.sourceCombined') }}</label>
+              <PrimeInputText
+                v-model="sourceTextFilter"
+                :placeholder="$t('admin.leads.list.filters.sourceCombinedPlaceholder')"
                 class="w-full"
-                @change="applyFilters"
+                @input="onSourceTextInput"
               />
             </div>
 

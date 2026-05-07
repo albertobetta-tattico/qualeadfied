@@ -116,9 +116,39 @@ const handleCopyOrderNumber = (order: Order) => {
   copyOrderNumber(order.order_number)
 }
 
-const exportOrders = () => {
-  // TODO: Implementare export Excel
-  showSuccess(t('admin.orders.list.actions.exportInProgress'))
+const exportOrders = async () => {
+  try {
+    const config = useRuntimeConfig()
+    const params = new URLSearchParams()
+    if (searchQuery.value) params.set('search', searchQuery.value)
+    if (statusFilter.value) params.set('status', String(statusFilter.value))
+    if (typeFilter.value) params.set('type', String(typeFilter.value))
+    if (paymentMethodFilter.value) params.set('payment_method', String(paymentMethodFilter.value))
+    if (dateFromFilter.value) params.set('date_from', formatDateForApi(dateFromFilter.value))
+    if (dateToFilter.value) params.set('date_to', formatDateForApi(dateToFilter.value))
+
+    const url = `${config.public.apiBase}/admin/orders/export?${params.toString()}`
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('auth_token')
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'text/csv' },
+    })
+    if (!res.ok) {
+      showError(t('admin.orders.list.actions.exportError'))
+      return
+    }
+    const blob = await res.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = blobUrl
+    a.download = `ordini-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(blobUrl)
+    showSuccess(t('admin.orders.list.actions.exportSuccess'))
+  } catch {
+    showError(t('admin.orders.list.actions.exportError'))
+  }
 }
 
 // Debounced search

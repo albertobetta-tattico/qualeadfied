@@ -402,6 +402,8 @@ export default {
         allCategories: 'Tutte le categorie',
         allProvinces: 'Tutte le province',
         allSources: 'Tutte le fonti',
+        sourceCombined: 'Sorgente / Mezzo / Campagna',
+        sourceCombinedPlaceholder: 'Es. zapier, facebook, summer-2026...',
       },
 
       table: {
@@ -1088,6 +1090,9 @@ export default {
 
       actions: {
         export: 'Export',
+        exportInProgress: 'Esportazione ordini in corso...',
+        exportSuccess: 'Esportazione ordini completata',
+        exportError: 'Esportazione ordini fallita',
       },
 
       contextMenu: {
@@ -1277,6 +1282,8 @@ export default {
       backToPricing: 'Torna ai Listini',
       searchPlaceholder: 'Cerca per categoria...',
       exportExcel: 'Export Excel',
+      exportInDevelopment: 'Funzionalità di export Excel in arrivo.',
+      exportError: 'Esportazione storico prezzi fallita',
       loading: 'Caricamento storico...',
       empty: 'Nessuna variazione prezzi trovata',
       emptySubtext: 'Lo storico si popola automaticamente quando vengono modificati i prezzi delle categorie.',

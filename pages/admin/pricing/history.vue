@@ -157,9 +157,34 @@ const getSlotNumber = (key: string): number => {
   return parseInt(key.replace('slot_', ''))
 }
 
-// Export to Excel (placeholder)
-const exportHistory = () => {
-  showError(t('admin.pricing.history.exportInDevelopment'))
+// CSV export (Excel-compatible)
+const exportHistory = async () => {
+  try {
+    const config = useRuntimeConfig()
+    const params = new URLSearchParams()
+    if (categoryFilter.value) params.set('category_id', String(categoryFilter.value))
+
+    const url = `${config.public.apiBase}/admin/pricing/history/export?${params.toString()}`
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('auth_token')
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'text/csv' },
+    })
+    if (!res.ok) {
+      showError(t('admin.pricing.history.exportError'))
+      return
+    }
+    const blob = await res.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = blobUrl
+    a.download = `storico-prezzi-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(blobUrl)
+  } catch {
+    showError(t('admin.pricing.history.exportError'))
+  }
 }
 
 // Lifecycle
