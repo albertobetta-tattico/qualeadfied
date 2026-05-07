@@ -1,0 +1,26 @@
+# Frontend dev stack (Nuxt 3 SPA).
+# Backend deve essere in esecuzione separatamente:
+# cd ../qualeadfied-be && docker compose up -d
+#
+# Avvio:  docker compose up -d
+# Logs:   docker compose logs -f web
+services:
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - '${FE_PORT:-3000}:3000'
+        environment:
+            HOST: 0.0.0.0
+            PORT: 3000
+            # Per il container, il backend è raggiungibile via host loopback (Docker Desktop)
+            NUXT_PUBLIC_API_BASE: '${NUXT_PUBLIC_API_BASE:-http://host.docker.internal:8000/api}'
+            NUXT_PUBLIC_STRIPE_PUBLIC_KEY: '${NUXT_PUBLIC_STRIPE_PUBLIC_KEY:-}'
+        volumes:
+            - '.:/app'
+            - '/app/node_modules'
+            - '/app/.nuxt'
+            - '/app/.output'
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
