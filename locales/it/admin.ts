@@ -1118,6 +1118,11 @@ export default {
       viewOnStripe: 'Vedi su Stripe',
       goToClient: 'Vai al Cliente',
       goToClientProfile: 'Vai al profilo cliente',
+      confirmPayment: 'Conferma pagamento',
+      confirmingPayment: 'Conferma in corso...',
+      confirmPaymentPrompt: 'Confermare manualmente il pagamento dell\'ordine {number}? L\'operazione assegnerà i lead al cliente e non è reversibile.',
+      confirmPaymentSuccess: 'Pagamento confermato. L\'ordine è ora in stato "Pagato".',
+      confirmPaymentError: 'Conferma pagamento fallita. Riprova.',
 
       cards: {
         orderTotal: 'Totale Ordine',

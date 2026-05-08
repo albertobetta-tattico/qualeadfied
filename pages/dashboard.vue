@@ -33,7 +33,7 @@ const goToMyLeads = () => {
 }
 
 const goToOrders = () => {
-  router.push('/i-miei-ordini')
+  router.push('/ordini')
 }
 
 // Status label helpers
@@ -303,7 +303,7 @@ const getTrendInfo = (current: number, previous: number) => {
           <template #title>
             <div class="flex items-center justify-between">
               <span>{{ $t('dashboard.recentOrders.title') }}</span>
-              <NuxtLink to="/i-miei-ordini" class="text-sm text-primary hover:text-primary-600 font-normal flex items-center gap-1">
+              <NuxtLink to="/ordini" class="text-sm text-primary hover:text-primary-600 font-normal flex items-center gap-1">
                 {{ $t('dashboard.recentLeads.viewAll') }} <i class="pi pi-arrow-right"></i>
               </NuxtLink>
             </div>

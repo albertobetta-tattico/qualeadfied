@@ -44,20 +44,34 @@ const getUsedLeads = (pkg: ActivePackage | undefined): number => {
 
 // Fetch data on mount
 onMounted(async () => {
+  // Active packages first — we need the package's category_id to query the
+  // right slice of the catalogue. Without it the previous code fetched only
+  // the first 12 leads of any category, then filtered client-side, which
+  // explained the "no leads found" empty state on a category that has many.
   await Promise.all([
     packagesStore.fetchActivePackages(),
     catalogStore.fetchCategories(),
-    catalogStore.fetchProvinces(),
-    catalogStore.fetchLeads()
+    catalogStore.fetchProvinces()
   ])
 
-  // Redirect if package not found
   if (!currentPackage.value) {
     router.push('/pacchetti/attivi')
+    return
   }
+
+  // Server-side filter on the package category, no pagination so the user
+  // sees every available lead they can pick from.
+  const pkgCatId = currentPackage.value.category_id
+  catalogStore.setFilters({
+    category_id: pkgCatId ?? '',
+    page: 1,
+    per_page: 200,
+  })
+  await catalogStore.fetchLeads()
 })
 
-// Filter leads by package category (m2m: a lead may belong to multiple categories)
+// Server-side already filtered by category; this stays as a defensive
+// client-side guard in case the catalog has stale items from a previous fetch.
 const availableLeads = computed(() => {
   const pkgCatId = currentPackage.value?.category_id
   if (!pkgCatId) {

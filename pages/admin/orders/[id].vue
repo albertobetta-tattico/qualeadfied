@@ -90,6 +90,44 @@ const totalLeads = computed(() => {
 const hasInvoice = computed(() => !!order.value?.invoice)
 const hasTransaction = computed(() => !!order.value?.transaction)
 
+// Manual payment confirmation (bonifico bancario / SEPA).
+// Stripe doesn't auto-confirm SEPA in our setup, so the admin marks the
+// order paid after verifying the wire on the bank statement.
+const confirmingPayment = ref(false)
+const canConfirmPayment = computed(() => {
+  const status = (order.value?.status as any)?.value ?? order.value?.status
+  return order.value && status === 'pending'
+})
+
+const onConfirmPayment = async () => {
+  if (!order.value || confirmingPayment.value) return
+  // Confirm action with the user — the operation is destructive (creates
+  // user_leads, transactions, decrements free trial, clears cart).
+  if (!window.confirm(t('admin.orders.detail.confirmPaymentPrompt', { number: order.value.order_number }))) {
+    return
+  }
+  confirmingPayment.value = true
+  try {
+    const config = useRuntimeConfig()
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('auth_token')
+    const res = await fetch(`${config.public.apiBase}/admin/orders/${order.value.id}/confirm-payment`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+    })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      showError(body.message || t('admin.orders.detail.confirmPaymentError'))
+      return
+    }
+    showSuccess(t('admin.orders.detail.confirmPaymentSuccess'))
+    await loadOrder()
+  } catch {
+    showError(t('admin.orders.detail.confirmPaymentError'))
+  } finally {
+    confirmingPayment.value = false
+  }
+}
+
 // Item type helpers
 const isLeadItem = (item: OrderItem): boolean => item.lead_id !== null
 const isPackageItem = (item: OrderItem): boolean => item.package_id !== null
@@ -168,6 +206,15 @@ onMounted(() => {
           </div>
         </div>
         <div class="page-header-actions">
+          <PrimeButton
+            v-if="canConfirmPayment"
+            :label="confirmingPayment ? $t('admin.orders.detail.confirmingPayment') : $t('admin.orders.detail.confirmPayment')"
+            icon="pi pi-check-circle"
+            severity="success"
+            :loading="confirmingPayment"
+            :disabled="confirmingPayment"
+            @click="onConfirmPayment"
+          />
           <PrimeButton
             v-if="hasTransaction"
             :label="$t('admin.orders.detail.viewOnStripe')"
