@@ -86,6 +86,7 @@ export default {
     errorClearing: 'Errore nello svuotamento',
     errorAddingToCart: 'Errore nell\'aggiunta al carrello',
     checkoutSuccess: 'Ordine completato con successo!',
+    sepaPending: 'Ordine ricevuto. Effettua il bonifico: l\'amministratore confermerà il pagamento appena lo riceve.',
   },
 
   // Checkout page

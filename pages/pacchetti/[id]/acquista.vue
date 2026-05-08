@@ -148,6 +148,12 @@ const processPayment = async () => {
       } catch (err: any) {
         showError(err.message || 'Pagamento rifiutato')
       }
+    } else {
+      // SEPA / bonifico bancario: l'ordine è stato creato in stato `pending`,
+      // l'admin confermerà manualmente in seguito. Niente conferma Stripe lato
+      // client. Avvisiamo l'utente e portiamolo alla lista ordini.
+      showSuccess(t('packages.purchase.toast.sepaPending'))
+      router.push('/ordini')
     }
   } finally {
     processing.value = false

@@ -147,14 +147,13 @@ const processPayment = async () => {
         showError(err.message || 'Pagamento rifiutato')
       }
     } else {
-      // SEPA flow not yet UI-integrated — just call confirm (existing behavior)
-      const result = await cartStore.confirmPayment(paymentIntent.client_secret.split('_secret_')[0])
-      if (result) {
-        showSuccess(t('cart.toast.checkoutSuccess'))
-        router.push(`/ordini/${result.orderId}`)
-      } else {
-        showError(cartStore.error || t('cart.checkout.paymentError'))
-      }
+      // SEPA / bonifico bancario: l'ordine è creato in stato `pending` lato
+      // backend. Stripe NON conferma sincronamente, e l'admin completerà
+      // l'ordine manualmente dal pannello quando il bonifico sarà ricevuto.
+      // Niente confirm lato client — informiamo l'utente e portiamolo alla
+      // lista ordini.
+      showSuccess(t('cart.toast.sepaPending'))
+      router.push('/ordini')
     }
   } finally {
     processing.value = false

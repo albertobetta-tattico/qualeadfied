@@ -25,6 +25,11 @@ const { showSuccess, showError } = useClientToast()
 // Selected leads
 const selectedLeads = ref<number[]>([])
 
+// When the package has a category but the catalogue has 0 leads in it, the
+// user can opt to see leads of all categories as a fallback (e.g. tutti
+// venduti in modalità esclusiva o slot esauriti).
+const showAllCategories = ref(false)
+
 // Current active package
 const currentPackage = computed(() => {
   return packagesStore.activePackages.find(p => p.id === packageId.value)
@@ -74,11 +79,26 @@ onMounted(async () => {
 // client-side guard in case the catalog has stale items from a previous fetch.
 const availableLeads = computed(() => {
   const pkgCatId = currentPackage.value?.category_id
-  if (!pkgCatId) {
+  if (!pkgCatId || showAllCategories.value) {
     return catalogStore.leads
   }
   return catalogStore.leads.filter(l => l.categories?.some((c: any) => c.id === pkgCatId))
 })
+
+const reloadAvailableLeads = async () => {
+  const pkgCatId = currentPackage.value?.category_id
+  catalogStore.setFilters({
+    category_id: showAllCategories.value ? '' : (pkgCatId ?? ''),
+    page: 1,
+    per_page: 200,
+  })
+  await catalogStore.fetchLeads()
+}
+
+const loadWithoutCategoryFilter = async () => {
+  showAllCategories.value = true
+  await reloadAvailableLeads()
+}
 
 // Can select more leads
 const canSelectMore = computed(() => {
@@ -155,7 +175,7 @@ const redeemLeads = async () => {
           <span class="text-sm text-surface-500">
             {{ $t('packages.select.selectedCount', { selected: selectedLeads.length, total: getRemainingLeads(currentPackage) }) }}
           </span>
-          <Button
+          <PrimeButton
             :label="$t('packages.select.redeemLeads')"
             icon="pi pi-check"
             :disabled="selectedLeads.length === 0"
@@ -168,11 +188,11 @@ const redeemLeads = async () => {
 
     <!-- Loading State -->
     <div v-if="packagesStore.loading || catalogStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Package Info Card -->
-    <Card v-else-if="currentPackage" class="mb-6 bg-surface-50 dark:bg-surface-800">
+    <PrimeCard v-else-if="currentPackage" class="mb-6 bg-surface-50 dark:bg-surface-800">
       <template #content>
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div class="flex items-center gap-4">
@@ -184,7 +204,11 @@ const redeemLeads = async () => {
                 {{ currentPackage.package_name }}
               </h3>
               <p class="text-sm text-surface-500">
-                {{ currentPackage.category_id ? `Categoria #${currentPackage.category_id}` : $t('packages.active.allCategories') }}
+                {{ currentPackage.category?.name
+                    ? `Categoria: ${currentPackage.category.name}`
+                    : (currentPackage.category_id
+                        ? `Categoria #${currentPackage.category_id}`
+                        : $t('packages.active.allCategories')) }}
               </p>
             </div>
           </div>
@@ -210,11 +234,11 @@ const redeemLeads = async () => {
           </div>
         </div>
       </template>
-    </Card>
+    </PrimeCard>
 
     <!-- Leads Grid -->
     <div v-if="availableLeads.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <Card
+      <PrimeCard
         v-for="lead in availableLeads"
         :key="lead.id"
         class="lead-card cursor-pointer transition-all"
@@ -239,8 +263,8 @@ const redeemLeads = async () => {
             <div class="flex-grow">
               <!-- Tags -->
               <div class="flex items-center gap-2 mb-2">
-                <Tag v-for="cat in ((lead as any).categories || [])" :key="cat.id" :value="cat.name" severity="info" size="small" class="mr-1" />
-                <Tag :value="lead.province?.code" severity="secondary" size="small" />
+                <PrimeTag v-for="cat in ((lead as any).categories || [])" :key="cat.id" :value="cat.name" severity="info" size="small" class="mr-1" />
+                <PrimeTag :value="lead.province?.code" severity="secondary" size="small" />
               </div>
 
               <!-- Lead Info -->
@@ -258,7 +282,7 @@ const redeemLeads = async () => {
             </div>
           </div>
         </template>
-      </Card>
+      </PrimeCard>
     </div>
 
     <!-- Empty State -->
@@ -267,9 +291,30 @@ const redeemLeads = async () => {
       <h3 class="text-xl font-semibold text-surface-700 dark:text-surface-300 mb-2">
         {{ $t('packages.select.empty.title') }}
       </h3>
-      <p class="text-surface-500 dark:text-surface-400">
-        {{ $t('packages.select.empty.subtitle') }}
+      <p class="text-surface-500 dark:text-surface-400 mb-4">
+        <template v-if="currentPackage?.category_id">
+          {{ $t('packages.select.empty.categoryExhausted', { category: currentPackage.category?.name || `#${currentPackage.category_id}` }) }}
+        </template>
+        <template v-else>
+          {{ $t('packages.select.empty.subtitle') }}
+        </template>
       </p>
+      <div class="flex gap-3 justify-center">
+        <PrimeButton
+          :label="$t('packages.select.empty.refresh')"
+          icon="pi pi-refresh"
+          severity="secondary"
+          outlined
+          @click="reloadAvailableLeads"
+        />
+        <PrimeButton
+          v-if="currentPackage?.category_id && !showAllCategories"
+          :label="$t('packages.select.empty.showAllCategories')"
+          icon="pi pi-eye"
+          severity="secondary"
+          @click="loadWithoutCategoryFilter"
+        />
+      </div>
     </div>
 
     <!-- Floating Action Bar -->
@@ -287,12 +332,12 @@ const redeemLeads = async () => {
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <Button
+          <PrimeButton
             :label="$t('packages.select.floatingBar.cancel')"
             severity="secondary"
             @click="selectedLeads = []"
           />
-          <Button
+          <PrimeButton
             :label="$t('packages.select.redeemLeads')"
             icon="pi pi-check"
             @click="redeemLeads"

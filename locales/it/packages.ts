@@ -104,6 +104,9 @@ export default {
     empty: {
       title: 'Nessun lead disponibile',
       subtitle: 'Al momento non ci sono lead disponibili per questa categoria',
+      categoryExhausted: 'Tutti i lead della categoria "{category}" sono già stati assegnati o non sono disponibili al momento. Puoi visualizzare tutti i lead disponibili oppure riprovare più tardi.',
+      refresh: 'Ricarica',
+      showAllCategories: 'Mostra tutti i lead disponibili',
     },
 
     // Toast
@@ -167,6 +170,7 @@ export default {
     // Toast
     toast: {
       success: 'Pacchetto acquistato con successo!',
+      sepaPending: 'Ordine ricevuto. Effettua il bonifico: l\'amministratore attiverà il pacchetto appena lo riceve.',
       errorPurchase: 'Errore nell\'acquisto',
       errorBilling: 'Errore nell\'aggiornamento dati fatturazione',
       errorFormValidation: 'Correggi gli errori nel form',
