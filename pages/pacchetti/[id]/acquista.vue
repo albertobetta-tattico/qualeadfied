@@ -395,7 +395,8 @@ const processPayment = async () => {
                 </div>
               </div>
 
-              <!-- SEPA Option -->
+              <!-- SEPA Option — nascosto temporaneamente, BE continua a supportarlo -->
+              <!--
               <div
                 class="payment-option p-4 border-2 rounded-lg cursor-pointer transition-all"
                 :class="paymentMethod === 'sepa'
@@ -422,6 +423,7 @@ const processPayment = async () => {
                   </div>
                 </div>
               </div>
+              -->
             </div>
 
             <!-- Stripe Card Form (shown only when card is selected) -->

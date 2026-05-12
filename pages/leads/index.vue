@@ -59,8 +59,8 @@ const applyFilters = async () => {
     category_id: selectedCategory.value || undefined,
     province_id: selectedProvince.value || undefined,
     mode: selectedMode.value || undefined,
-    generated_from: formatDateForApi(dateRangeFilter.value?.[0]) || undefined,
-    generated_to: formatDateForApi(dateRangeFilter.value?.[1]) || undefined
+    date_from: formatDateForApi(dateRangeFilter.value?.[0]) || undefined,
+    date_to: formatDateForApi(dateRangeFilter.value?.[1]) || undefined
   })
   await catalogStore.fetchLeads()
 }

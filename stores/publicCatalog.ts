@@ -133,6 +133,12 @@ export const usePublicCatalogStore = defineStore('publicCatalog', {
         if (this.filters.availability) {
           query.availability = this.filters.availability
         }
+        if (this.filters.date_from) {
+          query.date_from = this.filters.date_from
+        }
+        if (this.filters.date_to) {
+          query.date_to = this.filters.date_to
+        }
         if (this.filters.sort_by) {
           query.sort_by = this.filters.sort_by
         }

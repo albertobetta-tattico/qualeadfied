@@ -327,4 +327,25 @@ const currentPageTitle = computed(() => {
   font-size: 1rem;
   color: #6b7280;
 }
+
+/*
+ * Responsive — confina lo scroll orizzontale delle tabelle dentro la
+ * tabella stessa. Senza queste regole il `min-width` cumulativo delle
+ * colonne PrimeDataTable spinge il contenuto a destra, espandendo
+ * `.admin-content` e propagando lo scroll al main e all'intera pagina.
+ * `min-width: 0` evita il default `auto` dei flex/grid children che
+ * forzerebbe il padre a crescere oltre il viewport.
+ */
+.admin-main,
+.admin-content {
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+:deep(.p-datatable-wrapper),
+:deep(.p-datatable-table-container),
+:deep(.p-datatable) {
+  overflow-x: auto;
+  max-width: 100%;
+}
 </style>

@@ -37,7 +37,6 @@ const leadToDelete = ref<Lead | null>(null)
 const searchQuery = ref('')
 const categoryFilter = ref<number | ''>('')
 const provinceFilter = ref<number | ''>('')
-const sourceFilter = ref<number | ''>('')
 // Single combined free-text filter for sorgente / mezzo / campagna.
 // The backend OR-matches across `source.name`, `medium`, `campaign`.
 const sourceTextFilter = ref('')
@@ -79,7 +78,6 @@ const pagination = computed(() => leadStore.pagination)
 const hasActiveFilters = computed(() => leadStore.hasActiveFilters)
 const categories = computed(() => leadStore.activeCategories)
 const provinces = computed(() => leadStore.activeProvinces)
-const sources = computed(() => leadStore.activeSources)
 const stats = computed(() => leadStore.stats)
 
 // Computed for select options
@@ -91,11 +89,6 @@ const categoryOptions = computed(() => [
 const provinceOptions = computed(() => [
   { label: t('admin.leads.list.filters.allProvinces'), value: '' },
   ...provinces.value.map(p => ({ label: `${p.name} (${p.code})`, value: p.id }))
-])
-
-const sourceOptions = computed(() => [
-  { label: t('admin.leads.list.filters.allSources'), value: '' },
-  ...sources.value.map(s => ({ label: s.name, value: s.id }))
 ])
 
 // Pagination
@@ -125,7 +118,6 @@ const applyFilters = () => {
     search: searchQuery.value,
     category_id: categoryFilter.value,
     province_id: provinceFilter.value,
-    source_id: sourceFilter.value,
     source_text: sourceTextFilter.value,
     status: statusFilter.value,
     mode: modeFilter.value,
@@ -139,7 +131,6 @@ const clearFilters = () => {
   searchQuery.value = ''
   categoryFilter.value = ''
   provinceFilter.value = ''
-  sourceFilter.value = ''
   sourceTextFilter.value = ''
   statusFilter.value = ''
   modeFilter.value = ''
@@ -647,11 +638,29 @@ onUnmounted(() => {
           </template>
         </PrimeColumn>
 
-        <!-- Source -->
-        <PrimeColumn field="source_id" :header="$t('admin.leads.list.table.headers.source')" style="min-width: 120px">
+        <!-- Origin -->
+        <PrimeColumn field="origin" :header="$t('admin.leads.list.table.headers.origin')" style="min-width: 110px">
           <template #body="{ data }">
             <span class="text-neutral-600 text-sm">
-              {{ data.source?.name || '-' }}
+              {{ data.origin || '-' }}
+            </span>
+          </template>
+        </PrimeColumn>
+
+        <!-- Campaign -->
+        <PrimeColumn field="campaign" :header="$t('admin.leads.list.table.headers.campaign')" style="min-width: 130px">
+          <template #body="{ data }">
+            <span class="text-neutral-600 text-sm">
+              {{ data.campaign || '-' }}
+            </span>
+          </template>
+        </PrimeColumn>
+
+        <!-- Medium -->
+        <PrimeColumn field="medium" :header="$t('admin.leads.list.table.headers.medium')" style="min-width: 110px">
+          <template #body="{ data }">
+            <span class="text-neutral-600 text-sm">
+              {{ data.medium || '-' }}
             </span>
           </template>
         </PrimeColumn>
