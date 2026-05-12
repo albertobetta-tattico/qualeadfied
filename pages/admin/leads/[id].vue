@@ -367,14 +367,25 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Source Card -->
+        <!-- Tracking Card (Sorgente / Mezzo / Campagna) -->
         <div class="q-card p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.source') }}</span>
+            <span class="text-sm font-medium text-neutral-700">{{ $t('admin.leads.edit.infoCards.tracking') }}</span>
             <i class="pi pi-link text-lg text-primary-500"></i>
           </div>
-          <div class="font-semibold text-neutral-900 flex items-center min-h-[28px]">
-            {{ lead.source?.name || '-' }}
+          <div class="space-y-1 text-sm min-h-[28px]">
+            <div class="flex items-baseline gap-2">
+              <span class="text-neutral-500 w-20 flex-shrink-0">{{ $t('admin.leads.edit.infoCards.origin') }}:</span>
+              <span class="font-semibold text-neutral-900 truncate">{{ lead.origin || '-' }}</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-neutral-500 w-20 flex-shrink-0">{{ $t('admin.leads.edit.infoCards.medium') }}:</span>
+              <span class="font-semibold text-neutral-900 truncate">{{ lead.medium || '-' }}</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-neutral-500 w-20 flex-shrink-0">{{ $t('admin.leads.edit.infoCards.campaign') }}:</span>
+              <span class="font-semibold text-neutral-900 truncate">{{ lead.campaign || '-' }}</span>
+            </div>
           </div>
           <div v-if="lead.external_id" class="text-xs text-neutral-500 mt-1">
             ID: {{ lead.external_id }}
