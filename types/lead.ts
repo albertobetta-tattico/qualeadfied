@@ -156,6 +156,7 @@ export interface LeadFilters {
   category_id?: number | ''
   province_id?: number | ''
   source_id?: number | ''
+  source_text?: string
   status?: LeadStatus | ''
   mode?: 'exclusive' | 'shared' | ''
   country?: string

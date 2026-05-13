@@ -58,6 +58,7 @@ export const useLeadStore = defineStore('lead', {
       category_id: '',
       province_id: '',
       source_id: '',
+      source_text: '',
       status: '',
       sort_by: 'created_at',
       sort_order: 'desc',
@@ -97,6 +98,7 @@ export const useLeadStore = defineStore('lead', {
         state.filters.category_id ||
         state.filters.province_id ||
         state.filters.source_id ||
+        state.filters.source_text ||
         state.filters.status ||
         state.filters.date_from ||
         state.filters.date_to ||
@@ -177,6 +179,7 @@ export const useLeadStore = defineStore('lead', {
         if (this.filters.category_id) query.category_id = String(this.filters.category_id)
         if (this.filters.province_id) query.province_id = String(this.filters.province_id)
         if (this.filters.source_id) query.source_id = String(this.filters.source_id)
+        if (this.filters.source_text) query.source_text = this.filters.source_text
         if (this.filters.status) query.status = this.filters.status
         if (this.filters.generated_from) query.generated_from = this.filters.generated_from
         if (this.filters.generated_to) query.generated_to = this.filters.generated_to
@@ -535,6 +538,7 @@ export const useLeadStore = defineStore('lead', {
         category_id: '',
         province_id: '',
         source_id: '',
+        source_text: '',
         status: '',
         sort_by: 'created_at',
         sort_order: 'desc',
