@@ -379,12 +379,12 @@ onMounted(() => {
               <span class="font-semibold text-neutral-900 truncate">{{ lead.origin || '-' }}</span>
             </div>
             <div class="flex items-baseline gap-2">
-              <span class="text-neutral-500 w-20 flex-shrink-0">{{ $t('admin.leads.edit.infoCards.medium') }}:</span>
-              <span class="font-semibold text-neutral-900 truncate">{{ lead.medium || '-' }}</span>
-            </div>
-            <div class="flex items-baseline gap-2">
               <span class="text-neutral-500 w-20 flex-shrink-0">{{ $t('admin.leads.edit.infoCards.campaign') }}:</span>
               <span class="font-semibold text-neutral-900 truncate">{{ lead.campaign || '-' }}</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-neutral-500 w-20 flex-shrink-0">{{ $t('admin.leads.edit.infoCards.medium') }}:</span>
+              <span class="font-semibold text-neutral-900 truncate">{{ lead.medium || '-' }}</span>
             </div>
           </div>
           <div v-if="lead.external_id" class="text-xs text-neutral-500 mt-1">

@@ -476,7 +476,7 @@ export default {
         category: 'Category',
         province: 'Province',
         source: 'Source',
-        tracking: 'Origin / Medium / Campaign',
+        tracking: 'Origin / Campaign / Medium',
         origin: 'Origin',
         medium: 'Medium',
         campaign: 'Campaign',
