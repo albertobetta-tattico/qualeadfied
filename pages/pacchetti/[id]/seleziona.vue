@@ -77,12 +77,19 @@ onMounted(async () => {
 
 // Server-side already filtered by category; this stays as a defensive
 // client-side guard in case the catalog has stale items from a previous fetch.
+//
+// NOTE: `currentPackage.category_id` arriva tipizzato come string dall'API
+// (MySQL BIGINT serializzato → string in JSON), mentre `Lead.categories[].id`
+// arriva come number. Un confronto strict `c.id === pkgCatId` ritornerebbe
+// sempre false e la lista risulterebbe vuota. Normalizziamo entrambi a
+// Number prima di confrontare.
 const availableLeads = computed(() => {
-  const pkgCatId = currentPackage.value?.category_id
-  if (!pkgCatId || showAllCategories.value) {
+  const rawPkgCatId = currentPackage.value?.category_id
+  if (!rawPkgCatId || showAllCategories.value) {
     return catalogStore.leads
   }
-  return catalogStore.leads.filter(l => l.categories?.some((c: any) => c.id === pkgCatId))
+  const pkgCatId = Number(rawPkgCatId)
+  return catalogStore.leads.filter(l => l.categories?.some((c: any) => Number(c.id) === pkgCatId))
 })
 
 const reloadAvailableLeads = async () => {
