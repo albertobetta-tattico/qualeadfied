@@ -402,6 +402,8 @@ export default {
         allCategories: 'All categories',
         allProvinces: 'All provinces',
         allSources: 'All sources',
+        sourceCombined: 'Origin / Campaign / Medium',
+        sourceCombinedPlaceholder: 'E.g. meta, summer-2026, cpc...',
       },
 
       table: {

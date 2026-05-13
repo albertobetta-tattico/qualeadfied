@@ -639,7 +639,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Origin -->
-        <PrimeColumn field="origin" :header="$t('admin.leads.list.table.headers.origin')" style="min-width: 110px">
+        <PrimeColumn field="origin" :header="$t('admin.leads.list.table.headers.origin')" sortable style="min-width: 110px">
           <template #body="{ data }">
             <span class="text-neutral-600 text-sm">
               {{ data.origin || '-' }}
@@ -648,7 +648,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Campaign -->
-        <PrimeColumn field="campaign" :header="$t('admin.leads.list.table.headers.campaign')" style="min-width: 130px">
+        <PrimeColumn field="campaign" :header="$t('admin.leads.list.table.headers.campaign')" sortable style="min-width: 130px">
           <template #body="{ data }">
             <span class="text-neutral-600 text-sm">
               {{ data.campaign || '-' }}
@@ -657,7 +657,7 @@ onUnmounted(() => {
         </PrimeColumn>
 
         <!-- Medium -->
-        <PrimeColumn field="medium" :header="$t('admin.leads.list.table.headers.medium')" style="min-width: 110px">
+        <PrimeColumn field="medium" :header="$t('admin.leads.list.table.headers.medium')" sortable style="min-width: 110px">
           <template #body="{ data }">
             <span class="text-neutral-600 text-sm">
               {{ data.medium || '-' }}

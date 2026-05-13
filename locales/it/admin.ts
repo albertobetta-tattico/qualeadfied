@@ -402,8 +402,8 @@ export default {
         allCategories: 'Tutte le categorie',
         allProvinces: 'Tutte le province',
         allSources: 'Tutte le fonti',
-        sourceCombined: 'Sorgente / Mezzo / Campagna',
-        sourceCombinedPlaceholder: 'Es. zapier, facebook, summer-2026...',
+        sourceCombined: 'Origine / Campagna / Mezzo',
+        sourceCombinedPlaceholder: 'Es. meta, summer-2026, cpc...',
       },
 
       table: {
