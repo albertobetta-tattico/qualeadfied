@@ -82,11 +82,11 @@ const getPaymentMethodLabel = (method: string): string => {
       <div v-if="order" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div class="flex items-center gap-2 mb-2">
-            <Tag
+            <PrimeTag
               :value="formatOrderStatus(order.status)"
               :severity="getOrderStatusSeverity(order.status)"
             />
-            <Tag
+            <PrimeTag
               :value="formatOrderType(order.order_type)"
               :severity="order.order_type === 'free_trial' ? 'secondary' : 'info'"
             />
@@ -100,13 +100,13 @@ const getPaymentMethodLabel = (method: string): string => {
         </div>
 
         <div class="flex gap-2">
-          <Button
+          <PrimeButton
             v-if="order.invoice_url"
             :label="$t('orders.detail.downloadInvoice')"
             icon="pi pi-download"
             @click="downloadInvoice"
           />
-          <Button
+          <PrimeButton
             :label="$t('orders.detail.print')"
             icon="pi pi-print"
             severity="secondary"
@@ -118,7 +118,7 @@ const getPaymentMethodLabel = (method: string): string => {
 
     <!-- Loading State -->
     <div v-if="ordersStore.loading" class="flex justify-center py-12">
-      <ProgressSpinner />
+      <PrimeProgressSpinner />
     </div>
 
     <!-- Order Content -->
@@ -126,7 +126,7 @@ const getPaymentMethodLabel = (method: string): string => {
       <!-- Main Content -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Order Items -->
-        <Card>
+        <PrimeCard>
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-list text-primary"></i>
@@ -142,8 +142,8 @@ const getPaymentMethodLabel = (method: string): string => {
               >
                 <div class="flex-grow">
                   <div class="flex items-center gap-2 mb-1">
-                    <Tag v-for="cat in ((item.lead as any)?.categories || [])" :key="cat.id" :value="cat.name" severity="info" size="small" class="mr-1" />
-                    <Tag :value="item.lead?.province?.code" severity="secondary" size="small" />
+                    <PrimeTag v-for="cat in ((item.lead as any)?.categories || [])" :key="cat.id" :value="cat.name" severity="info" size="small" class="mr-1" />
+                    <PrimeTag :value="item.lead?.province?.code" severity="secondary" size="small" />
                   </div>
                   <h4 class="font-medium text-surface-900 dark:text-surface-0">
                     {{ item.lead?.full_name }}
@@ -167,10 +167,10 @@ const getPaymentMethodLabel = (method: string): string => {
               <p>{{ $t('orders.detail.items.emptyMessage') }}</p>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Billing Data -->
-        <Card v-if="order.billing_data">
+        <PrimeCard v-if="order.billing_data">
           <template #title>
             <div class="flex items-center gap-2">
               <i class="pi pi-file-edit text-primary"></i>
@@ -212,13 +212,13 @@ const getPaymentMethodLabel = (method: string): string => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
 
       <!-- Sidebar -->
       <div class="space-y-4">
         <!-- Order Summary -->
-        <Card>
+        <PrimeCard>
           <template #title>Riepilogo Ordine</template>
           <template #content>
             <div class="space-y-3">
@@ -236,7 +236,7 @@ const getPaymentMethodLabel = (method: string): string => {
                   {{ formatCurrency(order.vat_amount) }}
                 </span>
               </div>
-              <Divider />
+              <PrimeDivider />
               <div class="flex justify-between items-center">
                 <span class="text-lg font-semibold text-surface-900 dark:text-surface-0">
                   Totale
@@ -247,10 +247,10 @@ const getPaymentMethodLabel = (method: string): string => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Payment Info -->
-        <Card>
+        <PrimeCard>
           <template #title>Pagamento</template>
           <template #content>
             <div class="space-y-3">
@@ -262,7 +262,7 @@ const getPaymentMethodLabel = (method: string): string => {
               </div>
               <div class="flex justify-between">
                 <span class="text-surface-600 dark:text-surface-400">Stato</span>
-                <Tag
+                <PrimeTag
                   :value="formatOrderStatus(order.status)"
                   :severity="getOrderStatusSeverity(order.status)"
                   size="small"
@@ -282,10 +282,10 @@ const getPaymentMethodLabel = (method: string): string => {
               </div>
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Invoice -->
-        <Card v-if="order.invoice_number">
+        <PrimeCard v-if="order.invoice_number">
           <template #title>Fattura</template>
           <template #content>
             <div class="space-y-3">
@@ -295,7 +295,7 @@ const getPaymentMethodLabel = (method: string): string => {
                   {{ order.invoice_number }}
                 </span>
               </div>
-              <Button
+              <PrimeButton
                 label="Scarica PDF"
                 icon="pi pi-download"
                 class="w-full"
@@ -303,17 +303,17 @@ const getPaymentMethodLabel = (method: string): string => {
               />
             </div>
           </template>
-        </Card>
+        </PrimeCard>
 
         <!-- Help -->
-        <Card class="bg-surface-50 dark:bg-surface-800">
+        <PrimeCard class="bg-surface-50 dark:bg-surface-800">
           <template #content>
             <div class="text-center">
               <i class="pi pi-question-circle text-2xl text-surface-400 mb-2"></i>
               <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">
                 Hai bisogno di assistenza per questo ordine?
               </p>
-              <Button
+              <PrimeButton
                 label="Contatta Supporto"
                 icon="pi pi-envelope"
                 severity="secondary"
@@ -322,7 +322,7 @@ const getPaymentMethodLabel = (method: string): string => {
               />
             </div>
           </template>
-        </Card>
+        </PrimeCard>
       </div>
     </div>
   </div>
