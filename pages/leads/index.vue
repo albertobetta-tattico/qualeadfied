@@ -49,7 +49,8 @@ onMounted(async () => {
   await Promise.all([
     catalogStore.fetchCategories(),
     catalogStore.fetchProvinces(),
-    catalogStore.fetchLeads()
+    catalogStore.fetchLeads(),
+    cartStore.fetchCart()
   ])
 })
 
