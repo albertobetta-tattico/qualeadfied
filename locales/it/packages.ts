@@ -85,11 +85,23 @@ export default {
       available: 'Disponibili',
       used: 'Utilizzati',
       total: 'Totale',
+      exclusiveTitle: 'Esclusivi',
+      sharedTitle: 'Condivisi',
+      remainingOf: '{remaining} / {total}',
+      pickingSummary: 'Stai selezionando: {exclusive} esclusivi + {shared} condivisi',
     },
 
     // Lead card
     leadCard: {
       leadId: 'Lead #{id}',
+      availability: {
+        exclusive: 'Esclusiva disponibile',
+        shared: 'Condiviso ({available}/{total} slot)',
+      },
+      modeToggle: {
+        exclusive: 'Esclusivo',
+        shared: 'Condiviso',
+      },
     },
 
     // Floating action bar
@@ -98,6 +110,13 @@ export default {
       redeemHint: 'Clicca su "Riscatta Lead" per aggiungerli al tuo portafoglio',
       cancel: 'Annulla',
       redeem: 'Riscatta Lead',
+      summaryMixed: 'Stai per acquisire {exclusive} in esclusiva e {shared} condivisi',
+      summaryExclusiveOnly: 'Stai per acquisire {exclusive} in esclusiva',
+      summarySharedOnly: 'Stai per acquisire {shared} condivisi',
+      leadExclusiveSingular: '1 lead',
+      leadExclusivePlural: '{count} lead',
+      leadSharedSingular: '1 lead',
+      leadSharedPlural: '{count} lead',
     },
 
     // Empty state
@@ -114,6 +133,8 @@ export default {
       redeemed: '{count} lead riscattati con successo!',
       errorRedeeming: 'Errore nel riscatto',
       selectAtLeast: 'Seleziona almeno un lead',
+      bothBudgetsEmpty: 'Hai esaurito sia gli slot esclusivi sia quelli condivisi del pacchetto',
+      noCapacityForLead: 'Questo lead non è disponibile nelle modalità rimaste nel pacchetto',
     },
   },
 

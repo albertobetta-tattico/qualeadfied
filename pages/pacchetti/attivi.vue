@@ -26,24 +26,31 @@ const getDaysRemaining = (expiresAt: string): number => {
   return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
 }
 
-// Get total leads used
-const getTotalLeadsUsed = (pkg: ActivePackage): number => {
-  return pkg.exclusive_leads_used + pkg.shared_leads_used
-}
-
 // Get total leads
 const getTotalLeads = (pkg: ActivePackage): number => {
   return pkg.total_leads
 }
 
+// Get total leads used.
+// Defensive clamp: legacy/seeded packages can have used > total in the DB
+// (e.g. pre-fix runs where the counters were incremented past capacity).
+// Showing "13 / 4 utilizzati" or "-9 rimanenti" is just visual noise — clamp
+// the display to the package's real capacity so the bar stays sane.
+const getTotalLeadsUsed = (pkg: ActivePackage): number => {
+  const raw = pkg.exclusive_leads_used + pkg.shared_leads_used
+  return Math.max(0, Math.min(raw, getTotalLeads(pkg)))
+}
+
 // Get remaining leads
 const getRemainingLeads = (pkg: ActivePackage): number => {
-  return getTotalLeads(pkg) - getTotalLeadsUsed(pkg)
+  return Math.max(0, getTotalLeads(pkg) - getTotalLeadsUsed(pkg))
 }
 
 // Get progress percentage
 const getProgressPercentage = (pkg: ActivePackage): number => {
-  return Math.round((getTotalLeadsUsed(pkg) / getTotalLeads(pkg)) * 100)
+  const total = getTotalLeads(pkg)
+  if (total <= 0) return 0
+  return Math.min(100, Math.round((getTotalLeadsUsed(pkg) / total) * 100))
 }
 
 // Get status severity
@@ -96,8 +103,8 @@ const selectLeads = (pkg: ActivePackage) => {
             <!-- Package Info -->
             <div class="flex-grow">
               <div class="flex items-center gap-3 mb-2">
-                <PrimeTagv-if="pkg.category_id" :value="`Categoria #${pkg.category_id}`" severity="info" />
-                <PrimeTagv-else :value="$t('packages.active.allCategories')" severity="secondary" />
+                <PrimeTag v-if="pkg.category_id" :value="`Categoria #${pkg.category_id}`" severity="info" />
+                <PrimeTag v-else :value="$t('packages.active.allCategories')" severity="secondary" />
                 <Tag
                   :value="$t('packages.active.daysRemaining', { count: getDaysRemaining(pkg.expires_at) })"
                   :severity="getStatusSeverity(pkg)"

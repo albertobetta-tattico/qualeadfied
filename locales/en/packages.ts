@@ -85,11 +85,23 @@ export default {
       available: 'Available',
       used: 'Used',
       total: 'Total',
+      exclusiveTitle: 'Exclusive',
+      sharedTitle: 'Shared',
+      remainingOf: '{remaining} / {total}',
+      pickingSummary: 'Currently picking: {exclusive} exclusive + {shared} shared',
     },
 
     // Lead card
     leadCard: {
       leadId: 'Lead #{id}',
+      availability: {
+        exclusive: 'Exclusive available',
+        shared: 'Shared ({available}/{total} slots)',
+      },
+      modeToggle: {
+        exclusive: 'Exclusive',
+        shared: 'Shared',
+      },
     },
 
     // Floating action bar
@@ -98,6 +110,13 @@ export default {
       redeemHint: 'Click "Redeem Leads" to add them to your portfolio',
       cancel: 'Cancel',
       redeem: 'Redeem Leads',
+      summaryMixed: 'You are about to redeem {exclusive} as exclusive and {shared} shared',
+      summaryExclusiveOnly: 'You are about to redeem {exclusive} as exclusive',
+      summarySharedOnly: 'You are about to redeem {shared} shared',
+      leadExclusiveSingular: '1 lead',
+      leadExclusivePlural: '{count} leads',
+      leadSharedSingular: '1 lead',
+      leadSharedPlural: '{count} leads',
     },
 
     // Empty state
@@ -111,6 +130,8 @@ export default {
       redeemed: '{count} leads redeemed successfully!',
       errorRedeeming: 'Error redeeming',
       selectAtLeast: 'Select at least one lead',
+      bothBudgetsEmpty: 'You have used both exclusive and shared slots of this package',
+      noCapacityForLead: 'This lead is not available in the modes remaining in the package',
     },
   },
 

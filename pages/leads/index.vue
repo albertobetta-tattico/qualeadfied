@@ -441,6 +441,7 @@ const bulkTotalPrice = computed(() => {
                   :label="$t('common.labels.exclusive')"
                   icon="pi pi-star"
                   size="small"
+                  :disabled="!data.is_exclusive_available"
                   @click="addToCart(data.id, 'exclusive')"
                 />
                 <PrimeButton
@@ -448,6 +449,7 @@ const bulkTotalPrice = computed(() => {
                   icon="pi pi-users"
                   size="small"
                   severity="secondary"
+                  :disabled="data.shared_slots_available <= 0"
                   @click="addToCart(data.id, 'shared')"
                 />
               </div>
