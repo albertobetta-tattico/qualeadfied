@@ -58,12 +58,17 @@ export const useCartStore = defineStore('cart', {
 
     isEmpty: (state): boolean => state.items.length === 0,
 
+    // NOTE: `item.lead_id` arriva dall'API come string (MySQL BIGINT serializzato
+    // → string in JSON), nonostante il type lo dichiari `number`. Confronto strict
+    // `item.lead_id === leadId` ritornava sempre false → i pulsanti "Esclusivo /
+    // Condiviso" restavano cliccabili anche per lead già nel carrello, generando
+    // 500 sul secondo POST /cart. Normalizziamo entrambi i lati a Number.
     isLeadInCart: (state) => (leadId: number): boolean => {
-      return state.items.some(item => item.lead_id === leadId)
+      return state.items.some(item => Number(item.lead_id) === Number(leadId))
     },
 
     getItemByLeadId: (state) => (leadId: number): CartItem | undefined => {
-      return state.items.find(item => item.lead_id === leadId)
+      return state.items.find(item => Number(item.lead_id) === Number(leadId))
     },
 
     groupedItems(state): CartGroup[] {
