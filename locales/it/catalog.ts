@@ -112,6 +112,9 @@ export default {
     deselectAll: 'Deseleziona tutti',
     redeemLeads: 'Riscatta {count} lead',
     claimLeads: 'Riscatta Lead',
+    claimSuccess: '{count} lead riscattati con successo!',
+    claimError: 'Errore durante il riscatto dei lead. Riprova.',
+    selectAtLeastOne: 'Seleziona almeno un lead da riscattare.',
     selectPeriod: 'Seleziona periodo',
     generationDate: 'Data generazione',
     table: {

@@ -72,6 +72,9 @@ export default {
     pageTitle: 'Free Trial',
     pageSubtitle: 'Select up to {count} free leads in shared mode',
     myLeads: 'My Leads',
+    claimSuccess: '{count} leads redeemed successfully!',
+    claimError: 'An error occurred while redeeming the leads. Please try again.',
+    selectAtLeastOne: 'Select at least one lead to redeem.',
     statusCard: {
       available: 'Available',
       redeemed: 'Redeemed',
